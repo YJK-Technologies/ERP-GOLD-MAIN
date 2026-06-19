@@ -43,6 +43,10 @@ function NumberSeriesInput({ }) {
   const [hasValueChanged, setHasValueChanged] = useState(false);
   const created_by = sessionStorage.getItem('selectedUserCode')
   const [isUpdated, setIsUpdated] = useState(false); 
+  const [billFormatDrop, setBillFormatDrop] = useState([]);
+  const [selectedBillFormat, setSelectedBillFormat] = useState('');
+  const [billFormat, setBillFormat] = useState('');
+  const bill = useRef(null);
 
   const modified_by = sessionStorage.getItem("selectedUserCode");
  
@@ -62,6 +66,8 @@ function NumberSeriesInput({ }) {
     setStatus("");
     setNumber_prefix("");
     setselectedscreentype("");
+    setSelectedBillFormat("");
+    setBillFormat("");
   }
 
  useEffect(() => {
@@ -69,13 +75,14 @@ function NumberSeriesInput({ }) {
       setStart_Year(selectedRow.Start_Year || "");
       setEnd_Year(selectedRow.End_Year || "");
       setStart_No(selectedRow.Start_No || "");
-      setRunning_No(selectedRow.Running_No || "");
+      setRunning_No(selectedRow.Running_No || "0");
       setEnd_No(selectedRow.End_No || "");
       secomtext(selectedRow.comtext || "");
       setselectedscreentype({
         label: selectedRow.Screen_Type,
         value: selectedRow.Screen_Type,
       });
+      setScreen_Type(selectedRow.Screen_Type || "");
       setselectedStatus({
         label: selectedRow.Status,
         value: selectedRow.Status,
@@ -86,6 +93,11 @@ function NumberSeriesInput({ }) {
         value: selectedRow.number_prefix,
       });
       setNumber_prefix(selectedRow.number_prefix||'')
+      setSelectedBillFormat({
+        label: selectedRow.bill_format,
+        value: selectedRow.bill_format,
+      });
+      setBillFormat(selectedRow.bill_format||'')
     } else if (mode === "create") {
       clearInputFields();
     }
@@ -101,7 +113,9 @@ function NumberSeriesInput({ }) {
       !Running_No ||
       !End_No ||
       !comtext  ||
-      !status
+      !status ||
+      !number_prefix ||
+      !billFormat
       
     ) {
       setError(" ");
@@ -128,9 +142,10 @@ function NumberSeriesInput({ }) {
           number_prefix: number_prefix,
           Status: status,
           modified_by,
+          bill_format : billFormat
         }),
       });
-      if (response.status === 200) {
+      if (response.ok) {
         console.log("Data Updated successfully");
         setIsUpdated(true); 
         // clearInputFields();
@@ -203,6 +218,21 @@ function NumberSeriesInput({ }) {
   }, []);
 
 
+  useEffect(() => {
+    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    
+    fetch(`${config.apiBaseUrl}/getBillFormat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ company_code })
+    })
+      .then((data) => data.json())
+      .then((val) => setBillFormatDrop(val))
+      .catch((error) => console.error('Error fetching data:', error));
+  }, []);
+
   const filteredOptionscreentype = screentypedrop.map((option) => ({
     value: option.attributedetails_name,
     label: option.attributedetails_name,
@@ -214,6 +244,11 @@ function NumberSeriesInput({ }) {
   }));
 
   const filteredOptionBoolean = booleandrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  const filteredOptionBillFormat = billFormatDrop.map((option) => ({
     value: option.attributedetails_name,
     label: option.attributedetails_name,
   }));
@@ -241,23 +276,24 @@ function NumberSeriesInput({ }) {
 
   }, []);
 
-
   const handleChangescreentype = (selectedscreentype) => {
     setselectedscreentype(selectedscreentype);
     setScreen_Type(selectedscreentype ? selectedscreentype.value : '');
-      
   };
 
   const handleChangeStatus = (selectedStatus) => {
     setselectedStatus(selectedStatus);
-    setStatus(selectedStatus ? selectedStatus.value : '');
-      
+    setStatus(selectedStatus ? selectedStatus.value : ''); 
   };
 
   const handleChangeBoolean = (selectedBoolean) => {
     setselectedBoolean(selectedBoolean);
     setNumber_prefix(selectedBoolean ? selectedBoolean.value : '');
-      
+  };
+
+  const handleChangeBillFormat = (selectedBillFormat) => {
+    setSelectedBillFormat(selectedBillFormat);
+    setBillFormat(selectedBillFormat ? selectedBillFormat.value : '');
   };
 
   const handleInsert = async () => {
@@ -270,7 +306,8 @@ function NumberSeriesInput({ }) {
       !End_No ||
       !comtext ||
       !status ||
-      !number_prefix
+      !number_prefix ||
+      !billFormat
     ) {
       setError(" ");
       return;
@@ -293,7 +330,8 @@ function NumberSeriesInput({ }) {
           End_No,
           comtext,
           number_prefix,
-          status,
+          Status: status,
+          bill_format : billFormat,
           created_by: sessionStorage.getItem('selectedUserCode')
         }),
       });
@@ -628,6 +666,36 @@ function NumberSeriesInput({ }) {
                  placeholder=""
                  required title="Please select a Number Prefix status"
                  ref={numpre}
+                onKeyDown={(e) => handleKeyDown(e,bill,numpre)}
+              />
+              {error && !number_prefix && <div className="text-danger">Number Prefix should not be blank</div>}
+            </div>
+            </div>
+          </div>
+          <div className="col-md-3 form-group">
+            
+            <div class="exp-form-floating">
+            <div class="d-flex justify-content-start">
+                <div>
+                   <label for="state" class="exp-form-labels">
+                 Bill Format
+                  
+                </label>
+                </div>
+                <div>
+                  <span className="text-danger">*</span>
+                  </div>
+                </div>
+                <div title="Select the Bill Format">
+              <Select
+                 id="numpref"
+                 value={selectedBillFormat}
+                 onChange={handleChangeBillFormat}
+                 options={filteredOptionBillFormat}
+                 className="exp-input-field"
+                 placeholder=""
+                 required title="Please select a Bill Format"
+                 ref={bill}
                  onKeyDown={(e) => {
                           if (e.key === 'Enter') {
                             if (mode === "create") {
@@ -638,7 +706,7 @@ function NumberSeriesInput({ }) {
                           }
                         }}
               />
-              {error && !number_prefix && <div className="text-danger">Number Prefix Status should not be blank</div>}
+              {error && !billFormat && <div className="text-danger">Bill Format should not be blank</div>}
             </div>
             </div>
           </div>
