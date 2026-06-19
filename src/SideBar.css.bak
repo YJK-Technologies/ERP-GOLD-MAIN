@@ -1,0 +1,145 @@
+/* General sidebar styling */
+.sidebar {
+  position: sticky;
+  margin-top: 58px;
+  padding-top: 0;
+  width: 250px;
+  min-height: 1000px;
+  background-color: #1e2947;
+  color: #fff;
+  transition: width 0.3s ease-in;
+  display: flex;
+  flex-direction: column;
+  z-index: 999; 
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  overflow-y: auto; /* Ensures scroll appears only when necessary */
+}
+
+/* DeliveryChallan page-specific height */
+.DeliveryChallan {
+  max-height: 1500px;
+  overflow-y: auto; /* Ensure it scrolls when content overflows */
+}
+
+
+/* Adjusted for collapsed sidebar */
+.sidebar.collapsed {
+  width: 120px;
+  transition: 0.5s ease;
+}
+
+/* Sidebar header */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+}
+
+.sidebar-logo {
+  width: 40px;
+  
+}
+
+.sidebar-title {
+  margin-left: 10px;
+  font-size: 18px;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Sidebar menu */
+.sidebar-menu {
+  flex: 1;
+  max-height: calc(150vh);
+  transition: 0.5s ease;
+  overflow:scroll ;
+}
+
+.menu-section {
+  font-size: 13px;
+  color: #aaa;
+  padding: 10px 20px;
+  overflow:scroll;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 10px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background-color 0.3s ease;
+  border-top-left-radius: 30px;
+  border-bottom-left-radius: 30px;
+  width: 335px;
+  overflow:scroll ;
+}
+
+.menu-item:hover {
+  background-color: #5b616d;
+}
+
+.menu-item svg {
+  font-size: 13px;
+  margin-right: 15px;
+}
+
+/* Sidebar toggle button */
+.sidebar-toggle {
+  padding: 3px;
+  text-align: center;
+  cursor: pointer;
+  background-color: #3c362e;
+  border-top-right-radius: 25px;
+  border-bottom-right-radius: 25px;
+  width: 40px;
+  color: white;
+  position: fixed;
+  opacity: 0.5;
+  transition: 0.5s;
+}
+
+.sidebar-toggle:hover {
+  background-color: gold;
+  color: black;
+  opacity: 1;
+}
+
+/* Layout container for sidebar and content */
+.layout-container {
+  position: relative;
+  display: flex;
+  flex-direction: row; /* Aligns sidebar and content side-by-side */
+}
+
+.content-container {
+  
+  flex: 1; /* Takes up the remaining space on the right of the sidebar */
+  padding: 20px;
+  /* Ensure content container takes full height */
+}
+
+/* Mobile view: min-width: 100px to max-width: 500px */
+@media (min-width: 100px) and (max-width: 500px) {
+  .sidebar {
+      position: fixed;
+      overflow-y: auto; /* Scroll if content overflows */
+      width: 200px;
+      max-height: 100vh; /* Sidebar adjusts to screen height */
+      font-size: 13px;
+  }
+
+  .sidebar.collapsed {
+      width: 15px;
+  }
+}
+
+@media (min-width: 500px) and (max-width: 1024px) { /* Set max-width to a standard breakpoint */
+  .sidebar {
+      width: 230px; /* Adjusted width for medium screens */
+      height: calc(100vh - 58px); /* Ensure it covers the entire viewport height */
+  }
+}
+

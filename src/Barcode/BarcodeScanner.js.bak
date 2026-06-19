@@ -1,0 +1,52 @@
+import React, { useState, useEffect, useRef } from 'react';
+import './BarcodeScanner.css';
+const BarcodeScanner = () => {
+  const [scannedData, setScannedData] = useState('');
+  const inputRef = useRef(null);
+  
+  useEffect(() => {
+    const handleScan = (e) => {
+      if (e.key === 'Enter') {
+        setScannedData(e.target.value);
+      }
+    };
+    if (inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.addEventListener('keydown', handleScan);
+    }
+    return () => {
+      if (inputRef.current) {
+        inputRef.current.removeEventListener('keydown', handleScan);
+      }
+    };
+  }, []);
+
+  return (
+    <div className="container-fluid Topnav-screen">
+      <div className="scanner-container">
+        <h1 className="scanner-title">Barcode Scanner</h1>
+        <input
+          type="text"
+          ref={inputRef}
+          placeholder="Scan barcode here"
+          value={scannedData}
+          onChange={(e) => setScannedData(e.target.value)}
+          className="barcode-input"
+        />
+      </div>
+    </div>
+  );
+};
+export default BarcodeScanner;
+
+
+
+
+
+
+
+
+
+
+
+

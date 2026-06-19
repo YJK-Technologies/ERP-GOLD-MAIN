@@ -1,0 +1,522 @@
+ import React from "react";
+import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom";
+//import Login from "./Login.js";
+//import Register from "./registration.js";
+import Home from './Home.js';
+import Login from "./Login.js";
+import Signup from "./signup.js";
+import Dash from './Dashboard.js'
+import App from "./Theapp.js";
+import { useState,useEffect } from "react";
+import Input from "./Input.js";
+import Grid from "./Grid.js";
+import Topbar from "./Topbar2.js";
+import SideBar from "./SideBar.js";
+import UserGrid from "./user_Grid.js";
+import UserInput from "./UserInput.js";
+import WarehouseGrid from "./WarehouseGrid.js";
+import WareHouseInput from "./WareHouseInput.js";
+import RoleInfoGrid from "./RoleInfoGrid.js";
+import Role_input from "./RoleInfo_Input.js";
+import Purchase from "./Purchase.js";
+import AttriDetGrid from "./AttriDetGrid.js";
+import AttriHdrInput from "./AttriHdrInput.js";
+import AttriDetInput from "./AttriDetInput.js";
+import IntermediaryGrid from "./IntermediaryHeaderGrid.js";
+import IntermediaryHdrInput from "./IntermediaryHeaderInput.js";
+import IntermediaryDetailInput from "./IntermediaryDetailrInput.js";
+import TaxDetGrid from "./Taxdetgrid.js";
+import TaxHdrInput from "./TaxHdrInput.js";
+import TaxDetInput from "./TaxDetInput.js";
+import ItemBrandGrid from "./itembrandgrid.js";
+import ItemInput from "./ItemInput.js";
+import VenDetGrid from "./VenDetGrid.js";
+import VenHdrInput from "./VenHdrInput.js";
+import VenDetInput from "./VenDetInput.js";
+import CompanyMappingGrid from "./CompanyMappingGrid.js";
+import UserComMap_input from "./CompanyMappingInput.js";
+import UserRoleMapGrid from "./UserRoleMapGrid.js";
+import UserRoleInput from "./UserRoleMapInput.js";
+import LocInfoGrid from "./LocationInfoGrid.js";
+import LocInfoInput from "./LocationInput.js";
+import PurchaseAnalysis from "./PurchaseAnalysis.js";
+import PurchaseReturn from './PurchaseReturn.js';
+import Sales from "./Inventory.js";
+import SalesReturn from "./SalesReturn.js";
+import Template from "./Template.js";
+import NumberSeriesGrid from "./NumberSeriesGrid.js";
+import NumberSeriesInput from "./NumberSeriesInput.js";
+import SaleTrans from './SalesAnalysis.js';
+import SalesPrint from './SalesTemplate.js'
+import VariantTab from './ItemDashboard/Variant.js';
+import ProductTab from './ItemDashboard/Products.js';
+import UnitTab from './ItemDashboard/Unit.js';
+import Chart from './ItemDashboard/Charts/Charts.js';
+import Settings from './Settings.js';
+import UnitChart from './ItemDashboard/Charts/UnitChart.js';
+import ProChart from './ItemDashboard/Charts/ProChart.js';
+import VarChart from './ItemDashboard/Charts/VarChart.js';
+import Purdash from './PurchaseDashboard/PurchaseAnalysis.js';
+import PurchaseReturnPrint from "./PurchaseReturnTemplate.js";
+import AccountInformation from "./AccountInformation.js";
+import UserScreenMapGrid from "./userscreenmapgrid.js";
+import UserScreenInput from "./userscreeninput.js"; 
+import CustomerDetGrid from "./Customerdetgrid.js";
+import CustomerHdrInput from "./Customerhdrinput.js"; 
+import CustomerDetInput from "./customerdetinput.js";
+import OpeningbalanceGrid from "./OpeningbalanceGrid.js";
+import OpeningBalanceItem from "./OpeningBalanceItem.js";
+import OpeningbalanceInput from "./Openingbalanceinput.js";
+import AdjustmentGrid from "./Adjustmentgrid.js";
+import AdjustmentInput from "./Adjustmentinput.js";
+import StocktransferInput from "./stocktransferinput.js";
+import SalesReturnPrint from "./SalesReturnTemplate.js";
+import JournalGrid from "./journalgrid.js";
+import JournalInput from "./journalinput.js";
+import PurChart from './PurchaseDashboard/PurChart.js';
+import NotFound from './NotFound.js'
+import PurchaseDeleteDetails from "./PurchaseDeleteDetails.js";
+import DeletedSales from "./DeletedSales.js";
+import TStock from './TotalStockDashboard/TStockScreen.js'
+import StockTransfer from "./StockTransfer.js";
+import StockTransferTemplate from "./StockTransferTemplate.js";
+import BaseAccount from "./BaseAccount.js";
+import AddBaseAcc from "./AddBaseAccount.js";
+import UserAccGrpGrid from "./UserAccGrpgrid.js";
+import UserAccInput from "./UserAccGrpInput.js";
+import StandardAcc from "./StandardAccount.js";
+import StdAccInput from "./AddStandardAcc.js";
+import AccNameGrid from "./AccountName.js"; 
+import AccNameInput from "./AccountNameInput.js";
+import DeliveryChallan from "./DeliveryChallan.js";
+import Quotation from "./Quotation.js";
+import BankAccInput from "./BankAccount.js";
+import BankAccGrid from "./BankAccountGrid.js";
+import Cstock from "./CurrentStockScreen.js";
+import TaxInvoicePrint from "./PrintScreens/NSM/InvoicePrint.js";
+import QuotationPrint from "./PrintScreens/NSM/QuotePrint.js";
+import PurchaseOrder from "./PurchaseOrder.js";
+import DeliveryChallanSM from "./PrintScreens/NSM/DeliveryChallanPrint.js";
+import PurchaseOrderPrint from "./PrintScreens/NSM/PurchaseOrderPrint.js";
+import TaxInvoice from "./TaxInvoice.js";
+import Product from "./Products.js";
+import ProductDetail from "./AddProductDetails.js";
+import ProductHdr from "./AddProducthdr.js";
+import PurchaseOrderAnalysis from "./PurchaseOrderanalysis.js";
+import TaxInvoiceanalysis from "./TaxInvoiceAnalysis.js";
+import DCanalysis from "./DeliveryChallanAnalysis.js";
+import QOanalysis from "./QuotationAnalysis.js";
+import UnplannedIssued from "./UnplannedIssued.js";
+import UnplannedReturn from "./UnplannedReturn.js";
+import UnplannedReceipt from "./UnplannedReceipt.js";
+import AssertAllocation from "./AssertAllocation.js";
+import InvReceiptPrint from "./InventoryPrintTemplates/InvReceiptPrint.js";
+import InvReturnPrint from "./InventoryPrintTemplates/InvReturnPrint.js";
+import InvIssuedPrint from "./InventoryPrintTemplates/InvIssuedPrint.js";
+import Employee from "./Employeegrid.js";
+import EmployeeInput from "./Employeeinput.js";
+import AssetsReturn from "./AssetsAllocationReturn.js";
+import BarcodeGenerator from "./Barcode/BarcodeGenerator.js";
+import BarcodeScanner from "./Barcode/BarcodeScanner.js";
+import DepartmentInput from "./DepartmentInput.js";
+import Department from "./DepartmentGrid.js";
+import Desgination from "./DesginationGrid.js";
+import DesginationInput from "./DesginationInput.js";
+import AdjustmnetPrint from "./InventoryPrintTemplates/AdjustmnetPrint.js";
+import ObPrint from "./InventoryPrintTemplates/ObPrint.js";
+import JournalPrint from "./InventoryPrintTemplates/JournalTemplate.js";
+import EmployeeLoan from './ESSComponents/AddEmployeeInfo.js'
+import CompanyDetails from './ESSComponents/CompanyDetails.js'
+import FinanceDet from './ESSComponents/FinanceDet.js'
+import BankAccDet from './ESSComponents/BankAccDet.js'
+import AcademicDet from './ESSComponents/AcademicDet.js'
+import IdentDoc from './ESSComponents/IdentDoc.js'
+import Insur from './ESSComponents/Insurance.js'
+import Documents from './ESSComponents/Document.js'
+import ESSDailyAtten from './ESSComponents/Payslip.js'
+import ESSLoan from './ESSComponents/EmpLoan.js'
+import EmpLeave from './ESSComponents/EmpLeave.js'
+import DailyAtt from './ESSComponents/DailyAttendance.js'
+import Announce from './ESSComponents/Announcement.js'
+import Grade from './ESSComponents/Grade.js'
+import EmpLoan from './ESSComponents/EmpLoan.js'
+import ESSDashboard from './ESSDashboard/Dashboard.js'
+// import Products from "./PrintTemplates/Productprint.js";
+import EmployeeDashboard from './ESSDashboard/EmployeeDashboard.js'
+import LeaveReq from './ESSDashboard/LeaveRequest.js'
+// import DCPrint from "./PrintTemplates/DCPrint.js";
+// import DCSM from "./PrintTemplates/DCSm/PO.js";
+import GSTReport from './GSTReport/GSTReport.js';
+import PerformaInvoicePrint from './PrintScreens/NSM/ProformaPrint.js';
+import OpeningItemAnalysis from './OpeningItemAnalysis.js';
+import DataWiseStock from './DataWiseItem/DataWiseItemStock.js';
+import PendingCustomer from './PendingCustomer.js';
+import EmployeeBonus from './ESSComponents/EmployeeBonus.js';
+import EmployeeOtherAllowance from './ESSComponents/Employee_other_Allowance.js'
+import EmpLoanType from './ESSComponents/EmployeeLoanType.js'
+import EmpPFCompany from './ESSComponents/EmployeePFCompany.js'
+import EmpProfessionalTax from './ESSComponents/EmpProfessionalTax.js'
+import ManagerLeave from './ESSComponents/ManagerLeave.js';
+import EmpTDS from './ESSComponents/EmpTDS.js'
+import Salessettings from "./SalesSettings.js";
+import ReceivedGoods from "./ReceivedGoods/ReceivedGoods.js";
+import ReceivedGoodsRt from "./ReceivedGoodsReport.js";
+import PurchaseSetting from "./PurchaseSetting.js";
+import POsettings from "./POsettings.js";
+import EmployeeTask from './TaskMasters/TaskInspector.js';
+import EmpProject from './TaskMasters/EmpProject.js';
+import DailyTask from './TaskMasters/DailyTask.js';
+import InvoiceSettings from "./InvoiceSetting.js";
+import EmpProjectinput from './TaskMasters/EmpProjectinput.js';
+import DailyTaskInput from './TaskMasters/DailyTaskInput.js';
+import Allocatedproject from './TaskTransactions/Projectscreen.js';
+import OpenTickets from './TaskTransactions/OpeningTickets.js';
+import ProjectMapping from './TaskMasters/ProjectMapping.js';
+import Login_info from './Task_Reports/TaskHours.js';
+import ProjectDetails from './Task_Reports/ProjectProgress.js';
+import HoliDays from "./ESSComponents/Holiday.js";
+import Validation from "./ValidationScreen.js";
+import ValidationGrid from "./ValidationGridScreen.js";
+import FinancialYear from "./ESSComponents/FinancialYear.js";
+import ProjectChartReport from "./Task_Reports/ProjectChartReport.js"
+import PayslipReport from "./PayslipReport.js"
+import FinancialYearAccess from "./financialYearAccess.js"
+import AddFinancialYearAccess from './AddFInancialYearAccess.js'
+import PayslipDash from './PayslipReports.js'
+import { ToastContainer } from "react-toastify";
+import PrintTemplate from "./PrintTemplate.js";
+import Crmworkspace from './CRMcomponents/Sales/CRMBoard.js'
+import Crmlistpage from "./CRMcomponents/Sales/CRMList.js";
+import CrmChart from "./CRMcomponents/Sales/CRMChart.js";
+import CrmScheduler from "./CRMcomponents/Sales/CRMSchedule.js";
+import CrmActivity from "./CRMcomponents/Sales/CRMActivity.js";
+import CrmLocation from "./CRMcomponents/Sales/CRMLocation.js";
+import Forcast from "./CRMcomponents/Reports/Forecast.js";
+import RChart from "./CRMcomponents/Reports/CRMChart.js";
+import Rpivot from "./CRMcomponents/Reports/Pivot.js";
+import CRMSettings from "./CRMcomponents/Configurations/Settings.js";
+import CRMSalesTeam from './CRMcomponents/Configurations/SalesTeam.js'
+
+function Main() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [screenTypes, setScreenTypes] = useState(
+    JSON.parse(sessionStorage.getItem("screenTypes")) || []
+  );
+
+  useEffect(() => {
+    const loadPermissions = () => {
+      const permissionsJSON = sessionStorage.getItem("permissions");
+      if (permissionsJSON) {
+        const permissions = JSON.parse(permissionsJSON);
+        const screens = permissions.map((permission) =>
+          permission.screen_type.replace(/\s+/g, "")
+        );
+        setScreenTypes(screens);
+        sessionStorage.setItem("screenTypes", JSON.stringify(screens));
+      }
+    };
+
+    loadPermissions();
+
+    window.addEventListener("permissionsUpdated", loadPermissions);
+    return () => window.removeEventListener("permissionsUpdated", loadPermissions);
+  }, []);
+
+// console.log('Screen Types:', screenTypes);
+  
+  // const screenTypes = Object.keys(permissions);
+
+  // create by pavun on 7 may 2024 use: To block the view page source  brgin
+  // useEffect(()=>{
+  //   document.addEventListener("contextmenu",handlecontextmenu)
+  //   return()=>{
+  //     document.removeEventListener("contextmenu",handlecontextmenu)
+  //   }
+  // },[])
+
+  // const handlecontextmenu=(e)=>{
+  //   e.preventDefault()
+  //   // alert("right click is disable")
+  // }
+  // create by pavun on 7 may 2024 use: To block the view page source  End
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const routes = [
+    { path: "/Dashboard", component: <Dash /> },
+    { path: "/", component: <Home /> },
+    { path: "/Login", component: <Login /> },
+    { path: "/signup", component: <Signup /> },
+    { path: "/PurchasePrint", component: <Template /> },
+    { path: "/SalesPrint", component: <SalesPrint /> },
+    { path: "/PurchaseReturnPrint", component: <PurchaseReturnPrint /> },
+    { path: "/SalesReturnPrint", component: <SalesReturnPrint /> },
+    { path: "/PurchaseChart", component: <PurChart /> },
+    { path: "/PurchaseAnalysis", component: <Purdash /> },
+    { path: "/UnitDataChart", component: <UnitChart /> },
+    { path: "/VarientDataChart", component: <VarChart /> },
+    { path: "/ItemDataChart", component: <ProChart /> },
+    { path: "/SalesChart", component: <Chart /> },
+    { path: "/Settings", component: <Settings /> },
+    { path: "/UnitData", component: <UnitTab /> },
+    { path: "/VarientData", component: <VariantTab /> },
+    { path: "/ItemData", component: <ProductTab /> },
+    { path: "/AddCompany", component: <Input /> },
+    { path: "/SalesAnalysis", component: <SaleTrans /> },
+    { path: "/Company", component: <Grid /> },
+    { path: "/AddUser", component: <UserInput /> },
+    { path: "/User", component: <UserGrid /> },
+    { path: "/Warehouse", component: <WarehouseGrid /> },
+    { path: "/AddWarehouse", component: <WareHouseInput /> },
+    { path: "/Role", component: <RoleInfoGrid /> },
+    { path: "/AddRole", component: <Role_input /> },
+    { path: "/Purchase", component: <Purchase /> },
+    { path: "/PurchaseReturn", component: <PurchaseReturn /> },
+    { path: "/Sales", component: <Sales /> },
+    { path: "/Attribute", component: <AttriDetGrid /> },
+    { path: "/AddAttributeHeader", component: <AttriHdrInput /> },
+    { path: "/AddAttributeDetail", component: <AttriDetInput /> },
+    { path: "/Intermediary", component: <IntermediaryGrid /> },
+    { path: "/AddIntermedHeader", component: <IntermediaryHdrInput /> },
+    { path: "/AddIntermedDetails", component: <IntermediaryDetailInput /> },
+    { path: "/Tax", component: <TaxDetGrid /> },
+    { path: "/AddTaxHeader", component: <TaxHdrInput /> },
+    { path: "/AddTaxDetails", component: <TaxDetInput /> },
+    { path: "/Item", component: <ItemBrandGrid /> },
+    { path: "/AddItem", component: <ItemInput /> },
+    { path: "/Vendor", component: <VenDetGrid /> },
+    { path: "/AddVendorHeader", component: <VenHdrInput /> },
+    { path: "/AddVendorDetails", component: <VenDetInput /> },
+    { path: "/CompanyMapping", component: <CompanyMappingGrid /> },
+    { path: "/AddCompanyMapping", component: <UserComMap_input /> },
+    { path: "/UserRoleMapping", component: <UserRoleMapGrid /> },
+    { path: "/AddUserRoleMapping", component: <UserRoleInput /> },
+    { path: "/Location", component: <LocInfoGrid /> },
+    { path: "/AddLocation", component: <LocInfoInput /> },
+    { path: "/PurchaseAnalysis", component: <PurchaseAnalysis /> },
+    { path: "/Sales", component: <Sales /> },
+    { path: "/SalesReturn", component: <SalesReturn /> },
+    { path: "/NumberSeries", component: <NumberSeriesGrid /> },
+    { path: "/AddNumberSeries", component: <NumberSeriesInput /> },
+    { path: "/UserRights", component: <UserScreenMapGrid /> },
+    { path: "/AccountInformation", component: <AccountInformation /> },
+    { path: "/AddUserRights", component: <UserScreenInput /> },
+    { path: "/Customer", component: <CustomerDetGrid /> },
+    { path: "/AddCustomerHeader", component: <CustomerHdrInput /> },
+    { path: "/AddCustomerDetails", component: <CustomerDetInput /> },
+    { path: "/OpeningBalance", component: <OpeningbalanceGrid /> },
+    { path: "/OpeningItem", component: <OpeningBalanceItem /> },
+    { path: "/AddOpeningBalance", component: <OpeningbalanceInput /> },
+    { path: "/Adjustment", component: <AdjustmentGrid /> },
+    { path: "/AddAdjustment", component: <AdjustmentInput /> },
+    { path: "/Journal", component: <JournalGrid /> },
+    { path: "/AddJournal", component: <JournalInput /> },
+    { path: "/NotFound", component: <NotFound /> },
+    { path: "/DeletePurchase", component: <PurchaseDeleteDetails /> },
+    { path: "/DeletedSales", component: <DeletedSales /> },
+    { path: "/TotalStock", component: <TStock /> },
+    { path: "/Stocktransfer", component: <StockTransfer /> },
+    { path: "/StockTransferTemplat", component: <StockTransferTemplate /> },
+    { path: "/BaseAccount", component: <BaseAccount /> },
+    { path: "/AddBaseAccount", component: <AddBaseAcc /> },
+    { path: "/UserAccountGroup", component: <UserAccGrpGrid /> },
+    { path: "/AddUserAccGrp", component: <UserAccInput /> },
+    { path: "/StandardAccount", component: <StandardAcc /> },
+    { path: "/AddStandardAccount", component: <StdAccInput /> },
+    { path: "/AccountName", component: <AccNameGrid /> },    
+    { path: "/AddAccountName", component: <AccNameInput /> },
+    { path: "/DeliveryChallan", component: <DeliveryChallan /> },
+    { path: "/Quotation", component: <Quotation /> },
+    { path: "/AddBankAccount", component: <BankAccInput /> },
+    { path: "/BankAccount", component: <BankAccGrid /> },
+    { path: "/CurrentStock", component: <Cstock /> },
+    { path: "/TaxInvoicePrint", component: <TaxInvoicePrint /> },
+    { path: "/QuotationPrint", component: <QuotationPrint /> },
+    { path: "/PurchaseOrder", component: <PurchaseOrder /> },
+    { path: "/DCPrint", component: <DeliveryChallanSM /> },
+    { path: "/PurchaseOrderPrint", component: <PurchaseOrderPrint /> },
+    { path: "/TaxInvoice", component: <TaxInvoice /> },
+    { path: "/Product", component: <Product /> },
+    { path: "/AddProductDetail", component: <ProductDetail /> },
+    { path: "/AddProductHdr", component: <ProductHdr /> },
+    { path: "/POanalysis", component: <PurchaseOrderAnalysis/>},
+    { path: "/TIanalysis", component: <TaxInvoiceanalysis/>},
+    { path: "/DCanalysis", component: <DCanalysis/>},
+    { path: "/QOanalysis", component: <QOanalysis/>},
+    { path: "/UnplannedIssued", component: <UnplannedIssued/>},
+    { path: "/UnplannedReturn", component: <UnplannedReturn/>},
+    { path: "/UnplannedReceipt", component: <UnplannedReceipt/>},
+    { path: "/AssertAllocation", component: <AssertAllocation/>},
+    { path: "/InvReceiptPrint", component: <InvReceiptPrint/>},
+    { path: "/InvReturnPrint", component: <InvReturnPrint/>},
+    { path: "/InvIssuedPrint", component: <InvIssuedPrint/>},
+    { path: "/EmployeeInfo", component: <Employee/>},
+    { path: "/EmployeeInputInfo", component: <EmployeeInput/>},
+    { path: "/AssetsReturn", component: <AssetsReturn/>},
+    { path: "/BarcodeGenerator", component: <BarcodeGenerator/>},
+    { path: "/BarcodeScanner", component: <BarcodeScanner/>},
+    { path: "/AddDepartment", component: <DepartmentInput/>},
+    { path: "/Department", component: <Department/>},
+    { path: "/DesgiantionInfo", component: <Desgination/>},
+    { path: "/AddDesgination", component: <DesginationInput/>},
+    { path: "/AdjustmnetPrint", component: <AdjustmnetPrint/>},
+    { path: "/ObPrint", component: <ObPrint/>},
+    { path: "/JournalPrint", component: <JournalPrint/>},
+    { path: "/AddEmployeeInfo", component: <EmployeeLoan/>},
+    { path: "/CompanyDetails", component: <CompanyDetails/>},
+    { path: "/FinanceDet", component: <FinanceDet/>},
+    { path: "/BankAccDet", component: <BankAccDet/>},
+    { path: "/AcademicDet", component: <AcademicDet/>},
+    { path: "/IdentDoc", component: <IdentDoc/>},
+    { path: "/Family", component: <Insur/>},
+    { path: "/Documents", component: <Documents/>},
+    { path: "/PayslipGenerator", component: <ESSDailyAtten/>},
+    { path: "/ESSLoan", component: <ESSLoan/>},
+    { path: "/EmpLeave", component: <EmpLeave/>},
+    { path: "/DailyAtt", component: <DailyAtt/>},
+    { path: "/Announce", component: <Announce/>},
+    { path: "/EmployeeGrade", component: <Grade/>},
+    { path: "/EmployeeLoan", component: <EmpLoan/>},
+    { path: "/ESSDashboard", component: <ESSDashboard/>},
+    // { path: "/ProductPrint", component: <Products/>},
+    { path: "/EmployeeDashboard", component: <EmployeeDashboard/>},
+    { path: "/LeaveReq", component: <LeaveReq/>},
+    // { path: "/DCSM", component: <DCSM/>},
+    { path: "/GSTReport", component: <GSTReport/>},
+    { path: "/PerformaInvoicePrint", component: <PerformaInvoicePrint/>},
+    { path: "/OIAnalysis", component: <OpeningItemAnalysis/>},
+     { path: "/DataWiseStock", component: <DataWiseStock/>},
+     { path: "/PendingCustomer", component: <PendingCustomer/>},
+     { path: "/PendingCustomer", component: <PendingCustomer/>},
+     { path: "/PayslipEmpBonus", component: <EmployeeBonus/>},
+     { path: "/EmpOtherAllowance", component: <EmployeeOtherAllowance/>},
+     { path: "/PayslipEmpLoanType", component: <EmpLoanType/>},
+     { path: "/PayslipEmpPFCompany", component: <EmpPFCompany/>},
+     { path: "/PayslipEmpProTax", component: <EmpProfessionalTax/>},
+    //  { path: "/PayslipEmpLoanType", component: <EmpLoanType/>},
+     { path: "/PayslipEmpTDS", component: <EmpTDS/>},
+     { path: "/Salessettings", component: <Salessettings/>},
+     { path: "/ReceivedGoods", component: <ReceivedGoods/>},
+     { path: "/ReceivedGoodsRt", component: <ReceivedGoodsRt/>},
+     { path: "/PurchaseSetting", component: <PurchaseSetting/>},
+     { path: "/POsettings", component: <POsettings/>},
+     { path: "/EmployeeTask", component: <EmployeeTask/>},
+     { path: "/Project", component: <EmpProject/>},
+     { path: "/Task", component: <DailyTask/>},
+     { path: "/InvoiceSettings", component: <InvoiceSettings/>},
+     { path: "/EmpProjectinput", component: <EmpProjectinput/>},
+     { path: "/DailyTaskInput", component: <DailyTaskInput/>},
+     { path: "/ProjectDetails", component: <Allocatedproject/>},
+     { path: "/OpenTickets", component: <OpenTickets/>},
+     { path: "/ProjectMapping", component: <ProjectMapping/>},
+     { path: "/ProjectProgress", component: < ProjectDetails/>},
+     { path: "/TaskHours", component: <Login_info/>},
+     { path: "/HoliDays", component: <HoliDays/>},
+     { path: "/Validation", component: <Validation/>},
+     { path: "/ValidationGrid", component: <ValidationGrid/>},
+     { path: "/FinancialYear", component: <FinancialYear/>},
+     { path: "/ProjectChartReport", component: <ProjectChartReport/>},
+     { path: "/PayslipReport", component: <PayslipReport/>},
+     { path: "/salarypath", component: <ESSDailyAtten mode="salarypath"/> },
+     { path: "/FinancialYearAccess", component: <FinancialYearAccess/>},
+     { path: "/AddFYA", component: <AddFinancialYearAccess/>},
+     { path: "/PayslipDash", component: <PayslipDash/>},
+     { path: "/TemplateDesign", component: <PrintTemplate /> },
+     { path: "/Crmworkspace", component: <Crmworkspace /> },
+     { path: "/crmlistpage", component: <Crmlistpage /> },
+     { path: "/CrmChart", component: <CrmChart /> },
+
+    
+
+
+  ];
+ 
+  return (
+    <Router>
+        <PathLogger />
+        <ToastContainer />
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/Login" element={<Login />} />
+      <Route path="/Signup" element={<Signup />} />
+      <Route
+        path="/AccountInformation"
+        element={
+          <div>
+            <Topbar />
+            <div className="layout-container ">
+              <SideBar className="sidebar"/>
+              <div className=" container-fluid ">
+                <AccountInformation />
+              </div>
+            </div>
+          </div>
+        }
+      />
+      
+      {routes.map(({ path, component }) =>
+        screenTypes.includes(path.replace('/', '')) ? (
+          path.includes('Print') ? (
+            // Render the component directly without the sidebar and topbar
+            <Route
+              key={path}
+              path={path}
+              element={
+                <div className="px-4">{component}</div>
+              }
+            />
+          ) : (
+            // Render with sidebar and topbar
+            <Route
+              key={path}
+              path={path}
+              element={
+                <div>
+                  <Topbar />
+                  <div className="layout-container">
+                    <SideBar className="sidebar" />
+                      <div className="container-fluid">{component}</div>
+                  </div>
+                </div>
+              }
+            />
+          )
+        ) : (
+          // Render NotFound component if path doesn't match screenTypes
+          <Route
+            key={path}
+            path={path}
+            element={
+              <div>
+                <SideBar className="sidebar" />
+                <Topbar />
+                <div className="layout-container">
+                  <div className="container-fluid ">
+                    <NotFound />
+                  </div>
+                </div>
+              </div>
+            }
+          />
+        )
+      )}
+    </Routes>
+  </Router>
+  );
+}
+
+const PathLogger = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    const currentPath = location.pathname;
+
+    sessionStorage.setItem('currentPath', currentPath);
+  }, [location]); 
+
+  return null; 
+};
+
+export default Main;
