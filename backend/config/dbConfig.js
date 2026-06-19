@@ -12,7 +12,7 @@ module.exports = {
   user: "saraswathi",
   password: "@%dSCt15",
   server: "95.216.47.253",
-  database: "YJKERP_GOLD",
+  database: "Development_ERP_Gold",
   port: 1433,
   options: {
     encrypt: false,

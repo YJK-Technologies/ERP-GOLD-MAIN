@@ -30,6 +30,7 @@ function NumberSeriesGrid() {
   const [statusgriddrop, setStatusGriddrop] = useState([]);
   const [booleangriddrop, setBooleangriddrop] = useState([]);
   const [loading, setLoading] = useState(false);
+const [billFormatDropGrid, setBillFormatDropGrid] = useState([]);
   const [createdBy, setCreatedBy] = useState("");
   const [modifiedBy, setModifiedBy] = useState("");
   const [createdDate, setCreatedDate] = useState("");
@@ -114,7 +115,23 @@ function NumberSeriesGrid() {
       .catch((error) => console.error('Error fetching data:', error));
   }, []);
 
+  useEffect(() => {
+    const company_code = sessionStorage.getItem('selectedCompanyCode');
 
+    fetch(`${config.apiBaseUrl}/getBillFormat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ company_code })
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const billFormatOption = data.map(option => option.attributedetails_name);
+        setBillFormatDropGrid(billFormatOption);
+      })
+      .catch((error) => console.error('Error fetching data:', error));
+  }, []);
 
   const filteredOptionscreentype = [{ value: 'All', label: 'All' }, ...screentypedrop.map((option) => ({
     value: option.attributedetails_name,
@@ -267,7 +284,7 @@ setselectedscreentype("");
       // minWidth: 150,
     },
     {
-      headerName: "Number_prefix",
+      headerName: "Number Prefix",
       field: "number_prefix",
       editable: true,
       cellStyle: { textAlign: "left" },
@@ -275,6 +292,17 @@ setselectedscreentype("");
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
         values: booleangriddrop
+      },
+    },
+    {
+      headerName: "Bill Format",
+      field: "bill_format",
+      editable: true,
+      cellStyle: { textAlign: "left" },
+      // minWidth: 150,
+      cellEditor: "agSelectCellEditor",
+      cellEditorParams: {
+        values: billFormatDropGrid
       },
     },
     {

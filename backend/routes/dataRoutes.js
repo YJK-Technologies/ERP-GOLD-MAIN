@@ -957,6 +957,7 @@ router.post("/Templatesearch",dataController.Templatesearch)
 router.post("/getPrint",dataController.getPrint)
 router.post("/getcopies",dataController.getcopies)
 router.post("/getSalesItemCode",dataController.getSalesItemCode)
+router.post("/getBillFormat",dataController.getBillFormat)
 
 
 module.exports = router;
