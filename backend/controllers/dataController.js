@@ -5243,11 +5243,10 @@ const addSalesRetHdr = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(
-        `EXEC sp_sales_return_hdr @mode,@company_code,@bill_date,@bill_no,@return_date,@return_no,@return_reason,@return_person,@dely_chlno,@warehouse_code,@sales_type,	
-                  @customer_code,@sale_amt,@less_frit,@less_disc,@less_amt,@net_amt,@excs_amt,@cess_amt,@dely_amt,@roff_amt,@othr_amt,@bill_amt,@total_item,
-                  @total_qty,@pay_type,@broker_code,@tpot_code,@sman_code,@vehl_no,@mark_name,@payment_mode,@customer_name,@entry_no,@roff_acccode,@order_type,@deli_charge,
-                  @tax_amount,@ref_no,'','',@created_by,@modified_by,@tempstr1,@tempstr2,@tempstr3,@tempstr4,@datetime1,@datetime2,@datetime3,@datetime4`);
+      .query(`EXEC sp_sales_return_hdr @mode,@company_code,@bill_date,@bill_no,@return_date,@return_no,@return_reason,@return_person,@dely_chlno,@warehouse_code,@sales_type,	
+       @customer_code,@sale_amt,@less_frit,@less_disc,@less_amt,@net_amt,@excs_amt,@cess_amt,@dely_amt,@roff_amt,@othr_amt,@bill_amt,@total_item,
+       @total_qty,@pay_type,@broker_code,@tpot_code,@sman_code,@vehl_no,@mark_name,@payment_mode,@customer_name,@entry_no,@roff_acccode,@order_type,@deli_charge,
+       @tax_amount,@ref_no,'','',@created_by,@modified_by,@tempstr1,@tempstr2,@tempstr3,@tempstr4,@datetime1,@datetime2,@datetime3,@datetime4`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset); // 200 OK if data is found
     } else {
@@ -14928,7 +14927,7 @@ const PurchaseAuthDetail = async (req, res) => {
       .input("authroization_status", sql.NVarChar, authroization_status)
       .query(`EXEC sp_purchase_details @mode,@company_code,'',@transaction_no,'','',0,'','',0,0,0,0,0,'','','','','','','',0,@authroization_status,'','','',
 NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
-    if (!recordset || !Array.isArray(recordset) || recordset.length === 0) {
+    if (!result.recordset || !Array.isArray(result.recordset) || result.recordset.length === 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(404).json("Data not found");

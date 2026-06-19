@@ -2933,6 +2933,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
         },
         body: JSON.stringify({
           transaction_no: transactionNumber,
+          company_code: sessionStorage.getItem('selectedCompanyCode'),
           authroization_status: selectedStatus.value
         })
       });
