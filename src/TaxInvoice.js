@@ -64,7 +64,7 @@ function TaxInvoice() {
     const [isDeleteVisible, setIsDeleteVisible] = useState(true);
     const [showDropdown, setShowDropdown] = useState(true);
     const [showAsterisk, setShowAsterisk] = useState(false);
-    const [Type, setType] = useState("taxInvoice");
+    const [Type, setType] = useState("");
     const [isChecked, setIsChecked] = useState(false);
     const [loading, setLoading] = useState(false);
     const [additionalData, setAdditionalData] = useState({
@@ -405,6 +405,7 @@ function TaxInvoice() {
         { fieldName: 'Document Type', notes: '', },
         { fieldName: 'Supplier Ref', notes: '', },
         { fieldName: 'E-Way Bill No', notes: '', },
+        { fieldName: 'Delivered Through', notes: '', },
     ]);
 
     const [PINotesRowData, setPINotesRowData] = useState([
@@ -684,7 +685,7 @@ function TaxInvoice() {
                     taxType: matchedItem.tax_type,
                     taxDetail: matchedItem.combined_tax_details,
                     taxPercentage: matchedItem.combined_tax_percent,
-                    keyField: `${updatedSerialNo}-${matchedItem.Code || ''}`,
+                    keyField: `${updatedSerialNo}-${matchedItem.Code}-${Date.now()}`,
                 }));
 
                 setRowData((prevRowData) => [...prevRowData, ...newRows]);  // Update state with fetched rows
@@ -766,6 +767,7 @@ function TaxInvoice() {
                         label: defaultInvoice.attributedetails_name,
                     });
                     setInvoiceType(defaultInvoice.attributedetails_name);
+                    setType(defaultInvoice.attributedetails_name);
                 }
             })
             .catch((error) => console.error("Error fetching invoice types:", error));
@@ -831,19 +833,17 @@ function TaxInvoice() {
     const handleChangePay = (selectedOption) => {
         setSelectedPay(selectedOption);
         setPayType(selectedOption ? selectedOption.value : '');
-        setError(false);
     };
 
     const handleChangeSales = (selectedOption) => {
         setSelectedSales(selectedOption);
         setSalesType(selectedOption ? selectedOption.value : '');
-        setError(false);
     };
 
     const handleChangeInvoice = (selectedOption) => {
         setselectedInvoice(selectedOption);
         setInvoiceType(selectedOption ? selectedOption.value : '');
-        setError(false);
+        setType(selectedOption ? selectedOption.value : '');
     };
 
     //Item Name Popup
@@ -1040,7 +1040,6 @@ function TaxInvoice() {
         }
     };
 
-
     const handleDelete = (params) => {
         const serialNumberToDelete = params.data.serialNumber;
 
@@ -1082,8 +1081,6 @@ function TaxInvoice() {
 
         TotalAmountCalculation(formattedTotalTaxAmounts, formattedTotalItemAmounts);
     };
-
-
 
     const DeleteTerms = (params) => {
         const { data } = params;
@@ -1240,7 +1237,7 @@ function TaxInvoice() {
             headerName: 'KeyField',
             field: 'keyField',
             editable: false,
-            maxWidth: 150,
+            // maxWidth: 150,
             filter: true,
             sortable: false,
             hide: true,
@@ -1300,6 +1297,7 @@ function TaxInvoice() {
             hide: true,
         }
     ];
+
     const columnDefsTermsConditions = [
         {
             headerName: 'S.No',
@@ -1423,7 +1421,7 @@ function TaxInvoice() {
                 bal_amt: balanceAmount,
                 created_by: sessionStorage.getItem('selectedUserCode'),
                 pending: pendingStatus,
-                ...(selectedInvoice?.label === "Performa Invoice"
+                ...(selectedInvoice?.label === "Proforma Invoice"
                     ? {
                         delivery_note: PINotes["Delivery Note"] ? PINotes["Delivery Note"] : null,
                         dispatched_through: PINotes["Dispatched Through"] ? PINotes["Dispatched Through"] : null,
@@ -1435,6 +1433,7 @@ function TaxInvoice() {
                         supplier_ref: Notes["Supplier Ref"] ? Notes["Supplier Ref"] : null,
                         po_date: Notes["PO Date"] ? Notes["PO Date"] : null,
                         document_type: Notes["Document Type"] ? Notes["Document Type"] : null,
+                        delivered_through: Notes["Delivered Through"] ? Notes["Delivered Through"] : null,
                     }),
             };
 
@@ -1583,10 +1582,11 @@ function TaxInvoice() {
         try {
             // Filter rows where Terms_conditions is non-empty
             const validRows = rowDataTerms.filter(row => row.Terms_conditions.trim() !== '');
-            if (validRows.length === 0) {
-                toast.warning('No valid Terms & Conditions to save.');
-                return;
-            }
+            // if (validRows.length === 0) {
+            //     toast.warning('No valid Terms & Conditions to save.');
+            //     return;
+            // }
+
             for (const row of validRows) {
                 const Details = {
                     created_by: sessionStorage.getItem('selectedUserCode'),
@@ -1705,7 +1705,7 @@ function TaxInvoice() {
                 advance_amount: advanceAmount,
                 bal_amt: balanceAmount,
                 modified_by: sessionStorage.getItem('selectedUserCode'),
-                ...(selectedInvoice?.label === "Performa Invoice"
+                ...(selectedInvoice?.label === "Proforma Invoice"
                     ? {
                         delivery_note: PINotes["Delivery Note"] ? PINotes["Delivery Note"] : null,
                         dispatched_through: PINotes["Dispatched Through"] ? PINotes["Dispatched Through"] : null,
@@ -1717,6 +1717,7 @@ function TaxInvoice() {
                         supplier_ref: Notes["Supplier Ref"] ? Notes["Supplier Ref"] : null,
                         po_date: Notes["PO Date"] ? Notes["PO Date"] : null,
                         document_type: Notes["Document Type"] ? Notes["Document Type"] : null,
+                        delivered_through: Notes["Delivered Through"] ? Notes["Delivered Through"] : null,
                     }),
             };
 
@@ -1942,7 +1943,7 @@ function TaxInvoice() {
             openWindow(url);
         }
     };
-
+    
 
     const generateReport = async () => {
         if (!new_running_no) {
@@ -1971,7 +1972,7 @@ function TaxInvoice() {
                     sessionStorage.setItem(detailKey, LZString.compress(JSON.stringify(detailData)));
                     sessionStorage.setItem(taxKey, LZString.compress(JSON.stringify(taxData)));
                 }
-                else if (invoicetype === "Performa Invoice") {
+                else if (invoicetype === "Proforma Invoice") {
                     headerKey = 'PerformaInvoiceheaderData';
                     detailKey = 'PerformaInvoicedetailData';
                     taxKey = 'PerformaInvoicetaxData';
@@ -2093,7 +2094,7 @@ function TaxInvoice() {
     const handleRefNo = async (code) => {
         setLoading(true)
         try {
-            const tempstr1Value = isChecked ? "Performa Invoice" : invoicetype;
+            const tempstr1Value = isChecked ? "Proforma Invoice" : invoicetype;
             const response = await fetch(`${config.apiBaseUrl}/getTaxInvoiceNo`, {
                 method: "POST",
                 headers: {
@@ -2154,6 +2155,7 @@ function TaxInvoice() {
                             { fieldName: "Document Type", notes: item.document_type },
                             { fieldName: "Supplier Ref", notes: item.supplier_ref },
                             { fieldName: "E-Way Bill No", notes: item.Eway_bill_no },
+                            { fieldName: "Delivered Through", notes: item.delivered_through },
                         ]);
                     } else {
                         setPINotesRowData([
@@ -2285,7 +2287,7 @@ function TaxInvoice() {
                 Taxamt, RoffAmt, Billamt, BillTo_customer_addr_1, BillTo_customer_addr_2, BillTo_customer_addr_3, BillTo_customer_addr_4, ShipTo_customer_addr_1, ShipTo_customer_addr_2,
                 ShipTo_customer_addr_3, billdate, ShipTo_customer_addr_4, BillTo_customer_state, ShipTo_customer_state, BillTo_customer_country, ShipTo_customer_country,
                 BillTo_customer_mobile_no, ShipTo_customer_mobile_no, BillTo_contact_person, ShipTo_contact_person, po_no, po_date, document_type, delivery_note,
-                dispatched_through, Destination, supplier_ref, Eway_bill_no }] = data;
+                dispatched_through, Destination, supplier_ref, Eway_bill_no, delivered_through }] = data;
 
 
             const AdAmount = document.getElementById('adAmount');
@@ -2378,6 +2380,7 @@ function TaxInvoice() {
                     { fieldName: "Document Type", notes: document_type },
                     { fieldName: "Supplier Ref", notes: supplier_ref },
                     { fieldName: "E-Way Bill No", notes: Eway_bill_no },
+                    { fieldName: "Delivered Through", notes: delivered_through },
                 ]);
             } else {
                 setPINotesRowData([
@@ -2420,7 +2423,7 @@ function TaxInvoice() {
                 },
                 body: JSON.stringify({
                     transaction_no: billno,
-                    invoice_type: invoicetype,
+                    invoice_type: isChecked ? "Proforma Invoice" : invoicetype,
                     company_code: sessionStorage.getItem("selectedCompanyCode"),
                 }),
             });
@@ -2479,7 +2482,7 @@ function TaxInvoice() {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ transaction_no: billno, invoice_type: invoicetype, company_code: sessionStorage.getItem("selectedCompanyCode") })
+                body: JSON.stringify({ transaction_no: billno, invoice_type: isChecked ? "Proforma Invoice" : invoicetype, company_code: sessionStorage.getItem("selectedCompanyCode") })
             });
 
             if (response.ok) {
@@ -2548,7 +2551,7 @@ function TaxInvoice() {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ transaction_no: billno, invoice_type: invoicetype, company_code: sessionStorage.getItem("selectedCompanyCode") })
+                body: JSON.stringify({ transaction_no: billno, invoice_type: isChecked ? "Proforma Invoice" : invoicetype, company_code: sessionStorage.getItem("selectedCompanyCode") })
             });
 
             if (response.ok) {
@@ -3037,6 +3040,9 @@ function TaxInvoice() {
         { fieldName: 'PO No', deletedNotes: '', },
         { fieldName: 'PO Date', deletedNotes: '', },
         { fieldName: 'Document Type', deletedNotes: '', },
+        { fieldName: 'Supplier Ref', notes: '', },
+        { fieldName: 'E-Way Bill No', notes: '', },
+        { fieldName: 'Delivered Through', notes: '', },
     ]);
 
     const [deletedPINotesRowData, setDeletedPINotesRowData] = useState([
@@ -3092,6 +3098,9 @@ function TaxInvoice() {
                         { fieldName: "PO No", deletedNotes: item.po_no },
                         { fieldName: "PO Date", deletedNotes: formatDate(item.po_date) },
                         { fieldName: "Document Type", deletedNotes: item.document_type },
+                        { fieldName: "Supplier Ref", deletedNotes: item.document_type },
+                        { fieldName: "E-Way Bill No", deletedNotes: item.document_type },
+                        { fieldName: "Delivered Through", deletedNotes: item.delivered_through },
                     ]);
 
                     setDeletedPINotesRowData([
@@ -3226,7 +3235,8 @@ function TaxInvoice() {
             const [{ adAmount, balAmount, BillToGSTNo, ShipToGSTNo, billtocustomercode, Shiptocustomercode, billno, billtocustomername, salestype, Shiptocustomername, Paytype, Saleamt, Taxamt, RoffAmt, Billamt, BillTo_customer_addr_1,
                 BillTo_customer_addr_2, BillTo_customer_addr_3, BillTo_customer_addr_4, ShipTo_customer_addr_1, ShipTo_customer_addr_2, ShipTo_customer_addr_3, billdate, ShipTo_customer_addr_4, BillTo_customer_state,
                 ShipTo_customer_state, BillTo_customer_country, ShipTo_customer_country, BillTo_customer_mobile_no, ShipTo_customer_mobile_no, BillTo_contact_person, ShipTo_contact_person,
-                po_no, po_date, document_type, delivery_note, dispatched_through, Destination }] = data;
+                po_no, po_date, document_type, delivery_note, dispatched_through, Destination, delivered_through,
+            supplier_ref, Eway_bill_no }] = data;
 
             // const AdAmount = document.getElementById('adAmount');
             // if (AdAmount) {
@@ -3312,6 +3322,9 @@ function TaxInvoice() {
                 { fieldName: "PO No", deletedNotes: po_no },
                 { fieldName: "PO Date", deletedNotes: formatDate(po_date) },
                 { fieldName: "Document Type", deletedNotes: document_type },
+                { fieldName: "Supplier Ref", deletedNotes: supplier_ref },
+                { fieldName: "E-Way Bill No", deletedNotes: Eway_bill_no },
+                { fieldName: "Delivered Through", deletedNotes: delivered_through },
             ]);
 
             setDeletedPINotesRowData([
@@ -3515,7 +3528,12 @@ function TaxInvoice() {
     };
 
     const navigateToSalesSettings = () => {
-        navigate('/InvoiceSettings'); // Adjust the path as per your route setup
+        if (Type) {
+            const formattedType = Type.replace(/\s/g, '');
+            navigate('/InvoiceSettings', { state: { type: formattedType } });
+        } else {
+            toast.warning("Type is not selected");
+        }
     };
 
     useEffect(() => {
@@ -3524,7 +3542,7 @@ function TaxInvoice() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 company_code: sessionStorage.getItem("selectedCompanyCode"),
-                Screen_Type: Type
+                Screen_Type: Type.replace(/\s/g, '')
 
             }),
         })
@@ -3546,7 +3564,7 @@ function TaxInvoice() {
 
             })
             .catch((error) => console.error("Error fetching data:", error));
-    }, [paydrop, salesdrop]);
+    }, [paydrop, salesdrop, Type]);
 
     const handleCheckboxChange = (e) => {
         setIsChecked(e.target.checked);
@@ -3801,7 +3819,7 @@ function TaxInvoice() {
                                 </div>
                                 <div className="col-md-6">
                                     <div className="ag-theme-alpine" style={{ height: 285, width: "100%" }}>
-                                        {selectedInvoice?.label === "Performa Invoice" ? (
+                                        {selectedInvoice?.label === "Proforma Invoice" ? (
                                             <AgGridReact
                                                 columnDefs={columnPINotes}
                                                 rowData={PINotesRowData}
@@ -4167,7 +4185,8 @@ function TaxInvoice() {
 
                                     <div className="col-md-12 form-group mb-2">
                                         <div className="exp-form-floating">
-                                            <label htmlFor="">Pay Type</label>                                    <input
+                                            <label htmlFor="">Pay Type</label>                                    
+                                            <input
                                                 id="PayType"
                                                 value={PayType}
                                                 onChange={(e) => setPaytype(e.target.value)}
@@ -4213,7 +4232,7 @@ function TaxInvoice() {
                                 </div>
                                 <div className="col-md-4">
                                     <div className="ag-theme-alpine" style={{ height: 285, width: "100%" }}>
-                                        {selectedInvoice?.label === "Performa Invoice" ? (
+                                        {selectedInvoice?.label === "Proforma Invoice" ? (
                                             <AgGridReact
                                                 columnDefs={columnDeletedPINotes}
                                                 rowData={deletedPINotesRowData}
