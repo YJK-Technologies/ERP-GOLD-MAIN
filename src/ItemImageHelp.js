@@ -1,7 +1,7 @@
 import React, { useState, useEffect,useRef} from "react";
 import "./input.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { ToastContainer,toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 const config = require('./Apiconfig');
 
@@ -80,7 +80,6 @@ function ItemInput({ open, handleClose, itemCode, itemImage }) {
 
   return (
     <div>
-            <ToastContainer position="top-right" className="toast-design" theme="colored"/>
       
       {open && (
         <fieldset>

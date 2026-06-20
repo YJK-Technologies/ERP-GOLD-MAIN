@@ -847,7 +847,7 @@ router.post("/updateTask",dataController.updateTask)
 router.post("/DeleteTask",dataController.DeleteTask)
 router.post("/getDCTotalAmountCalculation",dataController.getDCTotalAmountCalculation)
 router.post("/PendingCustomer",dataController.PendingCustomer)
-router.post("/updateBankAccount",dataController.updateBankAccount)
+router.post( "/updateBankAccount", upload.single("bank_paymentQRCode"), dataController.updateBankAccount);
 router.post("/projectSC",dataController.projectSC)
 router.post("/getProjectTask",dataController.getProjectTask)
 router.post("/getDailyTask",dataController.getDailyTask)

@@ -70,6 +70,8 @@ const Product = () => {
   const [hovered, setHovered] = useState(false);
   const [HSN, setHSNcode] = useState('');
 
+  const gridRef = useRef(null);
+
   const handleClick = () => {
     setOpen2(true);
   };
@@ -343,6 +345,8 @@ const Product = () => {
 
   const columnDefs = [
     {
+      headerCheckboxSelection: true,
+      checkboxSelection: true,
       headerName: 'S.No',
       field: 'ItemSno',
       minWidth: 80,
@@ -1106,12 +1110,24 @@ const Product = () => {
 
   const handleExcelDownload = () => {
 
-    const filteredRowData = rowData.filter(row => row.quantity > 0);
+  const selectedRows = gridRef.current.api.getSelectedRows();
+
+  if (selectedRows.length === 0) {
+    toast.warning("Please select at least one row.");
+    return;
+  }
+
+  const filteredRowData =
+    selectedRows.length > 0
+      ? selectedRows.filter(row => row.quantity > 0)
+      : rowData.filter(row => row.quantity > 0);
     console.log(selectedStatus)
     console.log(productCode)
     console.log(productName)
     console.log(description)
-    if (rowData.length === 0 || !productCode || !productName || !description || !selectedStatus || !HSN || !unitPrice) {
+    if (rowData.length === 0 
+      // || !productCode || !productName || !description || !selectedStatus || !HSN || !unitPrice
+    ) {
       toast.warning('There is no data to export.');
       return;
     }
@@ -1342,7 +1358,7 @@ const Product = () => {
                     required
                     value={HSN}
                     onChange={handleInputChange}
-                    maxLength={4} 
+                    maxLength={4}
                     autoComplete="off"
                   />
                 </div>
@@ -1358,7 +1374,7 @@ const Product = () => {
                 <input
                   id="Productprice"
                   className="exp-input-field form-control"
-                  type="text" 
+                  type="text"
                   placeholder=""
                   required
                   title="Please enter the sales price"
@@ -1367,7 +1383,7 @@ const Product = () => {
                   onInput={(e) => {
                     e.target.value = e.target.value
                       .replace(/[^0-9.]/g, '')
-                      .replace(/(\..*?)\..*/g, '$1') 
+                      .replace(/(\..*?)\..*/g, '$1')
                       .slice(0, 12);
                   }}
                   maxLength={12}
@@ -1378,7 +1394,7 @@ const Product = () => {
               <div class="exp-form-floating">
                 <div class="d-flex justify-content-start">
                   <div>
-                    <label for="state" className={`${error && !taxType ? 'red' : ''}`}> Local Tax Type<span className="text-danger">*</span> </label>
+                    <label for="state" className={`${error && !selectedTax ? 'red' : ''}`}> Local Tax Type<span className="text-danger">*</span> </label>
                   </div>
                   <div>
                   </div>
@@ -1401,7 +1417,7 @@ const Product = () => {
               <div class="exp-form-floating">
                 <div class="d-flex justify-content-start">
                   <div>
-                    <label for="state" className={`${error && !taxType ? 'red' : ''}`}> Other Tax Type<span className="text-danger">*</span> </label>
+                    <label for="state" className={`${error && !selectedsaltax ? 'red' : ''}`}> Other Tax Type<span className="text-danger">*</span> </label>
                   </div>
                   <div>
                   </div>
@@ -1551,8 +1567,10 @@ const Product = () => {
           </div>
           <div className="ag-theme-alpine " style={{ height: 430, width: "100%" }} >
             <AgGridReact
+              ref={gridRef}
               columnDefs={columnDefs}
               rowData={rowData}
+              rowSelection="multiple"
               defaultColDef={{ editable: true, resizable: true }}
               onCellValueChanged={async (event) => {
                 handleCellValueChanged(event);
