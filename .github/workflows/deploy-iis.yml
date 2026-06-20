@@ -1,4 +1,4 @@
-name: ERP GOLD MAIN Auto Deploy (IIS + Node + NSSM)
+name: ERP GOLD MAIN Auto Deploy (IIS + Node + Python + NSSM)
 
 on:
   push:
@@ -10,6 +10,17 @@ jobs:
     runs-on: self-hosted
 
     steps:
+      # -------------------------------------------------
+      # 0️⃣ CLEAN OLD WORKSPACE
+      # -------------------------------------------------
+      - name: Clean runner workspace
+        shell: powershell
+        run: |
+          Write-Host "Cleaning old workspace..."
+          if (Test-Path "$env:GITHUB_WORKSPACE") {
+            Get-ChildItem "$env:GITHUB_WORKSPACE" -Force | Remove-Item -Recurse -Force
+          }
+
       # -------------------------------------------------
       # 1️⃣ JOB START TIME (IST)
       # -------------------------------------------------
@@ -45,35 +56,25 @@ jobs:
           $src = "$env:GITHUB_WORKSPACE\backend"
           $dest = "C:\inetpub\wwwroot\ERP-Gold-Main\server"
 
-          if (!(Test-Path $src)) {
-            Write-Error "Backend folder missing: $src"
-            exit 1
-          }
+          if (!(Test-Path $src)) { Write-Error "Backend folder missing"; exit 1 }
 
           robocopy $src $dest /MIR /XD node_modules
-          if ($LASTEXITCODE -gt 7) {
-            exit $LASTEXITCODE
-          }
+          if ($LASTEXITCODE -le 7) { exit 0 } else { exit $LASTEXITCODE }
 
       # -------------------------------------------------
-      # 5️⃣ INSTALL BACKEND DEPENDENCIES
+      # 5️⃣ NODE DEPENDENCIES
       # -------------------------------------------------
-      - name: Install backend dependencies
+      - name: Install Node backend dependencies
         shell: powershell
         run: |
-          Set-Location "C:\inetpub\wwwroot\ERP-Gold-Main\server"
-
-          if (Test-Path "package-lock.json") {
-            npm ci --legacy-peer-deps
-          }
-          else {
-            npm install --legacy-peer-deps
-          }
+          cd C:\inetpub\wwwroot\ERP-Gold-Main\server
+          if (Test-Path node_modules) { Remove-Item -Recurse -Force node_modules }
+          npm ci --legacy-peer-deps
 
       # -------------------------------------------------
-      # 6️⃣ START / RESTART NODE SERVICE
+      # 7️⃣ NODE BACKEND NSSM (FAIL-SAFE)
       # -------------------------------------------------
-      - name: Start Node backend (NSSM)
+      - name: Start Node backend (NSSM safe)
         shell: powershell
         run: |
           $name = "ERP-GOLD-MAIN"
@@ -82,22 +83,16 @@ jobs:
           $app = "C:\inetpub\wwwroot\ERP-Gold-Main\server\https.js"
           $dir = "C:\inetpub\wwwroot\ERP-Gold-Main\server"
 
-          if (!(Test-Path $nssm)) {
-            Write-Error "NSSM not found at $nssm"
-            exit 1
-          }
-
-          $svc = Get-Service -Name $name -ErrorAction SilentlyContinue
+          $svc = Get-Service $name -ErrorAction SilentlyContinue
 
           if ($svc) {
+            Write-Host "Node service exists. Status: $($svc.Status)"
             if ($svc.Status -ne "Stopped") {
               & $nssm stop $name
-              Start-Sleep -Seconds 5
+              Start-Sleep 3
             }
-
             & $nssm start $name
-          }
-          else {
+          } else {
             & $nssm install $name $node $app
             & $nssm set $name AppDirectory $dir
             & $nssm set $name Start SERVICE_AUTO_START
@@ -105,53 +100,41 @@ jobs:
             & $nssm set $name AppStderr "$dir\node-err.log"
             & $nssm start $name
           }
-
+          
       # -------------------------------------------------
-      # 7️⃣ INSTALL FRONTEND DEPENDENCIES
+      # 9️⃣ FRONTEND DEPENDENCIES
       # -------------------------------------------------
       - name: Install frontend dependencies
         shell: powershell
         run: |
-          Set-Location $env:GITHUB_WORKSPACE
-
-          if (Test-Path "package-lock.json") {
-            npm ci --legacy-peer-deps
-          }
-          else {
-            npm install --legacy-peer-deps
-          }
+          if (Test-Path node_modules) { Remove-Item -Recurse -Force node_modules }
+          npm ci --legacy-peer-deps
 
       # -------------------------------------------------
-      # 8️⃣ BUILD FRONTEND
+      # 🔟 BUILD FRONTEND
       # -------------------------------------------------
       - name: Build frontend
         shell: powershell
         run: |
-          Set-Location $env:GITHUB_WORKSPACE
-
-          $env:CI = "false"
-          $env:GENERATE_SOURCEMAP = "false"
-
+          $env:CI="false"
+          $env:GENERATE_SOURCEMAP="false"
           npm run build
 
       # -------------------------------------------------
-      # 9️⃣ DEPLOY FRONTEND TO IIS
+      # 1️⃣1️⃣ DEPLOY FRONTEND TO IIS
       # -------------------------------------------------
       - name: Deploy frontend to IIS
         shell: powershell
         run: |
           robocopy build C:\inetpub\wwwroot\ERP-Gold-Main\build /MIR /XF web.config
-
-          if ($LASTEXITCODE -gt 7) {
-            exit $LASTEXITCODE
-          }
+          if ($LASTEXITCODE -le 7) { exit 0 } else { exit $LASTEXITCODE }
 
       # -------------------------------------------------
-      # 🔟 JOB END TIME (IST)
+      # 1️⃣2️⃣ JOB END TIME (IST)
       # -------------------------------------------------
       - name: Capture Job End Time (IST)
         if: always()
         shell: powershell
         run: |
           $log = "D:\Action-Runners\erp-gold-main-runner\_diag\job-runtime-IST.log"
-          "END | $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') | Repo=$env:GITHUB_REPOSITORY | RunId=$env:GITHUB_RUN_ID | Status=${{ job.status }}" | Out-File -Append $lo
+          "END | $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') | Repo=$env:GITHUB_REPOSITORY | RunId=$env:GITHUB_RUN_ID | Status=${{ job.status }}" | Out-File -Append $log
