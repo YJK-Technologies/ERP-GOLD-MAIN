@@ -18,6 +18,7 @@ import 'react-modern-calendar-datepicker/lib/DatePicker.css';
 import { ToastContainer, toast } from 'react-toastify';
 import { Calendar } from "react-modern-calendar-datepicker";
 import LoadingScreen from './Loading';
+import { showConfirmationToast } from './ToastConfirmation';
 
 const config = require('./Apiconfig');
 
@@ -58,6 +59,8 @@ function JournalGrid() {
   const [showExcelButton, setShowExcelButton] = useState(false);
   const [saveButtonVisible, setSaveButtonVisible] = useState(true);
   const [hovered, setHovered] = useState(false);
+
+  const [loading, setLoading] = useState(false);
 
 
   //code added by Harish purpose of set user permisssion
@@ -512,6 +515,11 @@ function JournalGrid() {
       return;
     }
 
+    showConfirmationToast(
+          "Are you sure you want to delete the data ?",
+          async () => {
+        setLoading(true);
+
     try {
 
       const detailResult = await journaldetdata();
@@ -526,32 +534,54 @@ function JournalGrid() {
 
       if (headerResult && detailResult) {
         console.log("All API calls completed successfully");
-        Swal.fire({
-          title: "Success",
-          text: "Successfully Deleted",
-          icon: "success",
-          confirmButtonText: "OK"
-        }).then(() => {
-           window.location.reload();
-        });
+        // Swal.fire({
+        //   title: "Success",
+        //   text: "Successfully Deleted",
+        //   icon: "success",
+        //   confirmButtonText: "OK"
+        // }).then(() => {
+        //    window.location.reload();
+        // });
+        toast.success("Successfully Deleted", {
+                      autoClose: true,
+                      onClose: () => {
+                        window.location.reload();
+                      }
+                    });
       } else {
         console.log("Failed to fetch some data");
-        Swal.fire({
-          title: "Error!",
-          text: "Reference Number Does Not Exist",
-          icon: "error",
-          confirmButtonText: "OK"
-        });
+        // Swal.fire({
+        //   title: "Error!",
+        //   text: "Reference Number Does Not Exist",
+        //   icon: "error",
+        //   confirmButtonText: "OK"
+        // });
+        const errorMessage =
+              headerResult !== true
+                ? headerResult
+                : detailResult !== true
+                  ? detailResult
+                  : "An unknown error occurred.";
+        toast.error(errorMessage);
       }
     } catch (error) {
       console.error("Error executing API calls:", error);
-      Swal.fire({
-        title: "Error!",
-        text: "An error occurred while deleting data",
-        icon: "error",
-        confirmButtonText: "OK"
-      });
+      // Swal.fire({
+      //   title: "Error!",
+      //   text: "An error occurred while deleting data",
+      //   icon: "error",
+      //   confirmButtonText: "OK"
+      // });
+      toast.error('Error inserting data: ' + error.message);
     }
+    finally {
+              setLoading(false);
+            }
+          },
+          () => {
+            toast.info("Data deleted cancelled.");
+          }
+  );
   };
 
   const journalhdrdata = async () => {
@@ -1236,6 +1266,7 @@ function JournalGrid() {
 
   return (
     <div className="container-fluid Topnav-screen">
+    {loading && <LoadingScreen />}
     <ToastContainer position="top-right" className="toast-design" theme="colored" />
       <div align="right">
 

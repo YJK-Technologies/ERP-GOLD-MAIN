@@ -829,7 +829,7 @@ const UnplannedReturn = () => {
           const detailResult = await InventoryDetailDelete();
           const headerResult = await InventoryHeaderDelete();
 
-          if (headerResult = true && detailResult === true) {
+          if (headerResult === true && detailResult === true) {
             console.log("All API calls completed successfully");
             toast.success("Successfully Deleted", {
               autoClose: true,
