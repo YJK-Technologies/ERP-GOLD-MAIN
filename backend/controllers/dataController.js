@@ -954,7 +954,7 @@ const getsearchdata = async (req, res) => {
       .input("country", sql.NVarChar, country)
       .input("company_gst_no", sql.NVarChar, company_gst_no)
       .input("status", sql.NVarChar, status)
-      .query(` EXEC sp_company_info @mode,@company_no,@company_name,'','','','',@city,@state,@pincode,@country,@company_gst_no,@status,'','','','','','','','','','','','','','','','','','' `);
+      .query(` EXEC sp_company_info @mode,@company_no,@company_name,'','','','',@city,@state,@pincode,@country,'',@status,'','','','','','',@company_gst_no,'','','','','','','','','','','' `);
     if (result.recordset.length > 0) {
       const formattedData = result.recordset.map(row => ({
   ...row,
@@ -25897,6 +25897,8 @@ const PendingCustomer = async (req, res) => {
 
 //code added by pavun 06-02-2025
 const updateBankAccount = async (req, res) => {
+  console.log("BODY:", req.body);
+  console.log("FILE:", req.file);
   const {
     company_code,
     account_code,
