@@ -302,21 +302,27 @@ setSelectedStatus("");
       },
     },
     {
-      headerName: "Barcode",
-      field: "Barcode_Data",
-      // minWidth: 200,
-      cellRenderer: (params) => (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <Barcode
-            value={params.value || ""}
-            width={1.5}
-            height={50}
-            format="CODE128"
-            displayValue={false}
-          />
-        </div>
-      ),
-    },
+  headerName: "Barcode",
+  field: "Barcode_Data",
+  cellRenderer: (params) => {
+
+    if (!params.value || params.value.trim() === "") {
+      return "";
+    }
+
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Barcode
+          value={params.value}
+          width={1.5}
+          height={50}
+          format="CODE128"
+          displayValue={false}
+        />
+      </div>
+    );
+  },
+},
     {
       headerName: "Item Image",
       field: "item_images",
