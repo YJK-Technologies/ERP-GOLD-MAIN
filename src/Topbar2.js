@@ -266,12 +266,12 @@ const TopBar = () => {
         <div className='purbut'>
           <a className="navbar-brand d-flex align-items-center">
             <img src={logo} alt="Logo" width="50" height="50" className="d-inline-block align-top logo-img" />
-            <b><sub><sub><i><font size="3" color="#D9B466">erp</font></i></sub></sub></b>
+            <b><sub><sub><i><font size="3" color="#D9B466">ERP-Gold</font></i></sub></sub></b>
           </a></div>
         <div className='mobileview'>
           <a className="navbar-brand d-flex align-items-center">
             <img src={logo} alt="Logo" width="30" height="30" className="d-inline-block align-top logo-img" />
-            <b><sub><sub><i><font size="1" color="#D9B466">erp</font></i></sub></sub></b>
+            <b><sub><sub><i><font size="1" color="#D9B466">ERP-Gold</font></i></sub></sub></b>
           </a></div>
 
 
