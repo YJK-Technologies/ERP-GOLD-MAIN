@@ -9965,25 +9965,19 @@ const addAccountName = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(
-        `EXEC sp_account_name @mode, @company_code,@account_code, @account_name, @acc_addr_1, @acc_addr_2, @acc_addr_3, @acc_addr_4, @acc_area_code, @acc_state_code, 
+      .query(`EXEC sp_account_name @mode, @company_code,@account_code, @account_name, @acc_addr_1, @acc_addr_2, @acc_addr_3, @acc_addr_4, @acc_area_code, @acc_state_code, 
       @acc_country_code, @acc_imex_no, @acc_office_no, @acc_resi_no, @acc_mobile_no, @acc_fax_no,@acc_email_id, @acc_credit_limit, @acc_transport_code, 
-      @acc_salesman_code, @acc_broker_code, @acc_weekday_code,@base_accgroup_code,@standard_accgroup_code,@user_accgroup_code,@account_subcode,@status,'','','','','','','',@created_by,
-      @modified_by,@tempstr1, @tempstr2, @tempstr3, @tempstr4,@datetime1, @datetime2, @datetime3, @datetime4,''`
-      );
+      @acc_salesman_code, @acc_broker_code, @acc_weekday_code,@base_accgroup_code,@standard_accgroup_code,@user_accgroup_code,@account_subcode,@status,'','','','','','','','','',@created_by,
+      @modified_by,@tempstr1, @tempstr2, @tempstr3, @tempstr4,@datetime1, @datetime2, @datetime3, @datetime4,''`);
 
     // Return success response
     res.json({ success: true, message: "Data inserted successfully" });
-  } catch (error) {
-    if (error.class === 16 && error.number === 50000) {
-      // Custom error from the stored procedure
-      res.status(400).json({ message: error.message });
-    } else {
-      // Handle unexpected errors
-      res.status(500).json({ message: 'Internal Server Error', error: error.message });
-    }
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
   }
 };
+
 const getAccNameSearch = async (req, res) => {
   const { company_code, account_code, account_name, acc_addr_1, acc_area_code, acc_state_code, acc_country_code, acc_mobile_no, base_accgroup_code,
     standard_accgroup_code, user_accgroup_code, account_subcode, status } = req.body;
@@ -10011,7 +10005,7 @@ const getAccNameSearch = async (req, res) => {
       .input("status", sql.NVarChar, status)
       .query(`EXEC sp_account_name @mode,@company_code,@account_code,@account_name,@acc_addr_1,'','','',@acc_area_code,@acc_state_code,
       @acc_country_code,'','','',@acc_mobile_no,'' ,'',0,'','','','',@base_accgroup_code,@standard_accgroup_code,@user_accgroup_code,
-      @account_subcode,@status,'','','','','','','','','',NULL,NULL,NULL,NULL,NULL,null,null,null,''`);
+      @account_subcode,@status,'','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,null,null,null,''`);
 
     // Send response
     if (result.recordset.length > 0) {
@@ -10024,6 +10018,7 @@ const getAccNameSearch = async (req, res) => {
     res.status(500).json({ message: err.message || 'Internal Server Error' });
   }
 };
+
 const updateAccName = async (req, res) => {
   const editedData = req.body.editedData;
 
@@ -10077,13 +10072,11 @@ const updateAccName = async (req, res) => {
         .input("datetime2", sql.NVarChar, updatedRow.datetime2)
         .input("datetime3", sql.NVarChar, updatedRow.datetime3)
         .input("datetime4", sql.NVarChar, updatedRow.datetime4)
-        .query(
-          `EXEC sp_account_name @mode,@company_code,@account_code,@account_name,@acc_addr_1,@acc_addr_2,@acc_addr_3,@acc_addr_4,
+        .query(`EXEC sp_account_name @mode,@company_code,@account_code,@account_name,@acc_addr_1,@acc_addr_2,@acc_addr_3,@acc_addr_4,
           @acc_area_code,@acc_state_code,@acc_country_code,@acc_imex_no,@acc_office_no,@acc_resi_no,@acc_mobile_no,@acc_fax_no,
           @acc_email_id,@acc_credit_limit,@acc_transport_code,@acc_salesman_code,@acc_broker_code,@acc_weekday_code,@base_accgroup_code,
-          @standard_accgroup_code,@user_accgroup_code,@account_subcode,@status,'','','','',@panno,@gst_no,'',
-          @created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,''`
-        );
+          @standard_accgroup_code,@user_accgroup_code,@account_subcode,@status,'','','','',@panno,@gst_no,'','','',
+          @created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,''`);
     }
 
     res.status(200).json("Edited data saved successfully");
@@ -10113,7 +10106,7 @@ const AccNameDelete = async (req, res) => {
           .input("modified_by", sql.NVarChar, req.headers['modified-by'])
           .query(`
          EXEC sp_account_name 'D',@company_code,@account_code,'','','','','','','','',
-'','' ,'','','','',0,'','','','','','','','','','','','','','','','','',@modified_by,NULL,NULL,NULL,null,null,null,null,null,''`);
+'','' ,'','','','',0,'','','','','','','','','','','','','','','','','','','',@modified_by,NULL,NULL,NULL,null,null,null,null,null,''`);
       } catch (error) {
         if (error.number === 50000) {
           // Foreign key constraint violation
@@ -10136,7 +10129,7 @@ const AccNameDelete = async (req, res) => {
 const getAllAccNameData = async (req, res) => {
   try {
     await connection.connectToDatabase();
-    const result = await sql.query(`EXEC sp_account_name 'A','','','','','','','','','','','','','','','',0,'','','','','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,''`);
+    const result = await sql.query(`EXEC sp_account_name 'A','','','','','','','','','','','','','','','','',0,'','','','','','','','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     res.json(result.recordset);
   } catch (err) {
@@ -10376,7 +10369,7 @@ const getUsercodename = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, 'FSA')
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_account_name @mode,@company_code,'','','','','','','','','','','','','','','',0,'','','','','','','','','','','','','','','','','','',NULL,NULL,NULL,null,null,null,null,null,''`);
+      .query(`EXEC sp_account_name @mode,@company_code,'','','','','','','','','','','','','','','',0,'','','','','','','','','','','','','','','','','','','','',NULL,NULL,NULL,null,null,null,null,null,''`);
 
     res.json(result.recordset);
   } catch (err) {
@@ -10384,6 +10377,7 @@ const getUsercodename = async (req, res) => {
     res.status(500).json({ message: err.message || 'Internal Server Error' });
   }
 };
+
 const getUsercodenameBank = async (req, res) => {
   const { company_code } = req.body;
 
@@ -10394,7 +10388,7 @@ const getUsercodenameBank = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, 'FSAB')
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_account_name @mode,@company_code,'','','','','','','','','','','','','','','',0,'','','','','','','','','','','','','','','','','','',NULL,NULL,NULL,null,null,null,null,null,''`);
+      .query(`EXEC sp_account_name @mode,@company_code,'','','','','','','','','','','','','','','',0,'','','','','','','','','','','','','','','','','','','','',NULL,NULL,NULL,null,null,null,null,null,''`);
 
     res.json(result.recordset);
   } catch (err) {
@@ -10416,7 +10410,7 @@ const getAccountCode = async (req, res) => {
       .input("company_code", sql.NVarChar, company_code)
       .input("user_accgroup_code", sql.NVarChar, user_accgroup_code)
       .input("account_name", sql.NVarChar, account_name)
-      .query(`EXEC sp_account_name @mode,@company_code,'',@account_name,'','','','','','','','','','','','','',0,'','','','','','',@user_accgroup_code,'','','','','','','','','','','',NULL,NULL,NULL,null,null,null,null,null,''`);
+      .query(`EXEC sp_account_name @mode,@company_code,'',@account_name,'','','','','','','','','','','','','',0,'','','','','','',@user_accgroup_code,'','','','','','','','','','','','','',NULL,NULL,NULL,null,null,null,null,null,''`);
 
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
@@ -10448,6 +10442,7 @@ const addbankAccount = async (req, res) => {
     IFSC_code,
     account_type,
     branch,
+    default_bank,
     created_by,
     modified_by,
     tempstr1,
@@ -10458,7 +10453,6 @@ const addbankAccount = async (req, res) => {
     datetime2,
     datetime3,
     datetime4
-
   } = req.body;
 
   let bank_paymentQRCode = null;
@@ -10491,6 +10485,7 @@ const addbankAccount = async (req, res) => {
       .input("account_type", sql.NVarChar, account_type)
       .input("branch", sql.NVarChar, branch)
       .input("bank_paymentQRCode", sql.VarBinary, bank_paymentQRCode)
+      .input("default_bank", sql.VarChar, default_bank)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
       .input("tempstr1", sql.NVarChar, tempstr1)
@@ -10501,21 +10496,16 @@ const addbankAccount = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(
-
-        `EXEC sp_account_name_TEST @mode, @company_code,@account_code, @account_name, @acc_addr_1, @acc_addr_2, @acc_addr_3, @acc_addr_4, @acc_area_code, @acc_state_code, 
-      @acc_country_code, '','','','','','',0,'','','','',@base_accgroup_code,@standard_accgroup_code,@user_accgroup_code,'','',@account_number,@IFSC_code,@account_type,@branch,'','','',@bank_paymentQRCode,@created_by,
+      .query(`EXEC sp_account_name @mode, @company_code,@account_code, @account_name, @acc_addr_1, @acc_addr_2, @acc_addr_3, @acc_addr_4, @acc_area_code, @acc_state_code, 
+      @acc_country_code, '','','','','','',0,'','','','',@base_accgroup_code,@standard_accgroup_code,@user_accgroup_code,'','',@account_number,@IFSC_code,@account_type,@branch,'','','',@bank_paymentQRCode,@default_bank,@created_by,
       @modified_by,@tempstr1, @tempstr2, @tempstr3, @tempstr4,@datetime1, @datetime2, @datetime3, @datetime4,''`
       );
 
-    // Return success response
     res.json({ success: true, message: "Data inserted successfully" });
 
-  } catch (error) {
-    {
-      // Handle unexpected errors
-      res.status(500).json({ message: 'Internal Server Error', error: error.message });
-    }
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
   }
 };
 
@@ -10570,6 +10560,7 @@ const updatebankAcc = async (req, res) => {
         .input("IFSC_code", sql.NVarChar, updatedRow.IFSC_code)
         .input("account_type", sql.NVarChar, updatedRow.account_type)
         .input("branch", sql.NVarChar, updatedRow.branch)
+        .input("default_bank", sql.VarChar, updatedRow.default_bank)
         .input("created_by", sql.NVarChar, updatedRow.created_by)
         .input("modified_by", sql.NVarChar, req.headers['modified-by'])
         .input("tempstr1", sql.NVarChar, updatedRow.tempstr1)
@@ -10580,14 +10571,10 @@ const updatebankAcc = async (req, res) => {
         .input("datetime2", sql.NVarChar, updatedRow.datetime2)
         .input("datetime3", sql.NVarChar, updatedRow.datetime3)
         .input("datetime4", sql.NVarChar, updatedRow.datetime4)
-        .query(
-
-          `EXEC sp_account_name @mode,@company_code,@account_code,@account_name,@acc_addr_1,@acc_addr_2,@acc_addr_3,@acc_addr_4,
+        .query(`EXEC sp_account_name @mode,@company_code,@account_code,@account_name,@acc_addr_1,@acc_addr_2,@acc_addr_3,@acc_addr_4,
           @acc_area_code,@acc_state_code,@acc_country_code,'','','','','',
-          '',0,'','','','',@base_accgroup_code,
-          @standard_accgroup_code,@user_accgroup_code,'','',@account_number,@IFSC_code,@account_type,@branch,'','','',
-          @created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,''`
-        );
+          '',0,'','','','',@base_accgroup_code,@standard_accgroup_code,@user_accgroup_code,'','',@account_number,@IFSC_code,@account_type,@branch,'','','',
+          '',@default_bank,@created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,''`);
     }
 
     res.status(200).json("Edited data saved successfully");
@@ -10619,7 +10606,7 @@ const getbankaccSearch = async (req, res) => {
       .input("branch", sql.NVarChar, branch)
       .query(`EXEC sp_account_name @mode,@company_code,@account_code,@account_name,@acc_addr_1,'','','',@acc_area_code,@acc_state_code,
       @acc_country_code,'','','','','' ,'',0,'','','','','','','',
-      '','','','',@account_type,@branch,'','','','','',NULL,NULL,NULL,NULL,NULL,null,null,null,''`);
+      '','','','',@account_type,@branch,'','','','','','','',NULL,NULL,NULL,NULL,NULL,null,null,null,''`);
 
     // Send response
     if (result.recordset.length > 0) {
@@ -16642,9 +16629,15 @@ const IntermediaryUpdate = async (req, res) => {
 };
 
 const BankAccountUpdate = async (req, res) => {
-  const { account_code, account_name, acc_addr_1, acc_addr_2, acc_addr_3, acc_addr_4, acc_area_code, acc_state_code, acc_country_code,
-    base_accgroup_code, standard_accgroup_code, user_accgroup_code, account_number, IFSC_code, account_type, branch, created_by, modified_by
+  const { company_code, account_code, account_name, acc_addr_1, acc_addr_2, acc_addr_3, acc_addr_4, acc_area_code, acc_state_code, acc_country_code,
+    base_accgroup_code, standard_accgroup_code, user_accgroup_code, account_number, IFSC_code, account_type, branch, modified_by, default_bank
   } = req.body;
+
+  let bank_paymentQRCode = null;
+
+  if (req.file) {
+    bank_paymentQRCode = req.file.buffer;
+  }
 
   try {
     const pool = await connection.connectToDatabase(dbConfig);
@@ -16652,6 +16645,7 @@ const BankAccountUpdate = async (req, res) => {
     await pool
       .request()
       .input("mode", sql.NVarChar, "U") // update mode
+      .input("company_code", sql.NVarChar, company_code)
       .input("account_code", sql.NVarChar, account_code)
       .input("account_name", sql.NVarChar, account_name)
       .input("acc_addr_1", sql.NVarChar, acc_addr_1)
@@ -16668,15 +16662,13 @@ const BankAccountUpdate = async (req, res) => {
       .input("IFSC_code", sql.NVarChar, IFSC_code)
       .input("account_type", sql.NVarChar, account_type)
       .input("branch", sql.NVarChar, branch)
-      .input("created_by", sql.NVarChar, created_by)
+      .input("bank_paymentQRCode", sql.VarBinary, bank_paymentQRCode)
+      .input("default_bank", sql.VarChar, default_bank)
       .input("modified_by", sql.NVarChar, modified_by)
-      .query(
-        `EXEC sp_account_name @mode,@account_code,@account_name,@acc_addr_1,@acc_addr_2,@acc_addr_3,@acc_addr_4,
+      .query(`EXEC sp_account_name @mode,@company_code,@account_code,@account_name,@acc_addr_1,@acc_addr_2,@acc_addr_3,@acc_addr_4,
           @acc_area_code,@acc_state_code,@acc_country_code,'','','','','',
-          '',0,'','','','',@base_accgroup_code,
-          @standard_accgroup_code,@user_accgroup_code,'','',@account_number,@IFSC_code,@account_type,@branch,'','',
-          @created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,''`
-      );
+          '',0,'','','','',@base_accgroup_code,@standard_accgroup_code,@user_accgroup_code,'','',@account_number,@IFSC_code,@account_type,@branch,'','','',
+          @bank_paymentQRCode,@default_bank,'',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,''`);
 
     res.status(200).json("Edited data saved successfully");
   } catch (err) {
@@ -16825,6 +16817,7 @@ const COAUpdate = async (req, res) => { //charts of accounts
     await pool
       .request()
       .input("mode", sql.NVarChar, "U") // update mode
+      .input("company_code", sql.NVarChar, company_code)
       .input("account_code", sql.NVarChar, account_code)
       .input("account_name", sql.NVarChar, account_name)
       .input("acc_addr_1", sql.NVarChar, acc_addr_1)
@@ -16854,11 +16847,10 @@ const COAUpdate = async (req, res) => { //charts of accounts
       .input("gst_no", sql.NVarChar, gst_no)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
-      .query(
-        `EXEC sp_account_name @mode,@account_code,@account_name,@acc_addr_1,@acc_addr_2,@acc_addr_3,@acc_addr_4,
+      .query(`EXEC sp_account_name @mode,@company_code,@account_code,@account_name,@acc_addr_1,@acc_addr_2,@acc_addr_3,@acc_addr_4,
           @acc_area_code,@acc_state_code,@acc_country_code,@acc_imex_no,@acc_office_no,@acc_resi_no,@acc_mobile_no,@acc_fax_no,
           @acc_email_id,@acc_credit_limit,@acc_transport_code,@acc_salesman_code,@acc_broker_code,@acc_weekday_code,@base_accgroup_code,
-          @standard_accgroup_code,@user_accgroup_code,@account_subcode,@status,'','','','',@panno,@gst_no,
+          @standard_accgroup_code,@user_accgroup_code,@account_subcode,@status,'','','','',@panno,@gst_no,'','','',
           @created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,''`);
 
     res.status(200).json("Edited data saved successfully");
@@ -25923,16 +25915,19 @@ const updateBankAccount = async (req, res) => {
     IFSC_code,
     account_type,
     branch,
-    modified_by } = req.body;
+    default_bank,
+    modified_by
+  } = req.body;
 
-  let pool;
+  let bank_paymentQRCode = null;
+
+  if (req.file) {
+    bank_paymentQRCode = req.file.buffer;
+  }
+
   try {
-    pool = await sql.connect(dbConfig);
-
-
-
-    // If the company code doesn't exist, proceed with inserting the data
-    const result = await pool
+    const pool = await connection.connectToDatabase(dbConfig);
+    await pool
       .request()
       .input("mode", sql.NVarChar, "U") // Insert mode
       .input("company_code", sql.NVarChar, company_code)
@@ -25952,15 +25947,14 @@ const updateBankAccount = async (req, res) => {
       .input("IFSC_code", sql.NVarChar, IFSC_code)
       .input("account_type", sql.NVarChar, account_type)
       .input("branch", sql.NVarChar, branch)
+      .input("bank_paymentQRCode", sql.VarBinary, bank_paymentQRCode)
+      .input("default_bank", sql.VarChar, default_bank)
       .input("modified_by", sql.NVarChar, modified_by)
       .query(`EXEC sp_account_name @mode, @company_code,@account_code, @account_name, @acc_addr_1, @acc_addr_2, @acc_addr_3, @acc_addr_4, @acc_area_code, @acc_state_code, 
-      @acc_country_code, '','','','','','',0,'','','','',@base_accgroup_code,@standard_accgroup_code,@user_accgroup_code,'','',@account_number,@IFSC_code,@account_type,@branch,'','','','',
-      @modified_by,NULL, NULL,NULL, NULL,NULL, NULL,NULL,NULL,''`
-      );
-
+      @acc_country_code, '','','','','','',0,'','','','',@base_accgroup_code,@standard_accgroup_code,@user_accgroup_code,'','',@account_number,@IFSC_code,@account_type,@branch,'','','',
+      @bank_paymentQRCode,@default_bank,'',@modified_by,NULL, NULL,NULL, NULL,NULL, NULL,NULL,NULL,''`);
     // Return success response
     res.json({ success: true, message: "Data updated successfully" });
-
   } catch (err) {
     console.error("Error", err);
     res.status(500).json({ message: err.message || 'Internal Server Error' });
