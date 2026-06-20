@@ -5,21 +5,36 @@ on:
     branches:
       - main
 
+# jobs:
+#   deploy:
+#     runs-on: self-hosted
+
+#     steps:
+#       # -------------------------------------------------
+#       # 0️⃣ CLEAN OLD WORKSPACE
+#       # -------------------------------------------------
+#       - name: Clean runner workspace
+#         shell: powershell
+#         run: |
+#           Write-Host "Cleaning old workspace..."
+#           if (Test-Path "$env:GITHUB_WORKSPACE") {
+#             Get-ChildItem "$env:GITHUB_WORKSPACE" -Force | Remove-Item -Recurse -Force
+#           }
+
+#       # ------------------------------------------------- 
+#       # 1️⃣ JOB START TIME (IST)
+#       # -------------------------------------------------
+#       - name: Capture Job Start Time (IST)
+#         shell: powershell
+#         run: |
+#           $log = "D:\Action-Runners\erp-gold-main-runner\_diag\job-runtime-IST.log"
+#           "START | $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') | Repo=$env:GITHUB_REPOSITORY | RunId=$env:GITHUB_RUN_ID" | Out-File -Append $log
+
 jobs:
   deploy:
     runs-on: self-hosted
 
     steps:
-      # -------------------------------------------------
-      # 0️⃣ CLEAN OLD WORKSPACE
-      # -------------------------------------------------
-      - name: Clean runner workspace
-        shell: powershell
-        run: |
-          Write-Host "Cleaning old workspace..."
-          if (Test-Path "$env:GITHUB_WORKSPACE") {
-            Get-ChildItem "$env:GITHUB_WORKSPACE" -Force | Remove-Item -Recurse -Force
-          }
 
       # -------------------------------------------------
       # 1️⃣ JOB START TIME (IST)
@@ -29,7 +44,7 @@ jobs:
         run: |
           $log = "D:\Action-Runners\erp-gold-main-runner\_diag\job-runtime-IST.log"
           "START | $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') | Repo=$env:GITHUB_REPOSITORY | RunId=$env:GITHUB_RUN_ID" | Out-File -Append $log
-
+          
       # -------------------------------------------------
       # 2️⃣ CHECKOUT SOURCE
       # -------------------------------------------------
