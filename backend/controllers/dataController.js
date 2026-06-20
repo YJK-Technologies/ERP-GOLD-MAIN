@@ -5292,7 +5292,7 @@ const addNumberseries = async (req, res) => {
     End_No,
     comtext,
     number_prefix,
-    status,
+    Status,
     bill_format,
     created_by,
     modified_by,
@@ -5320,7 +5320,7 @@ const addNumberseries = async (req, res) => {
       .input("End_No", sql.Int, End_No)
       .input("comtext", sql.NVarChar, comtext)
       .input("number_prefix", sql.NVarChar, number_prefix)
-      .input("Status", sql.NVarChar, status)
+      .input("Status", sql.NVarChar, Status)
       .input("bill_format", sql.NVarChar, bill_format)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
