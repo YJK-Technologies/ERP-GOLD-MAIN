@@ -10,6 +10,7 @@ import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { format } from 'date-fns';
 import Swal from 'sweetalert2';
 import LoadingScreen from './Loading';
+import { ToastContainer, toast } from 'react-toastify';
 const config = require('./Apiconfig');
 
 
@@ -133,15 +134,21 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
         setRowData(searchData);
         console.log(searchData)
         console.log("data fetched successfully")
-      } else if (response.status === 404) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Data not found!',
-        }).then(() => {
-          setRowData([]);
-          clearInputs([])
-        });
+       } 
+      // else if (response.status === 404) {
+      //   Swal.fire({
+      //     icon: 'error',
+      //     title: 'Oops...',
+      //     text: 'Data not found!',
+      //   }).then(() => {
+      //     setRowData([]);
+      //     clearInputs([])
+      //   });
+      else if (response.status === 404) {
+              console.log("Data not found");
+              toast.warning("Data not found");
+              setRowData([]);
+              clearInputs([])
         console.log("Data not found"); // Log the message for 404 Not Found
       } else {
         console.log("Bad request"); // Log the message for other errors
