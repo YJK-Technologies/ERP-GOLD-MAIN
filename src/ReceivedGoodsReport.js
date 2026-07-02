@@ -252,9 +252,9 @@ function ReceivedGoodsRt() {
 
         const reportData = selectedRows.map((row) => {
             return {
-                "Transaction Date": formatDate(row.transaction_date),
-                "Item Code": row.Item_code,
-                "Item Name": row.Item_name,
+                "Transaction Date": formatDate(row.bill_date),
+                "Item Code": row.item_code,
+                "Item Name": row.item_name,
                 "Qty": row.bill_qty
             };
         });
@@ -549,12 +549,12 @@ function ReceivedGoodsRt() {
                                         <ul className="dropdown-menu ">
                                             <li>
                                                 <icon class="iconbutton d-flex justify-content-center" onClick={generateReport}>
-                                                    <i className="fa-solid fa-print"></i>
+                                                    <i className="fa-solid fa-print" title="Print"></i>
                                                 </icon>
                                             </li>
                                             <li>
                                                 <icon class="iconbutton d-flex justify-content-center" onClick={handleExportToExcel}>
-                                                    <i class="fa-solid fa-file-excel"></i>
+                                                    <i class="fa-solid fa-file-excel" title="Excel"></i>
                                                 </icon>
                                             </li>
                                         </ul>
@@ -565,10 +565,10 @@ function ReceivedGoodsRt() {
                         <div className="purbut">
                             <div className="d-flex justify-content-end me-5">
                                 <button className="btn btn-dark mt-3 mb-3 rounded-3" onClick={generateReport}>
-                                    <i className="fa-solid fa-print"></i>
+                                    <i className="fa-solid fa-print" title="Print"></i>
                                 </button>
                                 <button class="btn btn-dark mt-3 mb-3 rounded-3" onClick={handleExportToExcel}>
-                                    <i class="fa-solid fa-file-excel"></i>
+                                    <i class="fa-solid fa-file-excel" title="Excel"></i>
                                 </button>
                             </div>
                         </div>
