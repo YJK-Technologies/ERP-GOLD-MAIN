@@ -7,6 +7,10 @@ import { useNavigate } from "react-router-dom";
 import 'react-toastify/dist/ReactToastify.css';
 import LoadingScreen from './Loading';
 import { ToastContainer, toast } from 'react-toastify';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import DefaultProductImage from "./DefaultIMG/User.png";
+
 
 const config = require('./Apiconfig');
 
@@ -53,29 +57,140 @@ function UserInput({ }) {
   const created_by = sessionStorage.getItem('selectedUserCode')
   const modified_by = sessionStorage.getItem("selectedUserCode");
 
+  const [UserCodeNameDrop, setUserCodeNameDrop] = useState([]);
+
+  const [superAdmin, setSuperAdmin] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
   const [isUpdated, setIsUpdated] = useState(false);
 
   const location = useLocation();
-  const { mode, selectedRow } = location.state || {};
+  const locationState = location.state || {};
+  const mode = locationState.mode || "create";
+  const selectedRow = locationState.selectedRow || null;
+  const userCode = location.state?.user_code;
+  const company_code = sessionStorage.getItem('selectedCompanyCode');
 
-  console.log(selectedRow);
+
+    const filteredOptionRole = Array.isArray(roleDrop)
+    ? roleDrop.map((option) => ({
+      value: option.role_id,
+      label: `${option.role_id} - ${option.role_name}`,
+    }))
+    : [];
+
+  useEffect(() => {
+    if (!location.state) {
+      clearInputFields();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (mode === "update" && userCode) {
+      fetchUserData();
+    }
+  }, [mode, userCode, filteredOptionRole.length]);
+
+  const fetchUserData = async () => {
+    try {
+      setLoading(true);
+
+      const response = await fetch(`${config.apiBaseUrl}/getUserData`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_code: userCode,
+          company_code
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.length > 0) {
+        const user = data[0];
+
+        setUser_code(user.user_code || "");
+        setUser_name(user.user_name || "");
+        setFirst_name(user.first_name || "");
+        setLast_name(user.last_name || "");
+        setUser_password(user.user_password || "");
+        setRole(user.role_id || "");
+        setLog_in_out(user.log_in_out || "");
+        setUser_status(user.user_status || "");
+        setGender(user.gender || "");
+        setSuperAdmin(
+          user.super_admin?.toLowerCase() === "yes"
+        );
+        setSelectedStatus({
+          label: user.user_status,
+          value: user.user_status,
+        });
+        // Find the selected role from the dropdown list
+const selectedRoleOption = filteredOptionRole.find(
+  (role) => role.value === user.role_id
+);
+
+setRole(user.role_id || "");
+setSelectedRole(
+  selectedRoleOption || {
+    value: user.role_id,
+    label: `${user.role_id} - ${user.role_name || ""}`,
+  }
+);
+        setSelectedLog({
+          label: user.log_in_out,
+          value: user.log_in_out,
+        });
+        setSelectedGender({
+          label: user.gender,
+          value: user.gender,
+        });
+        setEmail_id(user.email_id || "");
+
+        if (user.dob) {
+          const formattedDate = new Date(user.dob)
+            .toISOString()
+            .split("T")[0];
+          setDob(formattedDate);
+        } else {
+          setDob("");
+        }
+
+        if (user.user_images && user.user_images.data) {
+          const base64Image = arrayBufferToBase64(user.user_images.data);
+          const file = base64ToFile(
+            `data:image/jpeg;base64,${base64Image}`,
+            "user_image.jpg",
+          );
+          setSelectedImage(`data:image/jpeg;base64,${base64Image}`);
+          setuser_image(file);
+        } else {
+          setSelectedImage(null);
+          setuser_image(null);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to fetch user details");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const clearInputFields = () => {
     setUser_code("");
     setUser_name("");
     setFirst_name("");
     setLast_name("");
-    setLog_in_out("");
-    setRole("");
-    setGender("");
-    setUser_status("");
     setSelectedStatus("");
     setSelectedRole("");
     setSelectedLog("");
     setSelectedGender("");
-    setUser_password("");
     setEmail_id("");
     setDob("");
+    setSuperAdmin(false);
     setSelectedImage("");
     if (ImagE.current) {
       ImagE.current.value = null;
@@ -91,56 +206,59 @@ function UserInput({ }) {
     return window.btoa(binary);
   };
 
-  useEffect(() => {
-    if (mode === "update" && selectedRow && !isUpdated) {
-      setUser_code(selectedRow.user_code || "");
-      setUser_name(selectedRow.user_name || "");
-      setFirst_name(selectedRow.first_name || "");
-      setLast_name(selectedRow.last_name || "");
-      setUser_password(selectedRow.user_password || "");
-      setUser_status(selectedRow.user_status || "");
-      setSelectedStatus({
-        label: selectedRow.user_status,
-        value: selectedRow.user_status,
-      });
-      setRole(selectedRow.role_id || "");
-      setSelectedRole({
-        label: selectedRow.role_id,
-        value: selectedRow.role_id,
-      });
-      setLog_in_out(selectedRow.log_in_out || "");
-      setSelectedLog({
-        label: selectedRow.log_in_out,
-        value: selectedRow.log_in_out,
-      });
-      setGender(selectedRow.gender || "");
-      setSelectedGender({
-        label: selectedRow.gender,
-        value: selectedRow.gender,
-      });
-      setEmail_id(selectedRow.email_id || "");
+  // useEffect(() => {
+  //   if (mode === "update" && selectedRow && !isUpdated) {
+  //     setUser_code(selectedRow.user_code || "");
+  //     setUser_name(selectedRow.user_name || "");
+  //     setFirst_name(selectedRow.first_name || "");
+  //     setLast_name(selectedRow.last_name || "");
+  //     setUser_password(selectedRow.user_password || "");
+  //     setRole(selectedRow.role_id || "");
+  //     setLog_in_out(selectedRow.log_in_out || "");
+  //     setUser_status(selectedRow.user_status || "");
+  //     setGender(selectedRow.gender || "");
+  //     setSuperAdmin(
+  //       selectedRow.super_admin?.toLowerCase() === "yes"
+  //     );
+  //     setSelectedStatus({
+  //       label: selectedRow.user_status,
+  //       value: selectedRow.user_status,
+  //     });
+  //     setSelectedRole({
+  //       label: selectedRow.role_id,
+  //       value: selectedRow.role_id,
+  //     });
+  //     setSelectedLog({
+  //       label: selectedRow.log_in_out,
+  //       value: selectedRow.log_in_out,
+  //     });
+  //     setSelectedGender({
+  //       label: selectedRow.gender,
+  //       value: selectedRow.gender,
+  //     });
+  //     setEmail_id(selectedRow.email_id || "");
 
-      if (selectedRow.dob) {
-        const formattedDate = new Date(selectedRow.dob).toISOString().split("T")[0];
-        setDob(formattedDate);
-      } else {
-        setDob("");
-      }
+  //     if (selectedRow.dob) {
+  //       const formattedDate = new Date(selectedRow.dob).toISOString().split("T")[0];
+  //       setDob(formattedDate);
+  //     } else {
+  //       setDob("");
+  //     }
 
-      if (selectedRow.user_images && selectedRow.user_images.data) {
-        const base64Image = arrayBufferToBase64(selectedRow.user_images.data);
-        const file = base64ToFile(`data:image/jpeg;base64,${base64Image}`, 'user_image.jpg');
-        setSelectedImage(`data:image/jpeg;base64,${base64Image}`);
-        setuser_image(file);
-      } else {
-        setSelectedImage(null);
-        setuser_image(null);
-      }
+  //     if (selectedRow.user_images && selectedRow.user_images.data) {
+  //       const base64Image = arrayBufferToBase64(selectedRow.user_images.data);
+  //       const file = base64ToFile(`data:image/jpeg;base64,${base64Image}`, 'user_image.jpg');
+  //       setSelectedImage(`data:image/jpeg;base64,${base64Image}`);
+  //       setuser_image(file);
+  //     } else {
+  //       setSelectedImage(null);
+  //       setuser_image(null);
+  //     }
 
-    } else if (mode === "create") {
-      clearInputFields();
-    }
-  }, [mode, selectedRow, isUpdated]);
+  //   } else if (mode === "create") {
+  //     clearInputFields();
+  //   }
+  // }, [mode, selectedRow, isUpdated]);
 
   const base64ToFile = (base64Data, fileName) => {
     if (!base64Data || !base64Data.startsWith("data:")) {
@@ -252,25 +370,36 @@ function UserInput({ }) {
       .catch((error) => console.error('Error fetching data:', error));
   }, []);
 
-  const filteredOptionStatus = statusdrop.map((option) => ({
-    value: option.attributedetails_name,
-    label: option.attributedetails_name,
-  }));
+  const filteredOptionStatus = Array.isArray(statusdrop)
+    ? statusdrop.map((option) => ({
+      value: option.attributedetails_name,
+      label: option.attributedetails_name,
+    }))
+    : [];
 
-  const filteredOptionRole = roleDrop.map((option) => ({
-    value: option.role_id,
-    label: option.role_name,
-  }));
 
-  const filteredOptionLog = Loginoroutdrop.map((option) => ({
-    value: option.attributedetails_name,
-    label: option.attributedetails_name,
-  }));
 
-  const filteredOptionGender = Genderdrop.map((option) => ({
-    value: option.attributedetails_name,
-    label: option.attributedetails_name,
-  }));
+  const filteredOptionUserCode = Array.isArray(UserCodeNameDrop)
+    ? UserCodeNameDrop.map((option) => ({
+      value: option.EmployeeId,
+      label: `${option.EmployeeId} - ${option.Name}`,
+    }))
+    : [];
+
+  const filteredOptionLog = Array.isArray(Loginoroutdrop)
+    ? Loginoroutdrop.map((option) => ({
+      value: option.attributedetails_name,
+      label: option.attributedetails_name,
+    }))
+    : [];
+
+  const filteredOptionGender = Array.isArray(Genderdrop)
+    ? Genderdrop.map((option) => ({
+      value: option.attributedetails_name,
+      label: option.attributedetails_name,
+    }))
+    : [];
+
 
   const handleChangeStatus = (selectedStatus) => {
     setSelectedStatus(selectedStatus);
@@ -279,7 +408,13 @@ function UserInput({ }) {
 
   const handleChangeRole = (selectedRole) => {
     setSelectedRole(selectedRole);
-    setRole(selectedRole ? selectedRole.value : '');
+
+    const roleValue = selectedRole?.value || "";
+    setRole(roleValue);
+
+    if (!["sa", "super admin"].includes(roleValue.toLowerCase())) {
+      setSuperAdmin(false);
+    }
   };
 
   const handleChangeLog = (selectedLog) => {
@@ -329,6 +464,7 @@ function UserInput({ }) {
       formData.append("dob", dob);
       formData.append("role_id", role_id);
       formData.append("gender", gender);
+      formData.append("super_admin", superAdmin ? "Yes" : "No");
       formData.append("created_by", sessionStorage.getItem("selectedUserCode"));
 
       if (user_images) {
@@ -340,19 +476,17 @@ function UserInput({ }) {
         body: formData, // Sending formData
       });
 
-      if (response.status === 200) {
-        console.log("Data inserted successfully");
-        setTimeout(() => {
-          toast.success("Data inserted successfully!", {
-            onClose: () => {
-              clearInputFields();
-            } 
-          });
-        }, 1000);
-      } else {
+      if (response.ok) {
+        toast.success("Data inserted Successfully", {
+          onClose: () => clearInputFields()
+        });
+      } else if (response.status === 400) {
         const errorResponse = await response.json();
         console.error(errorResponse.message);
         toast.warning(errorResponse.message);
+      } else {
+        console.error("Failed to insert data");
+        toast.error('Failed to insert data');
       }
     } catch (error) {
       console.error("Error inserting data:", error);
@@ -371,30 +505,14 @@ function UserInput({ }) {
   const handleNavigate = () => {
     navigate("/User", {
       state: {
-        preservedRowData: location.state?.preservedRowData,
+        refreshGrid: true,
+        // preservedRowData: location.state?.preservedRowData,
         preservedInputs: location.state?.preservedInputs,
       },
     });
   };
 
-  // const handleKeyDown = async (e, nextFieldRef, value, hasValueChanged, setHasValueChanged) => {
-  //   if (e.key === 'Enter') {
-  //     // Check if the value has changed and handle the search logic
-  //     if (hasValueChanged) {
-  //       await handleKeyDownStatus(e); // Trigger the search function
-  //       setHasValueChanged(false); // Reset the flag after the search
-  //     }
-
-  //     // Move to the next field if the current field has a valid value
-  //     if (value) {
-  //       nextFieldRef.current.focus();
-  //     } else {
-  //       e.preventDefault(); // Prevent moving to the next field if the value is empty
-  //     }
-  //   }
-  // };
-
-    const handleKeyDown = (e, nextRef, currentRef) => {
+  const handleKeyDown = (e, nextRef, currentRef) => {
     if (e.key === 'Enter') {
       e.preventDefault();
 
@@ -454,6 +572,7 @@ function UserInput({ }) {
       formData.append("gender", selectedGender.value);
       formData.append("role_id", selectedRole.value);
       formData.append("modified_by", modified_by);
+      formData.append("super_admin", superAdmin ? "Yes" : "No");
 
       if (user_images) {
         formData.append("user_images", user_images);
@@ -463,13 +582,10 @@ function UserInput({ }) {
         body: formData,
       });
 
-      if (response.status === 200) {
-        console.log("Data Updated successfully");
-        setIsUpdated(true);
-        // clearInputFields();
-        setTimeout(() => {
-          toast.success("Data Updated successfully!")
-        })
+      if (response.ok) {
+        toast.success("Data updated successfully", {
+          // onClose: () => clearInputFields()
+        });
       } else if (response.status === 400) {
         const errorResponse = await response.json();
         console.error(errorResponse.message);
@@ -485,6 +601,15 @@ function UserInput({ }) {
       setLoading(false);
     }
   };
+
+    const today = new Date();
+  const maxDob = new Date(
+    today.getFullYear() - 18,
+    today.getMonth(),
+    today.getDate()
+  )
+    .toISOString()
+    .split("T")[0];
 
   return (
     <div class="container-fluid Topnav-screen ">
@@ -592,7 +717,7 @@ function UserInput({ }) {
                         <div>
                           <label for="state" class="exp-form-labels" className={`${error && !last_name ? 'text-danger' : ''}`}>
                             Last Name<span className="text-danger">*</span>
-                            </label>
+                          </label>
                         </div>
                       </div>
                       <input
@@ -612,26 +737,40 @@ function UserInput({ }) {
                   </div>
                   <div className="col-md-3 form-group  mb-2">
                     <div class="exp-form-floating">
-                      <div class="d-flex justify-content-start">
-                        <div>
-                          <label for="state" class="exp-form-labels" className={`${error && !user_password ? 'text-danger' : ''}`}>
-                            Password<span className="text-danger">*</span>
-                          </label>
-                        </div>
+                      <label
+                        for="state"
+                        className={`exp-form-labels ${error && !user_password ? "text-danger" : ""
+                          }`}
+                      >
+                        Password<span className="text-danger">*</span>
+                      </label>
+                      <div className="position-relative">
+                        <input
+                          id="upass"
+                          className="exp-input-field form-control"
+                          title="Please enter the password"
+                          type={showPassword ? "text" : "password"}
+                          value={user_password}
+                          onChange={(e) => setUser_password(e.target.value)}
+                          style={{ paddingRight: "40px" }}
+                        />
+                        <span
+                          className="eye"
+                          onClick={() => setShowPassword(!showPassword)}
+                          style={{
+                            position: "absolute",
+                            right: "12px",
+                            top: "50%",
+                            transform: "translateY(-50%)",
+                            cursor: "pointer",
+                            zIndex: 999,
+                          }}
+                        >
+                          <FontAwesomeIcon
+                            icon={showPassword ? faEye : faEyeSlash}
+                          />
+                        </span>
                       </div>
-                      <input
-                        id="upass"
-                        class="exp-input-field form-control"
-                        type="text"
-                        placeholder=""
-                        required title="Please enter the password"
-                        value={user_password}
-                        onChange={(e) => setUser_password(e.target.value)}
-                        maxLength={50}
-                        ref={password}
-                        onKeyDown={(e) => handleKeyDown(e, Status, password)}
-                      />
-                      {/* {error && !last_name && <div className="text-danger">Password should not be blank</div>} */}
                     </div>
                   </div>
                   <div className="col-md-3 form-group  mb-2">
@@ -644,66 +783,66 @@ function UserInput({ }) {
                         </div>
                       </div>
                       <div title="Select the Status">
-                      <Select
-                        id="status"
-                        value={selectedStatus}
-                        onChange={handleChangeStatus}
-                        options={filteredOptionStatus}
-                        className="exp-input-field"
-                        placeholder=""
-                        maxLength={50}
-                        ref={Status}
-                        onKeyDown={(e) => handleKeyDown(e, loginlogout, Status)}
-                      />
-                      {/* {error && !user_status && <div className="text-danger">Status should not be blank</div>} */}
-                    </div>
+                        <Select
+                          id="status"
+                          value={selectedStatus}
+                          onChange={handleChangeStatus}
+                          options={filteredOptionStatus}
+                          className="exp-input-field"
+                          placeholder=""
+                          maxLength={50}
+                          ref={Status}
+                          onKeyDown={(e) => handleKeyDown(e, loginlogout, Status)}
+                        />
+                        {/* {error && !user_status && <div className="text-danger">Status should not be blank</div>} */}
+                      </div>
                     </div>
                   </div>
                   <div className="col-md-3 form-group  mb-2">
                     <div class="exp-form-floating">
                       <label for="loginout" class="exp-form-labels">Log In/Out</label>
                       <div title="Select the Log In/Out">
-                      <Select
-                        id="loginout"
-                        value={selectedLog}
-                        onChange={handleChangeLog}
-                        options={filteredOptionLog}
-                        className="exp-input-field"
-                        placeholder=""
-                        maxLength={3}
-                        ref={loginlogout}
-                        onKeyDown={(e) => handleKeyDown(e, usertype, loginlogout)}
-                      />
-                    </div>
+                        <Select
+                          id="loginout"
+                          value={selectedLog}
+                          onChange={handleChangeLog}
+                          options={filteredOptionLog}
+                          className="exp-input-field"
+                          placeholder=""
+                          maxLength={3}
+                          ref={loginlogout}
+                          onKeyDown={(e) => handleKeyDown(e, usertype, loginlogout)}
+                        />
+                      </div>
                     </div>
                   </div>
-                  {mode !== 'update' && (
+                  {/* {mode !== 'update' && ( */}
                   <div className="col-md-3 form-group  mb-2 ">
                     <div class="exp-form-floating">
                       <div class="d-flex justify-content-start">
                         <div>
-                          <label for="state" class="exp-form-labels" className={`${error && !role_id ? 'text-danger' : ''}`}>
+                          <label for="state" class="exp-form-labels" className={`${error && !user_status ? 'text-danger' : ''}`}>
                             Role ID<span className="text-danger">*</span>
                           </label>
                         </div>
                       </div>
                       <div title="Select the Role ID ">
-                      <Select
-                        id="usertype"
-                        value={selectedRole}
-                        onChange={handleChangeRole}
-                        options={filteredOptionRole}
-                        className="exp-input-field"
-                        placeholder=""
-                        maxLength={50}
-                        ref={usertype}
-                        onKeyDown={(e) => handleKeyDown(e, email, usertype)}
-                      />
-                      {/* {error && !user_status && <div className="text-danger">User Type should not be blank</div>} */}
-                    </div>
+                        <Select
+                          id="usertype"
+                          value={selectedRole}
+                          onChange={handleChangeRole}
+                          options={filteredOptionRole}
+                          className="exp-input-field"
+                          placeholder=""
+                          maxLength={50}
+                          ref={usertype}
+                          onKeyDown={(e) => handleKeyDown(e, email, usertype)}
+                        />
+                        {/* {error && !user_status && <div className="text-danger">User Type should not be blank</div>} */}
+                      </div>
                     </div>
                   </div>
-                  )}
+                  {/* )} */}
                   <div className="col-md-3 form-group  mb-2">
                     <div class="exp-form-floating">
                       <div class="d-flex justify-content-start">
@@ -742,6 +881,7 @@ function UserInput({ }) {
                         class="exp-input-field form-control"
                         type="date"
                         placeholder=""
+                        max={maxDob}
                         required title="Please enter the DOB"
                         value={dob}
                         onChange={(e) => setDob(e.target.value)}
@@ -757,18 +897,18 @@ function UserInput({ }) {
                         Gender
                       </label>
                       <div title="Select the Gender">
-                      <Select
-                        id="gender"
-                        value={selectedGender}
-                        onChange={handleChangeGender}
-                        options={filteredOptionGender}
-                        className="exp-input-field"
-                        placeholder=""
-                        maxLength={50}
-                        ref={Gender}
-                        onKeyDown={(e) => handleKeyDown(e, ImagE, Gender)}
-                      />
-                    </div>
+                        <Select
+                          id="gender"
+                          value={selectedGender}
+                          onChange={handleChangeGender}
+                          options={filteredOptionGender}
+                          className="exp-input-field"
+                          placeholder=""
+                          maxLength={50}
+                          ref={Gender}
+                          onKeyDown={(e) => handleKeyDown(e, ImagE, Gender)}
+                        />
+                      </div>
                     </div>
                   </div>
                   <div className="col-md-3 form-group mb-2 ">
@@ -798,7 +938,7 @@ function UserInput({ }) {
                       />
                     </div>
                   </div>
-                  {selectedImage && (
+                  {/* {selectedImage && (
                     <div className="col-md-3 form-group mb-2">
                       <div class="exp-form-floating">
                         <img
@@ -806,8 +946,34 @@ function UserInput({ }) {
                           alt="Selected Preview"
                           className="avatar rounded sm mt-4"
                           style={{ height: '200px', width: '200px' }}
-                        /></div></div>
-                  )}
+                        />
+                      </div>
+                    </div>
+                  )} */}
+                <div className="col-md-3 form-group mb-2">
+
+                  <div className="image-preview-frame">
+                    <img
+                      src={selectedImage || DefaultProductImage}
+                      alt="Selected Preview"
+                      className="preview-image"
+                    />
+                  </div>
+                </div>                  
+                <div className="col-md-3 form-group mt-3">
+                    <div className="exp-form-floating d-flex align-items-center gap-2" style={{ minHeight: "58px" }} >
+                      <input
+                        className="form-check-input m-2"
+                        type="checkbox"
+                        id="superAdmin"
+                        checked={superAdmin}
+                        disabled={!["sa", "super admin"].includes(role_id?.toLowerCase())}
+                        onChange={(e) => setSuperAdmin(e.target.checked)}
+                        style={{ width: "1.5em", height: "1.5em", cursor: "pointer", }}
+                      />
+                      <label htmlFor="superAdmin" className="exp-form-labels m-0" style={{ cursor: "pointer" }} >Super Admin</label>
+                    </div>
+                  </div>
                   {/* <div className="col-md-3 form-group  mb-2">
                     {mode === "create" ? (
                       <div class="exp-form-floating">

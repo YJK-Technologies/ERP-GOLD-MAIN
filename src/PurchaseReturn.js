@@ -1596,6 +1596,11 @@ function PurchaseReturn() {
   };
 
   const handleAuthorizedButtonClick = async () => {
+    if (!returnnumber || !selectedStatus) {
+      setError(" ");
+      toast.warning('Error: Missing required fields');
+      return;
+    }
     setLoading(true);
     try {
       const headerResponse = await AuthorizedHeader();
@@ -1617,11 +1622,6 @@ function PurchaseReturn() {
   };
 
   const AuthorizedHeader = async () => {
-        if (!returnnumber || !status) {
-      setError(" ");
-      toast.warning('Error: Missing required fields');
-      return;
-    }
     try {
       const response = await fetch(`${config.apiBaseUrl}/PurchReturnAuthHdr`, {
         method: "POST",
@@ -1710,21 +1710,21 @@ function PurchaseReturn() {
                 </savebutton>
               )}
               { authButtonVisible &&(
-                    <savebutton className="purbut" onClick={handleAuthorizedButtonClick} >
+                    <savebutton className="purbut" onClick={handleAuthorizedButtonClick} title="Authorize">
                 <i class="fa-solid fa-check"></i>
               </savebutton>
               )}
               { printButtonVisible && ['all permission', 'view'].some(permission => purchaseReturnPermission.includes(permission)) && (
-                <printbutton className="purbut" title="print" onClick={generateReport}>
+                <printbutton className="purbut" title="Print" onClick={generateReport}>
                   <i class="fa-solid fa-file-pdf"></i>
                 </printbutton>
               )}
               {showExcelButton && (
-                <printbutton className="purbut" title='excel' onClick={handleExcelDownload}>
+                <printbutton className="purbut" title='Excel' onClick={handleExcelDownload}>
                   <i class="fa-solid fa-file-excel"></i>
                 </printbutton>
               )}
-              <printbutton className="purbut" onClick={handleReload} >
+              <printbutton className="purbut" title='Reload' onClick={handleReload} >
                 <i class="fa-solid fa-arrow-rotate-right"></i>
               </printbutton>
             </div>
@@ -1779,7 +1779,7 @@ function PurchaseReturn() {
           <div className="row ms-3 me-3">
             {showDropdown && (
               <div className="col-md-3 form-group mb-2">
-                <label for=""className={`${error && !status ? 'red' : ''}`}>Status</label><span className="text-danger">*</span>
+                <label for=""className={`${error && !selectedStatus ? 'red' : ''}`}>Status</label><span className="text-danger">*</span>
                 <div class="exp-form-floating">
                   <Select
                     id="returnType"

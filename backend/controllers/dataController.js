@@ -38,20 +38,26 @@ const forgetPassword = async (req, res) => {
       .input("mode", sql.NVarChar, "VE")
       .input("user_code", sql.NVarChar, user_code)
       .input("email_id", sql.NVarChar, email_id)
-      .query(`EXEC SP_user_info_hdr @mode,'',@user_code,'','','','','','','',@email_id,'','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
-    if (result.recordset.length > 0) {
-      const otp = generateOTP();
-      await sendOTP(email_id, otp);
+      .query(`EXEC sp_user_info_hdr_Pavun @mode,'',@user_code,'','','','','','','',@email_id,'','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
+    if (result.recordset.length > 0) {
+      const otp = generateOTP(); // your existing OTP generator
+      const sent = await sendOTP(email_id, otp); // call your fixed sendOTP
+
+      // store OTP regardless of email success
       otpStorage[email_id] = otp;
+
+      if (!sent) {
+        console.warn("OTP email failed, but allowing process to continue.");
+      }
 
       res.status(200).json({ message: "OTP sent successfully" });
     } else {
       res.status(401).json({ message: "Email not found" });
     }
   } catch (error) {
-    console.error("Error during login:", error);
-    res.status(500).json({ message: err.message || 'Internal Server Error' });
+    console.error("Error during forget password:", error);
+    res.status(500).json({ message: error.message || "Internal Server Error" });
   }
 };
 
@@ -92,7 +98,7 @@ const Passwords = async (req, res) => {
       .input("user_code", sql.NVarChar, user_code)
       .input("email_id", sql.NVarChar, email_id)
       .input("user_password", sql.NVarChar, user_password)
-      .query("EXEC SP_user_info_hdr @mode,'',@user_code,'','','',@user_password,'','','',@email_id,'','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL");
+      .query("EXEC sp_user_info_hdr_Pavun @mode,'',@user_code,'','','',@user_password,'','','',@email_id,'','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL");
     res.status(200).json({ message: "Password updated successfully" });
   } catch (err) {
     console.error("Error", err);
@@ -222,7 +228,7 @@ const login = async (req, res) => {
       .input("mode", sql.NVarChar, "LUC")
       .input("user_code", sql.NVarChar, decryptedUserCode)
       .input("user_password", sql.NVarChar, decryptedPassword)
-      .query(`EXEC SP_user_info_hdr 'LUC','',@user_code,'','','',@user_password,'','','','','','','','','','','','','','','','','',''`);
+      .query(`EXEC sp_user_info_hdr_Pavun 'LUC','',@user_code,'','','',@user_password,'','','','','','','','','','','','','','','','','','',''`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -1134,7 +1140,7 @@ const deleteData = async (req, res) => {
 const getAlluserData = async (req, res) => {
   try {
     await connection.connectToDatabase();
-    const result = await sql.query(`EXEC SP_user_info_hdr 'A','','','','',' ','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+    const result = await sql.query(`EXEC sp_user_info_hdr_Pavun 'A','','','','',' ','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     res.json(result.recordset);
   } catch (err) {
@@ -1144,37 +1150,15 @@ const getAlluserData = async (req, res) => {
 };
 
 const userAddData = async (req, res) => {
-  const {
-    company_code,
-    user_code,
-    user_name,
-    first_name,
-    last_name,
-    user_password,
-    user_status,
-    log_in_out,
-    user_type,
-    email_id,
-    dob,
-    gender,
-    role_id,
-    created_by,
-    modified_by,
-    tempstr1,
-    tempstr2,
-    tempstr3,
-    tempstr4,
-    datetime1,
-    datetime2,
-    datetime3,
-    datetime4,
-  } = req.body;
+  const { company_code,user_code,user_name,first_name,last_name,user_password,user_status,log_in_out,user_type,super_admin,
+    email_id,dob,gender,role_id,created_by,modified_by,tempstr1,tempstr2,tempstr3,tempstr4,datetime1,datetime2,datetime3,datetime4 } = req.body;
 
   let user_img = null;
 
   if (req.file) {
     user_img = req.file.buffer; // Buffer containing the uploaded image
   }
+
   try {
     pool = await sql.connect(dbConfig);
     const result = await pool
@@ -1194,6 +1178,7 @@ const userAddData = async (req, res) => {
       .input("gender", sql.NVarChar, gender)
       .input("role_id", sql.NVarChar, role_id)
       .input("user_img", sql.VarBinary, user_img)
+      .input("super_admin", sql.NVarChar, super_admin)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
       .input("tempstr1", sql.NVarChar, tempstr1)
@@ -1204,22 +1189,22 @@ const userAddData = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(
-        `EXEC SP_user_info_hdr @mode,@company_code,@user_code,@user_name,
-        @first_name,@last_name,@user_password,
-        @user_status,@log_in_out,@user_type,
-        @email_id,@dob,@gender,@role_id,@user_img,@created_by,@modified_by,
-        @tempstr1, @tempstr2, @tempstr3, @tempstr4,    
-        @datetime1, @datetime2, @datetime3, @datetime4`
-      );
+      .query(`EXEC sp_user_info_hdr_Pavun @mode,@company_code,@user_code,@user_name,@first_name,@last_name,@user_password,@user_status,@log_in_out,@user_type,
+        @email_id,@dob,@gender,@role_id,@user_img,@super_admin,@created_by,@modified_by,@tempstr1, @tempstr2, @tempstr3, @tempstr4,@datetime1, @datetime2, @datetime3, @datetime4`);
     // Return success response
     if (result.rowsAffected && result.rowsAffected[0] > 0) {
       return res.status(200).json({ success: true, message: 'Data inserted successfully' });
     }
   } catch (err) {
-    console.error("Error", err);
-    res.status(500).json({ message: err.message || 'Internal Server Error' });
+    if (err.class === 16 && err.number === 50000) {
+      // Custom error from the stored procedure
+      res.status(400).json({ message: 'User already exists', err: err.message });
+    } else {
+      // Handle unexpected errors
+      res.status(500).json({ message: err.message || 'Internal Server Error' });
+    }
   }
+
 };
 
 
@@ -1235,11 +1220,6 @@ const UsersaveEditedData = async (req, res) => {
     const pool = await connection.connectToDatabase(dbConfig);
 
     for (const updatedRow of editedData) {
-      const user_images =
-        updatedRow.user_images && updatedRow.user_images.type === "Buffer"
-          ? Buffer.from(updatedRow.user_images.data)
-          : null;
-
       await pool
         .request()
         .input("mode", sql.NVarChar, "U") // update mode
@@ -1256,7 +1236,7 @@ const UsersaveEditedData = async (req, res) => {
         .input("dob", sql.NVarChar, updatedRow.dob)
         .input("gender", sql.NVarChar, updatedRow.gender)
         .input("role_id", sql.NVarChar, updatedRow.role_id)
-        .input("user_images", sql.VarBinary,user_images)
+        .input("super_admin", sql.NVarChar, updatedRow.super_admin)
         .input("created_by", sql.NVarChar, updatedRow.created_by)
         .input("modified_by", sql.NVarChar, req.headers['modified-by'])
         .input("tempstr1", sql.NVarChar, updatedRow.tempstr1)
@@ -1267,8 +1247,8 @@ const UsersaveEditedData = async (req, res) => {
         .input("datetime2", sql.NVarChar, updatedRow.datetime2)
         .input("datetime3", sql.NVarChar, updatedRow.datetime3)
         .input("datetime4", sql.NVarChar, updatedRow.datetime4)
-        .query(`EXEC SP_user_info_hdr 'U',@company_code, @user_code, @user_name, @first_name, @last_name, @user_password, @user_status, @log_in_out, @user_type, 
-            @email_id, @dob, @gender,@role_id,@user_images, @created_by, @modified_by, @tempstr1, @tempstr2, @tempstr3, @tempstr4, @datetime1, @datetime2, @datetime3, @datetime4`);
+        .query(`EXEC sp_user_info_hdr_Pavun @mode,@company_code, @user_code, @user_name, @first_name, @last_name, @user_password, @user_status, @log_in_out, @user_type, 
+            @email_id, @dob, @gender,@role_id,'',@super_admin, @created_by, @modified_by, @tempstr1, @tempstr2, @tempstr3, @tempstr4, @datetime1, @datetime2, @datetime3, @datetime4`);
     }
 
     res.status(200).json("Edited data saved successfully");
@@ -1292,13 +1272,23 @@ const UserdeleteData = async (req, res) => {
     const pool = await connection.connectToDatabase();
 
     for (const user_code of user_codesToDelete) {
-        await pool
-        .request()
+      try {
+        await pool.request()
           .input("user_code", user_code)
           .input("company_code", sql.NVarChar, req.headers['company_code'])
           .input("modified_by", sql.NVarChar, req.headers['modified-by'])
-          .query(`EXEC SP_user_info_hdr 'D',@company_code,@user_code,'','','','', '', '', '','','', '','','','',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+          .query(`EXEC sp_user_info_hdr_Pavun 'D',@company_code,@user_code,'','','', '', '', '', '','','', '','','','', '', @modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      } catch (err) {
+        if (err.number === 50000) {
+          // Foreign key constraint violation
+          res.status(500).json("The user cannot be deleted due to a link with another record");
+          return;
+        } else {
+          throw err; // Rethrow other SQL errors
+        }
+      }
     }
+
     res.status(200).json("user deleted successfully");
   } catch (err) {
     console.error("Error", err);
@@ -3929,7 +3919,7 @@ const getUserrolesearchdata = async (req, res) => {
 };
 
 const getUsersearchdata = async (req, res) => {
-  const { company_code, user_code, user_name, first_name, last_name, user_status, email_id, dob, gender, role_id, user_img } = req.body;
+  const { company_code, user_code, user_name, first_name, last_name, user_status, email_id, dob, gender, role_id, created_by } = req.body;
 
   try {
     // Connect to the database
@@ -3949,8 +3939,8 @@ const getUsersearchdata = async (req, res) => {
       .input("dob", sql.NVarChar, dob)
       .input("gender", sql.NVarChar, gender)
       .input("role_id", sql.NVarChar, role_id)
-      .input("user_img", sql.NVarChar, user_img)
-      .query(` EXEC SP_user_info_hdr @mode,@company_code,@user_code,@user_name,@first_name,@last_name,'',@user_status,'','',@email_id,@dob,@gender,@role_id,@user_img,'','','','','','','','','',''`);
+      .input("created_by", sql.NVarChar, created_by)
+      .query(`EXEC sp_user_info_hdr_Pavun @mode,@company_code,@user_code,@user_name,@first_name,@last_name,'',@user_status,'','',@email_id,@dob,@gender,@role_id,'','',@created_by,'','','','','','','','',''`);
 
     // Send response
     if (result.recordset.length > 0) {
@@ -15604,7 +15594,7 @@ const RoleUpdate = async (req, res) => {
 
 const UserUpdate = async (req, res) => {
   const { company_code, user_code, user_name, first_name, last_name, user_password, user_status,
-    log_in_out, user_type, email_id, dob, gender, role_id, created_by, modified_by
+    log_in_out, user_type, email_id, dob, gender, role_id, created_by, modified_by, super_admin
   } = req.body;
 
   let user_images = null;
@@ -15632,11 +15622,11 @@ const UserUpdate = async (req, res) => {
       .input("gender", sql.NVarChar, gender)
       .input("role_id", sql.NVarChar, role_id)
       .input("user_images", sql.VarBinary, user_images)
+      .input("super_admin", sql.NVarChar, super_admin)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
-      .query(
-        `EXEC SP_user_info_hdr @mode,@company_code, @user_code, @user_name, @first_name, @last_name, @user_password, @user_status, @log_in_out, @user_type, 
-            @email_id, @dob, @gender,@role_id,@user_images, @created_by, @modified_by, '', '', '', '', '', '', '', ''`);
+      .query(`EXEC sp_user_info_hdr_Pavun @mode,@company_code, @user_code, @user_name, @first_name, @last_name, @user_password, @user_status, @log_in_out, @user_type, 
+      @email_id, @dob, @gender,@role_id,@user_images, @super_admin, @created_by, @modified_by, '', '', '', '', '', '', '', ''`);
     res.status(200).json("Edited data saved successfully");
   } catch (err) {
     console.error("Error", err);
@@ -26454,8 +26444,7 @@ const Userdropdown = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "MG")
       .input("user_code", sql.NVarChar, user_code)
-      .query(`EXEC [SP_user_info_hdr] @mode,'',@user_code,'','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
-`);
+      .query(`EXEC [sp_user_info_hdr_Pavun] @mode,'',@user_code,'','','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     res.json(result.recordset);
   } catch (err) {
     console.error("Error during update:", err);
@@ -28875,6 +28864,29 @@ const getBillFormat = async (req, res) => {
 };
 //Code Ended by pavun on 19-06-2026
 
+const getUserData = async (req, res) => {
+  const { company_code, user_code } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "GUIH")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("user_code", sql.NVarChar, user_code)
+      .query(`EXEC sp_user_info_hdr_Pavun @mode,@company_code,@user_code,'','','','','','','','','','','','','','','','','','','','','','',''`);
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset); 
+    } else {
+      res.status(404).json("Data not found");
+    }
+  } catch (err) {
+    console.error("Error", err.message);
+    return res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+
 module.exports = {
   login,
   forgetPassword,
@@ -29811,6 +29823,7 @@ module.exports = {
   DeleteClientBugs,
   UpdateClientBugs,
   getClientbugs,
-  getBillFormat
+  getBillFormat,
+  getUserData
 
 };
