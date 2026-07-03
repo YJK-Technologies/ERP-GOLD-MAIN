@@ -9,10 +9,18 @@ module.exports = {
   // options: {
   //   encrypt: false,
   // },   
+  // user: "saraswathi",
+  // password: "@%dSCt15",
+  // server: "95.216.47.253",
+  // database: "Development_ERP_Gold",
+  // port: 1433,
+  // options: {
+  //   encrypt: false,
+  // },   
   user: "saraswathi",
   password: "@%dSCt15",
   server: "95.216.47.253",
-  database: "Development_ERP_Gold",
+  database: "Latest_ERP_GOLD",
   port: 1433,
   options: {
     encrypt: false,
