@@ -1652,10 +1652,10 @@ finally {
   return (
     <div className="container-fluid Topnav-screen">
       <div>
-        <div className="shadow-lg p-1 bg-body-tertiary rounded mt-2 mb-2">
-          <div className="d-flex justify-content-between" >
       {loading && <LoadingScreen />}
                   <ToastContainer position="top-right" className="toast-design" theme="colored" />
+        <div className="shadow-lg p-1 bg-body-tertiary rounded mt-2 mb-2">
+          <div className="d-flex justify-content-between" >
       
             <div className="d-flex justify-content-start">
               <h1 align="left" className="purbut me-5" >Stock Transfer</h1>
@@ -1752,7 +1752,7 @@ finally {
       
 <div className="shadow-lg p-1 bg-body-tertiary rounded  pt-4 "
           align="left">
-              <div className="status">{status}</div>
+              {/* <div className="status">{status}</div> */}
         <div  
          >
 
@@ -1796,13 +1796,15 @@ finally {
               <div class="exp-form-floating" >
                 <label for="" className={`${error && !transactionDate ? 'red' : ''}`}>Transaction Date</label>
                 <span className="text-danger">*</span>
-                <DtPicker
+                <input
                   name="transactionDate"
                   id="transactionDate"
                   className="exp-input-field form-control"
-                  type="single"
-                  placeholder="select the Date"
+                  type="date"
+                  placeholder=""
                   required
+                  min={financialYearStart}
+                  max={financialYearEnd}                  
                   value={transactionDate}
                   onChange={handleTransactionDateChange}
                   autoComplete="off"

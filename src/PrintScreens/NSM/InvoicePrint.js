@@ -6,16 +6,16 @@ import LZString from "lz-string";
 
 const getPageName = (page) => {
     switch (page) {
-      case "1":
-        return "Original";
-      case "2":
-        return "Duplicate";
-      case "3":
-        return "Triplicate";
-      default:
-        return "";
+        case "1":
+            return "Original";
+        case "2":
+            return "Duplicate";
+        case "3":
+            return "Triplicate";
+        default:
+            return "";
     }
-  };
+};
 
 const Invoice = () => {
     const [headerData, setHeaderData] = useState(null);
@@ -78,16 +78,20 @@ const Invoice = () => {
     const taxAmountFormatted = taxAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const purchaseAmountFormatted = purchaseAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-    const totalAmountInWords = `${toWords.convert(totalAmount)} rupees only`;
-    const taxAmountInWords = `${toWords.convert(taxAmount)} rupees only`;
+    const totalAmountInWords = `${toWords.convert(totalAmount)} Rupees Only`;
+    const taxAmountInWords = `${toWords.convert(taxAmount)} Rupees Only`;
 
+    const formatDate = (date) => {
+        if (!date) return '';
+        return new Date(date).toLocaleDateString('en-GB');
+    };
 
     return (
         <div>
             <div className="InvoiceContainer custom-text topnav-screen">
                 <div className="d-flex justify-content-between align-items-center border border-bottom-0 mb-0 border-1 border-dark text-dark px-3">
-                <p className="m-0 w-50 " style={{ fontSize: "15px" }}>E-Way Bill No:{headerData[0].Eway_bill_no}</p>
-                <h2 className="w-50 fs-5 m-0">INVOICE</h2>
+                    <p className="m-0 w-50 " style={{ fontSize: "15px" }}>E-Way Bill No:{headerData[0].Eway_bill_no}</p>
+                    <h2 className="w-50 fs-5 m-0">INVOICE</h2>
                     <p className="m-0" style={{ fontSize: "15px" }}>{getPageName(page)}</p>
                 </div>
                 <div class="invoice">
@@ -135,30 +139,36 @@ const Invoice = () => {
                                             <td className="p-1 border-end border-dark"><strong>Invoice No:</strong>
                                                 <br /> {headerData[0].bill_no}</td>
                                             <td className="p-1"><strong>Date:</strong>
-                                                <br /> {new Date(headerData[0].bill_date).toLocaleDateString('en-GB')}</td>
+                                                <br />{formatDate(headerData[0].bill_date)}</td>
                                         </tr>
                                         <tr className="small-row border-bottom border-dark">
                                             <td className="p-1 border-end border-dark"><strong>Buyer's Order No:</strong>
                                                 <br /> {headerData[0].po_no}</td>
                                             <td className="p-1"><strong>Date:</strong>
-                                                <br /> {new Date(headerData[0].po_date).toLocaleDateString('en-GB')}</td>
+                                                <br />{formatDate(headerData[0].po_date)}</td>
                                         </tr>
                                         <tr className="small-row border-bottom border-dark">
                                             <td className="p-1"><strong>Supplier Ref:</strong>
                                                 <br /> {headerData[0].supplier_ref}</td>
                                         </tr>
                                         <tr className="small-row border-bottom border-dark">
-                                            <td className="p-1"><strong>Terms of Payment:</strong>
-                                                <br /> {headerData.map((row, index) => (
-                                                    <p key={index} style={{ fontSize: "12px" }}>
-                                                        {index + 1}.{row.Terms_Conditions}
-                                                    </p>
-                                                ))}
+                                            <td className="p-1">
+                                                <strong>Terms of Payment:</strong>
+                                                <br />
+
+                                                {headerData
+                                                    .filter(row => row.Terms_Conditions) // remove empty/null
+                                                    .map((row, index) => (
+                                                        <p key={index} style={{ fontSize: "12px" }}>
+                                                            {index + 1}. {row.Terms_Conditions}
+                                                        </p>
+                                                    ))
+                                                }
                                             </td>
                                         </tr>
                                         <tr className="small-row border-bottom border-dark">
                                             <td className="p-1 text-break" style={{ maxWidth: "350px" }}><strong>Delivered Through:</strong>
-                                                <br /> {headerData[0].dispatched_through || "-"}</td>
+                                                <br /> {headerData[0].delivered_through || "-"}</td>
                                         </tr>
                                         <tr className="small-row">
                                             <td className="p-1 text-break" style={{ maxWidth: "350px" }}><strong>Destination:</strong>
@@ -184,11 +194,12 @@ const Invoice = () => {
                                     <td colSpan="2" className="border border-dark p-1">
                                         <strong>Bank Details</strong>
                                         <br />
+                                        <strong>{headerData[0].company_name}</strong>
                                         <br />
-                                        <strong>Name:</strong> Indian Bank <br />
-                                        <strong>Account No:</strong> 7660795459 <br />
-                                        <strong>Branch:</strong> Andarkuppam <br />
-                                        <strong>IFSC Code:</strong> IDIB000A076
+                                        <strong>Name:</strong> {headerData[0].account_name}<br />
+                                        <strong>Account No:</strong> {headerData[0].account_number}<br />
+                                        <strong>Branch:</strong> {headerData[0].branch}<br />
+                                        <strong>IFSC Code:</strong> {headerData[0].IFSC_code}
                                     </td>
                                 </tr>
                             </tbody>
@@ -204,8 +215,9 @@ const Invoice = () => {
                             <th style={{ textAlign: "center" }}>HSN/SAC</th>
                             <th style={{ textAlign: "center" }}>Qty</th>
                             <th style={{ textAlign: "center" }}>Unit Price</th>
-                            <th style={{ textAlign: "center" }}>Tax</th>
-                            <th style={{ textAlign: "center" }}>Total</th>
+                            <th style={{ textAlign: "center" }}>Tax %</th>
+                            <th style={{ textAlign: "center" }}>Tax Amount</th>
+                            <th style={{ textAlign: "center" }}>Total Amount</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -217,6 +229,7 @@ const Invoice = () => {
                                 <td style={{ textAlign: "right" }}>{row.hsn_code}</td>
                                 <td style={{ textAlign: "right" }}>{row.bill_qty || 0}</td>
                                 <td style={{ textAlign: "right" }}>{row.unit_price || 0}</td>
+                                <td style={{ textAlign: "right" }}>{row.tax_percentage || 0}%</td>
                                 <td style={{ textAlign: "right" }}>{row.tax_amt || 0}</td>
                                 <td style={{ textAlign: "right" }}>{parseFloat(row.bill_rate).toFixed(2)}</td>
                             </tr>
@@ -248,7 +261,7 @@ const Invoice = () => {
                 </section>
                 <div className="bank-details">
                     <div className="d-flex justify-content-between">
-                    <div className="col-6 ms-auto">
+                        <div className="col-6 ms-auto">
                             <div
                                 className="border-dark border-bottom-0 border-top-0 border-end-0"
                                 style={{

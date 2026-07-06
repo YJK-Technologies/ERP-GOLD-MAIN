@@ -158,18 +158,19 @@ const Invoice = () => {
                                         <div className="justify-content-start">
                                             <strong>Bank Details</strong>
                                             <br />
-                                            Name: <br /><strong>Karur Vysya Bank</strong>
+                                            Name: <br /><strong>Indian Bank</strong>
                                             <br />
-                                            Account No: <br /><strong>1942135000000059</strong>
+                                            Account No: <br /><strong>7660795459</strong>
                                             <br />
-                                            Branch: <br /><strong>Ayappakam</strong>
+                                            Branch: <br /><strong>Andarkuppam</strong>
                                             <br />
-                                            IFSC Code: <br /><strong>KVBL0001280</strong>
+                                            IFSC Code: <br /><strong>IDIB000A076</strong>
                                         </div>
 
-                                        <div className="justify-content-end ms-4">
-                                            <img src={PaymentQr} alt="QR Code" width={150} height={150} />
-                                        </div>
+                                        {/*<div className="justify-content-end ms-4">
+                                            <img src={PaymentQr} alt="QR Code" width={150} height={150} /> 
+                                            </div> */}
+
                                     </div>
                                 </td>
                             </tr>

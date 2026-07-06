@@ -65,8 +65,13 @@ const Invoice = () => {
     const taxAmountFormatted = taxAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const purchaseAmountFormatted = purchaseAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-    const totalAmountInWords = `${toWords.convert(totalAmount)} rupees only`;
-    const taxAmountInWords = `${toWords.convert(taxAmount)} rupees only`;
+    const totalAmountInWords = `${toWords.convert(totalAmount)} Rupees Only`;
+    const taxAmountInWords = `${toWords.convert(taxAmount)} Rupees Only`;
+
+    const formatDate = (date) => {
+        if (!date) return '';
+        return new Date(date).toLocaleDateString('en-GB');
+    };
 
     return (
         <div>
@@ -122,15 +127,15 @@ const Invoice = () => {
                                         </tr>
                                         <tr className="large-row border-bottom border-dark">
                                             <td className="p-1"><strong>Date:</strong>
-                                                <br />{new Date(headerData[0].Entry_date).toLocaleDateString('en-GB')}</td>
+                                                <br />{formatDate(headerData[0].Entry_date)}</td>
                                         </tr>
                                         <tr className="large-row border-bottom border-dark">
                                             <td className="p-1"><strong>Quote Date:</strong>
-                                                <br /> {new Date(headerData[0].delivery_date).toLocaleDateString('en-GB')}</td>
+                                                <br />{formatDate(headerData[0].delivery_date)}</td>
                                         </tr>
                                         <tr className="large-row border-dark">
                                             <td className="p-1"><strong>Delivery Terms:</strong>
-                                                <br /> {headerData[0].remarks} 
+                                                <br /> {headerData[0].remarks}
                                             </td>
                                         </tr>
                                     </td>
@@ -190,15 +195,18 @@ const Invoice = () => {
                 </section>
                 <div className="bank-details">
                     <div className="d-flex justify-content-between">
-                    <div className="col-6 mt-3">
+                        <div className="col-6 mt-3">
                             <p className="mb-3" style={{ fontSize: "12px" }}>
                                 <strong className="text-decoration-underline">TERMS AND CONDITIONS</strong><br />
                             </p>
-                            {headerData.map((row, index) => (
-                                <p key={index} style={{ fontSize: "12px" }}>
-                                    {index + 1}.{row.Terms_Conditions}
-                                </p>
-                            ))}
+                            {headerData
+                                .filter(row => row.Terms_Conditions) // remove empty/null
+                                .map((row, index) => (
+                                    <p key={index} style={{ fontSize: "12px" }}>
+                                        {index + 1}. {row.Terms_Conditions}
+                                    </p>
+                                ))
+                            }
                         </div>
                         <div className="col-6 ms-auto">
                             <div
