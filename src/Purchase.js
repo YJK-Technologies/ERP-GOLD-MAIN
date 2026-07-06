@@ -3778,4 +3778,4 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
   );
 }
 
-export default Purchase;  
+export default Purchase;
