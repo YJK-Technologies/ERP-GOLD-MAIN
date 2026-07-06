@@ -56,12 +56,15 @@ const Invoice = () => {
     }
 
     const totalAmount = headerData[0].total_amount;
-    const totalAmountInWords = `${toWords.convert(totalAmount)} rupees only`;
+    const totalAmountInWords = `${toWords.convert(totalAmount)} Rupees Only`;
     const purchase = parseFloat(headerData[0].purchase_amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const total = parseFloat(headerData[0].total_amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const transport = parseFloat(headerData[0].transport_charges).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-
+    const formatDate = (date) => {
+        if (!date) return '';
+        return new Date(date).toLocaleDateString('en-GB');
+    };
 
     return (
         <div>
@@ -116,7 +119,7 @@ const Invoice = () => {
                                         </tr>
                                         <tr className="large-row border-bottom border-dark">
                                             <td className="p-1"><strong>Date:</strong>
-                                                <br />{new Date(headerData[0].transaction_date).toLocaleDateString('en-GB')}</td>
+                                                <br />{formatDate(headerData[0].transaction_date)}</td>
                                         </tr>
                                         <tr className="large-row border-bottom border-dark">
                                             <td className="p-1 border-dark"><strong> PO No:</strong>
@@ -124,7 +127,7 @@ const Invoice = () => {
                                         </tr>
                                         <tr className="large-row border-dark">
                                             <td className="p-1"><strong>Date:</strong>
-                                                <br />{new Date(headerData[0].transaction_date).toLocaleDateString('en-GB')}</td>
+                                                <br />{formatDate(headerData[0].transaction_date)}</td>
                                         </tr>
                                         {/* <tr className="small-row border-dark">
                                             <td className="p-1 text-break" style={{ maxWidth: "350px" }}><strong>Mobile No:</strong>
@@ -154,11 +157,12 @@ const Invoice = () => {
                                     <td colSpan="2" className="border border-dark p-1">
                                         <strong>Bank Details</strong>
                                         <br />
+                                        <strong>{headerData[0].company_name}</strong>
                                         <br />
-                                        <strong>Name:</strong> Indian Bank <br />
-                                        <strong>Account No:</strong> 7660795459 <br />
-                                        <strong>Branch:</strong> Andarkuppam <br />
-                                        <strong>IFSC Code:</strong> IDIB000A076
+                                        <strong>Name:</strong> {headerData[0].account_name}<br />
+                                        <strong>Account No:</strong> {headerData[0].account_number}<br />
+                                        <strong>Branch:</strong> {headerData[0].branch}<br />
+                                        <strong>IFSC Code:</strong> {headerData[0].IFSC_code}
                                     </td>
                                 </tr>
                             </tbody>

@@ -5,6 +5,7 @@ import { AgGridReact } from 'ag-grid-react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ReceivedGoodsPopup from './ReceivedGoodsHelp';
+import * as XLSX from 'xlsx';
 const config = require('../Apiconfig');
 
 function AssetsReturn({ }) {
@@ -244,6 +245,42 @@ function AssetsReturn({ }) {
         window.location.reload();
     };
 
+      const transformRowData = (data) => {
+        return data.map(row => ({
+          "Item S.No": row.itemSNo,
+          "Item Code": row.itemCode.toString(),
+          "Item Name": row.itemName.toString(),
+          "Bill Qty": row.billQty.toString(),
+          "Balance Qty": row.balanceQty.toString(),
+          "Receive Qty": row.receiveQty.toString(),
+        }));
+      };
+    
+      const handleExcelDownload = () => {
+        const filteredRowData = rowData.filter(row => row.receiveQty > 0);
+    
+        if (rowData.length === 0 || !transactionNo || !transactionDate) {
+          toast.warning('No Data Available');
+          return;
+        }
+    
+        const headerData = [{
+          "company Code": sessionStorage.getItem('selectedCompanyCode'),
+          "Transaction No": transactionNo,
+          "Transaction Date": transactionDate,
+        }];
+    
+        const transformedData = transformRowData(filteredRowData);
+        const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
+        const headerSheet = XLSX.utils.json_to_sheet(headerData);
+    
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+        XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
+    
+        XLSX.writeFile(workbook, "Received_Goods.xlsx");
+      };
+
     return (
         <div class="container-fluid Topnav-screen">
             <ToastContainer position="top-right" className="toast-design" theme="colored" />
@@ -258,6 +295,9 @@ function AssetsReturn({ }) {
                                 <i class="fa-regular fa-floppy-disk"></i>
                             </savebutton>
                         )}
+                <printbutton className="purbut" title='excel' onClick={handleExcelDownload}>
+                  <i class="fa-solid fa-file-excel"></i>
+                </printbutton>
                         <printbutton className="purbut" onClick={handleReload} title='reload'>
                             <i class="fa-solid fa-arrow-rotate-right"></i>
                         </printbutton>
@@ -280,6 +320,11 @@ function AssetsReturn({ }) {
                                                 </icon>
                                             )}
                                         </li>
+                                     <li class="iconbutton  d-flex justify-content-center text-info">
+                                       <icon class="icon" onClick={handleExcelDownload}>
+                                         <i class="fa-solid fa-file-excel"></i>
+                                           </icon>
+                                     </li>
                                         <li class="iconbutton  d-flex justify-content-center">
                                             <icon class="icon" onClick={handleReload} title='reload'>
                                                 <i class="fa-solid fa-arrow-rotate-right"></i>

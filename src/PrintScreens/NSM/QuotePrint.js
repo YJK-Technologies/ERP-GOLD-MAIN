@@ -60,8 +60,13 @@ const Invoice = () => {
 
     const totalAmount = parseFloat(headerData[0]?.total_amount || 0);
     const taxAmount = parseFloat(headerData[0]?.tax_amount || 0);
-    const totalAmountInWords = `${toWords.convert(totalAmount)} rupees only`;
-    const taxAmountInWords = `${toWords.convert(taxAmount)} rupees only`;
+    const totalAmountInWords = `${toWords.convert(totalAmount)} Rupees Only`;
+    const taxAmountInWords = `${toWords.convert(taxAmount)} Rupees Only`;
+
+    const formatDate = (date) => {
+        if (!date) return '';
+        return new Date(date).toLocaleDateString('en-GB');
+    };
 
     return (
         <div>
@@ -116,7 +121,7 @@ const Invoice = () => {
                                         </tr>
                                         <tr className="small-row border-bottom border-dark">
                                             <td className="p-1"><strong>Date:</strong>
-                                                <br />{new Date(headerData[0].Entry_date).toLocaleDateString('en-GB')}</td>
+                                                <br />{formatDate(headerData[0].Entry_date)}</td>
                                         </tr>
                                         <tr className="small-row border-bottom border-dark">
                                             <td className="p-1"><strong>Valid Till:</strong>
@@ -126,11 +131,12 @@ const Invoice = () => {
                                             <td className="p-1">
                                                 <strong>Bank Details</strong>
                                                 <br />
+                                                <strong>{headerData[0].company_name}</strong>
                                                 <br />
-                                                <strong>Name:</strong> Indian Bank <br />
-                                                <strong>Account No:</strong> 7660795459 <br />
-                                                <strong>Branch:</strong> Andarkuppam <br />
-                                                <strong>IFSC Code:</strong> IDIB000A076
+                                                <strong>Name:</strong> {headerData[0].account_name}<br />
+                                                <strong>Account No:</strong> {headerData[0].account_number}<br />
+                                                <strong>Branch:</strong> {headerData[0].branch}<br />
+                                                <strong>IFSC Code:</strong> {headerData[0].IFSC_code}
                                             </td>
                                         </tr> 
                                     </td>

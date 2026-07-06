@@ -4,6 +4,7 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import "ag-grid-enterprise";
 import "./apps.css";
+import * as XLSX from 'xlsx';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -678,7 +679,40 @@ function OpeningbalanceGrid() {
   const handleReload = () => {
     window.location.reload();
   };
-
+       const transformRowData = (data) => {
+         return data.map(row => ({
+           "S.No": row.serialNumber,
+           "": row.delete.toString(),
+           "Item Code": row.itemCode.toString(),
+           "Item Name": row.itemName.toString(),
+         }));
+       };
+     
+       const handleExcelDownload = () => {
+         const filteredRowData = rowData.filter(row => row.Qty > 0);
+     
+         if (rowData.length === 0 || !transaction_no || !transaction_date) {
+           toast.warning('No Data Available');
+           return;
+         }
+     
+         const headerData = [{
+           "company Code": sessionStorage.getItem('selectedCompanyCode'),
+           "Transaction No": transaction_no,
+           "Transaction Date": transaction_date,
+         }];
+     
+         const transformedData = transformRowData(filteredRowData);
+         const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
+         const headerSheet = XLSX.utils.json_to_sheet(headerData);
+     
+         const workbook = XLSX.utils.book_new();
+         XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+         XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
+     
+         XLSX.writeFile(workbook, "Opening_Item.xlsx");
+       };
+ 
   return (
     <div className="container-fluid Topnav-screen">
       {loading && <LoadingScreen />}
@@ -715,6 +749,9 @@ function OpeningbalanceGrid() {
                     <i class="fa-solid fa-trash"></i>
                   </delbutton>
                 )}
+              <printbutton className="purbut" title='excel' onClick={handleExcelDownload}>
+                  <i class="fa-solid fa-file-excel"></i>
+              </printbutton>
               <printbutton className="purbut" title="Reload" onClick={handleReload}>
                 <i class="fa-solid fa-arrow-rotate-right"></i>
               </printbutton>
@@ -756,6 +793,9 @@ function OpeningbalanceGrid() {
                           </icon>
                         )}
                     </li>
+                <printbutton className="purbut" title='excel' onClick={handleExcelDownload}>
+                  <i class="fa-solid fa-file-excel"></i>
+                </printbutton>
                     <li class="iconbutton  d-flex justify-content-center">
                       <icon class="icon" onClick={handleReload}>
                         <i class="fa-solid fa-arrow-rotate-right"></i>

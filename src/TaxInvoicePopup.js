@@ -368,7 +368,8 @@ export default function TaxInvoicePopup({ open, handleClose, handletaxinvoice, i
       Destination:row.Destination,
       Performa_bill_no:row.Performa_bill_no,
       Eway_bill_no:row.Eway_bill_no,
-      supplier_ref:row.supplier_ref
+      supplier_ref:row.supplier_ref,
+      delivered_through:row.delivered_through
     }));
     handletaxinvoice(selectedData);
     handleClose();

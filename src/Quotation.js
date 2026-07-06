@@ -831,7 +831,7 @@ function Quotation() {
       field: "taxType",
       editable: false,
       filter: true,
-      hide: false,
+      hide: true,
       sortable: false,
     },
     {
@@ -839,7 +839,7 @@ function Quotation() {
       field: "taxDetail",
       editable: false,
       filter: true,
-      hide: false,
+      hide: true,
       sortable: false,
     },
     {
@@ -847,7 +847,7 @@ function Quotation() {
       field: "taxPercentage",
       editable: false,
       filter: true,
-      hide: false,
+      hide: true,
       sortable: false,
     },
     {
