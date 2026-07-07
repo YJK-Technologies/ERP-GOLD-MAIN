@@ -3245,7 +3245,7 @@ function PurchaseOrder() {
                   <printbutton className="purbut" title='excel' onClick={handleExcelDownload} style={{ display: showExcelButton ? 'block' : 'none' }}>
                     <i class="fa-solid fa-file-excel"></i>
                   </printbutton>
-                  <printbutton className="purbut" onClick={handleReload} >
+                  <printbutton className="purbut" title='Reload' onClick={handleReload} >
                     <i class="fa-solid fa-arrow-rotate-right"></i>
                   </printbutton>
                   {/* <button className="purbut" onClick={navigateToSettings}>
