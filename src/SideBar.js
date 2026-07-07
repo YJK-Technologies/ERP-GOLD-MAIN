@@ -1120,12 +1120,12 @@ setCRMCollapsed(false);  };
               </Link>
             )}
           </div>{" "}
-          <div className="menu-item" onClick={toggleUnplannedCollapse} title="Inventory">
+          {/* <div className="menu-item" onClick={toggleUnplannedCollapse} title="Inventory">
             <span className={collapsed ? "hidden" : ""}>Inventory</span>
             <div class="inventory-arrow">
               {unplannedCollapsed ? <BsChevronDown /> : <BsChevronRight />}
             </div>
-          </div>
+          </div> */}
           <div className={`collapse ${unplannedCollapsed ? "show" : ""}`}>
             <div className=" ms-3">
               {screenType.includes("UnplannedIssued") && (
