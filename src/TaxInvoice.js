@@ -4079,7 +4079,7 @@ function TaxInvoice() {
                         </div>
                     </div>
                     <div>
-                        <TaxInvoicePopup open={open} handleClose={handleClose} handletaxinvoice={handletaxinvoice} invoicetype={isChecked ? "Performa Invoice" : invoicetype} />
+                        <TaxInvoicePopup open={open} handleClose={handleClose} handletaxinvoice={handletaxinvoice} invoicetype={isChecked ? "Proforma Invoice" : invoicetype} />
                         <TaxInvoiceCustomerPopup open={open1} handleClose={handleClose} handleVendor={handleCustomerBillTo} />
                         <TaxInvoiceCustomerPopup open={open2} handleClose={handleClose} handleVendor={handleCustomerShipTo} />
                     </div>

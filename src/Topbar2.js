@@ -309,7 +309,7 @@ const TopBar = () => {
               <li className="nav-item p-1 mt-1">
 
                 <p className="text-white" >
-                  Welcome,{user_code}
+                  Welcome, {user_code}
                 </p>
 
 
@@ -321,7 +321,7 @@ const TopBar = () => {
             <div className='mobileview'>
               <li className="nav-item mt-3">
                 <p className="text-white text-center" style={{ fontSize: "11px" }}>
-                  Welcome,{user_code}
+                  Welcome, {user_code}
                 </p>
               </li></div>
 
