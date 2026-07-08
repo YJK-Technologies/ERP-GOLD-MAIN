@@ -881,14 +881,23 @@ function CustomerDetInput({ }) {
                         Mobile No
                       </label></div>
                       <div> <span className="text-danger">*</span></div>
-                    </div><input
+                    </div>
+                    <input
                       id="mobno"
-                      class="exp-input-field form-control"
-                      type="number"
+                      className="exp-input-field form-control"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       placeholder=""
-                      required title="Please enter the mobile number"
+                      required
+                      title="Please enter the mobile number"
                       value={customer_mobile_no}
-                      onChange={(e) => setcustomer_mobile_no(e.target.value)}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, ""); // Allow only digits
+                        if (value.length <= 20) {
+                          setcustomer_mobile_no(value);
+                        }
+                      }}
                       maxLength={20}
                       ref={Mobile}
                       onKeyDown={(e) => handleKeyDown(e, Fax, Mobile)}
@@ -902,15 +911,21 @@ function CustomerDetInput({ }) {
                       <div><label for="rid" class="exp-form-labels">
                         Fax No
                       </label></div>
-                    </div> <input
+                    </div> 
+                    <input
                       id="cusfax"
-                      class="exp-input-field form-control"
-                      type="number"
-                      placeholder=""
-                      required title="Please enter the FAX number"
-                      value={customer_fax_no}
-                      onChange={(e) => setcustomer_fax_no(e.target.value)}
+                      className="exp-input-field form-control"
+                      type="text"
+                      inputMode="numeric"
                       maxLength={20}
+                      placeholder=""
+                      required
+                      title="Please enter the FAX number"
+                      value={customer_fax_no}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, ""); // Only digits
+                        setcustomer_fax_no(value);
+                      }}
                       ref={Fax}
                       onKeyDown={(e) => handleKeyDown(e, Email, Fax)}
                     />
@@ -945,15 +960,21 @@ function CustomerDetInput({ }) {
                         Credit Limit
                       </label></div>
                       <div> <span className="text-danger">*</span></div>
-                    </div><input
+                    </div>
+                    <input
                       id="cuscre"
-                      class="exp-input-field form-control"
+                      className="exp-input-field form-control"
                       type="number"
                       placeholder=""
-                      required title="Please enter the credit limit"
+                      required
+                      title="Please enter the credit limit"
                       value={customer_credit_limit}
-                      onChange={(e) => setcustomer_credit_limit(e.target.value)}
-                      maxLength={18}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value.length <= 18) {
+                          setcustomer_credit_limit(value);
+                        }
+                      }}
                       ref={Credit}
                       onKeyDown={(e) => handleKeyDown(e, Transport, Credit)}
                     />

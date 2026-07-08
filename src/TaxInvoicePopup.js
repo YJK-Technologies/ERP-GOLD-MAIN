@@ -392,7 +392,7 @@ export default function TaxInvoicePopup({ open, handleClose, handletaxinvoice, i
                       <div class="col-md-12 text-center">
                         <div className="p-0 bg-body-tertiary">
                           <div className="purbut mb-0 d-flex justify-content-between" >
-                            <h1 align="left" className="purbut">{invoicetype === 'Performa Invoice' ? 'Proforma Invoice' : 'Tax Invoice'}</h1>
+                            <h1 align="left" className="purbut">{invoicetype === 'Proforma Invoice' ? 'Proforma Invoice' : 'Tax Invoice'}</h1>
                             <button onClick={handleClose} className="purbut btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
                               <i class="fa-solid fa-xmark"></i>
                             </button>

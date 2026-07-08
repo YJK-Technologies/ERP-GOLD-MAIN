@@ -1765,7 +1765,7 @@ function DeliveryChallan() {
 
 
     const handleExcelDownload = () => {
-        const filteredRowData = rowData.filter(row => row.purchaseQty > 0 && row.TotalItemAmount > 0 && row.purchaseAmt > 0);
+        const filteredRowData = rowData.filter(row => row.purchaseQty > 0 && row.TotalItemAmount > 0 && row.unitPrice > 0);
         const headerData = [{
             company_code: sessionStorage.getItem('selectedCompanyCode'),
 
@@ -3189,7 +3189,7 @@ function DeliveryChallan() {
                                         <div className="exp-form-floating">
                                             <label htmlFor="">Pay Type</label>
                                             <div title="Please select a paytype">
-                                            <Select
+                                            <input
                                                 id="PayType"
                                                 value={PayType}
                                                 onChange={(e) => setPaytype(e.target.value)}
@@ -3206,7 +3206,7 @@ function DeliveryChallan() {
                                         <div className="exp-form-floating">
                                             <label htmlFor="">Sales Type </label>
                                             <div title="Please select a sales type">
-                                            <Select
+                                            <input
                                                 id="SalesType"
                                                 value={SalesType}
                                                 onChange={(e) => setSalestype(e.target.value)}
