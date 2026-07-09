@@ -156,16 +156,16 @@ function ItemInput({}) {
       setBarcodeValue(selectedRow.Barcode_Data || "");
       setItem_code(selectedRow.Item_code || "");
       setItem_name(selectedRow.Item_name || "");
-      setItem_wigh(selectedRow.Item_wigh || "");
+      setItem_wigh(selectedRow.Item_wigh || 0);
       sethsn(selectedRow.hsn || "");
       setItem_stock_type(selectedRow.Item_stock_type || "");
       setItem_stock_code(selectedRow.Item_stock_code || "");
       setItem_std_sales_price(selectedRow.Item_std_sales_price || "");
       setItem_std_purch_price(selectedRow.Item_std_purch_price || "");
       setItem_Last_salesRate_IncludingTax(
-        selectedRow.Item_Last_salesRate_IncludingTax || "",
+        selectedRow.Item_Last_salesRate_IncludingTax || 0,
       );
-      setItem_Last_salesRate_ExTax(selectedRow.Item_Last_salesRate_ExTax || "");
+      setItem_Last_salesRate_ExTax(selectedRow.Item_Last_salesRate_ExTax || 0);
       setItem_short_name(selectedRow.Item_short_name || "");
       setMRPPrice(selectedRow.MRP_Price || 0);
       setDiscount(selectedRow.discount_Percentage || 0);
