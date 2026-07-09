@@ -552,7 +552,7 @@ function DeliveryChallan() {
                     Item_code: params.data.productItemCode,
                     bill_qty: params.data.purchaseQty,
                     purchaser_amt: params.data.unitPrice,
-                    // tax_type_header: params.data.taxType,
+                    // tax_type_header: params.data.taxType,    
                     // tax_name_details: params.data.taxDetail,
                     // tax_percentage: params.data.taxPercentage,
                 })
