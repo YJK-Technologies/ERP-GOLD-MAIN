@@ -3223,7 +3223,7 @@ function PurchaseOrder() {
                     />
                   </div>
                   {buttonsVisible && ['add', 'all permission'].some(permission => purchaseOrderPermission.includes(permission)) && (
-                    <savebutton className="purbut" onClick={handleSaveButtonClick} title='save' >
+                    <savebutton className="purbut" onClick={handleSaveButtonClick} title='Save' >
                       <i class="fa-regular fa-floppy-disk"></i>
                     </savebutton>
                   )}
@@ -3233,16 +3233,16 @@ function PurchaseOrder() {
                     </savebutton>
                   )}
                   {delButtonVisible && ['delete', 'all permission'].some(permission => purchaseOrderPermission.includes(permission)) && (
-                    <delbutton className="purbut" onClick={handleDeleteButtonClick} title='delete' >
+                    <delbutton className="purbut" onClick={handleDeleteButtonClick} title='Delete' >
                       <i class="fa-solid fa-trash"></i>
                     </delbutton>
                   )}
                   {printButtonVisible && ['all permission', 'view'].some(permission => purchaseOrderPermission.includes(permission)) && (
-                    <printbutton className="purbut" title="print" onClick={generateReport} >
+                    <printbutton className="purbut" title="Print" onClick={generateReport} >
                       <i class="fa-solid fa-file-pdf"></i>
                     </printbutton>
                   )}
-                  <printbutton className="purbut" title='excel' onClick={handleExcelDownload} style={{ display: showExcelButton ? 'block' : 'none' }}>
+                  <printbutton className="purbut" title='Excel' onClick={handleExcelDownload} style={{ display: showExcelButton ? 'block' : 'none' }}>
                     <i class="fa-solid fa-file-excel"></i>
                   </printbutton>
                   <printbutton className="purbut" title='Reload' onClick={handleReload} >
