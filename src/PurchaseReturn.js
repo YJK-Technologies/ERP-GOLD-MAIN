@@ -1556,40 +1556,133 @@ function PurchaseReturn() {
   };
 
 
+  // const handleExcelDownload = () => {
+  //   const filteredRowData = rowData.filter(row => row.returnQty > 0 && row.totalReturnAmount > 0 && row.purchaseAmt > 0);
+  //   const filteredRowDataTax = rowDataTax.filter(taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0);
+
+  //   const headerData = [{
+  //     company_code: sessionStorage.getItem('selectedCompanyCode'),
+  //     vendor_code: vendorcode,
+  //     pay_type: payType,
+  //     purchase_type: purchaseType,
+  //     Entry_date: entryDate,
+  //     transaction_no: purch_autono.toString(),
+  //     transaction_date: transactionDate,
+  //     purchase_amount_returne: parseFloat(TotalBillAmount),
+  //     tax_amount: parseFloat(TotalTaxAmount),
+  //     total_amount: parseFloat(TotalPurchaseAmount),
+  //     Return_date: returnDate,
+  //     return_reason: returnreason,
+  //     return_person: returnperson,
+  //     vendor_name: vendor_name,
+  //     rounded_off: parseFloat(round_difference),
+  //   }];
+
+  //   const headerSheet = XLSX.utils.json_to_sheet(headerData);
+  //   const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
+  //   const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
+
+  //   const workbook = XLSX.utils.book_new();
+  //   XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+  //   XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
+  //   XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Tax Details Data");
+
+  //   XLSX.writeFile(workbook, "Purchase_Return_data.xlsx");
+  // };
+
   const handleExcelDownload = () => {
-    const filteredRowData = rowData.filter(row => row.returnQty > 0 && row.totalReturnAmount > 0 && row.purchaseAmt > 0);
-    const filteredRowDataTax = rowDataTax.filter(taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0);
+  const filteredRowData = rowData.filter(
+    row =>
+      row.returnQty > 0 &&
+      row.totalReturnAmount > 0 &&
+      row.purchaseAmt > 0
+  );
 
-    const headerData = [{
-      company_code: sessionStorage.getItem('selectedCompanyCode'),
-      vendor_code: vendorcode,
-      pay_type: payType,
-      purchase_type: purchaseType,
-      Entry_date: entryDate,
-      transaction_no: purch_autono.toString(),
-      transaction_date: transactionDate,
-      purchase_amount_returne: parseFloat(TotalBillAmount),
-      tax_amount: parseFloat(TotalTaxAmount),
-      total_amount: parseFloat(TotalPurchaseAmount),
-      Return_date: returnDate,
-      return_reason: returnreason,
-      return_person: returnperson,
-      vendor_name: vendor_name,
-      rounded_off: parseFloat(round_difference),
-    }];
+  const filteredRowDataTax = rowDataTax.filter(
+    taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0
+  );
 
-    const headerSheet = XLSX.utils.json_to_sheet(headerData);
-    const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
-    const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
+  const headerData = [{
+    "Vendor Code": vendorcode,
+    "Vendor Name": vendor_name,
+    "Pay Type": payType,
+    "Purchase Type": purchaseType,
+    "Entry Date": entryDate,
+    "Transaction No": purch_autono.toString(),
+    "Transaction Date": transactionDate,
+    "Return Date": returnDate,
+    "Return Reason": returnreason,
+    "Return Person": returnperson,
+    "Purchase Return Amount": parseFloat(TotalBillAmount),
+    "Tax Amount": parseFloat(TotalTaxAmount),
+    "Total Amount": parseFloat(TotalPurchaseAmount),
+    "Rounded Off": parseFloat(round_difference),
+  }];
 
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
-    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
-    XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Tax Details Data");
+  // Header Sheet
+  const headerSheet = XLSX.utils.aoa_to_sheet([
+    ["Purchase Return"],
+    [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+    [],
+  ]);
 
-    XLSX.writeFile(workbook, "Purchase_Return_data.xlsx");
+  XLSX.utils.sheet_add_json(headerSheet, headerData, {
+    origin: "A4",
+  });
+
+  // Merge Heading
+  headerSheet["!merges"] = [
+    {
+      s: { r: 0, c: 0 },
+      e: { r: 0, c: 9 },
+    },
+    {
+      s: { r: 1, c: 0 },
+      e: { r: 1, c: 9 },
+    },
+  ];
+
+  // Detail Sheets
+  const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
+  const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
+
+  // Auto Fit Function
+  const autoFitColumns = (worksheet, data) => {
+    if (!data || data.length === 0) return;
+
+    const cols = [];
+
+    data.forEach((row) => {
+      Object.keys(row).forEach((key, i) => {
+        const value = row[key] == null ? "" : row[key].toString();
+
+        cols[i] = Math.max(
+          cols[i] || key.length,
+          key.length,
+          value.length
+        );
+      });
+    });
+
+    worksheet["!cols"] = cols.map(width => ({
+      wch: width + 5,
+    }));
   };
 
+  // Apply Auto Width
+  autoFitColumns(headerSheet, headerData);
+  autoFitColumns(rowDataSheet, filteredRowData);
+  autoFitColumns(rowDataTaxSheet, filteredRowDataTax);
+
+  // Workbook
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+  XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
+  XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Tax Details");
+
+  XLSX.writeFile(workbook, "Purchase_Return_Data.xlsx");
+  };
+  
   const handleChangeStatus = (selectedOption) => {
     setSelectedStatus(selectedOption);
     console.log("Selected option:", selectedOption);

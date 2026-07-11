@@ -1731,78 +1731,192 @@ function Quotation() {
     setFinancialYearEnd(financialYearEndDate);
   }, []);
 
+  // const handleExcelDownload = () => {
+  //   const headerData = [
+  //     {
+  //       "Entry Date": entryDate,
+  //       "Transaction No": transactionNo,
+  //       "Company Code": sessionStorage.getItem("selectedCompanyCode"),
+  //       "Customer Code": headerRowData[0].billTo,
+  //       "Customer Name": headerRowData[1].billTo,
+  //       "Customer Address 1": headerRowData[2].billTo,
+  //       "Customer Address 2": headerRowData[3].billTo,
+  //       "Customer Address 3": headerRowData[4].billTo,
+  //       "Customer Address 4": headerRowData[5].billTo,
+  //       "Customer State": headerRowData[6].billTo,
+  //       "Customer Country": headerRowData[7].billTo,
+  //       "Customer Mobile No": headerRowData[8].billTo,
+  //       "Customer GST No": headerRowData[9].billTo,
+  //       "Contact Person": headerRowData[10].billTo,
+  //       "Purchase Amount": TotalPurchase,
+  //       "Tax Amount": TotalTax,
+  //       "Rounded Off": round_difference,
+  //       "Total Amount": TotalBill,
+  //     },
+  //   ];
+
+  //   const itemData = rowData
+  //     .filter((row) => row.itemCode && row.itemName && row.purchaseQty > 0)
+  //     .map((row) => ({
+  //       "Entry Date": entryDate,
+  //       "Transaction No": transactionNo,
+  //       "Customer Name": headerRowData[0].billTo,
+  //       "Item SNo": row.serialNumber,
+  //       "Item Code": row.itemCode,
+  //       "HSN Code": row.HSN_code,
+  //       "Item Name": row.itemName,
+  //       "Bill Qty": row.purchaseQty,
+  //       "Item Amount": row.purchaseAmt,
+  //       "Bill Rate": row.TotalItemAmount,
+  //       "Tax Amount": row.TotalTaxAmount,
+  //     }));
+
+  //   const taxDetailsData = rowDataTax.map((taxRow) => {
+  //     const matchedItem = rowData.find(
+  //       (row) => Number(row.serialNumber) === Number(taxRow.ItemSNO)
+  //     );
+
+  //     return {
+  //       "Transaction No": transactionNo.toString(),
+  //       "Entry Date": entryDate,
+  //       "Item SNo": taxRow.ItemSNO,
+  //       "Item Code": matchedItem ? matchedItem.itemCode : "",
+  //       "Item Name": matchedItem ? matchedItem.itemName : "",
+  //       "Tax SNo": taxRow.TaxSNO,
+  //       "Tax Type": taxRow.TaxType,
+  //       "Tax Amount": taxRow.TaxAmount,
+  //       "Tax Percentage": taxRow.TaxPercentage,
+  //     };
+  //   });
+
+  //   const headerWorksheet = XLSX.utils.json_to_sheet(headerData);
+
+  //   const itemWorksheet = XLSX.utils.json_to_sheet(itemData);
+
+  //   const taxDetailsWorksheet = XLSX.utils.json_to_sheet(taxDetailsData);
+
+  //   const workbook = XLSX.utils.book_new();
+
+  //   XLSX.utils.book_append_sheet(workbook, headerWorksheet, "Header Data");
+  //   XLSX.utils.book_append_sheet(workbook, itemWorksheet, "Detail Data");
+  //   XLSX.utils.book_append_sheet(workbook, taxDetailsWorksheet, "Tax Details");
+
+  //   XLSX.writeFile(workbook, "Quotation.xlsx");
+  // };
+
   const handleExcelDownload = () => {
-    const headerData = [
-      {
-        "Entry Date": entryDate,
-        "Transaction No": transactionNo,
-        "Company Code": sessionStorage.getItem("selectedCompanyCode"),
-        "Customer Code": headerRowData[0].billTo,
-        "Customer Name": headerRowData[1].billTo,
-        "Customer Address 1": headerRowData[2].billTo,
-        "Customer Address 2": headerRowData[3].billTo,
-        "Customer Address 3": headerRowData[4].billTo,
-        "Customer Address 4": headerRowData[5].billTo,
-        "Customer State": headerRowData[6].billTo,
-        "Customer Country": headerRowData[7].billTo,
-        "Customer Mobile No": headerRowData[8].billTo,
-        "Customer GST No": headerRowData[9].billTo,
-        "Contact Person": headerRowData[10].billTo,
-        "Purchase Amount": TotalPurchase,
-        "Tax Amount": TotalTax,
-        "Rounded Off": round_difference,
-        "Total Amount": TotalBill,
-      },
-    ];
+  const headerData = [{
+    "Entry Date": entryDate,
+    "Transaction No": transactionNo,
+    "Customer Code": headerRowData[0].billTo,
+    "Customer Name": headerRowData[1].billTo,
+    "Customer Address 1": headerRowData[2].billTo,
+    "Customer Address 2": headerRowData[3].billTo,
+    "Customer Address 3": headerRowData[4].billTo,
+    "Customer Address 4": headerRowData[5].billTo,
+    "Customer State": headerRowData[6].billTo,
+    "Customer Country": headerRowData[7].billTo,
+    "Customer Mobile No": headerRowData[8].billTo,
+    "Customer GST No": headerRowData[9].billTo,
+    "Contact Person": headerRowData[10].billTo,
+    "Purchase Amount": TotalPurchase,
+    "Tax Amount": TotalTax,
+    "Rounded Off": round_difference,
+    "Total Amount": TotalBill,
+  }];
 
-    const itemData = rowData
-      .filter((row) => row.itemCode && row.itemName && row.purchaseQty > 0)
-      .map((row) => ({
-        "Entry Date": entryDate,
-        "Transaction No": transactionNo,
-        "Customer Name": headerRowData[0].billTo,
-        "Item SNo": row.serialNumber,
-        "Item Code": row.itemCode,
-        "HSN Code": row.HSN_code,
-        "Item Name": row.itemName,
-        "Bill Qty": row.purchaseQty,
-        "Item Amount": row.purchaseAmt,
-        "Bill Rate": row.TotalItemAmount,
-        "Tax Amount": row.TotalTaxAmount,
-      }));
+  const itemData = rowData
+    .filter(row => row.itemCode && row.itemName && row.purchaseQty > 0)
+    .map(row => ({
+      "Entry Date": entryDate,
+      "Transaction No": transactionNo,
+      "Customer Name": headerRowData[1].billTo,
+      "Item SNo": row.serialNumber,
+      "Item Code": row.itemCode,
+      "HSN Code": row.HSN_code,
+      "Item Name": row.itemName,
+      "Bill Qty": row.purchaseQty,
+      "Item Amount": row.purchaseAmt,
+      "Bill Rate": row.TotalItemAmount,
+      "Tax Amount": row.TotalTaxAmount,
+    }));
 
-    const taxDetailsData = rowDataTax.map((taxRow) => {
-      const matchedItem = rowData.find(
-        (row) => Number(row.serialNumber) === Number(taxRow.ItemSNO)
-      );
+  const taxDetailsData = rowDataTax.map(taxRow => {
+    const matchedItem = rowData.find(
+      row => Number(row.serialNumber) === Number(taxRow.ItemSNO)
+    );
 
-      return {
-        "Transaction No": transactionNo.toString(),
-        "Entry Date": entryDate,
-        "Item SNo": taxRow.ItemSNO,
-        "Item Code": matchedItem ? matchedItem.itemCode : "",
-        "Item Name": matchedItem ? matchedItem.itemName : "",
-        "Tax SNo": taxRow.TaxSNO,
-        "Tax Type": taxRow.TaxType,
-        "Tax Amount": taxRow.TaxAmount,
-        "Tax Percentage": taxRow.TaxPercentage,
-      };
+    return {
+      "Transaction No": transactionNo.toString(),
+      "Entry Date": entryDate,
+      "Item SNo": taxRow.ItemSNO,
+      "Item Code": matchedItem ? matchedItem.itemCode : "",
+      "Item Name": matchedItem ? matchedItem.itemName : "",
+      "Tax SNo": taxRow.TaxSNO,
+      "Tax Type": taxRow.TaxType,
+      "Tax Amount": taxRow.TaxAmount,
+      "Tax Percentage": taxRow.TaxPercentage,
+    };
+  });
+
+  // Header Sheet
+  const headerWorksheet = XLSX.utils.aoa_to_sheet([
+    ["Quotation"],
+    [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+    [],
+  ]);
+
+  XLSX.utils.sheet_add_json(headerWorksheet, headerData, {
+    origin: "A4",
+  });
+
+  // Merge Heading
+  headerWorksheet["!merges"] = [
+    { s: { r: 0, c: 0 }, e: { r: 0, c: 9 } },
+    { s: { r: 1, c: 0 }, e: { r: 1, c: 9 } },
+  ];
+
+  // Detail Sheets
+  const itemWorksheet = XLSX.utils.json_to_sheet(itemData);
+  const taxDetailsWorksheet = XLSX.utils.json_to_sheet(taxDetailsData);
+
+  // Auto Fit Function
+  const autoFitColumns = (worksheet, data) => {
+    if (!data || data.length === 0) return;
+
+    const cols = [];
+
+    data.forEach(row => {
+      Object.keys(row).forEach((key, i) => {
+        const value = row[key] == null ? "" : row[key].toString();
+
+        cols[i] = Math.max(
+          cols[i] || key.length,
+          key.length,
+          value.length
+        );
+      });
     });
 
-    const headerWorksheet = XLSX.utils.json_to_sheet(headerData);
-
-    const itemWorksheet = XLSX.utils.json_to_sheet(itemData);
-
-    const taxDetailsWorksheet = XLSX.utils.json_to_sheet(taxDetailsData);
-
-    const workbook = XLSX.utils.book_new();
-
-    XLSX.utils.book_append_sheet(workbook, headerWorksheet, "Header Data");
-    XLSX.utils.book_append_sheet(workbook, itemWorksheet, "Detail Data");
-    XLSX.utils.book_append_sheet(workbook, taxDetailsWorksheet, "Tax Details");
-
-    XLSX.writeFile(workbook, "Quotation.xlsx");
+    worksheet["!cols"] = cols.map(width => ({
+      wch: width + 5,
+    }));
   };
+
+  // Apply Auto Width
+  autoFitColumns(headerWorksheet, headerData);
+  autoFitColumns(itemWorksheet, itemData);
+  autoFitColumns(taxDetailsWorksheet, taxDetailsData);
+
+  // Workbook
+  const workbook = XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(workbook, headerWorksheet, "Header Data");
+  XLSX.utils.book_append_sheet(workbook, itemWorksheet, "Detail Data");
+  XLSX.utils.book_append_sheet(workbook, taxDetailsWorksheet, "Tax Details");
+
+  XLSX.writeFile(workbook, "Quotation.xlsx");
+};
 
   const handleQuotationData = async (data) => {
     if (data && data.length > 0) {

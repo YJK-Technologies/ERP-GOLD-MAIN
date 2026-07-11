@@ -6,30 +6,32 @@ import "ag-grid-enterprise";
 import "./apps.css";
 import "./input.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
-import Select from 'react-select'
-import * as XLSX from 'xlsx';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
+import Select from "react-select";
+import * as XLSX from "xlsx";
 import AdjustmentPopup from "./AdjustmentPopup";
 import SalesItemPopup from "./ItemPopup";
-import { showConfirmationToast } from './ToastConfirmation';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import labels from './Labels';
-import LoadingScreen from './Loading';
+import { showConfirmationToast } from "./ToastConfirmation";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import labels from "./Labels";
+import LoadingScreen from "./Loading";
 
-const config = require('./Apiconfig');
+const config = require("./Apiconfig");
 
 function AdjustmentGrid() {
-  const [rowData, setRowData] = useState([{ Item_SNo: 1, item_code: '', qty: 0 }]);
+  const [rowData, setRowData] = useState([
+    { Item_SNo: 1, item_code: "", qty: 0 },
+  ]);
   const [transaction_date, settransaction_date] = useState("");
   const [transaction_type, settransaction_type] = useState("");
   const [transaction_no, settransaction_no] = useState("");
   const [Transactiondrop, setTransactiondrop] = useState([]);
-  const [selectedTransaction, setselectedTransaction] = useState('');
+  const [selectedTransaction, setselectedTransaction] = useState("");
   // const [Transdrop, setTransdrop] = useState([]);
-  const [financialYearStart, setFinancialYearStart] = useState('');
-  const [financialYearEnd, setFinancialYearEnd] = useState('');
+  const [financialYearStart, setFinancialYearStart] = useState("");
+  const [financialYearEnd, setFinancialYearEnd] = useState("");
   const [error, setError] = useState("");
   const [deleteError, setDeleteError] = useState("");
   const [showExcelButton, setShowExcelButton] = useState(false);
@@ -37,19 +39,24 @@ function AdjustmentGrid() {
   const [globalItem, setGlobalItem] = useState(null);
   const [global, setGlobal] = useState(null);
   const [isAdjustmentDataRun, setIsAdjustmentDataRun] = useState(false);
-  const [loading, setLoading] = useState('');
+  const [loading, setLoading] = useState("");
   const [additionalData, setAdditionalData] = useState({
-    modified_by: '',
-    created_by: '',
-    modified_date: '',
-    created_date: ''
+    modified_by: "",
+    created_by: "",
+    modified_date: "",
+    created_date: "",
   });
+  const [gridApi, setGridApi] = useState(null);
+
+  const onGridReady = (params) => {
+    setGridApi(params.api);
+  };
 
   //code added by Harish  purpose of set user permisssion
-  const permissions = JSON.parse(sessionStorage.getItem('permissions')) || {};
+  const permissions = JSON.parse(sessionStorage.getItem("permissions")) || {};
   const adjusmentPermission = permissions
-    .filter(permission => permission.screen_type === 'Adjustment')
-    .map(permission => permission.permission_type.toLowerCase());
+    .filter((permission) => permission.screen_type === "Adjustment")
+    .map((permission) => permission.permission_type.toLowerCase());
 
   // useEffect(() => {
   //   const company_code = sessionStorage.getItem('selectedCompanyCode');
@@ -68,18 +75,18 @@ function AdjustmentGrid() {
   // }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/Transaction`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setTransactiondrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   const filteredOptionTransaction = Transactiondrop.map((option) => ({
@@ -89,7 +96,7 @@ function AdjustmentGrid() {
 
   const handleChangetransaction = (selectedTransaction) => {
     setselectedTransaction(selectedTransaction);
-    settransaction_type(selectedTransaction ? selectedTransaction.value : '');
+    settransaction_type(selectedTransaction ? selectedTransaction.value : "");
   };
 
   useEffect(() => {
@@ -106,26 +113,30 @@ function AdjustmentGrid() {
       endYear = currentYear;
     }
 
-    const financialYearStartDate = new Date(startYear, 3, 1).toISOString().split('T')[0]; // April 1
-    const financialYearEndDate = new Date(endYear, 2, 31).toISOString().split('T')[0]; // March 31
+    const financialYearStartDate = new Date(startYear, 3, 1)
+      .toISOString()
+      .split("T")[0]; // April 1
+    const financialYearEndDate = new Date(endYear, 2, 31)
+      .toISOString()
+      .split("T")[0]; // March 31
 
     setFinancialYearStart(financialYearStartDate);
     setFinancialYearEnd(financialYearEndDate);
   }, []);
 
   const handleClickOpen = (params) => {
-    const GlobalSerialNumber = params.data.Item_SNo
-    setGlobal(GlobalSerialNumber)
-    const GlobalItem = params.data.item_code
-    setGlobalItem(GlobalItem)
+    const GlobalSerialNumber = params.data.Item_SNo;
+    setGlobal(GlobalSerialNumber);
+    const GlobalItem = params.data.item_code;
+    setGlobalItem(GlobalItem);
     setOpen(true);
-    console.log('Opening popup...');
+    console.log("Opening popup...");
   };
 
   function qtyValueSetter(params) {
     const newValue = parseFloat(params.newValue);
     if (isNaN(newValue) || newValue < 0) {
-      toast.warning('Quantity cannot be negative!');
+      toast.warning("Quantity cannot be negative!");
       return false;
     }
     params.data.qty = newValue;
@@ -134,48 +145,54 @@ function AdjustmentGrid() {
 
   const handleDelete = (params) => {
     const serialNumberToDelete = params.data.Item_SNo;
-    let updatedRowData = rowData.filter(row => row.Item_SNo !== serialNumberToDelete);
+    let updatedRowData = rowData.filter(
+      (row) => row.Item_SNo !== serialNumberToDelete,
+    );
     setRowData(updatedRowData);
 
     if (updatedRowData.length === 0) {
       const newRow = {
         Item_SNo: 1,
-        item_code: '',
-        qty: ''
+        item_code: "",
+        qty: "",
       };
       setRowData([newRow]);
-    }
-    else {
+    } else {
       const updatedRowDataWithNewSerials = updatedRowData.map((row, index) => ({
         ...row,
-        Item_SNo: index + 1
+        Item_SNo: index + 1,
       }));
       setRowData(updatedRowDataWithNewSerials);
     }
   };
 
-
   //ITEM CODE TO SEARCH IN AG GRID
   const handleItemCode = async (params) => {
     setLoading(true);
     try {
-      const response = await fetch(`${config.apiBaseUrl}/getItemCodeSalesData`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
+      const response = await fetch(
+        `${config.apiBaseUrl}/getItemCodeSalesData`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            Item_code: params.data.item_code,
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
+          }),
         },
-        body: JSON.stringify({ Item_code: params.data.item_code, company_code: sessionStorage.getItem("selectedCompanyCode") })
-      });
+      );
 
       if (response.ok) {
         const searchData = await response.json();
-        const updatedRowData = rowData.map(row => {
+        const updatedRowData = rowData.map((row) => {
           if (row.item_code === params.data.item_code) {
-            const matchedItem = searchData.find(item => item.id === row.id);
+            const matchedItem = searchData.find((item) => item.id === row.id);
             if (matchedItem) {
               return {
                 ...row,
-                item_code: matchedItem.Item_code
+                item_code: matchedItem.Item_code,
               };
             }
           }
@@ -185,19 +202,19 @@ function AdjustmentGrid() {
         console.log(updatedRowData);
         return true;
       } else if (response.status === 404) {
-        toast.warning('Data not found!', {
+        toast.warning("Data not found!", {
           onClose: () => {
-            const updatedRowData = rowData.map(row => {
+            const updatedRowData = rowData.map((row) => {
               if (row.item_code === params.data.item_code) {
                 return {
                   ...row,
-                  item_code: ''
+                  item_code: "",
                 };
               }
               return row;
             });
             setRowData(updatedRowData);
-          }
+          },
         });
         return false;
       } else {
@@ -214,7 +231,6 @@ function AdjustmentGrid() {
     }
   };
 
-
   const columnDefs = [
     {
       headerName: "S.NO",
@@ -222,21 +238,30 @@ function AdjustmentGrid() {
       editable: true,
       cellStyle: { textAlign: "left" },
       minWidth: 150,
-      editable: "false"
+      editable: "false",
     },
     {
-      headerName: '',
-      field: 'delete',
+      headerName: "",
+      field: "delete",
       editable: false,
       maxWidth: 25,
-      tooltipValueGetter: (p) =>
-        "Delete",
+      tooltipValueGetter: (p) => "Delete",
       onCellClicked: handleDelete,
       cellRenderer: function (params) {
-        return <FontAwesomeIcon icon="fa-solid fa-trash" style={{ cursor: 'pointer', marginRight: "12px" }} title='Delete' />
+        return (
+          <FontAwesomeIcon
+            icon="fa-solid fa-trash"
+            style={{ cursor: "pointer", marginRight: "12px" }}
+            title="Delete"
+          />
+        );
       },
-      cellStyle: { display: 'flex', justifyContent: 'center', alignItems: 'center' },
-      sortable: false
+      cellStyle: {
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      },
+      sortable: false,
     },
     {
       headerName: "Item Code",
@@ -256,15 +281,18 @@ function AdjustmentGrid() {
         const showSearchIcon = isWideEnough;
 
         return (
-          <div className="position-relative d-flex align-items-center" style={{ minHeight: '100%' }}>
+          <div
+            className="position-relative d-flex align-items-center"
+            style={{ minHeight: "100%" }}
+          >
             <div className="flex-grow-1">
               {params.editing ? (
                 <input
                   type="text"
                   className="form-control"
-                  value={params.value || ''}
+                  value={params.value || ""}
                   onChange={(e) => params.setValue(e.target.value)}
-                  style={{ width: '100%' }}
+                  style={{ width: "100%" }}
                 />
               ) : (
                 params.value
@@ -275,12 +303,12 @@ function AdjustmentGrid() {
               <span
                 className="icon searchIcon"
                 style={{
-                  position: 'absolute',
-                  right: '-10px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
+                  position: "absolute",
+                  right: "-10px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
                 }}
-                title='Item Help'
+                title="Item Help"
                 onClick={() => handleClickOpen(params)}
               >
                 <i className="fa fa-search"></i>
@@ -305,17 +333,21 @@ function AdjustmentGrid() {
   const handleItem = async (selectedData) => {
     console.log("Selected Data:", selectedData);
     let updatedRowDataCopy = [...rowData];
-    let highestSerialNumber = updatedRowDataCopy.reduce((max, row) => Math.max(max, row.Item_SNo), 0);
+    let highestSerialNumber = updatedRowDataCopy.reduce(
+      (max, row) => Math.max(max, row.Item_SNo),
+      0,
+    );
 
-    selectedData.map(item => {
-      const existingItemWithSameCode = updatedRowDataCopy.find(row => row.Item_SNo === global && row.item_code === globalItem);
+    selectedData.map((item) => {
+      const existingItemWithSameCode = updatedRowDataCopy.find(
+        (row) => row.Item_SNo === global && row.item_code === globalItem,
+      );
 
       if (existingItemWithSameCode) {
         console.log("if", existingItemWithSameCode);
         existingItemWithSameCode.item_code = item.itemCode;
         return true;
-      }
-      else {
+      } else {
         console.log("else");
         highestSerialNumber += 1;
         const newRow = {
@@ -338,7 +370,10 @@ function AdjustmentGrid() {
       return;
     }
 
-    const hasValidDetails = rowData.some(row => row.item_code && row.item_code.trim() !== '' && Number(row.qty) > 0);
+    const hasValidDetails = rowData.some(
+      (row) =>
+        row.item_code && row.item_code.trim() !== "" && Number(row.qty) > 0,
+    );
 
     if (!hasValidDetails) {
       toast.warning("No valid adjustment details found to save.");
@@ -348,10 +383,10 @@ function AdjustmentGrid() {
 
     try {
       const Header = {
-        company_code: sessionStorage.getItem('selectedCompanyCode'),
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
         transaction_date: transaction_date,
         transaction_type: transaction_type,
-        created_by: sessionStorage.getItem('selectedUserCode')
+        created_by: sessionStorage.getItem("selectedUserCode"),
       };
       const response = await fetch(`${config.apiBaseUrl}/addadjustmenthdr`, {
         method: "POST",
@@ -373,7 +408,6 @@ function AdjustmentGrid() {
         } else {
           toast.warning("Header saved, but failed to save all details.");
         }
-
       } else {
         const errorResponse = await response.json();
         toast.warning(errorResponse.message || "Failed to insert sales data");
@@ -381,23 +415,20 @@ function AdjustmentGrid() {
       }
     } catch (error) {
       console.error("Error inserting data:", error);
-      toast.error('Error inserting data: ' + error.message);
+      toast.error("Error inserting data: " + error.message);
     } finally {
       setLoading(false);
     }
   };
 
-
   const AdjustmnetDetails = async (transaction_no) => {
     try {
-      const validRows = rowData.filter(row =>
-        row.item_code && row.qty > 0
-      );
+      const validRows = rowData.filter((row) => row.item_code && row.qty > 0);
 
       for (const row of validRows) {
         const Details = {
-          company_code: sessionStorage.getItem('selectedCompanyCode'),
-          created_by: sessionStorage.getItem('selectedUserCode'),
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          created_by: sessionStorage.getItem("selectedUserCode"),
           transaction_no: transaction_no,
           transaction_date: transaction_date,
           item_code: row.item_code,
@@ -405,13 +436,16 @@ function AdjustmentGrid() {
           Item_SNo: row.Item_SNo,
         };
 
-        const response = await fetch(`${config.apiBaseUrl}/addadjustmnetdetails`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
+        const response = await fetch(
+          `${config.apiBaseUrl}/addadjustmnetdetails`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(Details),
           },
-          body: JSON.stringify(Details),
-        });
+        );
 
         if (!response.ok) {
           const errorResponse = await response.json();
@@ -422,18 +456,17 @@ function AdjustmentGrid() {
       }
 
       return true;
-
     } catch (error) {
       console.error("Error inserting details:", error);
       toast.error("Error inserting detail data: " + error.message);
       return false;
     }
   };
-  
+
   const handleDeleteButtonClick = async () => {
     if (!transaction_no) {
       setDeleteError(" ");
-      toast.warning('Error: Missing required fields');
+      toast.warning("Error: Missing required fields");
       return;
     }
 
@@ -451,7 +484,7 @@ function AdjustmentGrid() {
               autoClose: false,
               onClose: () => {
                 window.location.reload();
-              }
+              },
             });
           } else {
             const errorMessage =
@@ -465,14 +498,14 @@ function AdjustmentGrid() {
           }
         } catch (error) {
           console.error("Error executing API calls:", error);
-          toast.error('Error inserting data: ' + error.message);
+          toast.error("Error inserting data: " + error.message);
         } finally {
           setLoading(false);
         }
       },
       () => {
         toast.info("Data deleted cancelled.");
-      }
+      },
     );
   };
 
@@ -481,15 +514,22 @@ function AdjustmentGrid() {
       const response = await fetch(`${config.apiBaseUrl}/Adjustmnetdelhdr`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), transaction_no: transaction_no })
+        body: JSON.stringify({
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          transaction_no: transaction_no,
+        }),
       });
       if (response.ok) {
         return true;
       } else {
         const errorResponse = await response.json();
-        return errorResponse.details || errorResponse.message || "Failed to delete header.";
+        return (
+          errorResponse.details ||
+          errorResponse.message ||
+          "Failed to delete header."
+        );
       }
     } catch (error) {
       return "Error deleting header: " + error.message;
@@ -498,18 +538,28 @@ function AdjustmentGrid() {
 
   const AdjustmnetDetailDelete = async () => {
     try {
-      const response = await fetch(`${config.apiBaseUrl}/adjustmnetdeletedetails`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
+      const response = await fetch(
+        `${config.apiBaseUrl}/adjustmnetdeletedetails`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
+            transaction_no: transaction_no,
+          }),
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), transaction_no: transaction_no })
-      });
+      );
       if (response.ok) {
         return true;
       } else {
         const errorResponse = await response.json();
-        return errorResponse.details || errorResponse.message || "Failed to delete detail.";
+        return (
+          errorResponse.details ||
+          errorResponse.message ||
+          "Failed to delete detail."
+        );
       }
     } catch (error) {
       return "Error deleting detail: " + error.message;
@@ -519,7 +569,7 @@ function AdjustmentGrid() {
   const generateReport = async () => {
     if (!transaction_no) {
       setDeleteError(" ");
-      toast.warning('Error: Missing required fields');
+      toast.warning("Error: Missing required fields");
       return;
     }
     setLoading(true);
@@ -530,10 +580,10 @@ function AdjustmentGrid() {
       if (headerData && detailData) {
         console.log("All API calls completed successfully");
 
-        sessionStorage.setItem('ADheaderData', JSON.stringify(headerData));
-        sessionStorage.setItem('ADdetailData', JSON.stringify(detailData));
+        sessionStorage.setItem("ADheaderData", JSON.stringify(headerData));
+        sessionStorage.setItem("ADdetailData", JSON.stringify(detailData));
 
-        window.open('/AdjustmnetPrint', '_blank');
+        window.open("/AdjustmnetPrint", "_blank");
       } else {
         console.log("Failed to fetch some data");
         toast.error("Transaction Number Does Not Exits");
@@ -550,9 +600,12 @@ function AdjustmentGrid() {
       const response = await fetch(`${config.apiBaseUrl}/AdjustmnethdrPrint`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), transaction_no: transaction_no })
+        body: JSON.stringify({
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          transaction_no: transaction_no,
+        }),
       });
 
       if (response.ok) {
@@ -573,9 +626,12 @@ function AdjustmentGrid() {
       const response = await fetch(`${config.apiBaseUrl}/AdjustmnetdetPrint`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), transaction_no: transaction_no })
+        body: JSON.stringify({
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          transaction_no: transaction_no,
+        }),
       });
 
       if (response.ok) {
@@ -592,43 +648,127 @@ function AdjustmentGrid() {
   };
 
   const transformRowData = (data) => {
-    return data.map(row => ({
+    return data.map((row) => ({
       "S.No": row.Item_SNo,
       "Item Code": row.item_code,
       "Quantity ": row.qty.toString(),
     }));
   };
 
-  const handleExcelDownload = () => {
+  // const handleExcelDownload = () => {
 
-    const filteredRowData = rowData.filter(row => row.qty > 0);
+  //   const filteredRowData = rowData.filter(row => row.qty > 0);
 
-    if (rowData.length === 0 || !transaction_no || !transaction_date || !selectedTransaction) {
-      toast.warning('There is no data to export.');
-      return;
-    }
+  //   if (rowData.length === 0 || !transaction_no || !transaction_date || !selectedTransaction) {
+  //     toast.warning('There is no data to export.');
+  //     return;
+  //   }
 
-    const headerData = [{
-      "company code": sessionStorage.getItem('selectedCompanyCode'),
-      "Transaction No": transaction_no,
-      "Transaction Date": transaction_date,
-      "Transaction type": transaction_type
-    }];
+  //   const headerData = [{
+  //     "company code": sessionStorage.getItem('selectedCompanyCode'),
+  //     "Transaction No": transaction_no,
+  //     "Transaction Date": transaction_date,
+  //     "Transaction type": transaction_type
+  //   }];
 
-    const transformedData = transformRowData(filteredRowData);
-    const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
-    const headerSheet = XLSX.utils.json_to_sheet(headerData);
+  //   const transformedData = transformRowData(filteredRowData);
+  //   const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
+  //   const headerSheet = XLSX.utils.json_to_sheet(headerData);
 
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
-    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Adjustment  Details");
+  //   const workbook = XLSX.utils.book_new();
+  //   XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+  //   XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Adjustment  Details");
 
-    XLSX.writeFile(workbook, "Adjustmnet.xlsx");
+  //   XLSX.writeFile(workbook, "Adjustmnet.xlsx");
+  // };
+
+const handleExportToExcel = () => {
+  const filteredData = rowData.filter((row) => row.qty > 0);
+
+  if (
+    filteredData.length === 0 ||
+    !transaction_no ||
+    !transaction_date ||
+    !selectedTransaction
+  ) {
+    toast.warning("There is no data to export.");
+    return;
+  }
+
+  const formatDate = (date) => {
+    if (!date) return "";
+    return new Date(date).toLocaleDateString("en-GB").replace(/\//g, "-");
   };
+console.log(transaction_type)
+  const headerData = [
+    ["Adjustment Report"],
+    [`Company Code: ${sessionStorage.getItem("selectedCompanyCode")}`],
+    [`Transaction No: ${transaction_no}`],
+    [`Transaction Date: ${formatDate(transaction_date)}`],
+    [`Transaction Type: ${transaction_type?.label || ""}`],
+    [],
+  ];
 
+  // Grid-la visible columns mattum
+  const displayedColumns = gridApi
+    .getAllDisplayedColumns()
+    .map((col) => col.getColDef());
+
+  const exportData = [];
+
+  // Grid-la filter & sort apply aana data exact-a export aagum
+  gridApi.forEachNodeAfterFilterAndSort((node) => {
+    if (node.data.qty <= 0) return; // qty > 0 mattum
+
+    const row = {};
+
+    displayedColumns.forEach((col) => {
+      let value = node.data?.[col.field];
+
+      if (
+        ["transaction_date", "created_date", "date"].includes(col.field)
+      ) {
+        value = value ? formatDate(value) : "";
+      }
+
+      row[col.headerName] = value ?? "";
+    });
+
+    exportData.push(row);
+  });
+
+  const worksheet = XLSX.utils.aoa_to_sheet(headerData);
+
+  XLSX.utils.sheet_add_json(worksheet, exportData, {
+    origin: "A7",
+  });
+
+  // Auto column width
+  const colWidths = displayedColumns.map((col) => {
+    const headerLength = col.headerName.length;
+
+    const maxDataLength = Math.max(
+      ...exportData.map((row) =>
+        row[col.headerName]
+          ? row[col.headerName].toString().length
+          : 0
+      ),
+      headerLength
+    );
+
+    return { wch: maxDataLength + 5 };
+  });
+
+  worksheet["!cols"] = colWidths;
+
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Adjustment Report");
+
+  XLSX.writeFile(workbook, "Adjustment_Report.xlsx");
+};
   const handleAddRow = () => {
     const Item_SNo = rowData.length + 1;
-    const newRow = { Item_SNo, item_code: '', qty: 0 };
+    const newRow = { Item_SNo, item_code: "", qty: 0 };
     setRowData([...rowData, newRow]);
   };
 
@@ -636,7 +776,7 @@ function AdjustmentGrid() {
     if (rowData.length > 0) {
       const updatedRowData = rowData.slice(0, -1);
       if (updatedRowData.length === 0) {
-        setRowData([{ Item_SNo: '', item_code: '', qty: 0 }]);
+        setRowData([{ Item_SNo: "", item_code: "", qty: 0 }]);
       } else {
         setRowData(updatedRowData);
       }
@@ -646,14 +786,14 @@ function AdjustmentGrid() {
   const formatDate = (isoDateString) => {
     const date = new Date(isoDateString);
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleadjustment(transaction_no)
+    if (e.key === "Enter") {
+      handleadjustment(transaction_no);
     }
   };
 
@@ -663,9 +803,12 @@ function AdjustmentGrid() {
       const response = await fetch(`${config.apiBaseUrl}/getadjustmentdata`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ transaction_no: code, company_code: sessionStorage.getItem("selectedCompanyCode") })
+        body: JSON.stringify({
+          transaction_no: code,
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+        }),
       });
 
       if (response.ok) {
@@ -679,39 +822,54 @@ function AdjustmentGrid() {
         if (searchData.Header && searchData.Header.length > 0) {
           const item = searchData.Header[0];
           settransaction_date(formatDate(item.transaction_date));
-          const selectedTransaction = filteredOptionTransaction.find(option => option.value === item.transaction_type);
+          const selectedTransaction = filteredOptionTransaction.find(
+            (option) => option.value === item.transaction_type,
+          );
           setselectedTransaction(selectedTransaction);
-          settransaction_type(selectedTransaction)
+          settransaction_type(selectedTransaction);
         } else {
           console.log("Header Data is empty or not found");
-          settransaction_date('');
-          settransaction_no('');
-          settransaction_type('')
+          settransaction_date("");
+          settransaction_no("");
+          settransaction_type("");
         }
 
         if (searchData.Detail && searchData.Detail.length > 0) {
-          const updatedRowData = searchData.Detail.map(item => {
+          const updatedRowData = searchData.Detail.map((item) => {
             return {
               Item_SNo: item.Item_SNo,
               item_code: item.item_code,
-              qty: item.qty
+              qty: item.qty,
             };
           });
 
           setRowData(updatedRowData);
         } else {
           console.log("Detail Data is empty or not found");
-          setRowData([{ Item_SNo: 1, item_code: '', qty: 0 }]);
+          setRowData([{ Item_SNo: 1, item_code: "", qty: 0 }]);
         }
 
-        console.log("data fetched successfully")
+        console.log("data fetched successfully");
       } else if (response.status === 404) {
-        toast.warning('Data not found');
-        settransaction_date('');
-        settransaction_no('');
-        settransaction_type('');
-        setRowData([{ serialNumber: 1, itemCode: '', itemName: '', warehouse: '', department: '', quantityIssued: '', reasonForIssuance: '', issuedBy: '', approvalStatus: '', actionTaken: '', notes: '' }]);
-
+        toast.warning("Data not found");
+        settransaction_date("");
+        settransaction_no("");
+        settransaction_type("");
+        setRowData([
+          {
+            serialNumber: 1,
+            itemCode: "",
+            itemName: "",
+            warehouse: "",
+            department: "",
+            quantityIssued: "",
+            reasonForIssuance: "",
+            issuedBy: "",
+            approvalStatus: "",
+            actionTaken: "",
+            notes: "",
+          },
+        ]);
       } else {
         const errorResponse = await response.json();
         console.error(errorResponse.message);
@@ -739,34 +897,36 @@ function AdjustmentGrid() {
 
   const adjustmentData = async (data) => {
     if (data && data.length > 0) {
-      setShowExcelButton(true)
+      setShowExcelButton(true);
       setSaveButtonVisible(false);
       // setUpdateButtonVisible(true);
 
       const [{ transactionNo, transactionDate, transactionType }] = data;
 
-      const No = document.getElementById('transactionNO');
+      const No = document.getElementById("transactionNO");
       if (No) {
         No.value = transactionNo;
         settransaction_no(transactionNo);
       } else {
-        console.error('transactionNO element not found');
+        console.error("transactionNO element not found");
       }
 
-      const Date = document.getElementById('transactionDate');
+      const Date = document.getElementById("transactionDate");
       if (Date) {
         Date.value = transactionDate;
         settransaction_date(formatDate(transactionDate));
       } else {
-        console.error('transactionDate element not found');
+        console.error("transactionDate element not found");
       }
 
-      const transactiontype = document.getElementById('transactionType');
+      const transactiontype = document.getElementById("transactionType");
       if (transactiontype) {
-        const selectedTransaction = filteredOptionTransaction.find(option => option.value === transactionType);
-        setselectedTransaction(selectedTransaction)
+        const selectedTransaction = filteredOptionTransaction.find(
+          (option) => option.value === transactionType,
+        );
+        setselectedTransaction(selectedTransaction);
       } else {
-        console.error('entry element not found');
+        console.error("entry element not found");
       }
 
       await AdjustmentDetail(transactionNo);
@@ -781,23 +941,23 @@ function AdjustmentGrid() {
       const response = await fetch(`${config.apiBaseUrl}/AdjustmentDetails`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ transaction_no: transactionNo })
+        body: JSON.stringify({ transaction_no: transactionNo }),
       });
 
       if (response.ok) {
         const searchData = await response.json();
         const newRowData = [];
-        searchData.forEach(item => {
+        searchData.forEach((item) => {
           const { Item_SNo, item_code, qty } = item;
           newRowData.push({
             Item_SNo: Item_SNo,
             item_code: item_code,
-            qty: qty
+            qty: qty,
           });
         });
-        setRowData(newRowData)
+        setRowData(newRowData);
       } else if (response.status === 404) {
         console.log("Data not found");
         setRowData([]);
@@ -893,13 +1053,12 @@ function AdjustmentGrid() {
   //   }
   // };
 
-
   //CODE ITEM CODE TO ADD NEW ROW FUNCTION
   const handleCellValueChanged = (params) => {
     const { colDef, rowIndex, newValue } = params;
     const lastRowIndex = rowData.length - 1;
 
-    if (colDef.field === 'qty') {
+    if (colDef.field === "qty") {
       const quantity = parseFloat(newValue);
 
       if (quantity > 0 && rowIndex === lastRowIndex) {
@@ -907,15 +1066,15 @@ function AdjustmentGrid() {
         const newRowData = {
           Item_SNo,
           item_code: null,
-          qty: 0
+          qty: 0,
         };
-        setRowData(prevRowData => [...prevRowData, newRowData]);
+        setRowData((prevRowData) => [...prevRowData, newRowData]);
       }
     }
   };
 
   //Default Date functionality
-  const currentDate = new Date().toISOString().split('T')[0];
+  const currentDate = new Date().toISOString().split("T")[0];
 
   useEffect(() => {
     settransaction_date(currentDate);
@@ -924,13 +1083,18 @@ function AdjustmentGrid() {
   const handleDateChange = (e) => {
     const selectedDate = e.target.value;
 
-    if (selectedDate >= financialYearStart && selectedDate <= financialYearEnd) {
+    if (
+      selectedDate >= financialYearStart &&
+      selectedDate <= financialYearEnd
+    ) {
       if (selectedDate !== currentDate) {
         console.log("Date has been changed.");
       }
       settransaction_date(selectedDate);
     } else {
-      toast.warning('Transaction date must be between April 1st, 2024 and March 31st, 2025.');
+      toast.warning(
+        "Transaction date must be between April 1st, 2024 and March 31st, 2025.",
+      );
     }
   };
 
@@ -941,34 +1105,71 @@ function AdjustmentGrid() {
   return (
     <div className="container-fluid Topnav-screen">
       {loading && <LoadingScreen />}
-      <ToastContainer position="top-right" className="toast-design" theme="colored" />
+      <ToastContainer
+        position="top-right"
+        className="toast-design"
+        theme="colored"
+      />
       <div>
         <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
           <div class="d-flex justify-content-between">
             <div className="d-flex justify-content-start">
-              <h1 align="left" class="purbut me-5">Adjustment</h1>
+              <h1 align="left" class="purbut me-5">
+                Adjustment
+              </h1>
             </div>
             <div class="d-flex justify-content-end me-3">
-              {saveButtonVisible && ['add', 'all permission'].some(permission => adjusmentPermission.includes(permission)) && (
-                <savebutton className="purbut" onClick={handleSaveButtonClick}
-                  required title="Save"> <i class="fa-regular fa-floppy-disk"></i> </savebutton>
-              )}
-              {['delete', 'all permission'].some(permission => adjusmentPermission.includes(permission)) && (
-                <delbutton onClick={handleDeleteButtonClick} required title="Delete">
+              {saveButtonVisible &&
+                ["add", "all permission"].some((permission) =>
+                  adjusmentPermission.includes(permission),
+                ) && (
+                  <savebutton
+                    className="purbut"
+                    onClick={handleSaveButtonClick}
+                    required
+                    title="Save"
+                  >
+                    {" "}
+                    <i class="fa-regular fa-floppy-disk"></i>{" "}
+                  </savebutton>
+                )}
+              {["delete", "all permission"].some((permission) =>
+                adjusmentPermission.includes(permission),
+              ) && (
+                <delbutton
+                  onClick={handleDeleteButtonClick}
+                  required
+                  title="Delete"
+                >
                   <i class="fa-solid fa-trash"></i>
                 </delbutton>
               )}
-              {showExcelButton && ['all permission', 'view'].some(permission => adjusmentPermission.includes(permission)) && (
-                <printbutton className="purbut" title="Print" onClick={generateReport}>
-                  <i class="fa-solid fa-file-pdf"></i>
-                </printbutton>
-              )}
+              {showExcelButton &&
+                ["all permission", "view"].some((permission) =>
+                  adjusmentPermission.includes(permission),
+                ) && (
+                  <printbutton
+                    className="purbut"
+                    title="Print"
+                    onClick={generateReport}
+                  >
+                    <i class="fa-solid fa-file-pdf"></i>
+                  </printbutton>
+                )}
               {showExcelButton && (
-                <printbutton className="purbut" title='Excel' onClick={handleExcelDownload}>
+                <printbutton
+                  className="purbut"
+                  title="Excel"
+                  onClick={handleExportToExcel}
+                >
                   <i class="fa-solid fa-file-excel"></i>
                 </printbutton>
               )}
-              <printbutton className="purbut" title='Reload' onClick={handleReload}>
+              <printbutton
+                className="purbut"
+                title="Reload"
+                onClick={handleReload}
+              >
                 <i class="fa-solid fa-arrow-rotate-right"></i>
               </printbutton>
             </div>
@@ -976,16 +1177,25 @@ function AdjustmentGrid() {
           <div class="mobileview">
             <div class="d-flex justify-content-between">
               <div className="d-flex justify-content-start text-start">
-                <h1 align="left" className="h1">Adjustment</h1>
+                <h1 align="left" className="h1">
+                  Adjustment
+                </h1>
               </div>
               <div class="dropdown mt-1 ms-4" style={{ marginLeft: 0 }}>
-                <button class="btn btn-primary dropdown-toggle p-1 ms-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <button
+                  class="btn btn-primary dropdown-toggle p-1 ms-3"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
                   <i class="fa-solid fa-list"></i>
                 </button>
                 <ul class="dropdown-menu menu">
                   {saveButtonVisible && (
                     <li class="iconbutton d-flex justify-content-center text-success">
-                      {['add', 'all permission'].some(permission => adjusmentPermission.includes(permission)) && (
+                      {["add", "all permission"].some((permission) =>
+                        adjusmentPermission.includes(permission),
+                      ) && (
                         <icon class="icon" onClick={handleSaveButtonClick}>
                           <i class="fa-regular fa-floppy-disk"></i>
                         </icon>
@@ -993,22 +1203,27 @@ function AdjustmentGrid() {
                     </li>
                   )}
                   <li class="iconbutton  d-flex justify-content-center text-danger">
-                    {['delete', 'all permission'].some(permission => adjusmentPermission.includes(permission)) && (
+                    {["delete", "all permission"].some((permission) =>
+                      adjusmentPermission.includes(permission),
+                    ) && (
                       <icon class="icon" onClick={handleDeleteButtonClick}>
                         <i class="fa-solid fa-trash"></i>
                       </icon>
                     )}
                   </li>
                   <li class="iconbutton  d-flex justify-content-center text-warning">
-                    {showExcelButton && ['all permission', 'view'].some(permission => adjusmentPermission.includes(permission)) && (
-                      <icon class="icon" onClick={generateReport}>
-                        <i class="fa-solid fa-file-pdf"></i>
-                      </icon>
-                    )}
+                    {showExcelButton &&
+                      ["all permission", "view"].some((permission) =>
+                        adjusmentPermission.includes(permission),
+                      ) && (
+                        <icon class="icon" onClick={generateReport}>
+                          <i class="fa-solid fa-file-pdf"></i>
+                        </icon>
+                      )}
                   </li>
                   {showExcelButton && (
                     <li class="iconbutton  d-flex justify-content-center text-info">
-                      <icon class="icon" onClick={handleExcelDownload}>
+                      <icon class="icon" onClick={handleExportToExcel}>
                         <i class="fa-solid fa-file-excel"></i>
                       </icon>
                     </li>
@@ -1027,8 +1242,14 @@ function AdjustmentGrid() {
           <div className="row ms-3 me-3">
             <div className="col-md-3 form-group mb-2">
               <div class="exp-form-floating">
-                <label for="rolname" className={`${deleteError && !transaction_no ? 'red' : ''}`}>
-                  Transaction No{isAdjustmentDataRun && <span className="text-danger">*</span>}
+                <label
+                  for="rolname"
+                  className={`${deleteError && !transaction_no ? "red" : ""}`}
+                >
+                  Transaction No
+                  {isAdjustmentDataRun && (
+                    <span className="text-danger">*</span>
+                  )}
                 </label>
                 <div class="d-flex justify-content-end">
                   <input
@@ -1036,15 +1257,18 @@ function AdjustmentGrid() {
                     className="exp-input-field form-control justify-content-start"
                     type="text"
                     placeholder=""
-                    required title="Please fill the transaction no here"
+                    required
+                    title="Please fill the transaction no here"
                     value={transaction_no}
                     onKeyPress={handleKeyPress}
                     onChange={(e) => settransaction_no(e.target.value)}
                   />
-                  <div className='position-absolute mt-1 me-2'>
-                    <span className="icon searchIcon"
-                      title='Adjustment Help'
-                      onClick={handleadjustmentbtn}>
+                  <div className="position-absolute mt-1 me-2">
+                    <span
+                      className="icon searchIcon"
+                      title="Adjustment Help"
+                      onClick={handleadjustmentbtn}
+                    >
                       <i class="fa fa-search"></i>
                     </span>
                   </div>
@@ -1053,14 +1277,22 @@ function AdjustmentGrid() {
             </div>
             <div className="col-md-3 form-group mb-2">
               <div class="exp-form-floating">
-                <label for="rolname" className={`${error && !transaction_date ? 'red' : ''}`}>Transaction Date
-                  {!isAdjustmentDataRun && <span className="text-danger">*</span>}</label>
+                <label
+                  for="rolname"
+                  className={`${error && !transaction_date ? "red" : ""}`}
+                >
+                  Transaction Date
+                  {!isAdjustmentDataRun && (
+                    <span className="text-danger">*</span>
+                  )}
+                </label>
                 <input
                   id="transactionDate"
                   className="exp-input-field form-control"
                   type="date"
                   placeholder="Select the Date"
-                  required title="Please fill the transaction date here"
+                  required
+                  title="Please fill the transaction date here"
                   min={financialYearStart}
                   max={financialYearEnd}
                   value={transaction_date}
@@ -1071,36 +1303,45 @@ function AdjustmentGrid() {
             </div>
             <div className="col-md-3 form-group mb-2">
               <div class="exp-form-floating">
-                <label for="tcode" className={`${error && !transaction_type ? 'red' : ''}`}>
-                  Transaction Type{!isAdjustmentDataRun && <span className="text-danger">*</span>}
+                <label
+                  for="tcode"
+                  className={`${error && !transaction_type ? "red" : ""}`}
+                >
+                  Transaction Type
+                  {!isAdjustmentDataRun && (
+                    <span className="text-danger">*</span>
+                  )}
                 </label>
-                 <div title="Select the Transaction Type"> 
-                <Select
-                  id="transactionType"
-                  value={selectedTransaction}
-                  onChange={handleChangetransaction}
-                  options={filteredOptionTransaction}
-                  className="exp-input-field"
-                  placeholder=""
-                  required title="Please select a transaction type here"
-                />
+                <div title="Select the Transaction Type">
+                  <Select
+                    id="transactionType"
+                    value={selectedTransaction}
+                    onChange={handleChangetransaction}
+                    options={filteredOptionTransaction}
+                    className="exp-input-field"
+                    placeholder=""
+                    required
+                    title="Please select a transaction type here"
+                  />
+                </div>
               </div>
             </div>
-            </div>
           </div>
-          <div class="d-flex justify-content-end me-5 mb-2" >
+          <div class="d-flex justify-content-end me-5 mb-2">
             <icon
               title="Add row"
               type="button"
               className="popups-btn"
-              onClick={handleAddRow}>
+              onClick={handleAddRow}
+            >
               <FontAwesomeIcon icon={faPlus} />
             </icon>
             <icon
               title="Less row"
               type="button"
               className="popups-btn"
-              onClick={handleRemoveRow}>
+              onClick={handleRemoveRow}
+            >
               <FontAwesomeIcon icon={faMinus} />
             </icon>
           </div>
@@ -1111,26 +1352,42 @@ function AdjustmentGrid() {
               defaultColDef={{ editable: true, resizable: true, flex: true }}
               pagination={true}
               paginationAutoPageSize={true}
-              onCellValueChanged={async (event) => {
-                handleCellValueChanged(event);
-              }}
+              onCellValueChanged={async (event) => { handleCellValueChanged(event); }}
+              onGridReady={onGridReady}
             />
           </div>
         </div>
       </div>
       <div>
-        <AdjustmentPopup open={open1} handleClose={handleClose} adjustmentData={adjustmentData} />
-        <SalesItemPopup open={open} handleClose={handleClose} handleItem={handleItem} />
+        <AdjustmentPopup
+          open={open1}
+          handleClose={handleClose}
+          adjustmentData={adjustmentData}
+        />
+        <SalesItemPopup
+          open={open}
+          handleClose={handleClose}
+          handleItem={handleItem}
+        />
       </div>
       <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
         <div className="row ms-2">
           <div className="d-flex justify-content-start">
-            <p className="col-md-6">{labels.createdBy}: {additionalData.created_by}</p>
-            <p className="col-md-6">{labels.createdDate}: {additionalData.created_date}</p>
+            <p className="col-md-6">
+              {labels.createdBy}: {additionalData.created_by}
+            </p>
+            <p className="col-md-6">
+              {labels.createdDate}: {additionalData.created_date}
+            </p>
           </div>
           <div className="d-flex justify-content-start">
-            <p className="col-md-6">{labels.modifiedBy}: {additionalData.modified_by}</p>
-            <p className="col-md-6"> {labels.modifiedDate}: {additionalData.modified_date}</p>
+            <p className="col-md-6">
+              {labels.modifiedBy}: {additionalData.modified_by}
+            </p>
+            <p className="col-md-6">
+              {" "}
+              {labels.modifiedDate}: {additionalData.modified_date}
+            </p>
           </div>
         </div>
       </div>

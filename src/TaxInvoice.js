@@ -2757,90 +2757,227 @@ function TaxInvoice() {
     }, []);
 
 
-    const handleExcelDownload = () => {
-        // Prepare Header Data
-        const headerData = [
-            {
-                'Bill Date': bill_date,
-                'Bill No': new_running_no,
-                'Company Code': sessionStorage.getItem('selectedCompanyCode'),
-                'BillTo Customer Code': headerRowData[0].billTo,
-                'BillTo Customer Name': headerRowData[1].billTo,
-                'BillTo Customer Addr 1': headerRowData[2].billTo,
-                'BillTo Customer Addr 2': headerRowData[3].billTo,
-                'BillTo Customer Addr 3': headerRowData[4].billTo,
-                'BillTo Customer Addr 4': headerRowData[5].billTo,
-                'BillTo Customer State': headerRowData[6].billTo,
-                'BillTo Customer Country': headerRowData[7].billTo,
-                'BillTo Customer Mobile No': headerRowData[8].billTo,
-                'BillTo Customer GST No': headerRowData[9].billTo,
-                'BillTo Contact Person': headerRowData[10].billTo,
+    // const handleExcelDownload = () => {
+    //     // Prepare Header Data
+    //     const headerData = [
+    //         {
+    //             'Bill Date': bill_date,
+    //             'Bill No': new_running_no,
+    //             'Company Code': sessionStorage.getItem('selectedCompanyCode'),
+    //             'BillTo Customer Code': headerRowData[0].billTo,
+    //             'BillTo Customer Name': headerRowData[1].billTo,
+    //             'BillTo Customer Addr 1': headerRowData[2].billTo,
+    //             'BillTo Customer Addr 2': headerRowData[3].billTo,
+    //             'BillTo Customer Addr 3': headerRowData[4].billTo,
+    //             'BillTo Customer Addr 4': headerRowData[5].billTo,
+    //             'BillTo Customer State': headerRowData[6].billTo,
+    //             'BillTo Customer Country': headerRowData[7].billTo,
+    //             'BillTo Customer Mobile No': headerRowData[8].billTo,
+    //             'BillTo Customer GST No': headerRowData[9].billTo,
+    //             'BillTo Contact Person': headerRowData[10].billTo,
 
-                'ShipTo Customer Code': headerRowData[0].shipTo,
-                'ShipTo Customer Name': headerRowData[1].shipTo,
-                'ShipTo Customer Addr 1': headerRowData[2].shipTo,
-                'ShipTo Customer Addr 2': headerRowData[3].shipTo,
-                'ShipTo Customer Addr 3': headerRowData[4].shipTo,
-                'ShipTo Customer Addr 4': headerRowData[5].shipTo,
-                'ShipTo Customer State': headerRowData[6].shipTo,
-                'ShipTo Customer Country': headerRowData[7].shipTo,
-                'ShipTo Customer Mobile No': headerRowData[8].shipTo,
-                'ShipTo Customer GST No': headerRowData[9].shipTo,
-                'ShipTo Contact Person': headerRowData[10].shipTo,
-                'Tax Amount': TotalTax,
-                'Rounded Off': round_difference,
-                'Total Amount': TotalBill,
-            }
-        ];
+    //             'ShipTo Customer Code': headerRowData[0].shipTo,
+    //             'ShipTo Customer Name': headerRowData[1].shipTo,
+    //             'ShipTo Customer Addr 1': headerRowData[2].shipTo,
+    //             'ShipTo Customer Addr 2': headerRowData[3].shipTo,
+    //             'ShipTo Customer Addr 3': headerRowData[4].shipTo,
+    //             'ShipTo Customer Addr 4': headerRowData[5].shipTo,
+    //             'ShipTo Customer State': headerRowData[6].shipTo,
+    //             'ShipTo Customer Country': headerRowData[7].shipTo,
+    //             'ShipTo Customer Mobile No': headerRowData[8].shipTo,
+    //             'ShipTo Customer GST No': headerRowData[9].shipTo,
+    //             'ShipTo Contact Person': headerRowData[10].shipTo,
+    //             'Tax Amount': TotalTax,
+    //             'Rounded Off': round_difference,
+    //             'Total Amount': TotalBill,
+    //         }
+    //     ];
 
-        const itemData = rowData.filter(row =>
-            row.productItemCode && row.productItemName && row.qty > 0
-        ).map(row => ({
-            'Bill Date': bill_date,
-            'Bill No': new_running_no,
-            'Customer Name': headerRowData[0].billTo,
-            'S.No': row.serialNumber,
-            'Product / Item Code': row.productItemCode,
-            'Product / Item Name': row.productItemName,
-            'Product Description': row.productDescription,
-            'HSN Code': row.HSNCode,
-            'Qty': row.qty,
-            'unitPrice': row.unitPrice,
-            'Total': row.totalAmount,
-        }));
+    //     const itemData = rowData.filter(row =>
+    //         row.productItemCode && row.productItemName && row.qty > 0
+    //     ).map(row => ({
+    //         'Bill Date': bill_date,
+    //         'Bill No': new_running_no,
+    //         'Customer Name': headerRowData[0].billTo,
+    //         'S.No': row.serialNumber,
+    //         'Product / Item Code': row.productItemCode,
+    //         'Product / Item Name': row.productItemName,
+    //         'Product Description': row.productDescription,
+    //         'HSN Code': row.HSNCode,
+    //         'Qty': row.qty,
+    //         'unitPrice': row.unitPrice,
+    //         'Total': row.totalAmount,
+    //     }));
 
-        const taxDetailsData = rowDataTax.map(taxRow => {
-            const matchedItem = rowData.find(row => Number(row.serialNumber) === Number(taxRow.ItemSNO));
+    //     const taxDetailsData = rowDataTax.map(taxRow => {
+    //         const matchedItem = rowData.find(row => Number(row.serialNumber) === Number(taxRow.ItemSNO));
 
-            return {
-                'Transaction No': new_running_no.toString(),
-                'Entry Date': bill_date,
-                'Item SNo': taxRow.ItemSNO,
-                'Tax SNo': taxRow.TaxSNO,
-                'Item Code': matchedItem ? matchedItem.productItemCode : '',
-                'Item Name': matchedItem ? matchedItem.productItemName : '',
-                'Tax Type': taxRow.taxDetail,
-                'Tax Amount': taxRow.TaxAmount,
-                'Tax Percentage': taxRow.TaxPercentage,
-            };
-        });
+    //         return {
+    //             'Transaction No': new_running_no.toString(),
+    //             'Entry Date': bill_date,
+    //             'Item SNo': taxRow.ItemSNO,
+    //             'Tax SNo': taxRow.TaxSNO,
+    //             'Item Code': matchedItem ? matchedItem.productItemCode : '',
+    //             'Item Name': matchedItem ? matchedItem.productItemName : '',
+    //             'Tax Type': taxRow.taxDetail,
+    //             'Tax Amount': taxRow.TaxAmount,
+    //             'Tax Percentage': taxRow.TaxPercentage,
+    //         };
+    //     });
 
-        const headerWorksheet = XLSX.utils.json_to_sheet(headerData);
+    //     const headerWorksheet = XLSX.utils.json_to_sheet(headerData);
 
-        const itemWorksheet = XLSX.utils.json_to_sheet(itemData);
+    //     const itemWorksheet = XLSX.utils.json_to_sheet(itemData);
 
-        const taxDetailsWorksheet = XLSX.utils.json_to_sheet(taxDetailsData);
+    //     const taxDetailsWorksheet = XLSX.utils.json_to_sheet(taxDetailsData);
 
-        const workbook = XLSX.utils.book_new();
+    //     const workbook = XLSX.utils.book_new();
 
-        XLSX.utils.book_append_sheet(workbook, headerWorksheet, "Header Data");
-        XLSX.utils.book_append_sheet(workbook, itemWorksheet, "Details Data");
-        XLSX.utils.book_append_sheet(workbook, taxDetailsWorksheet, "Tax Details");
+    //     XLSX.utils.book_append_sheet(workbook, headerWorksheet, "Header Data");
+    //     XLSX.utils.book_append_sheet(workbook, itemWorksheet, "Details Data");
+    //     XLSX.utils.book_append_sheet(workbook, taxDetailsWorksheet, "Tax Details");
 
-        XLSX.writeFile(workbook, 'Invoice.xlsx');
-    };
+    //     XLSX.writeFile(workbook, 'Invoice.xlsx');
+    // };
 
     //Deleted Screen
+    
+    const handleExcelDownload = () => {
+
+    // Header Data
+    const headerData = [{
+        "Bill Date": bill_date,
+        "Bill No": new_running_no,
+
+        "BillTo Customer Code": headerRowData[0].billTo,
+        "BillTo Customer Name": headerRowData[1].billTo,
+        "BillTo Customer Addr 1": headerRowData[2].billTo,
+        "BillTo Customer Addr 2": headerRowData[3].billTo,
+        "BillTo Customer Addr 3": headerRowData[4].billTo,
+        "BillTo Customer Addr 4": headerRowData[5].billTo,
+        "BillTo Customer State": headerRowData[6].billTo,
+        "BillTo Customer Country": headerRowData[7].billTo,
+        "BillTo Customer Mobile No": headerRowData[8].billTo,
+        "BillTo Customer GST No": headerRowData[9].billTo,
+        "BillTo Contact Person": headerRowData[10].billTo,
+
+        "ShipTo Customer Code": headerRowData[0].shipTo,
+        "ShipTo Customer Name": headerRowData[1].shipTo,
+        "ShipTo Customer Addr 1": headerRowData[2].shipTo,
+        "ShipTo Customer Addr 2": headerRowData[3].shipTo,
+        "ShipTo Customer Addr 3": headerRowData[4].shipTo,
+        "ShipTo Customer Addr 4": headerRowData[5].shipTo,
+        "ShipTo Customer State": headerRowData[6].shipTo,
+        "ShipTo Customer Country": headerRowData[7].shipTo,
+        "ShipTo Customer Mobile No": headerRowData[8].shipTo,
+        "ShipTo Customer GST No": headerRowData[9].shipTo,
+        "ShipTo Contact Person": headerRowData[10].shipTo,
+
+        "Tax Amount": TotalTax,
+        "Rounded Off": round_difference,
+        "Total Amount": TotalBill,
+    }];
+
+    // Item Details
+    const itemData = rowData
+        .filter(row => row.productItemCode && row.productItemName && row.qty > 0)
+        .map(row => ({
+            "Bill Date": bill_date,
+            "Bill No": new_running_no,
+            "Customer Name": headerRowData[1].billTo,
+            "S.No": row.serialNumber,
+            "Product / Item Code": row.productItemCode,
+            "Product / Item Name": row.productItemName,
+            "Product Description": row.productDescription,
+            "HSN Code": row.HSNCode,
+            "Qty": row.qty,
+            "Unit Price": row.unitPrice,
+            "Total": row.totalAmount,
+        }));
+
+    // Tax Details
+    const taxDetailsData = rowDataTax.map(taxRow => {
+        const matchedItem = rowData.find(
+            row => Number(row.serialNumber) === Number(taxRow.ItemSNO)
+        );
+
+        return {
+            "Transaction No": new_running_no.toString(),
+            "Entry Date": bill_date,
+            "Item SNo": taxRow.ItemSNO,
+            "Tax SNo": taxRow.TaxSNO,
+            "Item Code": matchedItem ? matchedItem.productItemCode : "",
+            "Item Name": matchedItem ? matchedItem.productItemName : "",
+            "Tax Type": taxRow.taxDetail,
+            "Tax Amount": taxRow.TaxAmount,
+            "Tax Percentage": taxRow.TaxPercentage,
+        };
+    });
+
+    // Header Sheet
+    const headerWorksheet = XLSX.utils.aoa_to_sheet([
+        ["Invoice"],
+        [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+        [],
+    ]);
+
+    XLSX.utils.sheet_add_json(headerWorksheet, headerData, {
+        origin: "A4",
+    });
+
+    // Merge Heading
+    headerWorksheet["!merges"] = [
+        {
+            s: { r: 0, c: 0 },
+            e: { r: 0, c: 9 },
+        },
+        {
+            s: { r: 1, c: 0 },
+            e: { r: 1, c: 9 },
+        },
+    ];
+
+    // Detail Sheets
+    const itemWorksheet = XLSX.utils.json_to_sheet(itemData);
+    const taxDetailsWorksheet = XLSX.utils.json_to_sheet(taxDetailsData);
+
+    // Auto Fit
+    const autoFitColumns = (worksheet, data) => {
+        if (!data || data.length === 0) return;
+
+        const cols = [];
+
+        data.forEach(row => {
+            Object.keys(row).forEach((key, i) => {
+                const value = row[key] == null ? "" : row[key].toString();
+
+                cols[i] = Math.max(
+                    cols[i] || key.length,
+                    key.length,
+                    value.length
+                );
+            });
+        });
+
+        worksheet["!cols"] = cols.map(width => ({
+            wch: width + 5,
+        }));
+    };
+
+    // Apply Auto Width
+    autoFitColumns(headerWorksheet, headerData);
+    autoFitColumns(itemWorksheet, itemData);
+    autoFitColumns(taxDetailsWorksheet, taxDetailsData);
+
+    // Workbook
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, headerWorksheet, "Header Data");
+    XLSX.utils.book_append_sheet(workbook, itemWorksheet, "Invoice Details");
+    XLSX.utils.book_append_sheet(workbook, taxDetailsWorksheet, "Tax Details");
+
+    XLSX.writeFile(workbook, "Invoice.xlsx");
+    };
     const [deletedRowData, setDeletedRowData] = useState([]);
     const [deletedRowDataTerms, setDeletedRowDataTerms] = useState([]);
     const [deletedRowDataTax, setDeletedRowDataTax] = useState([]);
