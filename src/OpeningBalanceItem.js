@@ -688,31 +688,104 @@ function OpeningbalanceGrid() {
          }));
        };
      
-       const handleExcelDownload = () => {
-         const filteredRowData = rowData.filter(row => row.Qty > 0);
+      //  const handleExcelDownload = () => {
+      //    const filteredRowData = rowData.filter(row => row.Qty > 0);
      
-         if (rowData.length === 0 || !transaction_no || !transaction_date) {
-           toast.warning('No Data Available');
-           return;
-         }
+      //    if (rowData.length === 0 || !transaction_no || !transaction_date) {
+      //      toast.warning('No Data Available');
+      //      return;
+      //    }
      
-         const headerData = [{
-           "company Code": sessionStorage.getItem('selectedCompanyCode'),
-           "Transaction No": transaction_no,
-           "Transaction Date": transaction_date,
-         }];
+      //    const headerData = [{
+      //      "company Code": sessionStorage.getItem('selectedCompanyCode'),
+      //      "Transaction No": transaction_no,
+      //      "Transaction Date": transaction_date,
+      //    }];
      
-         const transformedData = transformRowData(filteredRowData);
-         const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
-         const headerSheet = XLSX.utils.json_to_sheet(headerData);
+      //    const transformedData = transformRowData(filteredRowData);
+      //    const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
+      //    const headerSheet = XLSX.utils.json_to_sheet(headerData);
      
-         const workbook = XLSX.utils.book_new();
-         XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
-         XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
+      //    const workbook = XLSX.utils.book_new();
+      //    XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+      //    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
      
-         XLSX.writeFile(workbook, "Opening_Item.xlsx");
-       };
- 
+      //    XLSX.writeFile(workbook, "Opening_Item.xlsx");
+      //  };
+
+const handleExcelDownload = () => {
+  const filteredRowData = rowData.filter(row => row.Qty > 0);
+
+  if (rowData.length === 0 || !transaction_no || !transaction_date) {
+    toast.warning("No Data Available");
+    return;
+  }
+
+  const headerData = [{
+    "Transaction No": transaction_no,
+    "Transaction Date": transaction_date,
+  }];
+
+  const transformedData = transformRowData(filteredRowData);
+
+  // Header Sheet
+  const headerSheet = XLSX.utils.aoa_to_sheet([
+    ["Opening Item"],
+    [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+    [],
+  ]);
+
+  XLSX.utils.sheet_add_json(headerSheet, headerData, {
+    origin: "A4",
+  });
+
+  // Merge Heading
+  headerSheet["!merges"] = [
+    {
+      s: { r: 0, c: 0 }, // A1
+      e: { r: 0, c: 7 }, // H1
+    },
+    {
+      s: { r: 1, c: 0 }, // A2
+      e: { r: 1, c: 7 }, // H2
+    },
+  ];
+
+  // Details Sheet
+  const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
+
+  // Auto Fit Function
+  const autoFitColumns = (worksheet, data) => {
+    const cols = [];
+
+    data.forEach((row) => {
+      Object.keys(row).forEach((key, i) => {
+        const value = row[key] == null ? "" : row[key].toString();
+
+        cols[i] = Math.max(
+          cols[i] || key.length,
+          key.length,
+          value.length
+        );
+      });
+    });
+
+    worksheet["!cols"] = cols.map(width => ({
+      wch: width + 5,
+    }));
+  };
+
+  // Apply Auto Width
+  autoFitColumns(headerSheet, headerData);
+  autoFitColumns(rowDataSheet, transformedData);
+
+  // Workbook
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+  XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
+
+  XLSX.writeFile(workbook, "Opening_Item.xlsx");
+}; 
   return (
     <div className="container-fluid Topnav-screen">
       {loading && <LoadingScreen />}

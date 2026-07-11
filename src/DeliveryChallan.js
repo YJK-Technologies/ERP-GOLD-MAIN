@@ -1764,52 +1764,105 @@ function DeliveryChallan() {
     }, []);
 
 
-    const handleExcelDownload = () => {
-        const filteredRowData = rowData.filter(row => row.purchaseQty > 0 && row.TotalItemAmount > 0 && row.unitPrice > 0);
-        const headerData = [{
-            company_code: sessionStorage.getItem('selectedCompanyCode'),
+const handleExcelDownload = () => {
+    const filteredRowData = rowData.filter(
+        row => row.purchaseQty > 0 &&
+               row.TotalItemAmount > 0 &&
+               row.unitPrice > 0
+    );
 
-            'Bill to customer code': headerRowData[0].billTo,
-            'Bill to customer name': headerRowData[1].billTo,
-            'Bill to customer address 1': headerRowData[2].billTo,
-            'Bill to customer address 2': headerRowData[3].billTo,
-            'Bill to customer address 3': headerRowData[4].billTo,
-            'Bill to customer address 4': headerRowData[5].billTo,
-            'Bill to customer state': headerRowData[6].billTo,
-            'Bill to customer country': headerRowData[7].billTo,
-            'Bill to customer mobile no': headerRowData[8].billTo,
-            'Bill to customer GST No': headerRowData[9].billTo,
-            'Bill to customer contact person': headerRowData[10].billTo,
+    const headerData = [{
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
 
-            'Ship to customer code': headerRowData[0].shipTo,
-            'Ship to customer name': headerRowData[1].shipTo,
-            'Ship to customer address 1': headerRowData[2].shipTo,
-            'Ship to customer address 2': headerRowData[3].shipTo,
-            'Ship to customer address 3': headerRowData[4].shipTo,
-            'Ship to customer address 4': headerRowData[5].shipTo,
-            'Ship to customer state': headerRowData[6].shipTo,
-            'Ship to customer country': headerRowData[7].shipTo,
-            'Ship to customer mobile no': headerRowData[8].shipTo,
-            'Ship to customer GST No': headerRowData[9].shipTo,
-            'Ship to customer contact person': headerRowData[10].shipTo,
-            "Transaction No": new_running_no,
-            "Transaction Date": transactionDate,
-            "Purchase Amount": TotalPurchase,
-            "Transport Charges": Totaltransport,
-            "Total Amount": TotalBill,
-            "Rounded Off": round_difference,
-        }];
+        "Bill to customer code": headerRowData[0].billTo,
+        "Bill to customer name": headerRowData[1].billTo,
+        "Bill to customer address 1": headerRowData[2].billTo,
+        "Bill to customer address 2": headerRowData[3].billTo,
+        "Bill to customer address 3": headerRowData[4].billTo,
+        "Bill to customer address 4": headerRowData[5].billTo,
+        "Bill to customer state": headerRowData[6].billTo,
+        "Bill to customer country": headerRowData[7].billTo,
+        "Bill to customer mobile no": headerRowData[8].billTo,
+        "Bill to customer GST No": headerRowData[9].billTo,
+        "Bill to customer contact person": headerRowData[10].billTo,
 
-        const headerSheet = XLSX.utils.json_to_sheet(headerData);
-        const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
+        "Ship to customer code": headerRowData[0].shipTo,
+        "Ship to customer name": headerRowData[1].shipTo,
+        "Ship to customer address 1": headerRowData[2].shipTo,
+        "Ship to customer address 2": headerRowData[3].shipTo,
+        "Ship to customer address 3": headerRowData[4].shipTo,
+        "Ship to customer address 4": headerRowData[5].shipTo,
+        "Ship to customer state": headerRowData[6].shipTo,
+        "Ship to customer country": headerRowData[7].shipTo,
+        "Ship to customer mobile no": headerRowData[8].shipTo,
+        "Ship to customer GST No": headerRowData[9].shipTo,
+        "Ship to customer contact person": headerRowData[10].shipTo,
 
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
-        XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Delivery Challan Details");
+        "Transaction No": new_running_no,
+        "Transaction Date": transactionDate,
+        "Purchase Amount": TotalPurchase,
+        "Transport Charges": Totaltransport,
+        "Total Amount": TotalBill,
+        "Rounded Off": round_difference,
+    }];
 
-        XLSX.writeFile(workbook, "Delivery_Challan.xlsx");
-    };
+    // Header sheet with title
+    const headerSheet = XLSX.utils.aoa_to_sheet([
+        ["Delivery Challan"], // Heading
+        [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+        [],                   // Empty row
+    ]);
 
+   // Header Data starts from Row 4
+XLSX.utils.sheet_add_json(headerSheet, headerData, {
+    origin: "A4",
+});
+    // Merge title across columns (A1:H1)
+    headerSheet["!merges"] = [
+        {
+            s: { r: 0, c: 0 }, // A1
+            e: { r: 0, c: 7 }, // H1
+        },
+    ];
+
+    // Detail Sheet
+    const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
+
+    // Auto adjust column width
+const autoFitColumns = (worksheet, data) => {
+    const cols = [];
+
+    data.forEach(row => {
+        Object.keys(row).forEach((key, i) => {
+            const value = row[key] == null ? "" : row[key].toString();
+
+            cols[i] = Math.max(
+                cols[i] || key.length,
+                key.length,
+                value.length
+            );
+        });
+    });
+
+    worksheet["!cols"] = cols.map(width => ({
+        wch: width + 5 // Extra padding
+    }));
+};
+
+// Apply Auto Width
+autoFitColumns(headerSheet, headerData);
+autoFitColumns(rowDataSheet, filteredRowData);
+
+    // Auto width
+autoFitColumns(headerSheet, headerData);
+autoFitColumns(rowDataSheet, filteredRowData);
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Delivery Challan Details");
+
+    XLSX.writeFile(workbook, "Delivery_Challan.xlsx");
+};
     const handleDcData = async (data) => {
         if (data && data.length > 0) {
             setButtonsVisible(false);

@@ -2298,65 +2298,190 @@ function PurchaseOrder() {
   };
 
 
+  // const handleExcelDownload = () => {
+
+  //   const filteredRowData = rowData.filter(row => row.purchaseQty > 0 && row.TotalItemAmount > 0 && row.purchaseAmt > 0);
+  //   const filteredRowDataTax = rowDataTax.filter(taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0);
+  //   const headerData = [{
+  //     company_code: sessionStorage.getItem('selectedCompanyCode'),
+  //     'Transaction No': transactionNo,
+  //     'Vendor / Customer Code': headerRowData[0].billTo,
+  //     'Vendor / Customer Name': headerRowData[1].billTo,
+  //     'Address 1': headerRowData[2].billTo,
+  //     'Address 2': headerRowData[3].billTo,
+  //     'Address 3': headerRowData[4].billTo,
+  //     'Address 4': headerRowData[5].billTo,
+  //     'State': headerRowData[6].billTo,
+  //     'Country': headerRowData[7].billTo,
+  //     'Mobile No': headerRowData[8].billTo,
+  //     'GST No': headerRowData[9].billTo,
+  //     'Contact Person': headerRowData[10].billTo,
+  //     'Purchase Amount': TotalPurchase,
+  //     'Tax Amount': TotalTax,
+  //     'Rounded Off': round_difference,
+  //     'Total Amount': TotalBill,
+  //   }];
+
+  //   const shipto = [{
+  //     'Transaction No': transactionNo,
+  //     'Vendor / Customer Code': headerRowData[0].shipTo,
+  //     'Vendor / Customer Name': headerRowData[1].shipTo,
+  //     'Address 1': headerRowData[2].shipTo,
+  //     'Address 2': headerRowData[3].shipTo,
+  //     'Address 3': headerRowData[4].shipTo,
+  //     'Address 4': headerRowData[5].shipTo,
+  //     'State': headerRowData[6].shipTo,
+  //     'Country': headerRowData[7].shipTo,
+  //     'Mobile No': headerRowData[8].shipTo,
+  //     'GST No': headerRowData[9].shipTo,
+  //     'Contact Person': headerRowData[10].shipTo,
+  //     'Purchase Amount': TotalPurchase,
+  //     'Tax Amount': TotalTax,
+  //     'Rounded Off': round_difference,
+  //     'Total Amount': TotalBill,
+  //   }];
+
+  //   const headerSheet = XLSX.utils.json_to_sheet(headerData);
+  //   const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
+  //   const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
+  //   const ShipTo = XLSX.utils.json_to_sheet(shipto);
+
+  //   const workbook = XLSX.utils.book_new();
+  //   XLSX.utils.book_append_sheet(workbook, headerSheet, "Bill to Header Data");
+  //   XLSX.utils.book_append_sheet(workbook, ShipTo, "Ship to Header Data");
+  //   XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Purchase Order Details");
+  //   XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Purchase Order Tax Details");
+
+
+  //   XLSX.writeFile(workbook, "purchase_order_data.xlsx");
+
+  // };
+
   const handleExcelDownload = () => {
 
-    const filteredRowData = rowData.filter(row => row.purchaseQty > 0 && row.TotalItemAmount > 0 && row.purchaseAmt > 0);
-    const filteredRowDataTax = rowDataTax.filter(taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0);
-    const headerData = [{
-      company_code: sessionStorage.getItem('selectedCompanyCode'),
-      'Transaction No': transactionNo,
-      'Vendor / Customer Code': headerRowData[0].billTo,
-      'Vendor / Customer Name': headerRowData[1].billTo,
-      'Address 1': headerRowData[2].billTo,
-      'Address 2': headerRowData[3].billTo,
-      'Address 3': headerRowData[4].billTo,
-      'Address 4': headerRowData[5].billTo,
-      'State': headerRowData[6].billTo,
-      'Country': headerRowData[7].billTo,
-      'Mobile No': headerRowData[8].billTo,
-      'GST No': headerRowData[9].billTo,
-      'Contact Person': headerRowData[10].billTo,
-      'Purchase Amount': TotalPurchase,
-      'Tax Amount': TotalTax,
-      'Rounded Off': round_difference,
-      'Total Amount': TotalBill,
-    }];
+  const filteredRowData = rowData.filter(
+    row => row.purchaseQty > 0 &&
+           row.TotalItemAmount > 0 &&
+           row.purchaseAmt > 0
+  );
 
-    const shipto = [{
-      'Transaction No': transactionNo,
-      'Vendor / Customer Code': headerRowData[0].shipTo,
-      'Vendor / Customer Name': headerRowData[1].shipTo,
-      'Address 1': headerRowData[2].shipTo,
-      'Address 2': headerRowData[3].shipTo,
-      'Address 3': headerRowData[4].shipTo,
-      'Address 4': headerRowData[5].shipTo,
-      'State': headerRowData[6].shipTo,
-      'Country': headerRowData[7].shipTo,
-      'Mobile No': headerRowData[8].shipTo,
-      'GST No': headerRowData[9].shipTo,
-      'Contact Person': headerRowData[10].shipTo,
-      'Purchase Amount': TotalPurchase,
-      'Tax Amount': TotalTax,
-      'Rounded Off': round_difference,
-      'Total Amount': TotalBill,
-    }];
+  const filteredRowDataTax = rowDataTax.filter(
+    taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0
+  );
 
-    const headerSheet = XLSX.utils.json_to_sheet(headerData);
-    const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
-    const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
-    const ShipTo = XLSX.utils.json_to_sheet(shipto);
+  const headerData = [{
+    "Transaction No": transactionNo,
+    "Vendor / Customer Code": headerRowData[0].billTo,
+    "Vendor / Customer Name": headerRowData[1].billTo,
+    "Address 1": headerRowData[2].billTo,
+    "Address 2": headerRowData[3].billTo,
+    "Address 3": headerRowData[4].billTo,
+    "Address 4": headerRowData[5].billTo,
+    "State": headerRowData[6].billTo,
+    "Country": headerRowData[7].billTo,
+    "Mobile No": headerRowData[8].billTo,
+    "GST No": headerRowData[9].billTo,
+    "Contact Person": headerRowData[10].billTo,
+    "Purchase Amount": TotalPurchase,
+    "Tax Amount": TotalTax,
+    "Rounded Off": round_difference,
+    "Total Amount": TotalBill,
+  }];
 
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, headerSheet, "Bill to Header Data");
-    XLSX.utils.book_append_sheet(workbook, ShipTo, "Ship to Header Data");
-    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Purchase Order Details");
-    XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Purchase Order Tax Details");
+  const shipToData = [{
+    "Transaction No": transactionNo,
+    "Vendor / Customer Code": headerRowData[0].shipTo,
+    "Vendor / Customer Name": headerRowData[1].shipTo,
+    "Address 1": headerRowData[2].shipTo,
+    "Address 2": headerRowData[3].shipTo,
+    "Address 3": headerRowData[4].shipTo,
+    "Address 4": headerRowData[5].shipTo,
+    "State": headerRowData[6].shipTo,
+    "Country": headerRowData[7].shipTo,
+    "Mobile No": headerRowData[8].shipTo,
+    "GST No": headerRowData[9].shipTo,
+    "Contact Person": headerRowData[10].shipTo,
+    "Purchase Amount": TotalPurchase,
+    "Tax Amount": TotalTax,
+    "Rounded Off": round_difference,
+    "Total Amount": TotalBill,
+  }];
 
+  // Header Sheets
+  const billToSheet = XLSX.utils.aoa_to_sheet([
+    ["Purchase Order - Bill To"],
+    [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+    [],
+  ]);
 
-    XLSX.writeFile(workbook, "purchase_order_data.xlsx");
+  XLSX.utils.sheet_add_json(billToSheet, headerData, {
+    origin: "A4",
+  });
 
+  const shipToSheet = XLSX.utils.aoa_to_sheet([
+    ["Purchase Order - Ship To"],
+    [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+    [],
+  ]);
+
+  XLSX.utils.sheet_add_json(shipToSheet, shipToData, {
+    origin: "A4",
+  });
+
+  // Merge Heading
+  billToSheet["!merges"] = [
+    { s: { r: 0, c: 0 }, e: { r: 0, c: 9 } },
+    { s: { r: 1, c: 0 }, e: { r: 1, c: 9 } },
+  ];
+
+  shipToSheet["!merges"] = [
+    { s: { r: 0, c: 0 }, e: { r: 0, c: 9 } },
+    { s: { r: 1, c: 0 }, e: { r: 1, c: 9 } },
+  ];
+
+  // Detail Sheets
+  const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
+  const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
+
+  // Auto Fit Function
+  const autoFitColumns = (worksheet, data) => {
+    if (!data || data.length === 0) return;
+
+    const cols = [];
+
+    data.forEach(row => {
+      Object.keys(row).forEach((key, i) => {
+        const value = row[key] == null ? "" : row[key].toString();
+
+        cols[i] = Math.max(
+          cols[i] || key.length,
+          key.length,
+          value.length
+        );
+      });
+    });
+
+    worksheet["!cols"] = cols.map(width => ({
+      wch: width + 5,
+    }));
   };
 
+  // Apply Auto Width
+  autoFitColumns(billToSheet, headerData);
+  autoFitColumns(shipToSheet, shipToData);
+  autoFitColumns(rowDataSheet, filteredRowData);
+  autoFitColumns(rowDataTaxSheet, filteredRowDataTax);
+
+  // Workbook
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, billToSheet, "Bill To Header");
+  XLSX.utils.book_append_sheet(workbook, shipToSheet, "Ship To Header");
+  XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Purchase Order Details");
+  XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Purchase Order Tax Details");
+
+  XLSX.writeFile(workbook, "Purchase_Order_Data.xlsx");
+  };
+  
   const handlePoData = async (data) => {
     if (data && data.length > 0) {
       setButtonsVisible(false);
