@@ -1592,40 +1592,131 @@ function SalesReturn() {
     }
   };
 
-  const handleExcelDownload = () => {
-    const filteredRowData = rowData.filter(row => row.returnQty > 0 && row.totalReturnAmt > 0 && row.itemAmt > 0);
-    const filteredRowDataTax = rowDataTax.filter(taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0);
+  // const handleExcelDownload = () => {
+  //   const filteredRowData = rowData.filter(row => row.returnQty > 0 && row.totalReturnAmt > 0 && row.itemAmt > 0);
+  //   const filteredRowDataTax = rowDataTax.filter(taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0);
 
-    const headerData = [{
-      company_code: sessionStorage.getItem('selectedCompanyCode'),
-      customer_name: customerName,
-      customer_code: customerCode,
-      return_date: return_date,
-      return_reason: return_reason,
-      return_person: return_person,
-      bill_date: billDate,
-      bill_no: billNo,
-      pay_type: payType,
-      sales_type: salesType,
-      roff_amt: roundOff,
-      sale_amt: saleAmount,
-      bill_amt: totalAmount,
-      tax_amount: TotalTax,
-    }];
+  //   const headerData = [{
+  //     company_code: sessionStorage.getItem('selectedCompanyCode'),
+  //     customer_name: customerName,
+  //     customer_code: customerCode,
+  //     return_date: return_date,
+  //     return_reason: return_reason,
+  //     return_person: return_person,
+  //     bill_date: billDate,
+  //     bill_no: billNo,
+  //     pay_type: payType,
+  //     sales_type: salesType,
+  //     roff_amt: roundOff,
+  //     sale_amt: saleAmount,
+  //     bill_amt: totalAmount,
+  //     tax_amount: TotalTax,
+  //   }];
 
-    const headerSheet = XLSX.utils.json_to_sheet(headerData);
-    const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
-    const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
+  //   const headerSheet = XLSX.utils.json_to_sheet(headerData);
+  //   const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
+  //   const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
 
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
-    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Sales Return Details");
-    XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Tax Details");
+  //   const workbook = XLSX.utils.book_new();
+  //   XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+  //   XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Sales Return Details");
+  //   XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Tax Details");
 
-    XLSX.writeFile(workbook, "Sales Return data.xlsx");
+  //   XLSX.writeFile(workbook, "Sales Return data.xlsx");
+  // };
+
+const handleExcelDownload = () => {
+  const filteredRowData = rowData.filter(
+    row =>
+      row.returnQty > 0 &&
+      row.totalReturnAmt > 0 &&
+      row.itemAmt > 0
+  );
+
+  const filteredRowDataTax = rowDataTax.filter(
+    taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0
+  );
+
+  const headerData = [{
+    "Customer Name": customerName,
+    "Customer Code": customerCode,
+    "Return Date": return_date,
+    "Return Reason": return_reason,
+    "Return Person": return_person,
+    "Bill Date": billDate,
+    "Bill No": billNo,
+    "Pay Type": payType,
+    "Sales Type": salesType,
+    "Sales Amount": saleAmount,
+    "Tax Amount": TotalTax,
+    "Total Amount": totalAmount,
+    "Rounded Off": roundOff,
+  }];
+
+  // Header Sheet
+  const headerSheet = XLSX.utils.aoa_to_sheet([
+    ["Sales Return"],
+    [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+    [],
+  ]);
+
+  XLSX.utils.sheet_add_json(headerSheet, headerData, {
+    origin: "A4",
+  });
+
+  // Merge Heading
+  headerSheet["!merges"] = [
+    {
+      s: { r: 0, c: 0 }, // A1
+      e: { r: 0, c: 9 }, // J1
+    },
+    {
+      s: { r: 1, c: 0 }, // A2
+      e: { r: 1, c: 9 }, // J2
+    },
+  ];
+
+  // Detail Sheets
+  const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
+  const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
+
+  // Auto Fit Function
+  const autoFitColumns = (worksheet, data) => {
+    if (!data || data.length === 0) return;
+
+    const cols = [];
+
+    data.forEach((row) => {
+      Object.keys(row).forEach((key, i) => {
+        const value = row[key] == null ? "" : row[key].toString();
+
+        cols[i] = Math.max(
+          cols[i] || key.length,
+          key.length,
+          value.length
+        );
+      });
+    });
+
+    worksheet["!cols"] = cols.map(width => ({
+      wch: width + 5,
+    }));
   };
 
+  // Apply Auto Width
+  autoFitColumns(headerSheet, headerData);
+  autoFitColumns(rowDataSheet, filteredRowData);
+  autoFitColumns(rowDataTaxSheet, filteredRowDataTax);
 
+  // Workbook
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+  XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Sales Return Details");
+  XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Tax Details");
+
+  XLSX.writeFile(workbook, "Sales_Return_Data.xlsx");
+  };
+  
   const handleKeyDown = async (e, nextFieldRef, value, hasValueChanged, setHasValueChanged) => {
     if (e.key === 'Enter') {
       // Check if the value has changed and handle the search logic

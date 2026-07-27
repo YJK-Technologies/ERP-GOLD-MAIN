@@ -898,7 +898,7 @@ function CustomerDetInput({ }) {
                           setcustomer_mobile_no(value);
                         }
                       }}
-                      maxLength={20}
+                      maxLength={15}
                       ref={Mobile}
                       onKeyDown={(e) => handleKeyDown(e, Fax, Mobile)}
                     />
@@ -976,6 +976,7 @@ function CustomerDetInput({ }) {
                         }
                       }}
                       ref={Credit}
+                      maxLength={18}
                       onKeyDown={(e) => handleKeyDown(e, Transport, Credit)}
                     />
                     {/* {error && !customer_credit_limit && <div className="text-danger">Credit Limit should not be blank</div>} */}

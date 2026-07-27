@@ -2961,38 +2961,128 @@ setLoading(true)
     window.location.reload();
   };
 
+  // const handleExcelDownload = () => {
+  //   const filteredRowData = rowData.filter(row => row.salesQty > 0 && row.TotalItemAmount > 0 && row.purchaseAmt > 0);
+  //   const filteredRowDataTax = rowDataTax.filter(taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0);
+
+  //   const headerData = [{
+  //     company_code: sessionStorage.getItem('selectedCompanyCode'),
+  //     customer_code: customerCode,
+  //     customer_name: customerName,
+  //     pay_type: payType,
+  //     sales_type: salesType,
+  //     order_type: orderType,
+  //     bill_no: billNo,
+  //     bill_date: billDate,
+  //     sale_amt: Totalsales,
+  //     tax_amount: TotalTax,
+  //     bill_amt: TotalBill,
+  //     roff_amt: round_difference,
+  //     dely_chlno: delvychellanno,
+  //   }];
+
+  //   const headerSheet = XLSX.utils.json_to_sheet(headerData);
+  //   const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
+  //   const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
+
+  //   const workbook = XLSX.utils.book_new();
+  //   XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+  //   XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Sales Details");
+  //   XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Tax Details");
+
+  //   XLSX.writeFile(workbook, "Sales data.xlsx");
+  // };
+
   const handleExcelDownload = () => {
-    const filteredRowData = rowData.filter(row => row.salesQty > 0 && row.TotalItemAmount > 0 && row.purchaseAmt > 0);
-    const filteredRowDataTax = rowDataTax.filter(taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0);
+  const filteredRowData = rowData.filter(
+    row =>
+      row.salesQty > 0 &&
+      row.TotalItemAmount > 0 &&
+      row.purchaseAmt > 0
+  );
 
-    const headerData = [{
-      company_code: sessionStorage.getItem('selectedCompanyCode'),
-      customer_code: customerCode,
-      customer_name: customerName,
-      pay_type: payType,
-      sales_type: salesType,
-      order_type: orderType,
-      bill_no: billNo,
-      bill_date: billDate,
-      sale_amt: Totalsales,
-      tax_amount: TotalTax,
-      bill_amt: TotalBill,
-      roff_amt: round_difference,
-      dely_chlno: delvychellanno,
-    }];
+  const filteredRowDataTax = rowDataTax.filter(
+    taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0
+  );
 
-    const headerSheet = XLSX.utils.json_to_sheet(headerData);
-    const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
-    const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
+  const headerData = [{
+    "Customer Code": customerCode,
+    "Customer Name": customerName,
+    "Pay Type": payType,
+    "Sales Type": salesType,
+    "Order Type": orderType,
+    "Bill No": billNo,
+    "Bill Date": billDate,
+    "Sales Amount": Totalsales,
+    "Tax Amount": TotalTax,
+    "Bill Amount": TotalBill,
+    "Rounded Off": round_difference,
+    "Delivery Challan No": delvychellanno,
+  }];
 
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
-    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Sales Details");
-    XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Tax Details");
+  // Header Sheet
+  const headerSheet = XLSX.utils.aoa_to_sheet([
+    ["Sales"],
+    [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+    [],
+  ]);
 
-    XLSX.writeFile(workbook, "Sales data.xlsx");
+  XLSX.utils.sheet_add_json(headerSheet, headerData, {
+    origin: "A4",
+  });
+
+  // Merge Heading
+  headerSheet["!merges"] = [
+    {
+      s: { r: 0, c: 0 },
+      e: { r: 0, c: 9 },
+    },
+    {
+      s: { r: 1, c: 0 },
+      e: { r: 1, c: 9 },
+    },
+  ];
+
+  // Detail Sheets
+  const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
+  const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
+
+  // Auto Fit Function
+  const autoFitColumns = (worksheet, data) => {
+    if (!data || data.length === 0) return;
+
+    const cols = [];
+
+    data.forEach((row) => {
+      Object.keys(row).forEach((key, i) => {
+        const value = row[key] == null ? "" : row[key].toString();
+
+        cols[i] = Math.max(
+          cols[i] || key.length,
+          key.length,
+          value.length
+        );
+      });
+    });
+
+    worksheet["!cols"] = cols.map(width => ({
+      wch: width + 5,
+    }));
   };
 
+  // Apply Auto Width
+  autoFitColumns(headerSheet, headerData);
+  autoFitColumns(rowDataSheet, filteredRowData);
+  autoFitColumns(rowDataTaxSheet, filteredRowDataTax);
+
+  // Workbook
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+  XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Sales Details");
+  XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Tax Details");
+
+  XLSX.writeFile(workbook, "Sales_Data.xlsx");
+};
   const handleKeyDown = async (e, nextFieldRef, value, hasValueChanged, setHasValueChanged) => {
     if (e.key === 'Enter') {
       if (hasValueChanged) {

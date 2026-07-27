@@ -610,10 +610,9 @@ function VenDetInput({ }) {
 
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
-                      <div><label for="rid" class="exp-form-labels">
-                        Code
+                      <div><label for="rid" className={`${error && !vendor_code ? 'text-danger' : ''}`}>
+                        Code<span className="text-danger">*</span>
                       </label></div>
-                      <div> <span className="text-danger">*</span></div>
                     </div>
 
                     <div className="input-group" title="Select the Code">
@@ -630,17 +629,16 @@ function VenDetInput({ }) {
                         onKeyDown={(e) => handleKeyDown(e, Address1, code)}
                       /><button onClick={handleClickOpen} class="vendorhdrcode position-absolute me-5 pt-2" required title="Add Header"><i class="fa-solid fa-plus"></i></button>
                     
-                    {error && !vendor_code && <div className="text-danger">Code should not be blank</div>}
                   </div>
-                </div>      </div>
+                </div>     
+                 </div>
 
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
-                      <div><label for="rid" class="exp-form-labels">
-                        Address1
+                      <div><label for="rid" className={`${error && !vendor_addr_1 ? 'text-danger' : ''}`}>
+                        Address1<span className="text-danger">*</span>
                       </label></div>
-                      <div> <span className="text-danger">*</span></div>
                     </div><input
                       id="venad1"
                       class="exp-input-field form-control"
@@ -652,18 +650,15 @@ function VenDetInput({ }) {
                       maxLength={250}
                       ref={Address1}
                       onKeyDown={(e) => handleKeyDown(e, Address2, Address1)}
-                    />{error && !vendor_addr_1 && <div className="text-danger">Address should not be blank</div>}
-
-
+                    />
                   </div>
                 </div>
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
-                      <div><label for="rid" class="exp-form-labels">
-                        Address2
+                      <div><label for="rid" className={`${error && !vendor_addr_2 ? 'text-danger' : ''}`}>
+                        Address2<span className="text-danger">*</span>
                       </label></div>
-                      <div> <span className="text-danger">*</span></div>
                     </div><input
                       id="venad2"
                       class="exp-input-field form-control"
@@ -675,9 +670,7 @@ function VenDetInput({ }) {
                       maxLength={250}
                       ref={Address2}
                       onKeyDown={(e) => handleKeyDown(e, Address3, Address2)}
-                    />            {error && !vendor_addr_2 && <div className="text-danger">Address should not be blank</div>}
-
-
+                    /> 
                   </div>
                 </div>
 
@@ -725,12 +718,11 @@ function VenDetInput({ }) {
 
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
-                      <div><label for="rid" class="exp-form-labels">
-                        City
+                      <div><label for="rid" className={`${error && !vendor_area_code ? 'text-danger' : ''}`}>
+                        City<span className="text-danger">*</span>
                       </label></div>
-                      <div> <span className="text-danger">*</span></div>
                     </div>
-  <div title="Select the City">  
+                    <div title="Select the City">  
                     <Select
                       id="city"
                       value={selectedCity}
@@ -741,20 +733,19 @@ function VenDetInput({ }) {
                       ref={City}
                       onKeyDown={(e) => handleKeyDown(e, State, City)}
                     />
-                    {error && !vendor_area_code && <div className="text-danger">City should not be blank</div>}
                   </div>
-                </div>     </div>
+                </div>     
+                </div>
 
                 <div className="col-md-3 form-group mb-2">
 
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
-                      <div><label for="rid" class="exp-form-labels">
-                        State
+                      <div><label for="rid" className={`${error && !vendor_state_code ? 'text-danger' : ''}`}>
+                        State<span className="text-danger">*</span>
                       </label></div>
-                      <div> <span className="text-danger">*</span></div>
                     </div>
- <div title="Select the State">       
+                   <div title="Select the State">       
                     <Select
                       id="state"
                       value={selectedState}
@@ -765,20 +756,18 @@ function VenDetInput({ }) {
                       ref={State}
                       onKeyDown={(e) => handleKeyDown(e, Country, State)}
                     />
-                    {error && !vendor_state_code && <div className="text-danger">State should not be blank</div>}
                   </div>
                 </div>  </div>
 
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
-                      <div><label for="rid" class="exp-form-labels">
-                        Country
+                      <div><label for="rid" className={`${error && !vendor_country_code ? 'text-danger' : ''}`}>
+                        Country<span className="text-danger">*</span>
                       </label>
                       </div>
-                      <div> <span className="text-danger">*</span></div>
                     </div>
- <div title="Select the Country">    
+                    <div title="Select the Country">    
                     <Select
                       id="country"
                       value={selectedCountry}
@@ -789,7 +778,6 @@ function VenDetInput({ }) {
                       ref={Country}
                       onKeyDown={(e) => handleKeyDown(e, Imex, Country)}
                     />
-                    {error && !vendor_country_code && <div className="text-danger">Country should not be blank</div>}
                   </div>
                 </div>  </div>
 
@@ -811,7 +799,6 @@ function VenDetInput({ }) {
                       ref={Imex}
                       onKeyDown={(e) => handleKeyDown(e, Office, Imex)}
                     />
-
                   </div>
                 </div>
 
@@ -831,7 +818,6 @@ function VenDetInput({ }) {
                       ref={Office}
                       onKeyDown={(e) => handleKeyDown(e, Residential, Office)}
                     />
-
                   </div>
                 </div>
 
@@ -851,16 +837,14 @@ function VenDetInput({ }) {
                       ref={Residential}
                       onKeyDown={(e) => handleKeyDown(e, Mobile, Residential)}
                     />
-
                   </div>
                 </div>
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
-                      <div><label for="rid" class="exp-form-labels">
-                        Mobile No
+                      <div><label for="rid" className={`${error && !vendor_mobile_no ? 'text-danger' : ''}`}>
+                        Mobile No<span className="text-danger">*</span>
                       </label></div>
-                      <div> <span className="text-danger">*</span></div>
                     </div><input
                       id="mobno"
                       class="exp-input-field form-control"
@@ -872,9 +856,7 @@ function VenDetInput({ }) {
                       maxLength={20}
                       ref={Mobile}
                       onKeyDown={(e) => handleKeyDown(e, FaxNo, Mobile)}
-                    />            {error && !vendor_mobile_no && <div className="text-danger">Mobile Number should not be blank</div>}
-
-
+                    />            
                   </div>
                 </div>
                 <div className="col-md-3 form-group mb-2">
@@ -895,17 +877,14 @@ function VenDetInput({ }) {
                       ref={FaxNo}
                       onKeyDown={(e) => handleKeyDown(e, Email, FaxNo)}
                     />
-
-
                   </div>
                 </div>
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
-                      <div><label for="rid" class="exp-form-labels">
-                        Email ID
+                      <div><label for="rid" className={`${error && !vendor_email_id ? 'text-danger' : ''}`}>
+                        Email ID<span className="text-danger">*</span>
                       </label></div>
-                      <div> <span className="text-danger">*</span></div>
                     </div><input
                       id="emailid"
                       class="exp-input-field form-control"
@@ -917,18 +896,15 @@ function VenDetInput({ }) {
                       maxLength={250}
                       ref={Email}
                       onKeyDown={(e) => handleKeyDown(e, Credit, Email)}
-                    />            {error && !validateEmail(vendor_email_id) && <div className="text-danger">Please Enter Valid Email Id</div>}
-
-
+                    />            
                   </div>
                 </div>
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
-                      <div><label for="rid" class="exp-form-labels">
-                        Credit Limit
+                      <div><label for="rid" className={`${error && !vendor_credit_limit ? 'text-danger' : ''}`}>
+                        Credit Limit<span className="text-danger">*</span>
                       </label></div>
-                      <div> <span className="text-danger">*</span></div>
                     </div><input
                       id="vencre"
                       class="exp-input-field form-control"
@@ -940,9 +916,7 @@ function VenDetInput({ }) {
                       maxLength={18}
                       ref={Credit}
                       onKeyDown={(e) => handleKeyDown(e, TRansport, Credit)}
-                    />            {error && !vendor_credit_limit && <div className="text-danger">Credit Limit should not be blank</div>}
-
-
+                    />           
                   </div>
                 </div>
                 <div className="col-md-3 form-group mb-2">

@@ -636,35 +636,108 @@ function JournalGrid() {
     }));
   };
 
+  // const handleExcelDownload = () => {
+  //   if (rowData.length === 0 || !journal_no || !transaction_date ) {
+  //     Swal.fire({
+  //       icon: 'warning',
+  //       title: 'No Data Available',
+  //       text: 'There is no data to export.',
+  //     });
+  //     return;
+  //   }
+
+  //   const headerData = [{
+  //     "company code": sessionStorage.getItem('selectedCompanyCode'),
+  //     "Journal No": journal_no,
+  //     "Transaction Date": transaction_date,
+  //   }];
+
+  //   const transformedData = transformRowData(rowData);
+  //   const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
+  //   const headerSheet = XLSX.utils.json_to_sheet(headerData);
+
+  //   const workbook = XLSX.utils.book_new();
+  //   XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+  //   XLSX.utils.book_append_sheet(workbook, rowDataSheet, "journal  Details");
+
+  //   XLSX.writeFile(workbook, "Journal .xlsx");
+  // };
+
   const handleExcelDownload = () => {
+  if (rowData.length === 0 || !journal_no || !transaction_date) {
+    Swal.fire({
+      icon: "warning",
+      title: "No Data Available",
+      text: "There is no data to export.",
+    });
+    return;
+  }
 
+  const headerData = [{
+    "Journal No": journal_no,
+    "Transaction Date": transaction_date,
+  }];
 
-    if (rowData.length === 0 || !journal_no || !transaction_date ) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'No Data Available',
-        text: 'There is no data to export.',
+  const transformedData = transformRowData(rowData);
+
+  // Header Sheet
+  const headerSheet = XLSX.utils.aoa_to_sheet([
+    ["Journal"],
+    [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+    [],
+  ]);
+
+  XLSX.utils.sheet_add_json(headerSheet, headerData, {
+    origin: "A4",
+  });
+
+  // Merge Heading
+  headerSheet["!merges"] = [
+    {
+      s: { r: 0, c: 0 }, // A1
+      e: { r: 0, c: 7 }, // H1
+    },
+    {
+      s: { r: 1, c: 0 }, // A2
+      e: { r: 1, c: 7 }, // H2
+    },
+  ];
+
+  // Details Sheet
+  const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
+
+  // Auto Fit Function
+  const autoFitColumns = (worksheet, data) => {
+    const cols = [];
+
+    data.forEach((row) => {
+      Object.keys(row).forEach((key, i) => {
+        const value = row[key] == null ? "" : row[key].toString();
+
+        cols[i] = Math.max(
+          cols[i] || key.length,
+          key.length,
+          value.length
+        );
       });
-      return;
-    }
+    });
 
-    const headerData = [{
-      "company code": sessionStorage.getItem('selectedCompanyCode'),
-      "Journal No": journal_no,
-      "Transaction Date": transaction_date,
-    }];
-
-    const transformedData = transformRowData(rowData);
-    const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
-    const headerSheet = XLSX.utils.json_to_sheet(headerData);
-
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
-    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "journal  Details");
-
-    XLSX.writeFile(workbook, "Journal .xlsx");
+    worksheet["!cols"] = cols.map((width) => ({
+      wch: width + 5,
+    }));
   };
 
+  // Apply Auto Width
+  autoFitColumns(headerSheet, headerData);
+  autoFitColumns(rowDataSheet, transformedData);
+
+  // Workbook
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+  XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Journal Details");
+
+  XLSX.writeFile(workbook, "Journal.xlsx");
+  };
   const generateReport = async () => {
     try {
       const headerData = await PrintHeaderData();

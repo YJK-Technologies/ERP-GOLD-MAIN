@@ -2809,36 +2809,126 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
     }
   };
 
+  // const handleExcelDownload = () => {
+  //   const filteredRowData = rowData.filter(row => row.purchaseQty > 0 && row.TotalItemAmount > 0 && row.purchaseAmt > 0);
+  //   const filteredRowDataTax = rowDataTax.filter(taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0);
+
+  //   const headerData = [{
+  //     company_code: sessionStorage.getItem('selectedCompanyCode'),
+  //     vendor_code: vendor_code,
+  //     pay_type: payType,
+  //     purchase_type: purchaseType,
+  //     Entry_date: entryDate,
+  //     transaction_no: transactionNumber,
+  //     transaction_date: transactionDate,
+  //     purchase_amount: TotalPurchase,
+  //     tax_amount: TotalTax,
+  //     total_amount: TotalBill,
+  //     rounded_off: round_difference
+  //   }];
+
+  //   const headerSheet = XLSX.utils.json_to_sheet(headerData);
+  //   const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
+  //   const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
+
+  //   const workbook = XLSX.utils.book_new();
+  //   XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+  //   XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Purchase Details");
+  //   XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Tax Details");
+
+  //   XLSX.writeFile(workbook, "purchase_data.xlsx");
+  // };
+
   const handleExcelDownload = () => {
-    const filteredRowData = rowData.filter(row => row.purchaseQty > 0 && row.TotalItemAmount > 0 && row.purchaseAmt > 0);
-    const filteredRowDataTax = rowDataTax.filter(taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0);
+  const filteredRowData = rowData.filter(
+    row =>
+      row.purchaseQty > 0 &&
+      row.TotalItemAmount > 0 &&
+      row.purchaseAmt > 0
+  );
 
-    const headerData = [{
-      company_code: sessionStorage.getItem('selectedCompanyCode'),
-      vendor_code: vendor_code,
-      pay_type: payType,
-      purchase_type: purchaseType,
-      Entry_date: entryDate,
-      transaction_no: transactionNumber,
-      transaction_date: transactionDate,
-      purchase_amount: TotalPurchase,
-      tax_amount: TotalTax,
-      total_amount: TotalBill,
-      rounded_off: round_difference
-    }];
+  const filteredRowDataTax = rowDataTax.filter(
+    taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0
+  );
 
-    const headerSheet = XLSX.utils.json_to_sheet(headerData);
-    const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
-    const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
+  const headerData = [{
+    "Vendor Code": vendor_code,
+    "Pay Type": payType,
+    "Purchase Type": purchaseType,
+    "Entry Date": entryDate,
+    "Transaction No": transactionNumber,
+    "Transaction Date": transactionDate,
+    "Purchase Amount": TotalPurchase,
+    "Tax Amount": TotalTax,
+    "Total Amount": TotalBill,
+    "Rounded Off": round_difference,
+  }];
 
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
-    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Purchase Details");
-    XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Tax Details");
+  // Header Sheet
+  const headerSheet = XLSX.utils.aoa_to_sheet([
+    ["Purchase"],
+    [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+    [],
+  ]);
 
-    XLSX.writeFile(workbook, "purchase_data.xlsx");
+  XLSX.utils.sheet_add_json(headerSheet, headerData, {
+    origin: "A4",
+  });
+
+  // Merge Heading
+  headerSheet["!merges"] = [
+    {
+      s: { r: 0, c: 0 }, // A1
+      e: { r: 0, c: 9 }, // J1
+    },
+    {
+      s: { r: 1, c: 0 }, // A2
+      e: { r: 1, c: 9 }, // J2
+    },
+  ];
+
+  // Purchase Details
+  const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
+
+  // Tax Details
+  const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
+
+  // Auto Fit Function
+  const autoFitColumns = (worksheet, data) => {
+    if (!data || data.length === 0) return;
+
+    const cols = [];
+
+    data.forEach((row) => {
+      Object.keys(row).forEach((key, i) => {
+        const value = row[key] == null ? "" : row[key].toString();
+
+        cols[i] = Math.max(
+          cols[i] || key.length,
+          key.length,
+          value.length
+        );
+      });
+    });
+
+    worksheet["!cols"] = cols.map(width => ({
+      wch: width + 5,
+    }));
   };
 
+  // Apply Auto Width
+  autoFitColumns(headerSheet, headerData);
+  autoFitColumns(rowDataSheet, filteredRowData);
+  autoFitColumns(rowDataTaxSheet, filteredRowDataTax);
+
+  // Workbook
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+  XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Purchase Details");
+  XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Tax Details");
+
+  XLSX.writeFile(workbook, "Purchase_Data.xlsx");
+  };
   const handleKeyDown = async (e, nextFieldRef, value, hasValueChanged, setHasValueChanged) => {
     if (e.key === 'Enter') {
       if (hasValueChanged) {

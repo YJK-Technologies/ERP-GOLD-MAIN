@@ -1286,33 +1286,108 @@ const UnplannedReturn = () => {
   };
 
 
+  // const handleExcelDownload = () => {
+
+  //   const filteredRowData = rowData.filter(row => row.quantityReturned > 0);
+  //   console.log(selectedReturn)
+  //   if (rowData.length === 0 || !returnId || !returnDate || !selectedReturn) {
+  //     toast.warning('No Data Available');
+  //     return;
+  //   }
+
+  //   const headerData = [{
+  //     "Company Code": sessionStorage.getItem('selectedCompanyCode'),
+  //     "Transaction ID": returnId,
+  //     "Transaction Date": returnDate,
+  //     "Transaction Type": selectedReturn.value,
+  //   }];
+
+  //   const transformedData = transformRowData(filteredRowData);
+  //   const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
+  //   const headerSheet = XLSX.utils.json_to_sheet(headerData);
+
+  //   const workbook = XLSX.utils.book_new();
+  //   XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+  //   XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
+
+  //   XLSX.writeFile(workbook, "Inventory_Return.xlsx");
+  // };
+
   const handleExcelDownload = () => {
 
-    const filteredRowData = rowData.filter(row => row.quantityReturned > 0);
-    console.log(selectedReturn)
-    if (rowData.length === 0 || !returnId || !returnDate || !selectedReturn) {
-      toast.warning('No Data Available');
-      return;
-    }
+  const filteredRowData = rowData.filter(row => row.quantityReturned > 0);
 
-    const headerData = [{
-      "Company Code": sessionStorage.getItem('selectedCompanyCode'),
-      "Transaction ID": returnId,
-      "Transaction Date": returnDate,
-      "Transaction Type": selectedReturn.value,
-    }];
+  if (rowData.length === 0 || !returnId || !returnDate || !selectedReturn) {
+    toast.warning("No Data Available");
+    return;
+  }
 
-    const transformedData = transformRowData(filteredRowData);
-    const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
-    const headerSheet = XLSX.utils.json_to_sheet(headerData);
+  const headerData = [{
+    "Transaction ID": returnId,
+    "Transaction Date": returnDate,
+    "Transaction Type": selectedReturn.value,
+  }];
 
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
-    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
+  const transformedData = transformRowData(filteredRowData);
 
-    XLSX.writeFile(workbook, "Inventory_Return.xlsx");
+  // Header Sheet
+  const headerSheet = XLSX.utils.aoa_to_sheet([
+    ["Inventory Return"],
+    [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+    [],
+  ]);
+
+  XLSX.utils.sheet_add_json(headerSheet, headerData, {
+    origin: "A4",
+  });
+
+  // Merge Heading
+  headerSheet["!merges"] = [
+    {
+      s: { r: 0, c: 0 }, // A1
+      e: { r: 0, c: 7 }, // H1
+    },
+    {
+      s: { r: 1, c: 0 }, // A2
+      e: { r: 1, c: 7 }, // H2
+    },
+  ];
+
+  // Details Sheet
+  const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
+
+  // Auto Fit Function
+  const autoFitColumns = (worksheet, data) => {
+    const cols = [];
+
+    data.forEach((row) => {
+      Object.keys(row).forEach((key, i) => {
+        const value = row[key] == null ? "" : row[key].toString();
+
+        cols[i] = Math.max(
+          cols[i] || key.length,
+          key.length,
+          value.length
+        );
+      });
+    });
+
+    worksheet["!cols"] = cols.map(width => ({
+      wch: width + 5,
+    }));
   };
 
+  // Apply Auto Width
+  autoFitColumns(headerSheet, headerData);
+  autoFitColumns(rowDataSheet, transformedData);
+
+  // Workbook
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+  XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
+
+  XLSX.writeFile(workbook, "Inventory_Return.xlsx");
+};
   const handleAddRow = () => {
     const serialNumber = rowData.length + 1;
     const newRow = { serialNumber, itemCode: '', itemName: '', serialno: '', warehouse: selectedWarehouse ? selectedWarehouse.value : '', supplier: '', quantityReturned: '', reasonForReturn: '', condition: '', processedBy: '', approvalStatus: '', actionTaken: '', notes: '' };
