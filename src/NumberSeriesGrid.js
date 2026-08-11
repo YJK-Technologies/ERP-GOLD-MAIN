@@ -202,12 +202,7 @@ setselectedscreentype("");
       headerName: "Screen Type",
       field: "Screen_Type",
       cellClass: "ag-link-cell",
-      //  editable: true,
       cellStyle: { textAlign: "left" },
-
-      // minWidth: 250,
-      // maxWidth: 250,
-
       cellRenderer: (params) => {
         const handleClick = () => {
           handleNavigateWithRowData(params.data);
@@ -223,72 +218,47 @@ setselectedscreentype("");
         );
       }
     },
-
     {
       headerName: "Start Year",
       field: "Start_Year",
       editable: true,
       cellStyle: { textAlign: "left" },
-
-      // minWidth: 150,
-      valueFormatter: (params) => {
-        if (!params.value) return ""; // Return an empty string if the value is null or undefined
-        const date = new Date(params.value);
-        const day = date.getDate().toString().padStart(2, "0"); // Get day (padStart ensures double-digit format)
-        const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Get month (+1 because months are zero-indexed)
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`; // Return formatted date string with day, month, and year
-      },
     },
     {
       headerName: "End Year",
       field: "End_Year",
       editable: true,
       cellStyle: { textAlign: "left" },
-      // minWidth: 150,
-      valueFormatter: (params) => {
-        if (!params.value) return ""; // Return an empty string if the value is null or undefined
-        const date = new Date(params.value);
-        const day = date.getDate().toString().padStart(2, "0"); // Get day (padStart ensures double-digit format)
-        const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Get month (+1 because months are zero-indexed)
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`; // Return formatted date string with day, month, and year
-      },
     },
     {
       headerName: "Start No",
       field: "Start_No",
       editable: true,
       cellStyle: { textAlign: "left" },
-      // minWidth: 150,
     },
     {
       headerName: "Running No",
       field: "Running_No",
       editable: true,
       cellStyle: { textAlign: "left" },
-      // minWidth: 150,
     },
     {
       headerName: "End No",
       field: "End_No",
       editable: true,
       cellStyle: { textAlign: "left" },
-      // minWidth: 150,
     },
     {
       headerName: "Text",
       field: "comtext",
       editable: true,
       cellStyle: { textAlign: "left" },
-      // minWidth: 150,
     },
     {
       headerName: "Number Prefix",
       field: "number_prefix",
       editable: true,
       cellStyle: { textAlign: "left" },
-      // minWidth: 150,
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
         values: booleangriddrop
@@ -299,7 +269,6 @@ setselectedscreentype("");
       field: "bill_format",
       editable: true,
       cellStyle: { textAlign: "left" },
-      // minWidth: 150,
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
         values: billFormatDropGrid
@@ -310,23 +279,16 @@ setselectedscreentype("");
       field: "Status",
       editable: true,
       cellStyle: { textAlign: "left" },
-      // minWidth: 150,
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
         values: statusgriddrop
       },
-
     },
   ];
 
   const defaultColDef = {
     resizable: true,
     wrapText: true,
-    // sortable: true,
-    //editable: true,
-    // flex: 1,
-    // filter: true,
-    // floatingFilter: true,
   };
 
   const onGridReady = (params) => {
@@ -471,14 +433,13 @@ setselectedscreentype("");
   const handleNavigatesToForm = () => {
     navigate("/AddNumberSeries", { state: { mode: "create" } }); // Pass selectedRows as props to the Input component
   };
+  
   const handleNavigateWithRowData = (selectedRow) => {
   navigate("/AddNumberSeries", {
     state: {
       mode: "update",
       selectedRow,
-
       preservedRowData: rowData,
-
       preservedInputs: {
         Screen_Type,
       },
