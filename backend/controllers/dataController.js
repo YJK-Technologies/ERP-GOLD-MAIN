@@ -5559,14 +5559,15 @@ const refNumberTosalesSumTax = async (req, res) => {
 
 
 const getAllDashboardData = async (req, res) => {
-  const { company_code } = req.body;
+  const { company_code, user_code } = req.body;
   try {
     const pool = await connection.connectToDatabase();
     const result = await pool
       .request()
       .input("mode", sql.NVarChar, "plb")
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_dashboard @mode,@company_code,0,0,0,'',''`);
+      .input("user_code", sql.NVarChar, user_code)
+      .query(`EXEC sp_dashboard_test @mode,@company_code,0,0,0,'','',@user_code`);
     res.json(result.recordset);
   } catch (err) {
     console.error("Error", err);
@@ -5586,11 +5587,7 @@ const getItemPrice = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "GV")
       .input("Item_code", sql.NVarChar, Item_code)
-
-
-      .query(`EXEC sp_item_brand_info @mode,'',@Item_code,'','',0,'','','',0,0,0,
-                           0,'','','','','','','','','','','','','',0,0,'','','',NULL,NULL,NULL,NULL,NULL
-						   ,NULL,NULL,NULL`);
+      .query(`EXEC sp_item_brand_info @mode,'',@Item_code,'','',0,'','','',0,0,0,0,'','','','','','','','','','','','','',0,0,'','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     // Send response
     if (result.recordset.length > 0) {
@@ -5693,14 +5690,15 @@ const getSalesReturnItemAmountCalculation = async (req, res) => {
 
 /* CODE ADDED BY PAVUN */
 const getDashboardItemData = async (req, res) => {
-  const { company_code } = req.body;
+  const { company_code, user_code } = req.body;
   try {
     const pool = await connection.connectToDatabase();
     const result = await pool
       .request()
       .input("mode", sql.NVarChar, "TIC")
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_dashboard @mode,@company_code,0,0,0,'',''`);
+      .input("user_code", sql.NVarChar, user_code)
+      .query(`EXEC sp_dashboard_test @mode,@company_code,0,0,0,'','',@user_code`);
     res.json(result.recordset);
   } catch (err) {
     console.error("Error", err);
@@ -5709,15 +5707,15 @@ const getDashboardItemData = async (req, res) => {
 };
 
 const getDashboardStockData = async (req, res) => {
-  const { company_code } = req.body;
+  const { company_code, user_code } = req.body;
   try {
     const pool = await connection.connectToDatabase();
     const result = await pool
       .request()
       .input("mode", sql.NVarChar, "TSV")
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_calculate_stock_value @mode,@company_code`
-      );
+      .input("user_code", sql.NVarChar, user_code)
+      .query(`EXEC sp_calculate_stock_value_test @mode,@company_code,@user_code`);
     res.json(result.recordset);
   } catch (err) {
     console.error("Error", err);
@@ -28886,6 +28884,56 @@ const getUserData = async (req, res) => {
   }
 };
 
+//Code Added By Pavun on 10-08-2026
+const insertSettings  = async (req, res) => {
+ const { url, DashboardSales, DashboardPurchase, DashboardItem, DashboardStockValue, warehouse_code, company_code, user_code,created_by,  modified_by } = req.body;
+  let pool;
+  try {
+    const pool = await connection.connectToDatabase(dbConfig);
+    
+      await pool
+        .request()              
+        .input("mode",                  sql.NVarChar, "I")
+        .input("url",                   sql.VarChar(sql.MAX),url)
+        .input("DashboardSales",        sql.NVarChar,DashboardSales)
+        .input("DashboardPurchase",     sql.NVarChar,DashboardPurchase)
+        .input("DashboardItem",         sql.NVarChar,DashboardItem)
+        .input("DashboardStockValue",   sql.NVarChar,DashboardStockValue)
+        .input("warehouse_code",        sql.VarChar,warehouse_code)
+        .input("company_code",          sql.NVarChar, company_code)
+        .input("user_code",             sql.NVarChar, user_code)
+        .input("created_by",            sql.NVarChar, created_by)
+        .input("modified_by",           sql.NVarChar, modified_by)
+        .query(`EXEC sp_setting  @mode,@url,@DashboardSales,@DashboardPurchase,@DashboardItem,@DashboardStockValue,@warehouse_code,@company_code,@user_code,@created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);  
+    res.status(200).json("Settings Data Inserted Successfully");
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const getSettings = async (req, res) => {
+  const { company_code, user_code } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "A")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("user_code", sql.NVarChar, user_code)
+      .query(`EXEC sp_setting  @mode,'','','','','','',@company_code,@user_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset); 
+    } else {
+      res.status(404).json("Data not found");
+    }
+  } catch (err) {
+    console.error("Error", err.message);
+    return res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+//Code Ended By Pavun on 10-08-2026
 
 module.exports = {
   login,
@@ -29824,6 +29872,8 @@ module.exports = {
   UpdateClientBugs,
   getClientbugs,
   getBillFormat,
-  getUserData
+  getUserData,
+  insertSettings,
+  getSettings
 
 };
