@@ -11,7 +11,7 @@ import LoadingScreen from "./Loading";
 import { useLocation } from "react-router-dom";
 const config = require("./Apiconfig");
 
-function NumberSeriesInput({}) {
+function NumberSeriesInput({ }) {
   const [Screen_Type, setScreen_Type] = useState("");
   const [screentypedrop, setscreentypedrop] = useState([]);
   const [Start_Year, setStart_Year] = useState("");
@@ -242,27 +242,27 @@ function NumberSeriesInput({}) {
   }));
 
   useEffect(() => {
+    if (mode !== "create") return;
+
     const today = new Date();
     const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth(); // 0-based month, so 0 is January, 1 is February, etc.
+    const currentMonth = today.getMonth(); // 0 = January, 3 = April
 
-    let financialYearStartDate, financialYearEndDate;
+    let financialYearStartDate;
+    let financialYearEndDate;
 
     if (currentMonth < 3) {
-      // If current month is less than April (March)
-      // Set the previous year's start date and the current year's end date
+      // April to March financial year
       financialYearStartDate = `${currentYear - 1}-04-01`;
       financialYearEndDate = `${currentYear}-03-31`;
     } else {
-      // Set the current year's start date and the next year's end date
       financialYearStartDate = `${currentYear}-04-01`;
       financialYearEndDate = `${currentYear + 1}-03-31`;
     }
 
-    // Set the calculated dates to the state
     setStart_Year(financialYearStartDate);
     setEnd_Year(financialYearEndDate);
-  }, []);
+  }, [mode]);
 
   const handleChangescreentype = (selectedscreentype) => {
     setselectedscreentype(selectedscreentype);
