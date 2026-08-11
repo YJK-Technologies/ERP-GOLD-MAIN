@@ -25078,7 +25078,7 @@ const getDefaultoptions = async (req, res) => {
       .input("mode", sql.NVarChar, "A")
       .input("company_code", sql.NVarChar, company_code)
       .input("Screen_Type", sql.NVarChar, Screen_Type)
-      .query(`EXEC sp_transaction_settings_test_2 @mode,@company_code,'','','','','','',@Screen_Type,'','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+      .query(`EXEC sp_transaction_settings @mode,@company_code,'','','','','','',@Screen_Type,'','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
 
 `);
     if (result.recordset.length > 0) {
@@ -25281,7 +25281,7 @@ const AddTransactionSettinngs = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(`EXEC sp_transaction_settings_test_2 @mode,@company_code,@Party_code,@Party_name,@pay_type,@Transaction_type,@order_type,@warehouse_code,@Screen_Type,@Sales_mode,@No_of_Reports,@Negative_stock,@Print_options,@Print_copies,@Print_templates,@created_by,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_transaction_settings @mode,@company_code,@Party_code,@Party_name,@pay_type,@Transaction_type,@order_type,@warehouse_code,@Screen_Type,@Sales_mode,@No_of_Reports,@Negative_stock,@Print_options,@Print_copies,@Print_templates,@created_by,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     res.json({ message: "Data inserted successfully" });
   }
   catch (err) {
@@ -28617,7 +28617,7 @@ const PrintTemplates = async (req, res) => {
       .request()
       .input("mode",          sql.NVarChar, "PT")
       .input("Screen_Type",   sql.NVarChar, Screen_Type)
-      .query(`EXEC sp_transaction_settings_test_2 @mode,'','','','','','','',@Screen_Type,'','','','',0,'','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_transaction_settings @mode,'','','','','','','',@Screen_Type,'','','','',0,'','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset); 
