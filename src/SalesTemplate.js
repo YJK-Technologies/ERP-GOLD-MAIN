@@ -6,7 +6,7 @@ import { saveAs } from 'file-saver';
 import html2canvas from 'html2canvas';
 import './Template.css'
 import { toWords } from 'number-to-words';
-import {ToWords} from 'to-words';
+import { ToWords } from 'to-words';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 const config = require('./Apiconfig');
 
@@ -16,7 +16,7 @@ const SalesTemplate = () => {
     const [taxData, setTaxData] = useState(null);
     const componentRef = useRef("");
     const toWords = new ToWords();
-   
+
 
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
@@ -25,39 +25,39 @@ const SalesTemplate = () => {
 
     const handleDownload = async () => {
         try {
-          const invoiceElement = componentRef.current;
-          const canvas = await html2canvas(invoiceElement);
-          const imageData = canvas.toDataURL('image/png');
-          const pdf = new jsPDF();
-      
-          const imgWidth = 210; // A4 width in mm
-          const imgHeight = canvas.height * imgWidth / canvas.width;
-          pdf.addImage(imageData, 'PNG', 0, 0, imgWidth, imgHeight);
-      
-          const blob = pdf.output('blob');
-      
-          if ('showSaveFilePicker' in window) {
-            const opts = {
-              types: [{
-                description: 'PDF file',
-                accept: { 'application/pdf': ['.pdf'] },
-              }],
-            };
-      
-            const handle = await window.showSaveFilePicker(opts);
-            const writableStream = await handle.createWritable();
-            await writableStream.write(blob);
-            await writableStream.close();
-          } else {
-            const fileName = prompt("Enter file name:", "invoice.pdf");
-            if (fileName) {
-              saveAs(blob, fileName);
+            const invoiceElement = componentRef.current;
+            const canvas = await html2canvas(invoiceElement);
+            const imageData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF();
+
+            const imgWidth = 210; // A4 width in mm
+            const imgHeight = canvas.height * imgWidth / canvas.width;
+            pdf.addImage(imageData, 'PNG', 0, 0, imgWidth, imgHeight);
+
+            const blob = pdf.output('blob');
+
+            if ('showSaveFilePicker' in window) {
+                const opts = {
+                    types: [{
+                        description: 'PDF file',
+                        accept: { 'application/pdf': ['.pdf'] },
+                    }],
+                };
+
+                const handle = await window.showSaveFilePicker(opts);
+                const writableStream = await handle.createWritable();
+                await writableStream.write(blob);
+                await writableStream.close();
+            } else {
+                const fileName = prompt("Enter file name:", "invoice.pdf");
+                if (fileName) {
+                    saveAs(blob, fileName);
+                }
             }
-          }
         } catch (error) {
-          console.error('Error saving the file:', error);
+            console.error('Error saving the file:', error);
         }
-      };
+    };
 
     useEffect(() => {
         const header = sessionStorage.getItem('SheaderData');
@@ -77,7 +77,7 @@ const SalesTemplate = () => {
     if (!headerData || !detailData || !taxData) {
         return <div>Loading...</div>;
     }
-    
+
     const totalAmount = headerData[0].bill_amt;
     const totalAmountInWords = `${toWords.convert(totalAmount)} rupees only`;
 
@@ -140,24 +140,69 @@ const SalesTemplate = () => {
     //     return words;
     // };
 
-  
+    const bufferToBase64 = (buffer) => {
+        const bytes = new Uint8Array(buffer);
+        let binary = '';
+
+        for (let i = 0; i < bytes.byteLength; i += 1024) {
+            const chunk = bytes.subarray(i, i + 1024);
+            binary += String.fromCharCode.apply(null, chunk);
+        }
+
+        return `data:image/jpeg;base64,${window.btoa(binary)}`;
+    };
+
+    const processItemImages = () => {
+        if (headerData[0].company_logo && headerData[0].company_logo.data) {
+            return bufferToBase64(headerData[0].company_logo.data);
+        }
+        return '';
+    };
+
+    const processSignatureImages = () => {
+        if (headerData[0].authorisedSignatur && headerData[0].authorisedSignatur.data) {
+            return bufferToBase64(headerData[0].authorisedSignatur.data);
+        }
+        return '';
+    };
+
     return (
         <>
             <div className="invoice-container" ref={componentRef}>
                 <div className="invoice-header">
-                    <div className="company-details">
-                        <h2>{headerData[0].company_code}</h2>
-                        {/* <p>Phone no: 9790876453</p> */}
-                    </div>
-                    <div className="logo">
-                        {/* <img src="logo.png" alt="Company Logo" /> */}
-                    </div>
+                    <div className="d-flex align-items-start">
+  {headerData[0]?.company_logo && (
+    <div className="ms-3 mt-1">
+      <img
+        className="rounded-0"
+        src={processItemImages(headerData[0].company_logo)}
+        width={100}
+        height={100}
+        alt="Company Logo"
+      />
+    </div>
+  )}
+
+  <div className="mt-3 p-1">
+    <strong>{headerData[0]?.company_name}</strong>
+    <br />
+
+    {[headerData[0]?.address1, headerData[0]?.address2, headerData[0]?.address3]
+      .filter((addr) => addr)
+      .join(", ")}
+
+    {headerData[0]?.city && `, ${headerData[0].city}`}
+    {headerData[0]?.pincode && ` - ${headerData[0].pincode}`}
+
+    <br />
+  </div>
+</div>
                 </div>
                 <h1 className="invoice-title">Sales</h1>
                 <div className="invoice-info">
                     <div className="bill-to">
-                    <p>Party Code : {headerData[0].customer_code}</p>
-                    <p>Party Name : {detailData[0].customer_name}</p>
+                        <p>Party Code : {headerData[0].customer_code}</p>
+                        <p>Party Name : {detailData[0].customer_name}</p>
                     </div>
                     <div className="invoice-details">
                         <p>Transaction No   :{headerData[0].bill_no} </p>
@@ -180,7 +225,7 @@ const SalesTemplate = () => {
                         </tr>
                     </thead>
                     <tbody>
-                    {detailData.map((row, index) => (
+                        {detailData.map((row, index) => (
                             <tr key={index}>
                                 <td>{row.ItemSNo}</td>
                                 <td>{row.item_name}</td>
@@ -189,12 +234,12 @@ const SalesTemplate = () => {
                                 <td>{row.total_weight}</td>
                                 <td>{row.item_amt}</td>
                                 <td>{row.tax_amt}</td>
-                                <td style={{textAlign:"right"}}>{parseFloat(row.bill_rate).toFixed(2)}</td>
+                                <td style={{ textAlign: "right" }}>{parseFloat(row.bill_rate).toFixed(2)}</td>
                             </tr>
-                               ))}
+                        ))}
                         <tr className="total">
-                            <td colSpan="7" style={{textAlign:"left"}}>Total</td>
-                            <td style={{textAlign:"right"}}>₹ {sales}</td>
+                            <td colSpan="7" style={{ textAlign: "left" }}>Total</td>
+                            <td style={{ textAlign: "right" }}>₹ {sales}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -205,11 +250,11 @@ const SalesTemplate = () => {
                             <td>₹ {sales}</td>
                         </tr>
                         {taxData.map((row, index) => (
-                        <tr key={index}>
-                            <td>{row.tax_name_details}
-                             {row.tax_per}%</td>
-                             <td>{new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(row.tax_amt)}</td>
-                        </tr>
+                            <tr key={index}>
+                                <td>{row.tax_name_details}
+                                    {row.tax_per}%</td>
+                                <td>{new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(row.tax_amt)}</td>
+                            </tr>
                         ))}
                         <tr>
                             <td>Round off</td>
@@ -221,28 +266,28 @@ const SalesTemplate = () => {
                         </tr>
                     </table>
                     <p className="invoice-amount-words">Invoice Amount In Words: <span className="amount-in-words">{totalAmountInWords}</span></p>
-                    <p style={{fontSize:"13px"}}>Terms and Conditions: Thanks for doing business with us!</p>
+                    <p style={{ fontSize: "13px" }}>Terms and Conditions: Thanks for doing business with us!</p>
                 </div>
                 <div className="invoice-footer">
                     <p>For: My Company</p>
                     {/* <p>Authorized Signatory</p> */}
                 </div>
-              </div>
-            
-              <div class="d-flex justify-content-between" style={{ marginLeft: "45%", marginTop: "5px" }} >
+            </div>
+
+            <div class="d-flex justify-content-between" style={{ marginLeft: "45%", marginTop: "5px" }} >
                 <div align="left" class="d-flex justify-content-start">
                     <button
                         type="button"
                         onClick={handleDownload}
                         className='PrintButton'
-                        >
-                         <FontAwesomeIcon icon="fa-solid fa-download" />
+                    >
+                        <FontAwesomeIcon icon="fa-solid fa-download" />
                     </button>
                     <button
                         type="button"
                         onClick={handlePrint}
                         className='PrintButton'
-                        >
+                    >
                         <FontAwesomeIcon icon="fa-solid fa-print" />
                     </button>
 

@@ -389,7 +389,6 @@ function Main() {
     { path: "/OIAnalysis", component: <OpeningItemAnalysis/>},
      { path: "/DataWiseStock", component: <DataWiseStock/>},
      { path: "/PendingCustomer", component: <PendingCustomer/>},
-     { path: "/PendingCustomer", component: <PendingCustomer/>},
      { path: "/PayslipEmpBonus", component: <EmployeeBonus/>},
      { path: "/EmpOtherAllowance", component: <EmployeeOtherAllowance/>},
      { path: "/PayslipEmpLoanType", component: <EmpLoanType/>},
