@@ -120,7 +120,7 @@ useEffect(() => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ company_code: companyCode }),
+        body: JSON.stringify({ company_code: companyCode, user_code : sessionStorage.getItem("selectedUserCode") }),
       });
       const data = await response.json();
       const [{ TotalSales, TotalPurchase }] = data;
@@ -182,7 +182,7 @@ useEffect(() => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ company_code: companyCode }), 
+          body: JSON.stringify({ company_code: companyCode, user_code : sessionStorage.getItem("selectedUserCode") }), 
         });
         const data = await response.json();
         const [{ totalItem, totalCloseItem, totalActiveItem }] = data;
@@ -205,7 +205,7 @@ useEffect(() => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ company_code: companyCode }),
+          body: JSON.stringify({ company_code: companyCode, user_code : sessionStorage.getItem("selectedUserCode") }),
         });
         const data = await response.json();
         const [{ overallStockValue }] = data;
