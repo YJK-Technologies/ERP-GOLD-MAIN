@@ -689,7 +689,7 @@ finally {
 </div>
   <div className="col-md-3 form-group mb-2" >
               <div className="exp-form-floating">
-                <label className={` ${error && !selectedOrder ? 'text-danger' : ''}`}> Negative Stock<span className="text-danger">*</span></label>
+                <label for=""> Negative Stock</label>
                 <Select
                   className="exp-input-field "
                   id="customername"
@@ -704,7 +704,7 @@ finally {
             </div>
             <div className="col-md-3 form-group mb-2" >
               <div className="exp-form-floating">
-                <label className={` ${error && !selectedOrder ? 'text-danger' : ''}`}> Print Options<span className="text-danger">*</span></label>
+                <label for=""> Print Options</label>
                 <Select
                   className="exp-input-field "
                   id="customername"
@@ -719,7 +719,7 @@ finally {
             </div>
             <div className="col-md-3 form-group mb-2" >
               <div className="exp-form-floating">
-                <label className={` ${error && !selectedOrder ? 'text-danger' : ''}`}> Print Copies<span className="text-danger">*</span></label>
+                <label for=""> Print Copies</label>
                 <Select
                   className="exp-input-field "
                   id="customername"

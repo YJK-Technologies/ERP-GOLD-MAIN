@@ -877,7 +877,7 @@ function ItemInput({}) {
                     <div class="d-flex justify-content-start">
                       <div>
                         <label for="state" className={`${error && !Item_code ? 'text-danger' : ''}`}>
-                          Code <span className="text-danger">*</span>
+                          Code<span className="text-danger">*</span>
                         </label>
                       </div>
                     </div>
@@ -903,7 +903,7 @@ function ItemInput({}) {
                     <div class="d-flex justify-content-start">
                       <div>
                         <label for="state" className={`${error && !Item_variant ? 'text-danger' : ''}`}>
-                          Variant <span className="text-danger">*</span>
+                          Variant<span className="text-danger">*</span>
                         </label>
                       </div>
                     </div>
@@ -929,7 +929,7 @@ function ItemInput({}) {
                     <div class="d-flex justify-content-start">
                       <div>
                         <label for="state" className={`${error && !Item_name ? 'text-danger' : ''}`}>
-                          Name <span className="text-danger">*</span>
+                          Name<span className="text-danger">*</span>
                         </label>
                       </div>
                     </div>
@@ -975,7 +975,7 @@ function ItemInput({}) {
                   <div class="exp-form-floating">
                     <div>
                       <label for="state" className={`${error && !Item_BaseUOM ? 'text-danger' : ''}`}>
-                        Base UOM <span className="text-danger">*</span>
+                        Base UOM<span className="text-danger">*</span>
                       </label>
                     </div>
                     <div title="Select the Base UOM">
@@ -1001,7 +1001,7 @@ function ItemInput({}) {
                     <div class="d-flex justify-content-start">
                       <div>
                         <label for="state" className={`${error && !Item_SecondaryUOM ? 'text-danger' : ''}`}>
-                          Secondary UOM <span className="text-danger">*</span>
+                          Secondary UOM<span className="text-danger">*</span>
                         </label>
                       </div>
                     </div>
@@ -1101,7 +1101,7 @@ function ItemInput({}) {
                     <div class="d-flex justify-content-start">
                       <div>
                         <label for="state" className={`${error && !Item_std_purch_price ? 'text-danger' : ''}`}>
-                          Purchase Price <span className="text-danger">*</span>
+                          Purchase Price<span className="text-danger">*</span>
                         </label>
                       </div>
                     </div>
@@ -1128,7 +1128,7 @@ function ItemInput({}) {
                     <div class="d-flex justify-content-start">
                       <div>
                         <label for="state" className={`${error && !Item_std_sales_price ? 'text-danger' : ''}`}>
-                          Sales Price <span className="text-danger">*</span>
+                          Sales Price<span className="text-danger">*</span>
                         </label>
                       </div>
                     </div>
@@ -1152,7 +1152,7 @@ function ItemInput({}) {
                     <div class="d-flex justify-content-start">
                       <div>
                         <label for="state" className={`${error && !MRPprice ? 'text-danger' : ''}`}>
-                          MRP Price <span className="text-danger">*</span>
+                          MRP Price<span className="text-danger">*</span>
                         </label>
                       </div>
                     </div>
@@ -1204,7 +1204,7 @@ function ItemInput({}) {
                     <div class="d-flex justify-content-start">
                       <div>
                         <label for="state" className={`${error && !Item_purch_tax_type ? 'text-danger' : ''}`}>
-                          Local Purchase Tax Type <span className="text-danger">*</span>
+                          Local Purchase Tax Type<span className="text-danger">*</span>
                         </label>
                       </div>
                     </div>
@@ -1232,7 +1232,7 @@ function ItemInput({}) {
                     <div class="d-flex justify-content-start">
                       <div>
                         <label for="state" className={`${error && !Item_purch_othertax_type ? 'text-danger' : ''}`}>
-                          Other Purchase Tax Type <span className="text-danger">*</span>
+                          Other Purchase Tax Type<span className="text-danger">*</span>
                         </label>
                       </div>
                     </div>
@@ -1259,7 +1259,7 @@ function ItemInput({}) {
                     <div class="d-flex justify-content-start">
                       <div>
                         <label for="state" className={`${error && !Item_sales_tax_type ? 'text-danger' : ''}`}>
-                          Local Sales Tax Type <span className="text-danger">*</span>
+                          Local Sales Tax Type<span className="text-danger">*</span>
                         </label>
                       </div>
                     </div>
@@ -1285,7 +1285,7 @@ function ItemInput({}) {
                     <div class="d-flex justify-content-start">
                       <div>
                         <label for="state" className={`${error && !Item_sales_Othertax_type ? 'text-danger' : ''}`}>
-                          Other Sales Tax Type <span className="text-danger">*</span>
+                          Other Sales Tax Type<span className="text-danger">*</span>
                         </label>
                       </div>
                     </div>
@@ -1360,7 +1360,7 @@ function ItemInput({}) {
                     <div class="d-flex justify-content-start">
                       <div>
                         <label for="state" className={`${error && !hsn ? 'text-danger' : ''}`}>
-                          HSN Code <span className="text-danger">*</span>
+                          HSN Code<span className="text-danger">*</span>
                         </label>
                       </div>
                     </div>
@@ -1385,7 +1385,7 @@ function ItemInput({}) {
                     <div class="d-flex justify-content-start">
                       <div>
                         <label for="state" className={`${error && !Item_Register_Brand ? 'text-danger' : ''}`}>
-                          Register Brand <span className="text-danger">*</span>
+                          Register Brand<span className="text-danger">*</span>
                         </label>
                       </div>
                     </div>
@@ -1410,7 +1410,7 @@ function ItemInput({}) {
                     <div class="d-flex justify-content-start">
                       <div>
                         <label for="state" className={`${error && !Item_Our_Brand ? 'text-danger' : ''}`}>
-                          Our Brand <span className="text-danger">*</span>
+                          Our Brand<span className="text-danger">*</span>
                         </label>
                       </div>
                     </div>
@@ -1433,8 +1433,7 @@ function ItemInput({}) {
                   <div class="exp-form-floating">
                     <div>
                       <label for="state" className={`${error && !status ? 'text-danger' : ''}`}>
-                        Status <span className="text-danger">*</span>
-
+                        Status<span className="text-danger">*</span>
                       </label>
                     </div>
                     <div title="Select the Our Brand ">

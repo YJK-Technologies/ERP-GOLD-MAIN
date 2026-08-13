@@ -1491,8 +1491,7 @@ function JournalGrid() {
         <div className="col-md-3 form-group ">
           <div class="exp-form-floating">
             <label for="" className={`${error && !transaction_date ? 'red' : ''}`}>
-            <span className="text-danger">*</span>
-              Transaction Date
+              Transaction Date<span className="text-danger">*</span>
             </label>
             <input
               id="TransactionDate"
