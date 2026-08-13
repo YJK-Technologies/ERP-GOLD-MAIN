@@ -41,15 +41,15 @@ function OpeningbalanceGrid() {
     .filter((permission) => permission.screen_type === "OpeningItem")
     .map((permission) => permission.permission_type.toLowerCase());
 
-    useEffect(() => {
-      const today = new Date();
-      const currentYear = today.getFullYear();
-      const currentMonth = today.getMonth(); 
-      const startYear = currentMonth >= 3 ? currentYear : currentYear - 1;
-      const financialYearStartDate = `${startYear}-04-01`; 
-      settransaction_date(financialYearStartDate);
-   
-    }, []);
+  useEffect(() => {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth();
+    const startYear = currentMonth >= 3 ? currentYear : currentYear - 1;
+    const financialYearStartDate = `${startYear}-04-01`;
+    settransaction_date(financialYearStartDate);
+
+  }, []);
 
   const handleClickOpen = (params) => {
     const GlobalSerialNumber = params.data.serialNumber;
@@ -308,17 +308,18 @@ function OpeningbalanceGrid() {
       return;
     }
 
-    const hasValidData = rowData.some(
+    const validRows = rowData.filter(
       (row) =>
-        row?.itemCode?.trim() !== "" ||
-        row?.itemName?.trim() !== "" ||
-        row?.purchaseQty?.trim() !== ""
+        row.itemCode?.trim() &&
+        row.itemName?.trim() &&
+        Number(row.billQty) > 0
     );
 
-    if (!hasValidData) {
-      toast.warning("No valid data available to save");
+    if (validRows.length === 0) {
+      toast.warning("Please enter at least one valid item.");
       return;
     }
+
     setLoading(true);
 
     try {
@@ -679,113 +680,113 @@ function OpeningbalanceGrid() {
   const handleReload = () => {
     window.location.reload();
   };
-       const transformRowData = (data) => {
-         return data.map(row => ({
-           "S.No": row.serialNumber,
-           "": row.delete.toString(),
-           "Item Code": row.itemCode.toString(),
-           "Item Name": row.itemName.toString(),
-         }));
-       };
-     
-      //  const handleExcelDownload = () => {
-      //    const filteredRowData = rowData.filter(row => row.Qty > 0);
-     
-      //    if (rowData.length === 0 || !transaction_no || !transaction_date) {
-      //      toast.warning('No Data Available');
-      //      return;
-      //    }
-     
-      //    const headerData = [{
-      //      "company Code": sessionStorage.getItem('selectedCompanyCode'),
-      //      "Transaction No": transaction_no,
-      //      "Transaction Date": transaction_date,
-      //    }];
-     
-      //    const transformedData = transformRowData(filteredRowData);
-      //    const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
-      //    const headerSheet = XLSX.utils.json_to_sheet(headerData);
-     
-      //    const workbook = XLSX.utils.book_new();
-      //    XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
-      //    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
-     
-      //    XLSX.writeFile(workbook, "Opening_Item.xlsx");
-      //  };
-
-const handleExcelDownload = () => {
-  const filteredRowData = rowData.filter(row => row.Qty > 0);
-
-  if (rowData.length === 0 || !transaction_no || !transaction_date) {
-    toast.warning("No Data Available");
-    return;
-  }
-
-  const headerData = [{
-    "Transaction No": transaction_no,
-    "Transaction Date": transaction_date,
-  }];
-
-  const transformedData = transformRowData(filteredRowData);
-
-  // Header Sheet
-  const headerSheet = XLSX.utils.aoa_to_sheet([
-    ["Opening Item"],
-    [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
-    [],
-  ]);
-
-  XLSX.utils.sheet_add_json(headerSheet, headerData, {
-    origin: "A4",
-  });
-
-  // Merge Heading
-  headerSheet["!merges"] = [
-    {
-      s: { r: 0, c: 0 }, // A1
-      e: { r: 0, c: 7 }, // H1
-    },
-    {
-      s: { r: 1, c: 0 }, // A2
-      e: { r: 1, c: 7 }, // H2
-    },
-  ];
-
-  // Details Sheet
-  const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
-
-  // Auto Fit Function
-  const autoFitColumns = (worksheet, data) => {
-    const cols = [];
-
-    data.forEach((row) => {
-      Object.keys(row).forEach((key, i) => {
-        const value = row[key] == null ? "" : row[key].toString();
-
-        cols[i] = Math.max(
-          cols[i] || key.length,
-          key.length,
-          value.length
-        );
-      });
-    });
-
-    worksheet["!cols"] = cols.map(width => ({
-      wch: width + 5,
+  const transformRowData = (data) => {
+    return data.map(row => ({
+      "S.No": row.serialNumber,
+      "": row.delete.toString(),
+      "Item Code": row.itemCode.toString(),
+      "Item Name": row.itemName.toString(),
     }));
   };
 
-  // Apply Auto Width
-  autoFitColumns(headerSheet, headerData);
-  autoFitColumns(rowDataSheet, transformedData);
+  //  const handleExcelDownload = () => {
+  //    const filteredRowData = rowData.filter(row => row.Qty > 0);
 
-  // Workbook
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
-  XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
+  //    if (rowData.length === 0 || !transaction_no || !transaction_date) {
+  //      toast.warning('No Data Available');
+  //      return;
+  //    }
 
-  XLSX.writeFile(workbook, "Opening_Item.xlsx");
-}; 
+  //    const headerData = [{
+  //      "company Code": sessionStorage.getItem('selectedCompanyCode'),
+  //      "Transaction No": transaction_no,
+  //      "Transaction Date": transaction_date,
+  //    }];
+
+  //    const transformedData = transformRowData(filteredRowData);
+  //    const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
+  //    const headerSheet = XLSX.utils.json_to_sheet(headerData);
+
+  //    const workbook = XLSX.utils.book_new();
+  //    XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+  //    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
+
+  //    XLSX.writeFile(workbook, "Opening_Item.xlsx");
+  //  };
+
+  const handleExcelDownload = () => {
+    const filteredRowData = rowData.filter(row => row.Qty > 0);
+
+    if (rowData.length === 0 || !transaction_no || !transaction_date) {
+      toast.warning("No Data Available");
+      return;
+    }
+
+    const headerData = [{
+      "Transaction No": transaction_no,
+      "Transaction Date": transaction_date,
+    }];
+
+    const transformedData = transformRowData(filteredRowData);
+
+    // Header Sheet
+    const headerSheet = XLSX.utils.aoa_to_sheet([
+      ["Opening Item"],
+      [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+      [],
+    ]);
+
+    XLSX.utils.sheet_add_json(headerSheet, headerData, {
+      origin: "A4",
+    });
+
+    // Merge Heading
+    headerSheet["!merges"] = [
+      {
+        s: { r: 0, c: 0 }, // A1
+        e: { r: 0, c: 7 }, // H1
+      },
+      {
+        s: { r: 1, c: 0 }, // A2
+        e: { r: 1, c: 7 }, // H2
+      },
+    ];
+
+    // Details Sheet
+    const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
+
+    // Auto Fit Function
+    const autoFitColumns = (worksheet, data) => {
+      const cols = [];
+
+      data.forEach((row) => {
+        Object.keys(row).forEach((key, i) => {
+          const value = row[key] == null ? "" : row[key].toString();
+
+          cols[i] = Math.max(
+            cols[i] || key.length,
+            key.length,
+            value.length
+          );
+        });
+      });
+
+      worksheet["!cols"] = cols.map(width => ({
+        wch: width + 5,
+      }));
+    };
+
+    // Apply Auto Width
+    autoFitColumns(headerSheet, headerData);
+    autoFitColumns(rowDataSheet, transformedData);
+
+    // Workbook
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
+
+    XLSX.writeFile(workbook, "Opening_Item.xlsx");
+  };
   return (
     <div className="container-fluid Topnav-screen">
       {loading && <LoadingScreen />}
@@ -823,7 +824,7 @@ const handleExcelDownload = () => {
                   </delbutton>
                 )}
               <printbutton className="purbut" title='excel' onClick={handleExcelDownload}>
-                  <i class="fa-solid fa-file-excel"></i>
+                <i class="fa-solid fa-file-excel"></i>
               </printbutton>
               <printbutton className="purbut" title="Reload" onClick={handleReload}>
                 <i class="fa-solid fa-arrow-rotate-right"></i>
@@ -866,9 +867,9 @@ const handleExcelDownload = () => {
                           </icon>
                         )}
                     </li>
-                <printbutton className="purbut" title='excel' onClick={handleExcelDownload}>
-                  <i class="fa-solid fa-file-excel"></i>
-                </printbutton>
+                    <printbutton className="purbut" title='excel' onClick={handleExcelDownload}>
+                      <i class="fa-solid fa-file-excel"></i>
+                    </printbutton>
                     <li class="iconbutton  d-flex justify-content-center">
                       <icon class="icon" onClick={handleReload}>
                         <i class="fa-solid fa-arrow-rotate-right"></i>
@@ -926,7 +927,7 @@ const handleExcelDownload = () => {
                   type="date"
                   value={transaction_date}
                   onChange={(e) => settransaction_date(e.target.value)}
-                  readOnly 
+                  readOnly
                   title="Transaction date is fixed and based on the financial year."
                 />
               </div>
@@ -973,7 +974,7 @@ const handleExcelDownload = () => {
           <div className="d-flex justify-content-start">
             <p className="col-md-6">
               Created_by: {additionalData.created_by}
-              </p>
+            </p>
             <p className="col-md-">
               Created_date: {additionalData.created_date}
             </p>
