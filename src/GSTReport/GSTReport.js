@@ -532,12 +532,12 @@ function Grid() {
                     <ul className="dropdown-menu ">
                       <li>
                         <icon class="iconbutton d-flex justify-content-center" onClick={generateReport}>
-                          <i className="fa-solid fa-print"></i>
+                          <i className="fa-solid fa-print" title="Generate Report"></i>
                         </icon>
                       </li>
                       <li>
                         <icon class="iconbutton d-flex justify-content-center" onClick={handleExportToExcel}>
-                          <i class="fa-solid fa-file-excel"></i>
+                          <i class="fa-solid fa-file-excel" title="Excel"></i>
                         </icon>
                       </li>
                     </ul>
@@ -548,10 +548,10 @@ function Grid() {
             <div className="purbut">
               <div className="d-flex justify-content-end me-5">
                 <button className="btn btn-dark mt-3 mb-3 rounded-3" onClick={generateReport}>
-                  <i className="fa-solid fa-print"></i>
+                  <i className="fa-solid fa-print" title="Generate Report"></i>
                 </button>
                 <button class="btn btn-dark mt-3 mb-3 rounded-3" onClick={handleExportToExcel}>
-                  <i class="fa-solid fa-file-excel"></i>
+                  <i class="fa-solid fa-file-excel" title="Excel"></i>
                 </button>
               </div>
             </div>
