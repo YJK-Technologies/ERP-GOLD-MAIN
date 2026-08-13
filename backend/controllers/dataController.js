@@ -661,7 +661,7 @@ const getUsercode = async (req, res) => {
     const result = await pool
     .request()
     .input("company_code", sql.NVarChar, company_code)
-    .query(`EXEC SP_user_info_hdr 'F',@company_code,'user_code','','', '' ,'','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+    .query(`EXEC SP_user_info_hdr 'F',@company_code,'user_code','','', '' ,'','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     res.json(result.recordset);
   } catch (err) {
     console.error("Error", err);
