@@ -657,7 +657,19 @@ setSelectedRole(
                         onChange={(e) => setUser_code(e.target.value)}
                         maxLength={18}
                         ref={usercode}
-                        onKeyDown={(e) => handleKeyDown(e, username, usercode)}
+                        onKeyDown={(e) => {
+                          // Allow Ctrl/Cmd shortcuts
+                          if (e.ctrlKey || e.metaKey) { return; }
+                          // Allow letters, numbers, and space
+                          if (!/[a-zA-Z0-9 ]/.test(e.key)) {
+                            // Allow control/navigation keys
+                            const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Tab", "Home", "End",];
+                            if (!allowedKeys.includes(e.key)) {
+                              e.preventDefault();
+                            }
+                          }
+                          handleKeyDown(e, username, usercode);
+                        }}
                         readOnly={mode === "update"}
                       />
                       {/* {error && !user_code && <div className="text-danger">User Code should not be blank</div>} */}
@@ -682,7 +694,19 @@ setSelectedRole(
                         onChange={(e) => setUser_name(e.target.value)}
                         maxLength={250}
                         ref={username}
-                        onKeyDown={(e) => handleKeyDown(e, firstname, username)}
+                        onKeyDown={(e) => {
+                          // Allow Ctrl/Cmd shortcuts
+                          if (e.ctrlKey || e.metaKey) { return; }
+                          // Allow letters, numbers, and space
+                          if (!/[a-zA-Z0-9 ]/.test(e.key)) {
+                            // Allow control/navigation keys
+                            const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Tab", "Home", "End",];
+                            if (!allowedKeys.includes(e.key)) {
+                              e.preventDefault();
+                            }
+                          }
+                          handleKeyDown(e, firstname, username);
+                        }}
                       />
                       {/* {error && !user_name && <div className="text-danger">User Name should not be blank</div>} */}
                     </div>
@@ -706,7 +730,19 @@ setSelectedRole(
                         onChange={(e) => setFirst_name(e.target.value)}
                         maxLength={250}
                         ref={firstname}
-                        onKeyDown={(e) => handleKeyDown(e, lastname, firstname)}
+                        onKeyDown={(e) => {
+                          // Allow Ctrl/Cmd shortcuts
+                          if (e.ctrlKey || e.metaKey) { return; }
+                          // Allow letters, numbers, and space
+                          if (!/[a-zA-Z0-9 ]/.test(e.key)) {
+                            // Allow control/navigation keys
+                            const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Tab", "Home", "End",];
+                            if (!allowedKeys.includes(e.key)) {
+                              e.preventDefault();
+                            }
+                          }
+                          handleKeyDown(e, lastname, lastname);
+                        }}
                       />
                       {/* {error && !first_name && <div className="text-danger">First Name should not be blank</div>} */}
                     </div>
@@ -730,7 +766,19 @@ setSelectedRole(
                         onChange={(e) => setLast_name(e.target.value)}
                         maxLength={250}
                         ref={lastname}
-                        onKeyDown={(e) => handleKeyDown(e, password, lastname)}
+                        onKeyDown={(e) => {
+                          // Allow Ctrl/Cmd shortcuts
+                          if (e.ctrlKey || e.metaKey) { return; }
+                          // Allow letters, numbers, and space
+                          if (!/[a-zA-Z0-9 ]/.test(e.key)) {
+                            // Allow control/navigation keys
+                            const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Tab", "Home", "End",];
+                            if (!allowedKeys.includes(e.key)) {
+                              e.preventDefault();
+                            }
+                          }
+                          handleKeyDown(e, password, lastname);
+                        }}
                       />
                       {/* {error && !last_name && <div className="text-danger">Last Name should not be blank</div>} */}
                     </div>
@@ -956,7 +1004,8 @@ setSelectedRole(
                     <img
                       src={selectedImage || DefaultProductImage}
                       alt="Selected Preview"
-                      className="preview-image"
+                      className="avatar rounded sm mt-4"
+                      style={{ height: "200px", width: "200px" }}
                     />
                   </div>
                 </div>                  
