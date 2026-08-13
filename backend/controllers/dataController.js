@@ -661,7 +661,7 @@ const getUsercode = async (req, res) => {
     const result = await pool
     .request()
     .input("company_code", sql.NVarChar, company_code)
-    .query(`EXEC SP_user_info_hdr 'F',@company_code,'user_code','','', '' ,'','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+    .query(`EXEC SP_user_info_hdr 'F',@company_code,'user_code','','', '' ,'','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     res.json(result.recordset);
   } catch (err) {
     console.error("Error", err);
@@ -6773,7 +6773,7 @@ const updcustomerdetData = async (req, res) => {
         .input("mode", sql.NVarChar, "U")
         .input("customer_code", customer_codesToUpdate[i])
         .input("company_code", company_codesToUpdate[i])
-        .input("customer_name", sql.NVarChar, updatedRow.vendor_name)
+        .input("customer_name", sql.NVarChar, updatedRow.customer_name)
         .input("status", sql.NVarChar, updatedRow.status)
         .input("panno", sql.NVarChar, updatedRow.panno)
         .input("customer_gst_no", sql.NVarChar, updatedRow.customer_gst_no)
@@ -19169,7 +19169,8 @@ const UpdateEmployeeImage = async (req, res) => {
       .input("EmployeeId", sql.NVarChar, EmployeeId) // Add the EmployeeId for any further queries if needed
       .input("Photos", sql.VarBinary, Photos)
       .input("Modified_by", sql.NVarChar, Modified_by) // Assuming req.user.username is available
-      .query(`EXEC [sp_employee_personal]  'UI',@EmployeeId,'','','','','','','','','','','','','','','','','','',@Photos,'','','','','',@Modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC [sp_employee_personal]  'UI',@EmployeeId,'','','','','','','','','','','','','','','','','','',@Photos,'','','','','',
+        @Modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     // Return success response
     if (result.rowsAffected && result.rowsAffected[0] > 0) {
       return res.status(200).json({ success: true, message: 'Image updated successfully' });
