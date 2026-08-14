@@ -1,30 +1,40 @@
-
 import React, { useState, useEffect } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import "ag-grid-enterprise";
 import "./apps.css";
-import "./mobile.css"
+import "./mobile.css";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import swal from "sweetalert2";
 import Swal from "sweetalert2";
-import * as XLSX from 'xlsx';
-import { faPlus, faMinus} from '@fortawesome/free-solid-svg-icons'
+import * as XLSX from "xlsx";
+import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
 import JournalPopup from "./JournalPopup";
-import 'react-modern-calendar-datepicker/lib/DatePicker.css';
-import { ToastContainer, toast } from 'react-toastify';
+import "react-modern-calendar-datepicker/lib/DatePicker.css";
+import { ToastContainer, toast } from "react-toastify";
 import { Calendar } from "react-modern-calendar-datepicker";
-import LoadingScreen from './Loading';
-import { showConfirmationToast } from './ToastConfirmation';
+import LoadingScreen from "./Loading";
+import { showConfirmationToast } from "./ToastConfirmation";
 
-const config = require('./Apiconfig');
+const config = require("./Apiconfig");
 
 function JournalGrid() {
-  const [rowData, setRowData] = useState([{transaction_type:'',original_accountcode:'',contra_accountCode:'',
-    journal_amount	:0,Item_SNo	:1,narration1	:'',narration2	:'',narration3	:'',narration4:''}]);
+  const [rowData, setRowData] = useState([
+    {
+      transaction_type: "",
+      original_accountcode: "",
+      contra_accountCode: "",
+      journal_amount: 0,
+      Item_SNo: 1,
+      narration1: "",
+      narration2: "",
+      narration3: "",
+      narration4: "",
+    },
+  ]);
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
   const navigate = useNavigate();
@@ -43,18 +53,18 @@ function JournalGrid() {
   const [editedData, setEditedData] = useState([]);
   const [error, setError] = useState("");
   const [Transactiondrop, setTransactiondrop] = useState([]);
-  const [selectedTransaction, setselectedTransaction] = useState('');
+  const [selectedTransaction, setselectedTransaction] = useState("");
   // const [itemcodedrop, setitemcodedrop] = useState([]);
   const [Transdrop, setTransdrop] = useState([]);
   const [additionalData, setAdditionalData] = useState({
-    modified_by: '',
-    created_by: '',
-    modified_date: '',
-    created_date: ''
+    modified_by: "",
+    created_by: "",
+    modified_date: "",
+    created_date: "",
   });
 
-  const [financialYearStart, setFinancialYearStart] = useState('');
-  const [financialYearEnd, setFinancialYearEnd] = useState('');
+  const [financialYearStart, setFinancialYearStart] = useState("");
+  const [financialYearEnd, setFinancialYearEnd] = useState("");
   const [updateButtonVisible, setUpdateButtonVisible] = useState(false);
   const [showExcelButton, setShowExcelButton] = useState(false);
   const [saveButtonVisible, setSaveButtonVisible] = useState(true);
@@ -62,51 +72,49 @@ function JournalGrid() {
 
   const [loading, setLoading] = useState(false);
 
-
   //code added by Harish purpose of set user permisssion
-  const permissions = JSON.parse(sessionStorage.getItem('permissions')) || {};
+  const permissions = JSON.parse(sessionStorage.getItem("permissions")) || {};
   const journalPermission = permissions
-    .filter(permission => permission.screen_type === 'Journal')
-    .map(permission => permission.permission_type.toLowerCase());
+    .filter((permission) => permission.screen_type === "Journal")
+    .map((permission) => permission.permission_type.toLowerCase());
 
   useEffect(() => {
-        const companyCode = sessionStorage.getItem('selectedCompanyCode');
-        
-        fetch(`${config.apiBaseUrl}/Transaction`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            company_code: companyCode,
-          }),
-        })
+    const companyCode = sessionStorage.getItem("selectedCompanyCode");
+
+    fetch(`${config.apiBaseUrl}/Transaction`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        company_code: companyCode,
+      }),
+    })
       .then((response) => response.json())
       .then((data) => {
         // Extract city names from the fetched data
-        const Transaction = data.map(option => option.attributedetails_name);
+        const Transaction = data.map((option) => option.attributedetails_name);
         setTransdrop(Transaction);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-   useEffect(() => {
-      const companyCode = sessionStorage.getItem('selectedCompanyCode');
-  
-      fetch(`${config.apiBaseUrl}/Transaction`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          company_code: companyCode,
-        }),
-      })
-            .then((response) => response.json())
-        .then((data) => setTransactiondrop(data))
-        .catch((error) => console.error("Error fetching purchase types:", error));
-    }, []);
+  useEffect(() => {
+    const companyCode = sessionStorage.getItem("selectedCompanyCode");
 
+    fetch(`${config.apiBaseUrl}/Transaction`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        company_code: companyCode,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setTransactiondrop(data))
+      .catch((error) => console.error("Error fetching purchase types:", error));
+  }, []);
 
   const filteredOptionTransaction = Transactiondrop.map((option) => ({
     value: option.attributedetails_name,
@@ -115,14 +123,12 @@ function JournalGrid() {
 
   const handleChangetransaction = (selectedTransaction) => {
     setselectedTransaction(selectedTransaction);
-    settransaction_type(selectedTransaction ? selectedTransaction.value : '');
+    settransaction_type(selectedTransaction ? selectedTransaction.value : "");
   };
-
 
   const reloadGridData = () => {
     window.location.reload();
   };
-
 
   useEffect(() => {
     const today = new Date();
@@ -138,88 +144,104 @@ function JournalGrid() {
       endYear = currentYear;
     }
 
-    const financialYearStartDate = new Date(startYear, 3, 1).toISOString().split('T')[0]; // April 1
-    const financialYearEndDate = new Date(endYear, 2, 31).toISOString().split('T')[0]; // March 31
+    const financialYearStartDate = new Date(startYear, 3, 1)
+      .toISOString()
+      .split("T")[0]; // April 1
+    const financialYearEndDate = new Date(endYear, 2, 31)
+      .toISOString()
+      .split("T")[0]; // March 31
 
     setFinancialYearStart(financialYearStartDate);
     setFinancialYearEnd(financialYearEndDate);
+
+     // Current date as default Transaction Date
+  const currentDate = today.toISOString().split("T")[0];
+  settransaction_date(currentDate);
   }, []);
 
   const handleSearch = async () => {
     try {
-      const response = await fetch(`${config.apiBaseUrl}/getjournalSearch
-`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
+      const response = await fetch(
+        `${config.apiBaseUrl}/getjournalSearch
+`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            transaction_date,
+            transaction_type,
+            transaction_no,
+            journal_no,
+            original_accountcode,
+            contra_accountCode,
+            journal_amount,
+            narration1,
+            narration2,
+            narration3,
+            narration4,
+          }), // Send company_no and company_name as search criteria
         },
-        body: JSON.stringify({
-          transaction_date, transaction_type, transaction_no, journal_no, original_accountcode, contra_accountCode,
-          journal_amount, narration1, narration2, narration3, narration4
-        }) // Send company_no and company_name as search criteria
-      });
+      );
       if (response.ok) {
         const searchData = await response.json();
         setRowData(searchData);
-        console.log("data fetched successfully")
-
+        console.log("data fetched successfully");
       } else if (response.status === 404) {
         console.log("Data not found");
         swal.fire({
           title: "Data not found",
           text: "No data matching the search criteria",
           icon: "info",
-          confirmButtonText: "OK"
-        }) // Log the message for 404 Not Found
+          confirmButtonText: "OK",
+        }); // Log the message for 404 Not Found
       } else {
         console.log("Bad request");
         swal.fire({
           title: "Error!",
           text: "An error occurred. Please try again later",
           icon: "error",
-          confirmButtonText: "OK"
+          confirmButtonText: "OK",
         });
       } // Log the message for other errors
-
     } catch (error) {
       console.error("Error fetching search data:", error);
       swal.fire({
         title: "Error!",
         text: "An error occurred while fetching data. Please try again later",
         icon: "error",
-        confirmButtonText: "OK"
+        confirmButtonText: "OK",
       });
     }
   };
 
-  
   const handleDelete = (params) => {
     const serialNumberToDelete = params.data.Item_SNo;
-  
+
     // Filter out the row to delete
-    let updatedRowData = rowData.filter(row => row.Item_SNo !== serialNumberToDelete);
-  
-   
+    let updatedRowData = rowData.filter(
+      (row) => row.Item_SNo !== serialNumberToDelete,
+    );
+
     updatedRowData = updatedRowData.map((row, index) => ({
       ...row,
-      Item_SNo: index + 1 // Assign new serial number based on index
+      Item_SNo: index + 1, // Assign new serial number based on index
     }));
-  
-    
+
     setRowData(updatedRowData);
-  
+
     if (updatedRowData.length === 0) {
       const newRow = {
-        transaction_type: '',
-        original_accountcode: '',
-        contra_accountCode: '',
+        transaction_type: "",
+        original_accountcode: "",
+        contra_accountCode: "",
         journal_amount: 0,
-        narration1: '',
-        narration2: '',
-        narration3: '',
-        narration4: '',
-        Item_SNo: 1
-        
+        narration1: "",
+        narration2: "",
+        narration3: "",
+        narration4: "",
+        Item_SNo: 1,
       };
       setRowData([newRow]);
     }
@@ -229,10 +251,10 @@ function JournalGrid() {
     const newValue = parseFloat(params.newValue);
     if (isNaN(newValue) || newValue < 0) {
       Swal.fire({
-        icon: 'error',
-        title: 'Invalid Amount',
-        text: 'Amount cannot be negative!',
-        confirmButtonText: 'OK'
+        icon: "error",
+        title: "Invalid Amount",
+        text: "Amount cannot be negative!",
+        confirmButtonText: "OK",
       });
       return false; // Prevent the value from being set
     }
@@ -240,12 +262,8 @@ function JournalGrid() {
     return true; // Allow the value to be set
   }
 
-
-
   const columnDefs = [
-
     {
-      
       headerName: "S.NO",
       field: "Item_SNo",
       editable: true,
@@ -254,7 +272,7 @@ function JournalGrid() {
     },
 
     // {
-      
+
     //   headerName: "Transaction Date",
     //   field: "transaction_date",
     //     editable: true,
@@ -269,28 +287,36 @@ function JournalGrid() {
 
     //   },
     //   valueFormatter: (params) => {
-    //     if (!params.value) return ''; 
+    //     if (!params.value) return '';
     //     const date = new Date(params.value);
-    //     const day = date.getDate().toString().padStart(2, '0'); 
+    //     const day = date.getDate().toString().padStart(2, '0');
     //     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     //     const year = date.getFullYear();
-    //     return `${day}/${month}/${year}`; 
+    //     return `${day}/${month}/${year}`;
     //   },
 
     // },
     {
-      headerName: '',
-      field: 'delete',
+      headerName: "",
+      field: "delete",
       editable: false,
       maxWidth: 25,
-      tooltipValueGetter: (p) =>
-        "Delete",
+      tooltipValueGetter: (p) => "Delete",
       onCellClicked: handleDelete,
       cellRenderer: function (params) {
-        return <FontAwesomeIcon icon="fa-solid fa-trash" style={{ cursor: 'pointer', marginRight: "12px" }} />
+        return (
+          <FontAwesomeIcon
+            icon="fa-solid fa-trash"
+            style={{ cursor: "pointer", marginRight: "12px" }}
+          />
+        );
       },
-      cellStyle: { display: 'flex', justifyContent: 'center', alignItems: 'center' },
-      sortable: false
+      cellStyle: {
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      },
+      sortable: false,
     },
     {
       headerName: "Transaction Type",
@@ -303,10 +329,8 @@ function JournalGrid() {
         values: Transdrop,
       },
     },
-   
-   
-    {
 
+    {
       headerName: "Original Account Code",
       field: "original_accountcode",
       editable: true,
@@ -319,7 +343,6 @@ function JournalGrid() {
       },
     },
     {
-
       headerName: "Contra Account Code",
       field: "contra_accountCode",
       editable: true,
@@ -332,17 +355,14 @@ function JournalGrid() {
       },
     },
     {
-
       headerName: "Journal Amount",
       field: "journal_amount",
       editable: true,
-      valueSetter:qtyValueSetter,
+      valueSetter: qtyValueSetter,
       cellStyle: { textAlign: "left" },
       // minWidth: 150,
-     
     },
     {
-
       headerName: "Narration1",
       field: "narration1",
       editable: true,
@@ -355,7 +375,6 @@ function JournalGrid() {
       },
     },
     {
-
       headerName: "Narration2",
       field: "narration2",
       editable: true,
@@ -368,7 +387,6 @@ function JournalGrid() {
       },
     },
     {
-
       headerName: "Narration3",
       field: "narration3",
       editable: true,
@@ -381,7 +399,6 @@ function JournalGrid() {
       },
     },
     {
-
       headerName: "Narration4",
       field: "narration4",
       editable: true,
@@ -411,25 +428,22 @@ function JournalGrid() {
   };
 
   const handleSaveButtonClick = async () => {
-    if ( !transaction_date) {
+    if (!transaction_date) {
       setError("");
-            toast.warning("Missing required fields");
+      toast.warning("Missing required fields");
       return;
     }
 
     if (rowData.length === 0) {
-     toast.warning("No Inventory issued details found to save.");
+      toast.warning("No Inventory issued details found to save.");
       return;
     }
 
-    
-
     try {
-
       const Header = {
-        company_code: sessionStorage.getItem('selectedCompanyCode'),
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
         transaction_date: transaction_date,
-        created_by: sessionStorage.getItem('selectedUserCode')
+        created_by: sessionStorage.getItem("selectedUserCode"),
       };
 
       const response = await fetch(`${config.apiBaseUrl}/AddJournalHdr`, {
@@ -444,12 +458,11 @@ function JournalGrid() {
         const searchData = await response.json();
         console.log(searchData);
         const [{ journal_no }] = searchData;
-        setjournal_no(journal_no)
-        toast.success("Journal Issued Data Inserted Successfully")
+        setjournal_no(journal_no);
+        toast.success("Journal Issued Data Inserted Successfully");
 
-         await JournalDetails(journal_no);
-         console.log(JournalDetails);
-
+        await JournalDetails(journal_no);
+        console.log(JournalDetails);
       } else {
         const errorResponse = await response.json();
         console.error(errorResponse.message); // Log error message
@@ -457,29 +470,27 @@ function JournalGrid() {
       }
     } catch (error) {
       console.error("Error inserting data:", error);
-      toast.error('Error inserting data: ' + error.message);
+      toast.error("Error inserting data: " + error.message);
     }
   };
 
   const JournalDetails = async (journal_no) => {
     try {
-
-
       for (const row of rowData) {
         const Details = {
-          company_code: sessionStorage.getItem('selectedCompanyCode'),
-          created_by: sessionStorage.getItem('selectedUserCode'),
-          journal_no:journal_no,
-          transaction_date:transaction_date,
-          transaction_type:row.transaction_type,
-          original_accountcode:row.original_accountcode,
-          contra_accountCode:row.contra_accountCode,
-          journal_amount	:row.journal_amount	,
-          Item_SNo:row.Item_SNo,
-          narration1:row.narration1,
-          narration2:row.narration2,
-          narration3:row.narration3,
-          narration4:row.narration4,
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          created_by: sessionStorage.getItem("selectedUserCode"),
+          journal_no: journal_no,
+          transaction_date: transaction_date,
+          transaction_type: row.transaction_type,
+          original_accountcode: row.original_accountcode,
+          contra_accountCode: row.contra_accountCode,
+          journal_amount: row.journal_amount,
+          Item_SNo: row.Item_SNo,
+          narration1: row.narration1,
+          narration2: row.narration2,
+          narration3: row.narration3,
+          narration4: row.narration4,
         };
 
         const response = await fetch(`${config.apiBaseUrl}/AddJournalDetails`, {
@@ -499,7 +510,7 @@ function JournalGrid() {
             title: "Error!",
             text: errorResponse.message,
             icon: "error",
-            confirmButtonText: "OK"
+            confirmButtonText: "OK",
           });
         }
       }
@@ -511,77 +522,75 @@ function JournalGrid() {
   const handleDeleteButtonClick = async () => {
     if (!journal_no) {
       setError(" ");
-      toast.warning("Error: Missing required fields");      
+      toast.warning("Error: Missing required fields");
       return;
     }
 
     showConfirmationToast(
-          "Are you sure you want to delete the data ?",
-          async () => {
+      "Are you sure you want to delete the data ?",
+      async () => {
         setLoading(true);
 
-    try {
+        try {
+          const detailResult = await journaldetdata();
+          if (!detailResult) {
+            throw new Error("Detail deletion failed");
+          }
 
-      const detailResult = await journaldetdata();
-      if (!detailResult) {
-        throw new Error('Detail deletion failed');
-      }
-      
-      const headerResult = await journalhdrdata();
-      if (!headerResult) {
-        throw new Error('Header deletion failed');
-      }
+          const headerResult = await journalhdrdata();
+          if (!headerResult) {
+            throw new Error("Header deletion failed");
+          }
 
-      if (headerResult && detailResult) {
-        console.log("All API calls completed successfully");
-        // Swal.fire({
-        //   title: "Success",
-        //   text: "Successfully Deleted",
-        //   icon: "success",
-        //   confirmButtonText: "OK"
-        // }).then(() => {
-        //    window.location.reload();
-        // });
-        toast.success("Successfully Deleted", {
-                      autoClose: true,
-                      onClose: () => {
-                        window.location.reload();
-                      }
-                    });
-      } else {
-        console.log("Failed to fetch some data");
-        // Swal.fire({
-        //   title: "Error!",
-        //   text: "Reference Number Does Not Exist",
-        //   icon: "error",
-        //   confirmButtonText: "OK"
-        // });
-        const errorMessage =
+          if (headerResult && detailResult) {
+            console.log("All API calls completed successfully");
+            // Swal.fire({
+            //   title: "Success",
+            //   text: "Successfully Deleted",
+            //   icon: "success",
+            //   confirmButtonText: "OK"
+            // }).then(() => {
+            //    window.location.reload();
+            // });
+            toast.success("Successfully Deleted", {
+              autoClose: true,
+              onClose: () => {
+                window.location.reload();
+              },
+            });
+          } else {
+            console.log("Failed to fetch some data");
+            // Swal.fire({
+            //   title: "Error!",
+            //   text: "Reference Number Does Not Exist",
+            //   icon: "error",
+            //   confirmButtonText: "OK"
+            // });
+            const errorMessage =
               headerResult !== true
                 ? headerResult
                 : detailResult !== true
                   ? detailResult
                   : "An unknown error occurred.";
-        toast.error(errorMessage);
-      }
-    } catch (error) {
-      console.error("Error executing API calls:", error);
-      // Swal.fire({
-      //   title: "Error!",
-      //   text: "An error occurred while deleting data",
-      //   icon: "error",
-      //   confirmButtonText: "OK"
-      // });
-      toast.error('Error inserting data: ' + error.message);
-    }
-    finally {
-              setLoading(false);
-            }
-          },
-          () => {
-            toast.info("Data deleted cancelled.");
+            toast.error(errorMessage);
           }
-  );
+        } catch (error) {
+          console.error("Error executing API calls:", error);
+          // Swal.fire({
+          //   title: "Error!",
+          //   text: "An error occurred while deleting data",
+          //   icon: "error",
+          //   confirmButtonText: "OK"
+          // });
+          toast.error("Error inserting data: " + error.message);
+        } finally {
+          setLoading(false);
+        }
+      },
+      () => {
+        toast.info("Data deleted cancelled.");
+      },
+    );
   };
 
   const journalhdrdata = async () => {
@@ -589,12 +598,15 @@ function JournalGrid() {
       const response = await fetch(`${config.apiBaseUrl}/JournaDeleteHdr`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'),journal_no: journal_no })
+        body: JSON.stringify({
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          journal_no: journal_no,
+        }),
       });
       if (response.ok) {
-        return true
+        return true;
       } else {
         console.log("Failed to fetch some data");
       }
@@ -607,12 +619,15 @@ function JournalGrid() {
       const response = await fetch(`${config.apiBaseUrl}/JournalDeletedet`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'),journal_no: journal_no })
+        body: JSON.stringify({
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          journal_no: journal_no,
+        }),
       });
       if (response.ok) {
-        return true
+        return true;
       } else {
         console.log("Failed to fetch some data");
       }
@@ -622,8 +637,8 @@ function JournalGrid() {
   };
 
   const transformRowData = (data) => {
-    return data.map(row => ({
-      "Transaction": row.transaction_type,
+    return data.map((row) => ({
+      Transaction: row.transaction_type,
       "Original Accountcode": row.original_accountcode,
       "Contra AccountCode ": row.contra_accountCode,
       "Journal Amount": row.journal_amount.toString(),
@@ -632,7 +647,6 @@ function JournalGrid() {
       "Narration 2": row.narration2,
       "Narration 3": row.narration3,
       "Narration 4": row.narration4,
-     
     }));
   };
 
@@ -664,79 +678,77 @@ function JournalGrid() {
   // };
 
   const handleExcelDownload = () => {
-  if (rowData.length === 0 || !journal_no || !transaction_date) {
-    Swal.fire({
-      icon: "warning",
-      title: "No Data Available",
-      text: "There is no data to export.",
-    });
-    return;
-  }
-
-  const headerData = [{
-    "Journal No": journal_no,
-    "Transaction Date": transaction_date,
-  }];
-
-  const transformedData = transformRowData(rowData);
-
-  // Header Sheet
-  const headerSheet = XLSX.utils.aoa_to_sheet([
-    ["Journal"],
-    [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
-    [],
-  ]);
-
-  XLSX.utils.sheet_add_json(headerSheet, headerData, {
-    origin: "A4",
-  });
-
-  // Merge Heading
-  headerSheet["!merges"] = [
-    {
-      s: { r: 0, c: 0 }, // A1
-      e: { r: 0, c: 7 }, // H1
-    },
-    {
-      s: { r: 1, c: 0 }, // A2
-      e: { r: 1, c: 7 }, // H2
-    },
-  ];
-
-  // Details Sheet
-  const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
-
-  // Auto Fit Function
-  const autoFitColumns = (worksheet, data) => {
-    const cols = [];
-
-    data.forEach((row) => {
-      Object.keys(row).forEach((key, i) => {
-        const value = row[key] == null ? "" : row[key].toString();
-
-        cols[i] = Math.max(
-          cols[i] || key.length,
-          key.length,
-          value.length
-        );
+    if (rowData.length === 0 || !journal_no || !transaction_date) {
+      Swal.fire({
+        icon: "warning",
+        title: "No Data Available",
+        text: "There is no data to export.",
       });
+      return;
+    }
+
+    const headerData = [
+      {
+        "Journal No": journal_no,
+        "Transaction Date": transaction_date,
+      },
+    ];
+
+    const transformedData = transformRowData(rowData);
+
+    // Header Sheet
+    const headerSheet = XLSX.utils.aoa_to_sheet([
+      ["Journal"],
+      [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+      [],
+    ]);
+
+    XLSX.utils.sheet_add_json(headerSheet, headerData, {
+      origin: "A4",
     });
 
-    worksheet["!cols"] = cols.map((width) => ({
-      wch: width + 5,
-    }));
-  };
+    // Merge Heading
+    headerSheet["!merges"] = [
+      {
+        s: { r: 0, c: 0 }, // A1
+        e: { r: 0, c: 7 }, // H1
+      },
+      {
+        s: { r: 1, c: 0 }, // A2
+        e: { r: 1, c: 7 }, // H2
+      },
+    ];
 
-  // Apply Auto Width
-  autoFitColumns(headerSheet, headerData);
-  autoFitColumns(rowDataSheet, transformedData);
+    // Details Sheet
+    const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
 
-  // Workbook
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
-  XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Journal Details");
+    // Auto Fit Function
+    const autoFitColumns = (worksheet, data) => {
+      const cols = [];
 
-  XLSX.writeFile(workbook, "Journal.xlsx");
+      data.forEach((row) => {
+        Object.keys(row).forEach((key, i) => {
+          const value = row[key] == null ? "" : row[key].toString();
+
+          cols[i] = Math.max(cols[i] || key.length, key.length, value.length);
+        });
+      });
+
+      worksheet["!cols"] = cols.map((width) => ({
+        wch: width + 5,
+      }));
+    };
+
+    // Apply Auto Width
+    autoFitColumns(headerSheet, headerData);
+    autoFitColumns(rowDataSheet, transformedData);
+
+    // Workbook
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Journal Details");
+
+    XLSX.writeFile(workbook, "Journal.xlsx");
   };
   const generateReport = async () => {
     try {
@@ -746,10 +758,10 @@ function JournalGrid() {
       if (headerData && detailData) {
         console.log("All API calls completed successfully");
 
-        sessionStorage.setItem('JheaderData', JSON.stringify(headerData));
-        sessionStorage.setItem('JdetailData', JSON.stringify(detailData));
+        sessionStorage.setItem("JheaderData", JSON.stringify(headerData));
+        sessionStorage.setItem("JdetailData", JSON.stringify(detailData));
 
-        window.open('/JournalPrint', '_blank');
+        window.open("/JournalPrint", "_blank");
       } else {
         console.log("Failed to fetch some data");
         toast.warning("Trasaction ID Does Not Exits");
@@ -764,9 +776,12 @@ function JournalGrid() {
       const response = await fetch(`${config.apiBaseUrl}/JournalHdrPrint`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'),journal_no: journal_no })
+        body: JSON.stringify({
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          journal_no: journal_no,
+        }),
       });
 
       if (response.ok) {
@@ -787,9 +802,12 @@ function JournalGrid() {
       const response = await fetch(`${config.apiBaseUrl}/JournalDetPrint`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'),journal_no: journal_no })
+        body: JSON.stringify({
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          journal_no: journal_no,
+        }),
       });
 
       if (response.ok) {
@@ -805,22 +823,19 @@ function JournalGrid() {
     }
   };
 
-
- 
   const onSelectionChanged = () => {
     const selectedNodes = gridApi.getSelectedNodes();
     const selectedData = selectedNodes.map((node) => node.data);
     setSelectedRows(selectedData);
   };
 
-
-
-
   // Assuming you have a unique identifier for each row, such as 'id'
   const onCellValueChanged = (params) => {
     const updatedRowData = [...rowData];
     const rowIndex = updatedRowData.findIndex(
-      (row) => row.transaction_date === params.data.transaction_date && row.journal_no === params.data.journal_no
+      (row) =>
+        row.transaction_date === params.data.transaction_date &&
+        row.journal_no === params.data.journal_no,
     );
     if (rowIndex !== -1) {
       updatedRowData[rowIndex][params.colDef.field] = params.newValue;
@@ -834,10 +849,12 @@ function JournalGrid() {
   const saveEditedData = async () => {
     try {
       // Filter the editedData state to include only the selected rows
-      const selectedRowsData = editedData.filter(row =>
-        selectedRows.some(selectedRow =>
-          selectedRow.transaction_date === row.transaction_date && selectedRow.journal_no === row.journal_no
-        )
+      const selectedRowsData = editedData.filter((row) =>
+        selectedRows.some(
+          (selectedRow) =>
+            selectedRow.transaction_date === row.transaction_date &&
+            selectedRow.journal_no === row.journal_no,
+        ),
       );
 
       if (selectedRowsData.length === 0) {
@@ -845,7 +862,7 @@ function JournalGrid() {
           title: "No Rows Selected",
           text: "Please select a row to update its data",
           icon: "warning",
-          confirmButtonText: "OK"
+          confirmButtonText: "OK",
         });
         return;
       }
@@ -855,7 +872,7 @@ function JournalGrid() {
         icon: "question",
         showCancelButton: true,
         confirmButtonText: "Yes",
-        cancelButtonText: "No"
+        cancelButtonText: "No",
       });
 
       if (!saveConfirmation.value) {
@@ -868,23 +885,27 @@ function JournalGrid() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          transaction_datesToUpdate: selectedRowsData.map(row => row.transaction_date),
-          journal_nosToUpdate: selectedRowsData.map(row => row.journal_no),
-          updatedData: selectedRowsData
+          transaction_datesToUpdate: selectedRowsData.map(
+            (row) => row.transaction_date,
+          ),
+          journal_nosToUpdate: selectedRowsData.map((row) => row.journal_no),
+          updatedData: selectedRowsData,
         }), // Send the selected rows for saving along with their header and detail codes
       });
 
       if (response.ok) {
         setTimeout(() => {
-          swal.fire({
-            text: "Data updated successfully!",
-            icon: "success",
-            timer: 1000,
-            timerProgressBar: true,
-            showConfirmButton: false,
-          }).then(() => {
-            handleSearch();
-          });
+          swal
+            .fire({
+              text: "Data updated successfully!",
+              icon: "success",
+              timer: 1000,
+              timerProgressBar: true,
+              showConfirmButton: false,
+            })
+            .then(() => {
+              handleSearch();
+            });
         }, 1000);
       } else {
         console.error("Failed to save data");
@@ -892,7 +913,7 @@ function JournalGrid() {
           title: "Error!",
           text: "Failed to update data. Please try again later",
           icon: "error",
-          confirmButtonText: "OK"
+          confirmButtonText: "OK",
         });
       }
     } catch (error) {
@@ -901,7 +922,7 @@ function JournalGrid() {
         title: "Error!",
         text: "An error occurred while saving data. Please try again later",
         icon: "error",
-        confirmButtonText: "OK"
+        confirmButtonText: "OK",
       });
     }
   };
@@ -914,11 +935,10 @@ function JournalGrid() {
         title: "No Rows Selected",
         text: "Please select at least one row to delete",
         icon: "warning",
-        confirmButtonText: "OK"
+        confirmButtonText: "OK",
       });
       return;
     }
-
 
     const confirmDelete = await swal.fire({
       title: "Confirm Delete",
@@ -926,14 +946,16 @@ function JournalGrid() {
       icon: "question",
       showCancelButton: true,
       confirmButtonText: "Yes",
-      cancelButtonText: "No"
+      cancelButtonText: "No",
     });
 
     if (!confirmDelete.isConfirmed) {
       return;
     }
 
-    const transaction_datesToDelete = selectedRows.map((row) => row.transaction_date);
+    const transaction_datesToDelete = selectedRows.map(
+      (row) => row.transaction_date,
+    );
     const journal_noToDelete = selectedRows.map((row) => row.journal_no);
 
     try {
@@ -946,13 +968,17 @@ function JournalGrid() {
       });
 
       if (response.ok) {
-        console.log("Rows deleted successfully:", transaction_datesToDelete, journal_noToDelete);
+        console.log(
+          "Rows deleted successfully:",
+          transaction_datesToDelete,
+          journal_noToDelete,
+        );
         handleSearch(); // Fetch updated data after deletion
         swal.fire({
           title: "Success",
           text: "Rows deleted successfully",
           icon: "success",
-          confirmButtonText: "OK"
+          confirmButtonText: "OK",
         });
       } else {
         // Check if the response status is 400 for custom error handling
@@ -962,7 +988,7 @@ function JournalGrid() {
             title: "Error",
             text: errorMessage,
             icon: "error",
-            confirmButtonText: "OK"
+            confirmButtonText: "OK",
           }); // Display error message to the user
         } else {
           console.error("Failed to delete rows");
@@ -975,28 +1001,27 @@ function JournalGrid() {
         title: "Error",
         text: "An error occurred while deleting rows. Please try again later.",
         icon: "error",
-        confirmButtonText: "OK"
+        confirmButtonText: "OK",
       });
     }
   };
 
-
   const fetchAdditionalData = async (company_no) => {
     try {
       const response = await fetch(`${config.apiBaseUrl}/AdditionalData`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ company_no }), 
+        body: JSON.stringify({ company_no }),
       });
-      
+
       const result = await response.json();
       setAdditionalData({
         modified_by: result.modified_by,
         created_by: result.created_by,
         modified_date: result.modified_date,
-        created_date: result.created_date
+        created_date: result.created_date,
       });
     } catch (error) {
       console.error("Error fetching additional data:", error);
@@ -1012,15 +1037,15 @@ function JournalGrid() {
 
   const handleAddRow = () => {
     const Item_SNo = rowData.length + 1;
-    const newRow = { Item_SNo, item_code: '', qty: 0};
+    const newRow = { Item_SNo, item_code: "", qty: 0 };
     setRowData([...rowData, newRow]);
   };
 
   const handleRemoveRow = () => {
     if (rowData.length > 0) {
-      const updatedRowData = rowData.slice(0, -1); 
+      const updatedRowData = rowData.slice(0, -1);
       if (updatedRowData.length === 0) {
-        setRowData([{ Item_SNo:'', item_code: '', qty: 0}]);
+        setRowData([{ Item_SNo: "", item_code: "", qty: 0 }]);
       } else {
         setRowData(updatedRowData);
       }
@@ -1029,7 +1054,6 @@ function JournalGrid() {
 
   const handleClose = () => {
     setOpen(false);
-   
   };
 
   const handleadjustmentbtn = () => {
@@ -1041,36 +1065,35 @@ function JournalGrid() {
   const formatDate = (isoDateString) => {
     const date = new Date(isoDateString);
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+    const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
 
   const handlejournal = async (data) => {
-    setShowExcelButton(true)
+    setShowExcelButton(true);
     setSaveButtonVisible(false);
     setUpdateButtonVisible(true);
     if (data && data.length > 0) {
       const [{ JournalNo, Transactiondate }] = data;
 
-      const No = document.getElementById('JournalNo');
+      const No = document.getElementById("JournalNo");
       if (No) {
         No.value = JournalNo;
         setjournal_no(JournalNo);
       } else {
-        console.error('Journal  element not found');
+        console.error("Journal  element not found");
       }
 
-      const Date = document.getElementById('TransactionDate');
+      const Date = document.getElementById("TransactionDate");
       if (Date) {
         Date.value = Transactiondate;
         settransaction_date(formatDate(Transactiondate));
       } else {
-        console.error('transactionDate element not found');
+        console.error("transactionDate element not found");
       }
 
       await Journaldetails(JournalNo);
-
     } else {
       console.log("Data not fetched...!");
     }
@@ -1081,16 +1104,26 @@ function JournalGrid() {
       const response = await fetch(`${config.apiBaseUrl}/getJournalDetails`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ journal_no: JournalNo })
+        body: JSON.stringify({ journal_no: JournalNo }),
       });
 
       if (response.ok) {
         const searchData = await response.json();
         const newRowData = [];
-        searchData.forEach(item => {
-          const { transaction_type, original_accountcode,Item_SNo,narration1,narration4,narration3,narration2,contra_accountCode,journal_amount,} = item;
+        searchData.forEach((item) => {
+          const {
+            transaction_type,
+            original_accountcode,
+            Item_SNo,
+            narration1,
+            narration4,
+            narration3,
+            narration2,
+            contra_accountCode,
+            journal_amount,
+          } = item;
           newRowData.push({
             Item_SNo: Item_SNo,
             transaction_type: transaction_type,
@@ -1101,10 +1134,9 @@ function JournalGrid() {
             narration2: narration2,
             narration3: narration3,
             narration4: narration4,
-           
           });
         });
-        setRowData(newRowData)
+        setRowData(newRowData);
       } else if (response.status === 404) {
         console.log("Data not found");
       } else {
@@ -1114,12 +1146,9 @@ function JournalGrid() {
       console.error("Error fetching search data:", error);
     }
   };
-  
-
 
   const handleUpdateButtonClick = async () => {
-    if (!journal_no || !transaction_date ) {
-      
+    if (!journal_no || !transaction_date) {
       return;
     }
 
@@ -1128,35 +1157,30 @@ function JournalGrid() {
         title: "Error!",
         text: "No  details found to save.",
         icon: "error",
-        confirmButtonText: "OK"
+        confirmButtonText: "OK",
       });
       return;
     }
 
     try {
-
-      const [detailResult] = await Promise.all([
-        handleDeleteUpdateDetail()
-      ]);
+      const [detailResult] = await Promise.all([handleDeleteUpdateDetail()]);
 
       if (!detailResult) {
-        throw new Error('Detail deletion failed');
+        throw new Error("Detail deletion failed");
       }
 
-      await Promise.all([
-        updateJournalDetails()
-      ]);
+      await Promise.all([updateJournalDetails()]);
 
       Swal.fire({
         title: "Success",
         text: "Journal  Data Upadated Successfully",
         icon: "success",
-        confirmButtonText: "OK"
+        confirmButtonText: "OK",
       });
 
-      console.log('Update successful');
+      console.log("Update successful");
     } catch (error) {
-      console.error('Update failed:', error);
+      console.error("Update failed:", error);
     }
   };
 
@@ -1165,12 +1189,12 @@ function JournalGrid() {
       const response = await fetch(`${config.apiBaseUrl}/JournalDeletedet`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ journal_no })
+        body: JSON.stringify({ journal_no }),
       });
       if (response.ok) {
-        return true
+        return true;
       } else {
         console.log("Failed to fetch some data");
       }
@@ -1181,23 +1205,21 @@ function JournalGrid() {
 
   const updateJournalDetails = async () => {
     try {
-
-  
       for (const row of rowData) {
         const Details = {
-          company_code: sessionStorage.getItem('selectedCompanyCode'),
-          created_by: sessionStorage.getItem('selectedUserCode'),
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          created_by: sessionStorage.getItem("selectedUserCode"),
           transaction_date,
           journal_no,
-          transaction_type:row.transaction_type,
-          original_accountcode:row.original_accountcode,
-          contra_accountCode:row.contra_accountCode,
-          journal_amount:row.journal_amount,
-          Item_SNo:row.Item_SNo,
-          narration1:row.narration1,
-          narration2:row.narration2,
-          narration3:row.narration3,
-          narration4:row.narration4
+          transaction_type: row.transaction_type,
+          original_accountcode: row.original_accountcode,
+          contra_accountCode: row.contra_accountCode,
+          journal_amount: row.journal_amount,
+          Item_SNo: row.Item_SNo,
+          narration1: row.narration1,
+          narration2: row.narration2,
+          narration3: row.narration3,
+          narration4: row.narration4,
         };
 
         const response = await fetch(`${config.apiBaseUrl}/AddJournalDetails`, {
@@ -1217,7 +1239,7 @@ function JournalGrid() {
             title: "Error!",
             text: errorResponse.message,
             icon: "error",
-            confirmButtonText: "OK"
+            confirmButtonText: "OK",
           });
         }
       }
@@ -1231,20 +1253,19 @@ function JournalGrid() {
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handlejournaldata(journal_no)
+    if (e.key === "Enter") {
+      handlejournaldata(journal_no);
     }
   };
-
 
   const handlejournaldata = async (code) => {
     try {
       const response = await fetch(`${config.apiBaseUrl}/getJournaldata`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ journal_no: code }) 
+        body: JSON.stringify({ journal_no: code }),
       });
       if (response.ok) {
         setSaveButtonVisible(false);
@@ -1254,18 +1275,16 @@ function JournalGrid() {
         if (searchData.Header && searchData.Header.length > 0) {
           const item = searchData.Header[0];
           settransaction_date(formatDate(item.transaction_date));
-         
         } else {
           console.log("Header Data is empty or not found");
           // Clear the fields
-          settransaction_date('');
-          settransaction_no('');
-          settransaction_type('')
+          settransaction_date("");
+          settransaction_no("");
+          settransaction_type("");
         }
 
         if (searchData.Detail && searchData.Detail.length > 0) {
-          const updatedRowData = searchData.Detail.map(item => {
-
+          const updatedRowData = searchData.Detail.map((item) => {
             return {
               transaction_type: item.transaction_type,
               original_accountcode: item.original_accountcode,
@@ -1275,30 +1294,39 @@ function JournalGrid() {
               narration1: item.narration1,
               narration2: item.narration2,
               narration3: item.narration3,
-              narration4: item.narration4
-             
+              narration4: item.narration4,
             };
           });
 
           setRowData(updatedRowData);
         } else {
           console.log("Detail Data is empty or not found");
-          setRowData([{ Item_SNo: 1, item_code: '', qty: 0}]);
+          setRowData([{ Item_SNo: 1, item_code: "", qty: 0 }]);
         }
 
-        console.log("data fetched successfully")
+        console.log("data fetched successfully");
       } else if (response.status === 404) {
         Swal.fire({
-          icon: 'error',
-          title: 'Data not found',
-          text: 'The requested data could not be found.',
+          icon: "error",
+          title: "Data not found",
+          text: "The requested data could not be found.",
         });
 
-        settransaction_date('');
-        setjournal_no('');
-        setRowData([{transaction_type:'',original_accountcode:'',contra_accountCode:'',
-          journal_amount	:0,Item_SNo	:1,narration1	:'',narration2	:'',narration3	:'',narration4:''}]);
-
+        settransaction_date("");
+        setjournal_no("");
+        setRowData([
+          {
+            transaction_type: "",
+            original_accountcode: "",
+            contra_accountCode: "",
+            journal_amount: 0,
+            Item_SNo: 1,
+            narration1: "",
+            narration2: "",
+            narration3: "",
+            narration4: "",
+          },
+        ]);
       } else {
         console.log("Bad request"); // Log the message for other errors
       }
@@ -1307,13 +1335,13 @@ function JournalGrid() {
     }
   };
 
-   //CODE ITEM CODE TO ADD NEW ROW FUNCTION
-   const handleCellValueChanged = (params) => {
+  //CODE ITEM CODE TO ADD NEW ROW FUNCTION
+  const handleCellValueChanged = (params) => {
     const { colDef, rowIndex, newValue } = params;
     const lastRowIndex = rowData.length - 1;
 
     // Check if the change occurred in the purchaseQty field
-    if (colDef.field === 'journal_amount') {
+    if (colDef.field === "journal_amount") {
       const quantity = parseFloat(newValue);
 
       // Check if the entered quantity is positive and the row is the last one
@@ -1331,203 +1359,243 @@ function JournalGrid() {
           narration4: null,
         };
 
-        setRowData(prevRowData => [...prevRowData, newRowData]);
+        setRowData((prevRowData) => [...prevRowData, newRowData]);
       }
     }
   };
 
-
   return (
     <div className="container-fluid Topnav-screen">
-    {loading && <LoadingScreen />}
-    <ToastContainer position="top-right" className="toast-design" theme="colored" />
+      {loading && <LoadingScreen />}
+      <ToastContainer
+        position="top-right"
+        className="toast-design"
+        theme="colored"
+      />
       <div align="right">
-
-      <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
-        <div class="d-flex justify-content-between" >
-          <div className="d-flex justify-content-start "><h1 align="left" class="purbut" >
-            Journal
-          </h1></div>
-          <div className="d-flex justify-content-end me-3" >
-          {saveButtonVisible &&['add', 'all permission'].some(permission => journalPermission.includes(permission)) && (
-                <savebutton className="purbut" onClick={handleSaveButtonClick}
-                  required title="save"> <i class="fa-regular fa-floppy-disk"></i> </savebutton>
-              )}
-               {/* {updateButtonVisible && ['update', 'all permission'].some(permission => journalPermission.includes(permission)) && (
+        <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
+          <div class="d-flex justify-content-between">
+            <div className="d-flex justify-content-start ">
+              <h1 align="left" class="purbut">
+                Journal
+              </h1>
+            </div>
+            <div className="d-flex justify-content-end me-3">
+              {saveButtonVisible &&
+                ["add", "all permission"].some((permission) =>
+                  journalPermission.includes(permission),
+                ) && (
+                  <savebutton
+                    className="purbut"
+                    onClick={handleSaveButtonClick}
+                    required
+                    title="save"
+                  >
+                    {" "}
+                    <i class="fa-regular fa-floppy-disk"></i>{" "}
+                  </savebutton>
+                )}
+              {/* {updateButtonVisible && ['update', 'all permission'].some(permission => journalPermission.includes(permission)) && (
                 <savebutton className="purbut" title='update' onClick={handleUpdateButtonClick} >
                   <i class="fa-solid fa-floppy-disk"></i>
                 </savebutton>
               )} */}
-            {['delete', 'all permission'].some(permission => journalPermission.includes(permission)) && (
-                <delbutton  onClick={handleDeleteButtonClick} required title="Delete">
+              {["delete", "all permission"].some((permission) =>
+                journalPermission.includes(permission),
+              ) && (
+                <delbutton
+                  onClick={handleDeleteButtonClick}
+                  required
+                  title="Delete"
+                >
                   <i class="fa-solid fa-trash"></i>
                 </delbutton>
               )}
-            <printbutton className="purbut" title='excel' onClick={handleExcelDownload}>
-              <i class="fa-solid fa-file-excel"></i>
-            </printbutton>
+              <printbutton
+                className="purbut"
+                title="excel"
+                onClick={handleExcelDownload}
+              >
+                <i class="fa-solid fa-file-excel"></i>
+              </printbutton>
 
-             {['all permission', 'view'].some(permission => journalPermission.includes(permission)) && (
-                <printbutton class="print" className="purbut" onClick={generateReport} required title="Generate Report" >
-                   <i class="fa-solid fa-file-pdf"></i></printbutton>
+              {["all permission", "view"].some((permission) =>
+                journalPermission.includes(permission),
+              ) && (
+                <printbutton
+                  class="print"
+                  className="purbut"
+                  onClick={generateReport}
+                  required
+                  title="Generate Report"
+                >
+                  <i class="fa-solid fa-file-pdf"></i>
+                </printbutton>
               )}
 
-
-            {/* <div class="d-flex flex-row my-2 mt-3 ">
+              {/* <div class="d-flex flex-row my-2 mt-3 ">
           <button  onClick={} title="print"><i class="fa fa-print" aria-hidden="true"></i></button>
 
         
          */}
-            
-          </div>
+            </div>
           </div>
           <div className="mobileview">
-
             <div class="d-flex justify-content-between">
-            <div className="d-flex justify-content-start">
-              <h1 align="left" className="h1">
-                Journal
-              </h1></div>
-              <div class="dropdown mt-2 me-5 ms-5" >
-                  <button
-                    class="btn btn-primary dropdown-toggle p-1 show"
-                    type="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    <i class="fa-solid fa-list"></i>
-                  </button>
+              <div className="d-flex justify-content-start">
+                <h1 align="left" className="h1">
+                  Journal
+                </h1>
+              </div>
+              <div class="dropdown mt-2 me-5 ms-5">
+                <button
+                  class="btn btn-primary dropdown-toggle p-1 show"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i class="fa-solid fa-list"></i>
+                </button>
 
-                  <ul class="dropdown-menu"  href="#" id="navbarDropdownLbl" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <ul
+                  class="dropdown-menu"
+                  href="#"
+                  id="navbarDropdownLbl"
+                  role="button"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
                   <li class="iconbutton d-flex justify-content-center text-success">
-          {['add', 'all permission'].some(permission => journalPermission.includes(permission)) && (
-              <icon
-              class="icon"
-              onClick={handleSaveButtonClick}
-            > 
-            <i class="fa-regular fa-floppy-disk"></i>
-              {" "}
-            </icon>
-          )}
-        </li>
-        {/* <li class="iconbutton  d-flex justify-content-center text-danger">
+                    {["add", "all permission"].some((permission) =>
+                      journalPermission.includes(permission),
+                    ) && (
+                      <icon class="icon" onClick={handleSaveButtonClick}>
+                        <i class="fa-regular fa-floppy-disk"></i>{" "}
+                      </icon>
+                    )}
+                  </li>
+                  {/* <li class="iconbutton  d-flex justify-content-center text-danger">
           {['delete', 'all permission'].some(permission => journalPermission.includes(permission)) && (
               <icon
               class="icon" onClick={handleUpdateButtonClick} ><i class="fa-solid fa-user-minus"></i>
 </icon>
             )}
              </li> */}
-             {/* <li class="iconbutton  d-flex justify-content-center text-primary ">
+                  {/* <li class="iconbutton  d-flex justify-content-center text-primary ">
              {['update', 'all permission'].some(permission => journalPermission.includes(permission)) && (
             <icon
             class="icon"onClick={handleUpdateButtonClick} ><i class="fa-solid fa-floppy-disk"></i>
                     </icon>
             )}
              </li> */}
-             <li class="iconbutton  d-flex justify-content-center">
-             {['all permission', 'view'].some(permission => journalPermission.includes(permission)) && (
-             <icon
-             class="icon" onClick={handleDeleteButtonClick}> <i class="fa-solid fa-trash"></i>
-                    </icon>
-            )}
-               </li>
-                    <li class=" iconbutton d-flex justify-content-center">
-                      {["all permission", "view"].some((permission) =>
-                        journalPermission.includes(permission)
-                      ) && (
-                        <icon
-                          class="icon"
-                          onClick={generateReport}
-                        >
-                          <i class="fa-solid fa-file-excel"></i>
-                        </icon>
-                      )}
-                    </li>
-                  </ul>
-                </div>
-            </div></div>
-
-</div>
-       </div>
-       <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
-
-
-    
-
-     
-      <div className="row ms-3 mb-3">
-
-      <div className="col-md-3 form-group ">
-          <div class="exp-form-floating">
-            <label for="rolname" class="exp-form-labels">
-              Journal No
-            </label>
-            <div class="d-flex justify-content-end">
-            <input
-              id="JournalNo"
-              className="exp-input-field form-control"
-              type="text"
-              placeholder=""
-              required title="Please fill the journal number here"
-              value={journal_no}
-              maxLength={25}
-              onKeyPress={handleKeyPress}
-              onChange={(e) => setjournal_no(e.target.value)}
-            />
-            <div className='position-absolute mt-2 me-2'>
-                    <span  
-                    style={hovered ? { cursor: "pointer", borderRadius: "50%", backgroundColor: "#f0f0f0", padding: "10px" } : { cursor: "pointer", borderRadius: "50%", padding: "10px" }}
-                    onMouseEnter={() => setHovered(true)}
-                    onMouseLeave={() => setHovered(false)}
-                    onClick={handleadjustmentbtn}>
-                     <i class="fa fa-search"></i>
-                      </span>
-                      </div>
-                      </div>
-
-          </div>
-        </div>
-
-        <div className="col-md-3 form-group ">
-          <div class="exp-form-floating">
-            <label for="" className={`${error && !transaction_date ? 'red' : ''}`}>
-              Transaction Date<span className="text-danger">*</span>
-            </label>
-            <input
-              id="TransactionDate"
-              className="exp-input-field form-control"
-              type="date"
-              placeholder=""
-              required title="Please fill the transaction date here"
-              min={financialYearStart}
-              max={financialYearEnd}
-              value={transaction_date}
-              onChange={(e) => settransaction_date(e.target.value)}
-
-              maxLength={50}
-            />
-
+                  <li class="iconbutton  d-flex justify-content-center">
+                    {["all permission", "view"].some((permission) =>
+                      journalPermission.includes(permission),
+                    ) && (
+                      <icon class="icon" onClick={handleDeleteButtonClick}>
+                        {" "}
+                        <i class="fa-solid fa-trash"></i>
+                      </icon>
+                    )}
+                  </li>
+                  <li class=" iconbutton d-flex justify-content-center">
+                    {["all permission", "view"].some((permission) =>
+                      journalPermission.includes(permission),
+                    ) && (
+                      <icon class="icon" onClick={generateReport}>
+                        <i class="fa-solid fa-file-excel"></i>
+                      </icon>
+                    )}
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+      <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
+        <div className="row ms-3 mb-3">
+          <div className="col-md-3 form-group ">
+            <div class="exp-form-floating">
+              <label for="rolname" class="exp-form-labels">
+                Journal No
+              </label>
+              <div class="d-flex justify-content-end">
+                <input
+                  id="JournalNo"
+                  className="exp-input-field form-control"
+                  type="text"
+                  placeholder=""
+                  required
+                  title="Please fill the journal number here"
+                  value={journal_no}
+                  maxLength={25}
+                  onKeyPress={handleKeyPress}
+                  onChange={(e) => setjournal_no(e.target.value)}
+                />
+                <div className="position-absolute mt-2 me-2">
+                  <span
+                    style={
+                      hovered
+                        ? {
+                            cursor: "pointer",
+                            borderRadius: "50%",
+                            backgroundColor: "#f0f0f0",
+                            padding: "10px",
+                          }
+                        : {
+                            cursor: "pointer",
+                            borderRadius: "50%",
+                            padding: "10px",
+                          }
+                    }
+                    onMouseEnter={() => setHovered(true)}
+                    onMouseLeave={() => setHovered(false)}
+                    onClick={handleadjustmentbtn}
+                  >
+                    <i class="fa fa-search"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
 
-      <div class="d-flex justify-content-end me-5 mb-2" style={{ marginBlock: "", marginTop: "10px" }} >
-         
-         <div align="" class="d-flex justify-content-end" >
-           <icon
-             type="button"
-             class="popups-btn"
-             onClick={handleAddRow}>
-             <FontAwesomeIcon icon={faPlus} />
-           </icon>
-           <icon
-             type="button"
-             class="popups-btn"
-             onClick={handleRemoveRow}>
-             <FontAwesomeIcon icon={faMinus} />
-           </icon>
-         </div>
-       </div>
+          <div className="col-md-3 form-group ">
+            <div class="exp-form-floating">
+              <label for=""className={`${error && !transaction_date ? "red" : ""}`}>
+                Transaction Date<span className="text-danger">*</span>
+              </label>
+              <input
+                id="TransactionDate"
+                className="exp-input-field form-control"
+                type="date"
+                placeholder=""
+                required
+                title="Please fill the transaction date here"
+                min={financialYearStart}
+                max={financialYearEnd}
+                value={transaction_date}
+                onChange={(e) => settransaction_date(e.target.value)}
+                maxLength={50}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="d-flex justify-content-end me-5 mb-2"
+          style={{ marginBlock: "", marginTop: "10px" }}
+        >
+          <div align="" class="d-flex justify-content-end">
+            <icon type="button" class="popups-btn" onClick={handleAddRow}>
+              <FontAwesomeIcon icon={faPlus} />
+            </icon>
+            <icon type="button" class="popups-btn" onClick={handleRemoveRow}>
+              <FontAwesomeIcon icon={faMinus} />
+            </icon>
+          </div>
+        </div>
 
         <div class="ag-theme-alpine" style={{ height: 430, width: "100%" }}>
           <AgGridReact
@@ -1538,28 +1606,35 @@ function JournalGrid() {
             rowSelection="multiple"
             pagination={true}
             paginationAutoPageSize={true}
-            />
+          />
         </div>
-        
-       
       </div>
       <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
-       <div className="row ms-2">
-       <div className="d-flex justify-content-start">
-       <p className="col-md-6">Created_by: {additionalData.created_by}</p>
-       <p className="col-md-">Created_date: {additionalData.created_date}</p>
-       
-       </div>
-       <div className="d-flex justify-content-start">
-       <p className="col-md-6">modified_by: {additionalData.modified_by} </p>
-       <p className="col-md-6">modified_date:  {additionalData.modified_date}</p>
-       </div>
-       </div>
-       <div>
-       <JournalPopup open={open} handleClose={handleClose} handlejournal={handlejournal}/>
-       </div>
-       </div>
+        <div className="row ms-2">
+          <div className="d-flex justify-content-start">
+            <p className="col-md-6">Created_by: {additionalData.created_by}</p>
+            <p className="col-md-">
+              Created_date: {additionalData.created_date}
+            </p>
+          </div>
+          <div className="d-flex justify-content-start">
+            <p className="col-md-6">
+              modified_by: {additionalData.modified_by}{" "}
+            </p>
+            <p className="col-md-6">
+              modified_date: {additionalData.modified_date}
+            </p>
+          </div>
+        </div>
+        <div>
+          <JournalPopup
+            open={open}
+            handleClose={handleClose}
+            handlejournal={handlejournal}
+          />
+        </div>
       </div>
+    </div>
   );
 }
 

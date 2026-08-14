@@ -1629,6 +1629,10 @@ finally {
 
     setFinancialYearStart(financialYearStartDate);
     setFinancialYearEnd(financialYearEndDate);
+
+    // Current date as default Transaction Date
+  const currentDate = today.toISOString().split("T")[0];
+  setTransactionDate(currentDate);
   }, []);
 
   const handleAddRow = () => {
@@ -1806,7 +1810,8 @@ finally {
                   min={financialYearStart}
                   max={financialYearEnd}                  
                   value={transactionDate}
-                  onChange={handleTransactionDateChange}
+                  // onChange={handleTransactionDateChange}
+                  onChange={(e) => setTransactionDate(e.target.value)}
                   autoComplete="off"
                 />
               </div>
