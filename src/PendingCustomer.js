@@ -305,6 +305,10 @@ function AssetsReturn({ }) {
         setGridApi(params.api);
     };
 
+    const handleReload = () => {
+    window.location.reload();
+    };
+
     return (
         <div class="container-fluid Topnav-screen">
             <ToastContainer position="top-right" className="toast-design" theme="colored" />
@@ -319,6 +323,9 @@ function AssetsReturn({ }) {
                                 <i class="fa-regular fa-floppy-disk"></i>
                             </savebutton>
                         )}
+                        <printbutton className="purbut" onClick={handleReload} title='Reload'>
+                          <i class="fa-solid fa-arrow-rotate-right"></i>
+                        </printbutton>
                     </div>
                     <div className="mobileview">
                         <div class=" d-flex justify-content-between ">
