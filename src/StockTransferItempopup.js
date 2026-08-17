@@ -8,6 +8,7 @@ import 'ag-grid-autocomplete-editor/dist/main.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import Swal from 'sweetalert2';
+import { ToastContainer,toast } from 'react-toastify';
 import LoadingScreen from './Loading';
 const config = require('./Apiconfig');
 
@@ -213,18 +214,20 @@ export default function StockTransferItemPopup({ open, handleClose, handleItem }
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ Item_code, Item_variant, Item_name, Item_short_name, Item_Our_Brand, status }) // Send company_no and company_name as search criteria
+        body: JSON.stringify({ Item_code, Item_variant, Item_name, Item_short_name, Item_Our_Brand, status, company_code: sessionStorage.getItem('selectedCompanyCode') }) // Send company_no and company_name as search criteria
       });
       if (response.ok) {
         const searchData = await response.json();
         setRowData(searchData);
         console.log("data fetched successfully")
       } else if (response.status === 404) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Data not found!',
-        }).then(() => {
+        // Swal.fire({
+        //   icon: 'error',
+        //   title: 'Oops...',
+        //   text: 'Data not found!',
+        // })
+        toast.warning("Data Not Found")
+        .then(() => {
           setRowData([]);
           clearInputs([])
         });

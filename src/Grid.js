@@ -979,7 +979,7 @@ function Grid() {
               <input
                 id="pin"
                 className="exp-input-field form-control"
-                type="text"  // Changed to text to enforce maxLength
+                type="number"  // Changed to text to enforce maxLength
                 placeholder=""
                 required
                 title="Please fill the Pin Code here"
