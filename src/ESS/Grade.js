@@ -54,7 +54,9 @@ function Input({ }) {
        Other_Allowance:parseFloat(Other_Allowance),
        LeaveDeduction:parseFloat(LeaveDeduction),
        otherDeductions:parseFloat(otherDeductions),
-       created_by:sessionStorage.getItem('selectedUserCode')
+       created_by:sessionStorage.getItem('selectedUserCode'),
+       company_code: sessionStorage.getItem("selectedCompanyCode"),
+       Location_Code: sessionStorage.getItem('selectedLocationCode')
       };
 
       const response = await fetch(`${config.apiBaseUrl}/addGrade`, {
@@ -102,7 +104,9 @@ function Input({ }) {
        Other_Allowance:parseFloat(Other_Allowance),
        LeaveDeduction:parseFloat(LeaveDeduction),
        otherDeductions:parseFloat(otherDeductions),
-       modified_by:sessionStorage.getItem('selectedUserCode')
+       modified_by:sessionStorage.getItem('selectedUserCode'),
+       company_code: sessionStorage.getItem("selectedCompanyCode"),
+       Location_Code: sessionStorage.getItem('selectedLocationCode')
       };
 
       const response = await fetch(`${config.apiBaseUrl}/updateGrade`, {
@@ -138,7 +142,10 @@ function Input({ }) {
     try {
       
       const Header = {
-       GradeID: GradeID
+       GradeID: GradeID,
+       company_code: sessionStorage.getItem("selectedCompanyCode"),
+       Location_Code: sessionStorage.getItem('selectedLocationCode')
+
       };
 
       const response = await fetch(`${config.apiBaseUrl}/deleteGrade`, {

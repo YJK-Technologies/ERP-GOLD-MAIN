@@ -74,7 +74,7 @@ function Input({ }) {
 
   
   const handleNavigateWithRowData = (selectedRow) => {
-    navigate("/Grade", { state: { mode: "update", selectedRow } });
+    navigate("/EmployeeGrade", { state: { mode: "update", selectedRow } });
   };
 
   const handleNavigate = () => {
@@ -288,6 +288,7 @@ function Input({ }) {
        ctc_currency:ctccurrency,
        minimum_take_salary:parseFloat(minimumtakesalary),
        company_code:sessionStorage.getItem('selectedCompanyCode'),
+       Location_Code: sessionStorage.getItem('selectedLocationCode'),
        created_by:sessionStorage.getItem('selectedUserCode')
       };
 
@@ -337,6 +338,7 @@ function Input({ }) {
         salary_range_to:parseFloat(SalaryrangeTo),
         minimum_take_salary:parseFloat(minimum_take_salary),
         company_code: sessionStorage.getItem("selectedCompanyCode"),
+        Location_Code: sessionStorage.getItem('selectedLocationCode')
       }
       const response = await fetch(`${config.apiBaseUrl}/GradeSC`, {
         method: "POST",
@@ -386,41 +388,86 @@ function Input({ }) {
 
 
 
-       const saveEditedData = async () => {
+    //    const saveEditedData = async () => {
 
-        try {
-          const company_code = sessionStorage.getItem('selectedCompanyCode');
-          const modified_by = sessionStorage.getItem('selectedUserCode');
+    //     try {
+    //       const company_code = sessionStorage.getItem('selectedCompanyCode');
+    //       const Location_Code = sessionStorage.getItem('selectedLocation_Code');
+    //       const modified_by = sessionStorage.getItem('selectedUserCode');
   
-          const dataToSend = { editedData: Array.isArray(rowData) ? rowData : [rowData] };
+    //       const dataToSend = { editedData: Array.isArray(rowData) ? rowData : [rowData] };
   
-            const response = await fetch(`${config.apiBaseUrl}/updateGrade `, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "company_code":company_code,
-                "modified_by":modified_by
-              },
-              body: JSON.stringify(dataToSend)
-            });
+    //         const response = await fetch(`${config.apiBaseUrl}/updateGrade`, {
+    //           method: "POST",
+    //           headers: {
+    //             "Content-Type": "application/json",
+    //             "company_code":company_code,
+    //             "Location_Code":Location_Code,
+    //             "modified_by":modified_by
+    //           },
+    //           body: JSON.stringify(dataToSend)
+    //         });
   
-            if (response.ok) {
-              toast.success("Data updated successfully", {
-                onClose: () => handleSearch(), // Runs handleSearch when toast closes
-              });
-            } else {
-              const errorResponse = await response.json();
-              toast.warning(errorResponse.message || "Failed to insert sales data");
-            }
-          } catch (error) {
-            console.error("Error deleting rows:", error);
-            toast.error('Error Deleting Data: ' + error.message);
-          }
-     };
+    //         if (response.ok) {
+    //           toast.success("Data updated successfully", {
+    //             onClose: () => handleSearch(), // Runs handleSearch when toast closes
+    //           });
+    //         } else {
+    //           const errorResponse = await response.json();
+    //           toast.warning(errorResponse.message || "Failed to insert sales data");
+    //         }
+    //       } catch (error) {
+    //         console.error("Error deleting rows:", error);
+    //         toast.error('Error Deleting Data: ' + error.message);
+    //       }
+    //  };
   
+    const saveEditedData = async () => {
+  try {
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+    const Location_Code = sessionStorage.getItem("selectedLocationCode");
+    const modified_by = sessionStorage.getItem("selectedUserCode");
+
+    console.log("Company Code:", company_code);
+    console.log("Location Code:", Location_Code);
+    console.log("Modified By:", modified_by);
+
+    const dataToSend = {
+      editedData: Array.isArray(rowData) ? rowData : [rowData],
+    };
+
+    const response = await fetch(`${config.apiBaseUrl}/updateGrade`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "company_code": company_code || "",
+        "Location_Code": Location_Code || "",
+        "modified_by": modified_by || "",
+      },
+      body: JSON.stringify(dataToSend),
+    });
+
+    if (response.ok) {
+      toast.success("Data updated successfully", {
+        onClose: () => handleSearch(),
+      });
+    } else {
+      const errorResponse = await response.json();
+
+      toast.warning(
+        errorResponse.message || "Failed to update grade data"
+      );
+    }
+  } catch (error) {
+    console.error("Error updating grade data:", error);
+    toast.error("Error Updating Data: " + error.message);
+  }
+};
+
      const deleteSelectedRows = async (rowData) => {
       const GradeIDDelete = { GradeIDToDelete: Array.isArray(rowData) ? rowData : [rowData] };
       const company_code = sessionStorage.getItem('selectedCompanyCode');
+      const Location_Code = sessionStorage.getItem('selectedLocationCode');
 
       showConfirmationToast(
         "Are you sure you want to delete the data in the selected rows?",
@@ -431,6 +478,7 @@ function Input({ }) {
               headers: {
                 "Content-Type": "application/json",
                 "company_code":company_code,
+                "Location_Code":Location_Code,
 
               },
               body: JSON.stringify(GradeIDDelete),

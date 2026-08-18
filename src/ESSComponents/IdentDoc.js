@@ -126,7 +126,9 @@ function Input({ }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ Id: code, company_code: sessionStorage.getItem("selectedCompanyCode"), })
+        body: JSON.stringify({ Id: code, company_code: sessionStorage.getItem("selectedCompanyCode"),
+          Location_Code: sessionStorage.getItem('selectedLocationCode')
+         })
       });
 
       if (response.ok) {
