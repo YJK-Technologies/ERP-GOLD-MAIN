@@ -183,7 +183,9 @@ export default function EmployeeInfoPopup({ open, handleClose, EmployeeInfo }) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({EmployeeId, Last_Name, First_Name, DOB,company_code: sessionStorage.getItem('selectedCompanyCode') })
+        body: JSON.stringify({EmployeeId, Last_Name, First_Name, DOB,company_code: sessionStorage.getItem('selectedCompanyCode'),
+          Location_Code: sessionStorage.getItem('selectedLocationCode')
+         })
       });
       if (response.ok) {
         const searchData = await response.json();

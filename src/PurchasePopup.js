@@ -204,8 +204,6 @@ export default function ItemPopup({ open, handleClose, handlePurchaseData }) {
         <fieldset>
           <div>
                     {loading && <LoadingScreen />}
-            
-          <ToastContainer position="top-right" className="toast-design" theme="colored" />
             <div className="purbut">
               <div className="modal mt-5 Topnav-screen popup popupadj" tabIndex="-1" role="dialog" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
                 <div className="modal-dialog modal-xl ps-5 p-1 pe-5" role="document">

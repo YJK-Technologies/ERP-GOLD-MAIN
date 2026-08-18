@@ -638,6 +638,7 @@ const handleSearch = async () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
       company_code: sessionStorage.getItem("selectedCompanyCode"),
+      Location_Code: sessionStorage.getItem('selectedLocationCode')
 
       }),
   })

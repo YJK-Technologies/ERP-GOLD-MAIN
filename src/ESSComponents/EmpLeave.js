@@ -113,7 +113,8 @@ function Input({ }) {
           Type:type,
           Accrual: accrual,
           Exceed_Leave:Exceedleave,
-company_code :sessionStorage.getItem('selectedCompanyCode'),          
+          company_code :sessionStorage.getItem('selectedCompanyCode'),   
+          Location_Code: sessionStorage.getItem('selectedLocationCode'),       
          })
       });
       if (response.ok) {
@@ -175,7 +176,7 @@ company_code :sessionStorage.getItem('selectedCompanyCode'),
     
       headerName: "Leave ID",
       field: "LeaveId",
-      editable: true,
+      editable: false,
       cellStyle: { textAlign: "left" },
       // minWidth: 150,
       // maxWidth: 150,
@@ -538,6 +539,7 @@ company_code :sessionStorage.getItem('selectedCompanyCode'),
               Exceed_Leave,
               LeaveReason,
               company_code: sessionStorage.getItem('selectedCompanyCode'),
+              Location_Code: sessionStorage.getItem('selectedLocationCode'),
               created_by: sessionStorage.getItem('selectedUserCode'),
             };
 
@@ -572,6 +574,7 @@ company_code :sessionStorage.getItem('selectedCompanyCode'),
 
           try {
             const company_code = sessionStorage.getItem('selectedCompanyCode');
+            const Location_Code = sessionStorage.getItem('selectedLocationCode');
             const modified_by = sessionStorage.getItem('selectedUserCode');
     
             const dataToSend = { editedData: Array.isArray(rowData) ? rowData : [rowData] };
@@ -581,6 +584,7 @@ company_code :sessionStorage.getItem('selectedCompanyCode'),
                 headers: {
                   "Content-Type": "application/json",
                   "company_code":company_code,
+                  "Location_Code":Location_Code,
                   "modified_by":modified_by
                 },
                 body: JSON.stringify(dataToSend)
