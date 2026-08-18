@@ -18439,29 +18439,67 @@ const allGradeData = async (req, res) => {
   }
 };
 
-const deleteGrade = async (req, res) => {
+// const deleteGrade = async (req, res) => {
 
+//   const GradeIDToDelete = req.body.GradeIDToDelete;
+
+//   if (!GradeIDToDelete || !GradeIDToDelete.length) {
+//     res.status(400).json("Invalid or empty editedData array.");
+//     return;
+//   }
+//   try {
+//     const pool = await connection.connectToDatabase();
+//     for (const updatedRow of GradeIDToDelete) {
+//       await pool
+//         .request()
+//         .input("mode", sql.NVarChar, "D")
+//         .input("GradeID", sql.NVarChar, updatedRow.GradeID)
+//         .input("company_code", sql.NVarChar, req.headers['company_code'])
+//         .input("Location_Code", sql.NVarChar, req.headers['Location_Code'])
+//         .query(`EXEC sp_Grade 'D',@GradeID,'',0,0,0,0,0,0,0,0,0,0,'',0,0,0,@company_code,@Location_Code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+//     }
+//     res.status(200).json("Data Deleted Successfully");
+//   } catch (err) {
+//     console.error("Error", err);
+//     res.status(500).json({ message: err.message || 'Internal Server Error' });
+//   }
+// };
+
+const deleteGrade = async (req, res) => {
   const GradeIDToDelete = req.body.GradeIDToDelete;
 
   if (!GradeIDToDelete || !GradeIDToDelete.length) {
-    res.status(400).json("Invalid or empty editedData array.");
-    return;
+    return res.status(400).json({
+      message: "Invalid or empty GradeIDToDelete array.",
+    });
   }
+
   try {
     const pool = await connection.connectToDatabase();
+
+    // Get company and location from headers
+    const company_code = req.headers["company_code"];
+    const Location_Code = req.headers["location_code"];
+
     for (const updatedRow of GradeIDToDelete) {
       await pool
         .request()
         .input("mode", sql.NVarChar, "D")
         .input("GradeID", sql.NVarChar, updatedRow.GradeID)
-        .input("company_code", sql.NVarChar, req.headers['company_code'])
-        .input("Location_Code", sql.NVarChar, req.headers['Location_Code'])
-        .query(`EXEC sp_Grade 'D',@GradeID,'',0,0,0,0,0,0,0,0,0,0,'',0,0,0,@company_code,@Location_Code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+        .input("company_code", sql.NVarChar, company_code)
+        .input("Location_Code", sql.NVarChar, Location_Code)
+        .query(`EXEC sp_Grade 'D', @GradeID, '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, 
+          @company_code, @Location_Code, '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
     }
-    res.status(200).json("Data Deleted Successfully");
+
+    return res.status(200).json("Data Deleted Successfully");
+
   } catch (err) {
-    console.error("Error", err);
-    res.status(500).json({ message: err.message || 'Internal Server Error' });
+    console.error("Error deleting Grade:", err);
+
+    return res.status(500).json({
+      message: err.message || "Internal Server Error",
+    });
   }
 };
 
@@ -18481,29 +18519,6 @@ const updateGrade = async (req, res) => {
     const company_code = req.headers["company_code"];
     const Location_Code = req.headers["location_code"];
     const modified_by = req.headers["modified_by"];
-
-    console.log("Company Code:", company_code);
-    console.log("Location Code:", Location_Code);
-    console.log("Modified By:", modified_by);
-
-    // Validate required values
-    if (!company_code) {
-      return res.status(400).json({
-        message: "Company code is missing.",
-      });
-    }
-
-    // if (!Location_Code) {
-    //   return res.status(400).json({
-    //     message: "Location code is missing.",
-    //   });
-    // }
-
-    if (!modified_by) {
-      return res.status(400).json({
-        message: "Modified by is missing.",
-      });
-    }
 
     for (const updatedRow of editedData) {
       await pool
@@ -19622,7 +19637,7 @@ const getMartial = async (req, res) => {
 
 const addLeaveType = async (req, res) => {
   const {
-    company_code,LeaveId, Description, code, Type, Accrual, TotalDaystoBeCredit, carryForward, Exceed_Leave, LeaveReason,
+    company_code,Location_Code, LeaveId, Description, code, Type, Accrual, TotalDaystoBeCredit, carryForward, Exceed_Leave, LeaveReason,
     created_by, modified_by,
     tempstr1, tempstr2, tempstr3, tempstr4, datetime1, datetime2, datetime3, datetime4,
 
@@ -19634,6 +19649,7 @@ const addLeaveType = async (req, res) => {
       .request()
       .input("mode", sql.VarChar, "I") // Insert mode
       .input("company_code", sql.VarChar,  company_code)
+      .input("Location_Code", sql.VarChar,  Location_Code)
       .input("LeaveId", sql.VarChar, LeaveId)
       .input("Description", sql.VarChar, Description)
       .input("code", sql.VarChar, code)
@@ -19654,7 +19670,10 @@ const addLeaveType = async (req, res) => {
       .input("datetime3", sql.VarChar, datetime3)
       .input("datetime4", sql.VarChar, datetime4)
       .query(
-        `EXEC sp_LeaveTypes @mode,@company_code,@LeaveId,@Description,@code,@Type,@Accrual,@TotalDaystoBeCredit,@carryForward,@Exceed_Leave,@LeaveReason,@created_by,@modified_by,@tempstr1,@tempstr2,@tempstr3,@tempstr4,@datetime1,@datetime2,@datetime3,@datetime4`);
+        `EXEC sp_LeaveTypes @mode,@company_code,@Location_Code,@LeaveId,@Description,
+        @code,@Type,@Accrual,@TotalDaystoBeCredit,@carryForward,@Exceed_Leave,
+        @LeaveReason,@created_by,@modified_by,@tempstr1,@tempstr2,@tempstr3,@tempstr4,
+        @datetime1,@datetime2,@datetime3,@datetime4`);
     res.json({ success: true, message: "Data inserted successfully" });
   } catch (err) {
     console.error("Error inserting data:", err);
@@ -23644,14 +23663,15 @@ const getPendingCustomer = async (req, res) => {
 
 const getsearchLeavetypes = async (req, res) => {
 
-  const { company_code } = req.body;
+  const { company_code, Location_Code } = req.body;
   try {
     const pool = await connection.connectToDatabase();
     const result = await pool
       .request()
       .input("mode", sql.NVarChar, "A")
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_LeaveTypes 'A',@company_code,'','','','','',0,0,'','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+      .input("Location_Code", sql.NVarChar, Location_Code)
+      .query(`EXEC sp_LeaveTypes 'A',@company_code,@Location_Code,'','','','','',0,0,'','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
 `);
 
     res.json(result.recordset);
@@ -23663,7 +23683,7 @@ const getsearchLeavetypes = async (req, res) => {
 
 
 const getLeaveTypeSearch = async (req, res) => {
-  const { company_code,LeaveId, code, Type, Accrual, Exceed_Leave } = req.body;
+  const { company_code, Location_Code, LeaveId, code, Type, Accrual, Exceed_Leave } = req.body;
 
   try {
     // Connect to the database
@@ -23674,13 +23694,15 @@ const getLeaveTypeSearch = async (req, res) => {
       .request()
       .input("mode", sql.VarChar, "SCL")
       .input("company_code", sql.VarChar, company_code)
+      .input("Location_Code", sql.VarChar, Location_Code)
       .input("LeaveId", sql.VarChar, LeaveId)
       .input("code", sql.VarChar, code)
       .input("Type", sql.VarChar, Type)
       .input("Accrual", sql.NVarChar, Accrual)
       .input("Exceed_Leave", sql.VarChar, Exceed_Leave)
 
-      .query(`EXEC sp_LeaveTypes @mode,@company_code,@LeaveId,'',@code,@Type,@Accrual,0,0,@Exceed_Leave,'','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_LeaveTypes @mode,@company_code,@Location_Code,@LeaveId,'',@code,@Type,@Accrual,0,0,@Exceed_Leave,
+        '','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     // Send response
     if (result.recordset.length > 0) {
@@ -26555,7 +26577,8 @@ const deleteLeave = async (req, res) => {
         .input("mode", sql.NVarChar, "D")
         .input("LeaveId", sql.NVarChar, updatedRow.LeaveId)
         .input("company_code", sql.NVarChar, updatedRow.company_code)
-        .query(`EXEC sp_LeaveTypes @mode,@company_code,@LeaveId,'','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+        .input("Location_Code", sql.NVarChar, updatedRow.Location_Code)
+        .query(`EXEC sp_LeaveTypes @mode,@company_code,@Location_Code,@LeaveId,'','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     }
     res.status(200).json("Data Deleted Successfully");
   } catch (err) {
@@ -26581,6 +26604,7 @@ const UpdateLeaveType = async (req, res) => {
         .request()
         .input("mode", sql.VarChar, "U") // Insert mode
         .input("company_code", sql.VarChar, updatedRow.company_code)
+        .input("Location_Code", sql.VarChar, updatedRow.Location_Code)
         .input("LeaveId", sql.VarChar, updatedRow.LeaveId)
         .input("Description", sql.VarChar, updatedRow.Description)
         .input("code", sql.VarChar, updatedRow.code)
@@ -26593,7 +26617,7 @@ const UpdateLeaveType = async (req, res) => {
         .input("modified_by", sql.NVarChar, updatedRow.modified_by)
 
         .query(
-          `EXEC sp_LeaveTypes @mode,@company_code,@LeaveId,@Description,@code,@Type,@Accrual,@TotalDaystoBeCredit,@carryForward,@Exceed_Leave,@LeaveReason,'',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+          `EXEC sp_LeaveTypes @mode,@company_code,@Location_Code,@LeaveId,@Description,@code,@Type,@Accrual,@TotalDaystoBeCredit,@carryForward,@Exceed_Leave,@LeaveReason,'',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     } res.json({ success: true, message: "Data inserted successfully" });
   } catch (err) {
     console.error("Error", err);
@@ -27878,14 +27902,15 @@ const getDocument = async (req, res) => {
 
 //code added by mathu-15-04-2025
 const getapplyLeavetype = async (req, res) => {
-  const { company_code } = req.body;
+  const { company_code, Location_Code } = req.body;
   try {
     const pool = await connection.connectToDatabase();
     const result = await pool
       .request()
       .input("mode", sql.NVarChar, "F")
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_LeaveTypes @mode,@company_code,'','','','','',0,0,'','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .input("Location_Code", sql.NVarChar, Location_Code)
+      .query(`EXEC sp_LeaveTypes @mode,@company_code,@Location_Code,'','','','','',0,0,'','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     res.json(result.recordset);
   } catch (err) {

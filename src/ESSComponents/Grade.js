@@ -74,7 +74,7 @@ function Input({ }) {
 
   
   const handleNavigateWithRowData = (selectedRow) => {
-    navigate("/Grade", { state: { mode: "update", selectedRow } });
+    navigate("/EmployeeGrade", { state: { mode: "update", selectedRow } });
   };
 
   const handleNavigate = () => {
