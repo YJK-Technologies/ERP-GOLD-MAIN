@@ -30,7 +30,7 @@ function NumberSeriesGrid() {
   const [statusgriddrop, setStatusGriddrop] = useState([]);
   const [booleangriddrop, setBooleangriddrop] = useState([]);
   const [loading, setLoading] = useState(false);
-const [billFormatDropGrid, setBillFormatDropGrid] = useState([]);
+  const [billFormatDropGrid, setBillFormatDropGrid] = useState([]);
   const [createdBy, setCreatedBy] = useState("");
   const [modifiedBy, setModifiedBy] = useState("");
   const [createdDate, setCreatedDate] = useState("");
