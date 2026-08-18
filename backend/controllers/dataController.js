@@ -18389,7 +18389,7 @@ const updateEmployeeLoan = async (req, res) => {
 
 const addGrade = async (req, res) => {
   const { GradeID, GradeName, Basic, HRA, Conveyance, Medical, Special_Allowance, Company_Pf_Contribution, Bonus_Arrears, Other_Allowance, LeaveDeduction, otherDeductions,
-    ctc_currency, minimum_take_salary, company_code, salary_range_from,salary_range_to,created_by
+    ctc_currency, minimum_take_salary, company_code, Location_Code, salary_range_from,salary_range_to,created_by
   } = req.body;
   let pool;
   try {
@@ -18414,8 +18414,9 @@ const addGrade = async (req, res) => {
       .input("salary_range_from", sql.Decimal(10,2), salary_range_from)
       .input("salary_range_to", sql.Decimal(10,2), salary_range_to)
       .input("company_code", sql.NVarChar, company_code)
+      .input("Location_Code", sql.NVarChar, Location_Code)
       .input("created_by", sql.NVarChar, created_by)
-      .query(`EXEC sp_Grade @mode,@GradeID,@GradeName,@Basic,@HRA,@Conveyance,@Medical,@Special_Allowance,@Company_Pf_Contribution,@Bonus_Arrears,@Other_Allowance,@LeaveDeduction,@otherDeductions,@ctc_currency,@minimum_take_salary,@salary_range_from,@salary_range_to,@company_code,@created_by,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_Grade @mode,@GradeID,@GradeName,@Basic,@HRA,@Conveyance,@Medical,@Special_Allowance,@Company_Pf_Contribution,@Bonus_Arrears,@Other_Allowance,@LeaveDeduction,@otherDeductions,@ctc_currency,@minimum_take_salary,@salary_range_from,@salary_range_to,@company_code,@Location_Code,@created_by,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     res.status(200).json("Grade data inserted successfully");
   } catch (err) {
     console.error("Error inserting data:", err);
@@ -18429,7 +18430,7 @@ const addGrade = async (req, res) => {
 const allGradeData = async (req, res) => {
   try {
     await connection.connectToDatabase();
-    const result = await sql.query(`EXEC sp_Grade 'A','','',0,0,0,0,0,0,0,0,0,0,'',0,0,0,'','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+    const result = await sql.query(`EXEC sp_Grade 'A','','',0,0,0,0,0,0,0,0,0,0,'',0,0,0,'','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     res.json(result.recordset);
   } catch (err) {
@@ -18454,7 +18455,8 @@ const deleteGrade = async (req, res) => {
         .input("mode", sql.NVarChar, "D")
         .input("GradeID", sql.NVarChar, updatedRow.GradeID)
         .input("company_code", sql.NVarChar, req.headers['company_code'])
-        .query(`EXEC sp_Grade 'D',@GradeID,'',0,0,0,0,0,0,0,0,0,0,'',0,0,0,@company_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+        .input("Location_Code", sql.NVarChar, req.headers['Location_Code'])
+        .query(`EXEC sp_Grade 'D',@GradeID,'',0,0,0,0,0,0,0,0,0,0,'',0,0,0,@company_code,@Location_Code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     }
     res.status(200).json("Data Deleted Successfully");
   } catch (err) {
@@ -18474,6 +18476,35 @@ const updateGrade = async (req, res) => {
 
   try {
     const pool = await connection.connectToDatabase();
+
+    // Get company/location/user from headers
+    const company_code = req.headers["company_code"];
+    const Location_Code = req.headers["location_code"];
+    const modified_by = req.headers["modified_by"];
+
+    console.log("Company Code:", company_code);
+    console.log("Location Code:", Location_Code);
+    console.log("Modified By:", modified_by);
+
+    // Validate required values
+    if (!company_code) {
+      return res.status(400).json({
+        message: "Company code is missing.",
+      });
+    }
+
+    // if (!Location_Code) {
+    //   return res.status(400).json({
+    //     message: "Location code is missing.",
+    //   });
+    // }
+
+    if (!modified_by) {
+      return res.status(400).json({
+        message: "Modified by is missing.",
+      });
+    }
+
     for (const updatedRow of editedData) {
       await pool
         .request()
@@ -18494,10 +18525,11 @@ const updateGrade = async (req, res) => {
         .input("minimum_take_salary", sql.Decimal(14, 3), updatedRow.minimum_take_salary)
         .input("salary_range_from", sql.Decimal(10,2), updatedRow.salary_range_from)
         .input("salary_range_to", sql.Decimal(10,2), updatedRow.salary_range_to)
-        .input("company_code", sql.NVarChar, req.headers['company_code'])
-        .input("modified_by", sql.NVarChar, updatedRow.modified_by)
+        .input("company_code", sql.NVarChar, company_code)
+        .input("Location_Code", sql.NVarChar, Location_Code)
+        .input("modified_by", sql.NVarChar, modified_by)
         .query(`EXEC sp_Grade @mode,@GradeID,@GradeName,@Basic,@HRA,@Conveyance,@Medical,@Special_Allowance,@Company_Pf_Contribution,@Bonus_Arrears,@Other_Allowance,@LeaveDeduction,
-        @otherDeductions,@ctc_currency,@minimum_take_salary,@salary_range_from,@salary_range_to,@company_code,'',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+        @otherDeductions,@ctc_currency,@minimum_take_salary,@salary_range_from,@salary_range_to,@company_code,@Location_Code,'',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     } res.status(200).json("Grade data updated successfully");
   } catch (err) {
     console.error("Error", err);
@@ -19155,7 +19187,7 @@ const getAllemployeedoc = async (req, res) => {
 };
 
 const UpdateEmployeeImage = async (req, res) => {
-  const { EmployeeId, Modified_by } = req.body; // Assuming EmployeeId is sent in the body
+  const { EmployeeId, Modified_by, company_code, Location_Code } = req.body; // Assuming EmployeeId is sent in the body
   let Photos = null;
   if (req.file) {
     Photos = req.file.buffer; // Buffer containing the uploaded image
@@ -19169,7 +19201,9 @@ const UpdateEmployeeImage = async (req, res) => {
       .input("EmployeeId", sql.NVarChar, EmployeeId) // Add the EmployeeId for any further queries if needed
       .input("Photos", sql.VarBinary, Photos)
       .input("Modified_by", sql.NVarChar, Modified_by) // Assuming req.user.username is available
-      .query(`EXEC [sp_employee_personal]  'UI',@EmployeeId,'','','','','','','','','','','','','','','','','','',@Photos,'','','','','',
+      .input("company_code", sql.NVarChar, company_code) 
+      .input("Location_Code", sql.NVarChar, Location_Code) 
+      .query(`EXEC [sp_employee_personal]  'UI',@EmployeeId,'','','','','','','','','','','','','','','','','','',@Photos,'','','','','', @company_code, @Location_Code,
         @Modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     // Return success response
     if (result.rowsAffected && result.rowsAffected[0] > 0) {
@@ -19281,7 +19315,7 @@ const UpdateEmployeeImage = async (req, res) => {
 
 const Employeedataupdate = async (req, res) => {
   const { EmployeeId, First_Name, Middle_Name, Last_Name, Father_Name, Mother_Name, DOB, Gender, Email, Phone1, Phone2, Address1, Address2, Address3, PermanantAddress,
-    Reference_name, Reference_Phone, Pan_No, Aadhar_no, Marital_Status, Siblings, Kids, Grade_id, company_code, Modified_by
+    Reference_name, Reference_Phone, Pan_No, Aadhar_no, Marital_Status, Siblings, Kids, Grade_id, company_code, Location_Code, Modified_by
   } = req.body;
 
   let Photos = null;
@@ -19322,16 +19356,17 @@ const Employeedataupdate = async (req, res) => {
       .input("Kids", sql.NVarChar, Kids)
       .input("Grade_id", sql.NVarChar, Grade_id)
       .input("company_code", sql.NVarChar, company_code)
+      .input("Location_Code", sql.NVarChar, Location_Code)
 
       .input("Modified_by", sql.NVarChar, Modified_by)
-      .query(`EXEC sp_employee_personal_Test
+      .query(`EXEC sp_employee_personal
             @mode, @EmployeeId, @First_Name, @Middle_Name, @Last_Name,
             @Father_Name, @Mother_Name, @DOB, @Gender,
             @Email, @Phone1, @Phone2, @Address1,
             @Address2, @Address3, @PermanantAddress,
             @Reference_Name, @Reference_Phone, @Pan_No,
             @Aadhar_no, @Photos, @Marital_Status,
-             @Siblings, @Kids, @Grade_id,@company_code,'', @Modified_by,
+             @Siblings, @Kids, @Grade_id,@company_code,@Location_Code,'', @Modified_by,
              null, null, null, null,
              null, null, null, null`);
     res.status(200).json("Employee personal data updated successfully");
@@ -19344,7 +19379,7 @@ const Employeedataupdate = async (req, res) => {
 };
 
 const deleteemployeeper = async (req, res) => {
-  const { EmployeeId, company_code } = req.body;
+  const { EmployeeId, company_code, Location_Code } = req.body;
   if (!EmployeeId) {
     return res.status(400).json({ message: "Employee ID is required." });
   }
@@ -19353,7 +19388,8 @@ const deleteemployeeper = async (req, res) => {
     const result = await pool.request()
       .input("employeeID", sql.NVarChar, EmployeeId)
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC [sp_employee_personal]  'D',@EmployeeId,'','','','','','','','','','','','','','','','','','','','','','','',@company_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .input("Location_Code", sql.NVarChar, Location_Code)
+      .query(`EXEC [sp_employee_personal]  'D',@EmployeeId,'','','','','','','','','','','','','','','','','','','','','','','',@company_code,@Location_Code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     if (result.rowsAffected[0] > 0) {
       return res.status(200).json({ message: "Employee Personal  deleted successfully." });
     } else {
@@ -19372,7 +19408,7 @@ const getAllemployeedata = async (req, res) => {
   try {
     await connection.connectToDatabase();
     const result = await sql.query(
-      `EXEC [sp_employee_personal]  'A','','','','','','','','','','','','','','','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`
+      `EXEC [sp_employee_personal]  'A','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`
       /* "exec spexpensetype"*/
     );
     res.json(result.recordset);
@@ -19433,6 +19469,7 @@ const addEmployeePersonalData = async (req, res) => {
     Kids,
     Grade_id,
     company_code,
+    Location_Code,
     Created_by,
     Modified_by,
     tempstr1,
@@ -19479,6 +19516,7 @@ const addEmployeePersonalData = async (req, res) => {
       .input("Kids", sql.NVarChar, Kids)
       .input("Grade_id", sql.NVarChar, Grade_id)
       .input("company_code", sql.NVarChar, company_code)
+      .input("Location_Code", sql.NVarChar, Location_Code)
       .input("Created_by", sql.NVarChar, Created_by)
       .input("Modified_by", sql.NVarChar, Modified_by)
       .input("tempstr1", sql.NVarChar, tempstr1)
@@ -19489,7 +19527,7 @@ const addEmployeePersonalData = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(`EXEC sp_employee_personal_TEST @mode, @EmployeeId, @First_Name, @Middle_Name, @Last_Name, @Father_Name, @Mother_Name, @DOB, @Gender, @Email, @Phone1, @Phone2, @Address1, @Address2, @Address3, @PermanantAddress, @Reference_Name, @Reference_Phone, @Pan_No, @Aadhar_no, @Photos, @Marital_Status, @Siblings, @Kids, @Grade_id,@company_code, @Created_by, @Modified_by, @tempstr1, @tempstr2, @tempstr3, @tempstr4, @datetime1, @datetime2, @datetime3, @datetime4`);
+      .query(`EXEC sp_employee_personal @mode, @EmployeeId, @First_Name, @Middle_Name, @Last_Name, @Father_Name, @Mother_Name, @DOB, @Gender, @Email, @Phone1, @Phone2, @Address1, @Address2, @Address3, @PermanantAddress, @Reference_Name, @Reference_Phone, @Pan_No, @Aadhar_no, @Photos, @Marital_Status, @Siblings, @Kids, @Grade_id,@company_code, @Created_by, @Location_Code, @Modified_by, @tempstr1, @tempstr2, @tempstr3, @tempstr4, @datetime1, @datetime2, @datetime3, @datetime4`);
     // Return success response
     if (result.rowsAffected && result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
@@ -19506,14 +19544,15 @@ const addEmployeePersonalData = async (req, res) => {
 
 
 const getID = async (req, res) => {
-  const { company_code } = req.body;
+  const { company_code, Location_Code } = req.body;
   try {
     const pool = await connection.connectToDatabase();
     const result = await pool
       .request()
       .input("company_code", sql.NVarChar, company_code)
+      .input("Location_Code", sql.NVarChar, Location_Code)
       .query(
-        `EXEC sp_Grade 'F','','',0,0,0,0,0,0,0,0,0,0,'',0,0,0,@company_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`
+        `EXEC sp_Grade 'F','','',0,0,0,0,0,0,0,0,0,0,'',0,0,0,@company_code,@Location_Code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`
       );
 
     res.json(result.recordset);
@@ -21299,7 +21338,7 @@ const getAnnouncement = async (req, res) => {
 
 //Code Added By Harish 16/12/2024
 const EmployeePersonalSC = async (req, res) => {
-  const { EmployeeId, DOB, First_Name, Last_Name, company_code } = req.body;
+  const { EmployeeId, DOB, First_Name, Last_Name, company_code, Location_Code} = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -21310,9 +21349,10 @@ const EmployeePersonalSC = async (req, res) => {
       .input("First_Name", sql.NVarChar, First_Name)
       .input("Last_Name", sql.NVarChar, Last_Name)
       .input("company_code", sql.NVarChar, company_code)
+      .input("Location_Code", sql.NVarChar, Location_Code)
 
       .input("DOB", sql.NVarChar, DOB)
-      .query(`EXEC [sp_employee_personal_Test]  @mode,@EmployeeId,@First_Name,'',@Last_Name,'','',@DOB,'','','','','','','','','','','','','','','','','',@company_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+      .query(`EXEC sp_employee_personal  @mode,@EmployeeId,@First_Name,'',@Last_Name,'','',@DOB,'','','','','','','','','','','','','','','','','',@company_code,@Location_Code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
 `);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
@@ -26330,7 +26370,7 @@ const getProjectReport = async (req, res) => {
 
 // Code Added by Harish 19/02/25
 const GradeSC = async (req, res) => {
-  const { GradeID, GradeName, Basic, HRA, Conveyance, Medical, Special_Allowance, Company_Pf_Contribution, Bonus_Arrears, Other_Allowance, LeaveDeduction, otherDeductions, ctc_currency, minimum_take_salary,salary_range_from, salary_range_to,company_code } = req.body;
+  const { GradeID, GradeName, Basic, HRA, Conveyance, Medical, Special_Allowance, Company_Pf_Contribution, Bonus_Arrears, Other_Allowance, LeaveDeduction, otherDeductions, ctc_currency, minimum_take_salary,salary_range_from, salary_range_to,company_code,Location_Code } = req.body;
   try {
     // Connect to the database
     const pool = await connection.connectToDatabase();
@@ -26352,11 +26392,13 @@ const GradeSC = async (req, res) => {
       .input("otherDeductions", sql.Decimal(14, 3), otherDeductions)
       .input("ctc_currency", sql.VarChar, ctc_currency)
       .input("minimum_take_salary", sql.Decimal(14, 3), minimum_take_salary)
-      .input("salary_range_from", sql.Decimal(10, 2),salary_range_from)
-      .input("salary_range_to", sql.Decimal(10, 2), salary_range_to)
+      .input("salary_range_from", sql.Decimal(14, 3),salary_range_from)
+      .input("salary_range_to", sql.Decimal(14, 3), salary_range_to)
       .input("company_code", sql.VarChar, company_code)
+      .input("Location_Code", sql.VarChar, Location_Code)
       .query(`EXEC sp_Grade @mode,@GradeID,@GradeName,@Basic,@HRA,@Conveyance,@Medical,@Special_Allowance,@Company_Pf_Contribution,
-        @Bonus_Arrears,@Other_Allowance,@LeaveDeduction,@otherDeductions,@ctc_currency,@minimum_take_salary,@salary_range_from,@salary_range_to,@company_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+        @Bonus_Arrears,@Other_Allowance,@LeaveDeduction,@otherDeductions,@ctc_currency,@minimum_take_salary,@salary_range_from,@salary_range_to,
+        @company_code,@Location_Code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     // Send response
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset); // 200 OK if data is found
@@ -28100,7 +28142,7 @@ const getAssertReturnDetail = async (req, res) => {
 //code added by pavun on 08-05-25
 
 const assetsEmployeeId = async (req, res) => {
-  const { EmployeeId, company_code } = req.body;
+  const { EmployeeId, company_code, Location_Code } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -28109,7 +28151,8 @@ const assetsEmployeeId = async (req, res) => {
       .input("mode", sql.NVarChar, "EI")
       .input("EmployeeId", sql.NVarChar, EmployeeId)
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_employee_personal_Test  @mode,@EmployeeId,'','','','','','','','','','','','','','','','','','','','','','','',@company_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .input("Location_Code", sql.NVarChar, Location_Code)
+      .query(`EXEC sp_employee_personal  @mode,@EmployeeId,'','','','','','','','','','','','','','','','','','','','','','','',@company_code,@Location_Code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {

@@ -264,6 +264,7 @@ export default function EmployeeInfoPopup({ open, handleClose, EmployeeInfo }) {
             selectedkids: item.Kids,
             selectedgradeid: item.Grade_id,
             company_code: sessionStorage.getItem('selectedCompanyCode'),
+            Location_Code: sessionStorage.getItem('selectedLocationCode')
           }))
         );
         setRowData(updatedData);

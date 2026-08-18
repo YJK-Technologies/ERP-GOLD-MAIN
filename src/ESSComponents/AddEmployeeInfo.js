@@ -258,6 +258,7 @@ function Input({ }) {
       formData.append("Grade_id", selectedgradeid);
       formData.append("Created_by", sessionStorage.getItem("selectedUserCode"));
       formData.append("company_code", sessionStorage.getItem('selectedCompanyCode'));
+      formData.append("Location_Code", sessionStorage.getItem('selectedLocationCode'));
       if (user_images) {
         formData.append("Photos", user_images);
       }
@@ -364,6 +365,7 @@ function Input({ }) {
       formData.append("Kids",selectedkids);
       formData.append("Grade_id", selectedgradeid);
       formData.append("company_code", sessionStorage.getItem('selectedCompanyCode'));
+      formData.append("Location_Code", sessionStorage.getItem('selectedLocationCode'));
       formData.append("modified_by", sessionStorage.getItem('selectedUserCode'));
       
 
@@ -498,6 +500,7 @@ function Input({ }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
       company_code: sessionStorage.getItem("selectedCompanyCode"),
+      Location_Code: sessionStorage.getItem('selectedLocationCode')
 
       }),
   })
@@ -710,7 +713,9 @@ function Input({ }) {
 
     try {
       const deatils = {
-        EmployeeId: EmployeeId
+        EmployeeId: EmployeeId,
+        company_code: sessionStorage.getItem('selectedCompanyCode'),
+        Location_Code: sessionStorage.getItem('selectedLocationCode')
       }
 
       const response = await fetch(`${config.apiBaseUrl}/deleteemployeedata`, {
