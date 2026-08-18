@@ -5715,7 +5715,7 @@ const getDashboardStockData = async (req, res) => {
       .input("mode", sql.NVarChar, "TSV")
       .input("company_code", sql.NVarChar, company_code)
       .input("user_code", sql.NVarChar, user_code)
-      .query(`EXEC sp_calculate_stock_value_test @mode,@company_code,@user_code`);
+      .query(`EXEC sp_calculate_stock_value @mode,@company_code,@user_code`);
     res.json(result.recordset);
   } catch (err) {
     console.error("Error", err);
@@ -14902,7 +14902,7 @@ const PurchaseAuthDetail = async (req, res) => {
       .input("authroization_status", sql.NVarChar, authroization_status)
       .query(`EXEC sp_purchase_details @mode,@company_code,'',@transaction_no,'','',0,'','',0,0,0,0,0,'','','','','','','',0,@authroization_status,'','','',
 NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
-    if (!result.recordset || !Array.isArray(result.recordset) || result.recordset.length === 0) {
+    if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
       res.status(404).json("Data not found");
