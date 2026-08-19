@@ -764,6 +764,7 @@ function AssertAllocation({ }) {
         setAllocationno(allocation_no);
 
         const detailSuccess = await AssetsAllocationDetails(allocation_no);
+        console.log(allocation_no)
         if (detailSuccess) {
           toast.success("Data inserted successfully.");
         } else {
