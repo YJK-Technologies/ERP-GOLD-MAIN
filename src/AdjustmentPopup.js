@@ -173,7 +173,7 @@ export default function AdjustmentPopup({ open, handleClose, adjustmentData }) {
                           </div>
                           <div className="col-sm mb-2">
                             <input
-                              type='text'
+                              type='Date'
                               id='Variant'
                               className='exp-input-field form-control'
                               placeholder=' Transaction Date'
@@ -263,7 +263,7 @@ export default function AdjustmentPopup({ open, handleClose, adjustmentData }) {
                           </div>
                           <div className="col-sm mb-2">
                             <input
-                              type='text'
+                              type='Date'
                               id='Variant'
                               className='exp-input-field form-control'
                               placeholder=' Transaction Date'
