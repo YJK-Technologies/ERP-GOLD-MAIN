@@ -442,12 +442,19 @@ const getStatus = async (req, res) => {
 };
 
 const getApprovedBy = async (req, res) => {
+  const { company_code, Location_Code } = req.body;
   try {
     await connection.connectToDatabase();
-    const result = await sql.query(
-      `EXEC sp_EmployeeLoan 'DA', '', '', '', 
+    const result = await pool 
+    .request()
+    .input("mode", sql.NVarChar, "DA")
+    .input("company_code", sql.NVarChar, company_code)
+    .input("Location_Code", sql.NVarChar, Location_Code)
+    .query(
+      `EXEC sp_EmployeeLoan @mode, '', '', '', 
                                  0,'', 
                                 '', 0, 0, 
+                                @company_code,@Location_Code,
                                 '','', null, 
                                  null, null, null, 
                                  null, null, null,null`
@@ -14740,49 +14747,186 @@ const getallAssetsAllocationsaved = async (req, res) => {
 //   }
 // };
 
+// const getProductData = async (req, res) => {
+//   const { transaction_no, company_code } = req.body;
+//   try {
+    
+//     const pool = await connection.connectToDatabase();
+//     const result = await pool
+//       .request()
+//       .input("mode", sql.NVarChar, "PRO")
+//       .input("transaction_no", sql.NVarChar, transaction_no)
+//       .input("company_code", sql.NVarChar, company_code)
+//       .query(`EXEC sp_getdata @mode,@transaction_no,@company_code,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
+//     if (result.recordsets && result.recordsets.length > 0 && result.recordsets[0].length > 0) {
+//       const data = {
+//         Header: result.recordsets[0],
+//         Detail: result.recordsets[1] || []
+//       };
+//       res.status(200).json(data);
+//     }
+    
+//     else {
+//       res.status(404).json("Data not found");
+//     }
+//   } catch (err) {
+//   console.error("Product Data Error:", err);
+
+//   res.status(500).json({
+//     message: err.message || "Internal Server Error",
+//   });
+// }
+// };
+
 const getProductData = async (req, res) => {
   const { transaction_no, company_code } = req.body;
+
   try {
     const pool = await connection.connectToDatabase();
+
     const result = await pool
       .request()
       .input("mode", sql.NVarChar, "PRO")
       .input("transaction_no", sql.NVarChar, transaction_no)
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_getdata @mode,@transaction_no,@company_code,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
-    if (result.recordsets && result.recordsets.length > 0 && result.recordsets[0].length > 0) {
-      const data = {
-        Header: result.recordsets[0],
-        Detail: result.recordsets[1] || []
-      };
-      res.status(200).json(data);
+      .query(`
+        EXEC sp_getdata @mode, @transaction_no, @company_code, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+      `);
+
+    // -----------------------------------------
+    // Result Set 1 = Product Header
+    // Result Set 2 = Details OR Warning
+    // -----------------------------------------
+
+    const headerData = result.recordsets?.[0] || [];
+    const secondResult = result.recordsets?.[1] || [];
+
+    let detailData = [];
+    let warningMessage = null;
+
+    // -----------------------------------------
+    // Check second result
+    // -----------------------------------------
+
+    if (
+      secondResult.length > 0 &&
+      secondResult[0].HasDetails === 0
+    ) {
+      // No details found
+      warningMessage = secondResult[0].Message;
+      detailData = [];
     } else {
-      res.status(404).json("Data not found");
+      // Details found
+      detailData = secondResult;
     }
+
+    // -----------------------------------------
+    // Header found
+    // -----------------------------------------
+
+    if (headerData.length > 0) {
+      const data = {
+        Header: headerData,
+        Detail: detailData,
+        warning: warningMessage,
+      };
+
+      return res.status(200).json(data);
+    }
+
+    // -----------------------------------------
+    // Header not found
+    // -----------------------------------------
+
+    return res.status(404).json({
+      message: "Product data not found",
+    });
+
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: err.message || 'Internal Server Error' });
+    console.error("Product Data Error:", err);
+
+    return res.status(500).json({
+      message: err.message || "Internal Server Error",
+    });
   }
 };
 
+// const getProductDetail = async (req, res) => {
+//   const { transaction_no, company_code } = req.body;
+//   try {
+//     const pool = await connection.connectToDatabase();
+//     const result = await pool
+//       .request()
+//       .input("mode", sql.NVarChar, "PROD")
+//       .input("company_code", sql.NVarChar, company_code)
+//       .input("transaction_no", sql.NVarChar, transaction_no)
+//       .query(`EXEC sp_getdata @mode,@transaction_no,@company_code,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
+//     if (result.recordset.length > 0) {
+//       res.status(200).json(result.recordset);
+//     } else {
+//       res.status(404).json("Data not found");
+//     }
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: err.message || 'Internal Server Error' });
+//   }
+// };
+
 const getProductDetail = async (req, res) => {
   const { transaction_no, company_code } = req.body;
+
   try {
     const pool = await connection.connectToDatabase();
+
     const result = await pool
       .request()
       .input("mode", sql.NVarChar, "PROD")
       .input("company_code", sql.NVarChar, company_code)
       .input("transaction_no", sql.NVarChar, transaction_no)
-      .query(`EXEC sp_getdata @mode,@transaction_no,@company_code,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
-    if (result.recordset.length > 0) {
-      res.status(200).json(result.recordset);
-    } else {
-      res.status(404).json("Data not found");
+      .query(`
+        EXEC sp_getdata
+          @mode,
+          @transaction_no,
+          @company_code,
+          NULL,
+          NULL,
+          NULL,
+          NULL,
+          NULL,
+          NULL,
+          NULL,
+          NULL
+      `);
+
+    const detailData = result.recordsets?.[0] || [];
+
+    // -----------------------------------------
+    // Check whether SQL returned warning
+    // -----------------------------------------
+    if (
+      detailData.length > 0 &&
+      detailData[0].HasDetails === 0
+    ) {
+      return res.status(200).json({
+        Detail: [],
+        warning: detailData[0].Message,
+      });
     }
+
+    // -----------------------------------------
+    // Details found
+    // -----------------------------------------
+    return res.status(200).json({
+      Detail: detailData,
+      warning: null,
+    });
+
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: err.message || 'Internal Server Error' });
+    console.error("Product Detail Error:", err);
+
+    return res.status(500).json({
+      message: err.message || "Internal Server Error",
+    });
   }
 };
 
@@ -18181,6 +18325,7 @@ const addEmployeeLoan = async (req, res) => {
     HowManyMonth,
     EMIAmount,
     company_code,
+    Location_Code,
     created_by,
     modified_by,
     tempstr1,
@@ -18208,6 +18353,7 @@ const addEmployeeLoan = async (req, res) => {
       .input("HowManyMonth", sql.Int, HowManyMonth) // Assuming integer for months
       .input("EMIAmount", sql.Decimal, EMIAmount) // Assuming decimal for monetary values
       .input("company_code", sql.NVarChar, company_code)
+      .input("Location_Code", sql.NVarChar, Location_Code)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
       .input("tempstr1", sql.NVarChar, tempstr1)
@@ -18219,10 +18365,10 @@ const addEmployeeLoan = async (req, res) => {
       .input("datetime3", sql.DateTime, datetime3)
       .input("datetime4", sql.DateTime, datetime4)
       .query(`
-            EXEC sp_EmployeeLoan_TEST @mode, @EmployeeId, @loanID, @ApprovedBy, 
+            EXEC sp_EmployeeLoan @mode, @EmployeeId, @loanID, @ApprovedBy, 
                                  @LoanEligibleAmount, @EffectiveDate, 
                                  @EndDate, @HowManyMonth, @EMIAmount, 
-                               @company_code,@created_by,'', null, 
+                               @company_code,@Location_Code,@created_by,'', null, 
                                  null, null, null, 
                                  null, null, null,null
           `);
@@ -18237,17 +18383,19 @@ const addEmployeeLoan = async (req, res) => {
   }
 };
 const getsearchEmpLoan = async (req, res) => {
-
+  const { company_code, Location_Code  } = req.body;
   try {
     let pool = await sql.connect(dbConfig);
     const result = await pool
 
       .request()
       .input("mode", sql.NVarChar, "A")
-      .query(`EXEC sp_EmployeeLoan_TEST @mode, '', '', '', 
+      .input("company_code", sql.NVarChar, company_code)
+      .input("Location_Code", sql.NVarChar, Location_Code)
+      .query(`EXEC sp_EmployeeLoan @mode, '', '', '', 
                                  0, '', 
                                  '', 0, 0, 
-                                '','','', null, 
+                                @company_code,@Location_Code,'','', null, 
                                  null, null, null, 
                                  null, null, null,null`);
 
@@ -18267,6 +18415,7 @@ const getEmployeeLoan = async (req, res) => {
     HowManyMonth,
     EMIAmount,
     company_code,
+    Location_Code,
     created_by,
     modified_by } = req.body;
 
@@ -18285,12 +18434,13 @@ const getEmployeeLoan = async (req, res) => {
       .input("HowManyMonth", sql.Int, HowManyMonth) // Assuming integer for months
       .input("EMIAmount", sql.Decimal, EMIAmount) // Assuming decimal for monetary values
       .input("company_code", sql.NVarChar, company_code)
+      .input("Location_Code", sql.NVarChar, Location_Code)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
-      .query(`EXEC sp_EmployeeLoan_TEST @mode, @EmployeeId, @loanID, @ApprovedBy, 
+      .query(`EXEC sp_EmployeeLoan @mode, @EmployeeId, @loanID, @ApprovedBy, 
                                  @LoanEligibleAmount, @EffetiveDate, 
                                  @EndDate, @HowManyMonth,@EMIAmount, 
-                                @company_code'','',null, 
+                                @company_code,@Location_Code,'','',null, 
                                  null, null, null, 
                                  null, null, null,null`);
 
@@ -18321,12 +18471,13 @@ const deleteEmployeeLoan = async (req, res) => {
         .input("loanID", sql.VarChar, updatedRow.loanID)
         .input("EmployeeId", sql.VarChar, updatedRow.EmployeeId)
         .input("company_code", sql.NVarChar, req.headers['company_code'])
+        .input("Location_Code", sql.NVarChar, req.headers['Location_Code'])
 
         .query(`
-            EXEC sp_EmployeeLoan_TEST @mode, @EmployeeId, @loanID, '', 
+            EXEC sp_EmployeeLoan @mode, @EmployeeId, @loanID, '', 
                                  0, '', 
                                  '', 0, 0, 
-                                @company_code,'','', null, 
+                                @company_code,@Location_Code,'','', null, 
                                  null, null, null, 
                                  null, null, null,null
           `);
@@ -18362,6 +18513,7 @@ const updateEmployeeLoan = async (req, res) => {
         .input("HowManyMonth", sql.Int, updatedRow.HowManyMonth)
         .input("EMIAmount", sql.Decimal, updatedRow.EMIAmount)
         .input("company_code", sql.NVarChar, updatedRow.company_code)
+        .input("Location_Code", sql.NVarChar, updatedRow.Location_Code)
         .input("modified_by", sql.NVarChar, updatedRow.modified_by)
         .input("tempstr1", sql.NVarChar, updatedRow.tempstr1)
         .input("tempstr2", sql.NVarChar, updatedRow.tempstr2)
@@ -18371,10 +18523,10 @@ const updateEmployeeLoan = async (req, res) => {
         .input("datetime2", sql.DateTime, updatedRow.datetime2)
         .input("datetime3", sql.DateTime, updatedRow.datetime3)
         .input("datetime4", sql.DateTime, updatedRow.datetime4)
-        .query(`EXEC sp_EmployeeLoan_TEST @mode, 
+        .query(`EXEC sp_EmployeeLoan @mode, 
             @EmployeeId, @loanID, @ApprovedBy,@LoanEligibleAmount,
              @EffectiveDate,@EndDate, @HowManyMonth, @EMIAmount,
-             @company_code,'',@modified_by, null, null, null, null,
+             @company_code,@Location_Code,'',@modified_by, null, null, null, null,
              null, null, null, null`);
 
     } res.json({ message: "Data updated successfully" });
@@ -18581,7 +18733,9 @@ const addEmployeeCompany = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(`EXEC sp_employee_company @mode,@EmployeeId,@department_ID,@designation_ID,@DOJ,@DOL,@manager,@shift,@status,'','',@company_code,@created_by,@modified_by,@tempstr1,@tempstr2,@tempstr3,@tempstr4,@datetime1,@datetime2,@datetime3,@datetime4`);
+      .query(`EXEC sp_employee_company @mode,@EmployeeId,@department_ID,@designation_ID,@DOJ,@DOL,
+        @manager,@shift,@status,'','',@company_code,@created_by,@modified_by,@tempstr1,@tempstr2,
+        @tempstr3,@tempstr4,@datetime1,@datetime2,@datetime3,@datetime4`);
     res.status(200).json("Employee company data inserted successfully");
   } catch (err) {
     console.error("Error inserting data:", err);
@@ -19542,7 +19696,12 @@ const addEmployeePersonalData = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(`EXEC sp_employee_personal @mode, @EmployeeId, @First_Name, @Middle_Name, @Last_Name, @Father_Name, @Mother_Name, @DOB, @Gender, @Email, @Phone1, @Phone2, @Address1, @Address2, @Address3, @PermanantAddress, @Reference_Name, @Reference_Phone, @Pan_No, @Aadhar_no, @Photos, @Marital_Status, @Siblings, @Kids, @Grade_id,@company_code, @Created_by, @Location_Code, @Modified_by, @tempstr1, @tempstr2, @tempstr3, @tempstr4, @datetime1, @datetime2, @datetime3, @datetime4`);
+      .query(`EXEC sp_employee_personal @mode, @EmployeeId, @First_Name, @Middle_Name, @Last_Name, 
+        @Father_Name, @Mother_Name, @DOB, @Gender, @Email, @Phone1, @Phone2, @Address1, @Address2, 
+        @Address3, @PermanantAddress, @Reference_Name, @Reference_Phone, @Pan_No, @Aadhar_no, @Photos, 
+        @Marital_Status, @Siblings, @Kids, @Grade_id,@company_code, @Location_Code, @Created_by, 
+        @Modified_by, @tempstr1, @tempstr2, @tempstr3, @tempstr4, @datetime1, @datetime2, @datetime3, 
+        @datetime4`);
     // Return success response
     if (result.rowsAffected && result.rowsAffected[0] > 0) {
       res.status(200).json(result.recordset);
@@ -22127,7 +22286,8 @@ const EmployeeCompanyISC = async (req, res) => {
       .input("manager", sql.NVarChar, manager)
       .input("Name", sql.NVarChar, Name)
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC [sp_employee_company] @mode,@EmployeeId,@department_Id,@designation_Id,'','',@manager,'','','',@Name,@company_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+      .query(`EXEC [sp_employee_company] @mode,@EmployeeId,@department_Id,@designation_Id,'','',
+        @manager,'','','',@Name,@company_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
                 `);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
@@ -26436,7 +26596,7 @@ const GradeSC = async (req, res) => {
 
 // Code Added by Harish 22/02/25
 const LoanSC = async (req, res) => {
-  const { EmployeeId, loanID, EndDate, ApprovedBy, LoanEligibleAmount, EffetiveDate, HowManyMonth, EMIAmount, company_code } = req.body;
+  const { EmployeeId, loanID, EndDate, ApprovedBy, LoanEligibleAmount, EffetiveDate, HowManyMonth, EMIAmount, company_code, Location_Code } = req.body;
   try {
     // Connect to the database
     const pool = await connection.connectToDatabase();
@@ -26453,9 +26613,10 @@ const LoanSC = async (req, res) => {
       .input("HowManyMonth", sql.Int, HowManyMonth)
       .input("EMIAmount", sql.Int, EMIAmount)
       .input("company_code", sql.VarChar, company_code)
+      .input("Location_Code", sql.VarChar, Location_Code)
 
 
-      .query(`EXEC sp_EmployeeLoan_TEST  @mode,@EmployeeId ,@loanID,@ApprovedBy,@LoanEligibleAmount,@EffetiveDate,@EndDate ,@HowManyMonth ,@EMIAmount,@company_code,'','',null,null,null,null,null,null,null,null
+      .query(`EXEC sp_EmployeeLoan  @mode,@EmployeeId ,@loanID,@ApprovedBy,@LoanEligibleAmount,@EffetiveDate,@EndDate ,@HowManyMonth ,@EMIAmount,@company_code,@Location_Code,'','',null,null,null,null,null,null,null,null
 `);
     // Send response
     if (result.recordset.length > 0) {

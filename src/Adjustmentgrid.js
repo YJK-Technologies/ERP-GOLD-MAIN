@@ -479,7 +479,7 @@ function AdjustmentGrid() {
         const detailSuccess = await AdjustmnetDetails(transaction_no);
 
         if (detailSuccess) {
-          toast.success("Date inserted successfully.");
+          toast.success("Date inserted Successfully.");
         } else {
           toast.warning("Header saved, but failed to save all details.");
         }
@@ -554,9 +554,8 @@ function AdjustmentGrid() {
           const headerResult = await AdjustmnetHdrDelete();
 
           if (headerResult === true && detailResult === true) {
-            console.log("Data Deleted SuccessFully");
-            toast.success("Data Deleted SuccessFully", {
-              autoClose: false,
+            console.log("Data Deleted Successfully");
+            toast.success("Data Deleted Successfully", {
               onClose: () => {
                 window.location.reload();
               },
@@ -780,7 +779,7 @@ console.log(transaction_type)
     [`Company Code: ${sessionStorage.getItem("selectedCompanyCode")}`],
     [`Transaction No: ${transaction_no}`],
     [`Transaction Date: ${formatDate(transaction_date)}`],
-    [`Transaction Type: ${transaction_type?.label || ""}`],
+    [`Transaction Type: ${selectedTransaction?.label || ""}`],
     [],
   ];
 
@@ -924,7 +923,7 @@ console.log(transaction_type)
           setRowData([{ Item_SNo: 1, item_code: "", qty: 0 }]);
         }
 
-        console.log("data fetched successfully");
+        console.log("data fetched Successfully");
       } else if (response.status === 404) {
         toast.warning("Data not found");
         settransaction_date("");

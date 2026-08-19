@@ -243,7 +243,7 @@ const[Name,setname]=useState("");
                       <div class="col-md-12 text-center">
                         <div className="p-0 bg-body-tertiary">
                           <div className="purbut mb-0 d-flex justify-content-between" >
-                            <h1 align="left" className="purbut">Employee Info Help</h1>
+                            <h1 align="left" className="purbut">Company Details Help</h1>
                             <button onClick={handleClose} className="purbut btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
                             <i class="fa-solid fa-xmark"></i>
                             </button>
@@ -348,7 +348,7 @@ const[Name,setname]=useState("");
                         <div className="mb-0 d-flex justify-content-between">
                           <div className="mb-0 d-flex justify-content-start me-4">
                      
-                            <h1 className="h1">Employee Info Help</h1>
+                            <h1 className="h1">Company Details Help</h1>
                           </div>
                           <div className="mb-0 d-flex justify-content-end" >
                             <button onClick={handleClose} className="closebtn2" required title="Close">
