@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as React from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -8,6 +8,7 @@ import 'ag-grid-autocomplete-editor/dist/main.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { toast } from 'react-toastify';
+import Select from 'react-select';
 import 'react-toastify/dist/ReactToastify.css';
 import LoadingScreen from './Loading';
 
@@ -161,10 +162,64 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
   const [Item_name, setItem_name] = useState("");
   const [Item_short_name, setItem_short_name] = useState("");
   const [Item_Our_Brand, setItem_Our_Brand] = useState("");
-  const [status, setstatus] = useState("");
   const [loading, setLoading] = useState('');
 
+  const [ItemOurBranddrop, setItemOurBranddrop] = useState([]);
+  const [selectedItemOurBrand, setselectedItemOurBrand] = useState('');
+  const [ItemOurBrand, setItemOurBrand] = useState('');
 
+  const [statusdrop, setStatusdrop] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState('');
+  const [status, setStatus] = useState("");
+
+  useEffect(() => {
+    const company_code = sessionStorage.getItem('selectedCompanyCode');
+
+    fetch(`${config.apiBaseUrl}/getdefCustomer`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ company_code })
+    })
+      .then((data) => data.json())
+      .then((val) => setItemOurBranddrop(val))
+      .catch((error) => console.error('Error fetching data:', error));
+  }, []);
+
+  useEffect(() => {
+    const company_code = sessionStorage.getItem('selectedCompanyCode');
+
+    fetch(`${config.apiBaseUrl}/status`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ company_code })
+    })
+      .then((data) => data.json())
+      .then((val) => setStatusdrop(val))
+      .catch((error) => console.error('Error fetching data:', error));
+  }, []);
+    const handleChangeItemOurBrand = (selectedItemOurBrand) => {
+    setselectedItemOurBrand(selectedItemOurBrand);
+    setItemOurBrand(selectedItemOurBrand ? selectedItemOurBrand.value : '');
+  };
+
+    const filteredOptionItemOurBrand = ItemOurBranddrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+    const handleStatusChange = (selectedStatus) => {
+    setSelectedStatus(selectedStatus);
+    setStatus(selectedStatus ? selectedStatus.value : '');
+  };
+
+  const filteredOptionStatus = statusdrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
 
   const handleSearchItem = async () => {
     const company_code = sessionStorage.getItem("selectedCompanyCode");
@@ -175,7 +230,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code, Item_code, Item_variant, Item_name, Item_short_name, Item_Our_Brand, status }) // Send company_no and company_name as search criteria
+        body: JSON.stringify({ company_code, Item_code, Item_variant, Item_name, Item_short_name, Item_Our_Brand:ItemOurBrand, status }) // Send company_no and company_name as search criteria
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -210,7 +265,10 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
     setItem_name("");
     setItem_short_name("");
     setItem_Our_Brand("");
-    setstatus("");
+    setselectedItemOurBrand("");
+    setItemOurBrand("");
+    setSelectedStatus("");
+    setStatus("");
   };
   const [selectedRows, setSelectedRows] = useState([]);
 
@@ -311,6 +369,26 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                             />
                           </div>
                           <div className="col-sm mb-2">
+                            <Select
+                              id="OurBrand"
+                              type="text"
+                              placeholder='Our Brand'
+                              value={selectedItemOurBrand}
+                              onChange={handleChangeItemOurBrand}
+                              options={filteredOptionItemOurBrand}
+                            />
+                          </div>
+                          <div className="col-sm mb-2">
+                            <Select
+                              id="status"
+                              type="text"
+                              placeholder='status'
+                              value={selectedStatus}
+                              onChange={handleStatusChange}
+                              options={filteredOptionStatus}
+                            />
+                          </div>                          
+                          {/* <div className="col-sm mb-2">
                             <input
                               type="text"
                               id="OurBrand"
@@ -333,7 +411,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                               onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
                               autoComplete="off"
                             />
-                          </div>
+                          </div> */}
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <icon className="icon popups-btn" onClick={handleSearchItem}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
@@ -435,6 +513,26 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                             />
                           </div>
                           <div className="col-sm mb-2">
+                            <Select
+                              id="OurBrand"
+                              type="text"
+                              placeholder='Our Brand'
+                              value={selectedItemOurBrand}
+                              onChange={handleChangeItemOurBrand}
+                              options={filteredOptionItemOurBrand}
+                            />
+                          </div>
+                          <div className="col-sm mb-2">
+                            <Select
+                              id="status"
+                              type="text"
+                              placeholder='status'
+                              value={selectedStatus}
+                              onChange={handleStatusChange}
+                              options={filteredOptionStatus}
+                            />
+                          </div>
+                          {/* <div className="col-sm mb-2">
                             <input
                               type="text"
                               id="OurBrand"
@@ -457,7 +555,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                               onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
                               autoComplete="off"
                             />
-                          </div>
+                          </div> */}
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <button className="" onClick={handleSearchItem}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
