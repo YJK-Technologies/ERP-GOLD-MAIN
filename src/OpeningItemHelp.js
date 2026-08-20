@@ -175,7 +175,7 @@ export default function OIPopup({ open, handleClose, handleOb }) {
                           </div>
                           <div className="col-sm mb-2">
                             <input
-                              type="text"
+                              type="date"
                               id="Variant"
                               className="exp-input-field form-control"
                               placeholder="Transaction Date"
@@ -278,7 +278,7 @@ export default function OIPopup({ open, handleClose, handleOb }) {
                           </div>
                           <div className="col-sm mb-2">
                             <input
-                              type="text"
+                              type="date"
                               id="Variant"
                               className="exp-input-field form-control"
                               placeholder="Transaction Date"

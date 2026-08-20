@@ -1809,7 +1809,7 @@ const handleExcelDownload = () => {
     // Header sheet with title
     const headerSheet = XLSX.utils.aoa_to_sheet([
         ["Delivery Challan"], // Heading
-        [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+        [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
         [],                   // Empty row
     ]);
 
@@ -1960,9 +1960,9 @@ autoFitColumns(rowDataSheet, filteredRowData);
 
 
             setrowdatapatch([
-                { fieldName: 'Delivery Note', Notes: Dispatched_through },
+                { fieldName: 'Delivery Note', Notes: Delivery_note },
                 { fieldName: 'Dispatched Through', Notes: destination },
-                { fieldName: 'Destination', Notes: Delivery_note },
+                { fieldName: 'Destination', Notes: Dispatched_through},
                 { fieldName: 'Note For Sale', Notes: Note_not_for_sale }
 
             ]);
