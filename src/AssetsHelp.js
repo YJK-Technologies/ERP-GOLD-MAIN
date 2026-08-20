@@ -42,7 +42,7 @@ const columnDefs = [
     cellStyle: { textAlign: "center" },
   },
   {
-    headerName: "EMP No",
+    headerName: "Employee ID",
     field: "Emp_no",
     editable: false,
     cellStyle: { textAlign: "center" },
@@ -152,7 +152,7 @@ export default function AssetsHelp({ open, handleClose, handleAssetsHelp }) {
                       <div class="col-md-12 text-center">
                         <div className="p-0 bg-body-tertiary">
                           <div className="purbut mb-0 d-flex justify-content-between" >
-                            <h1 align="left" className="purbut">Assets Help</h1>
+                            <h1 align="left" className="purbut">Assets Allocation Help</h1>
                             <button onClick={handleClose} className="purbut btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
                               <i class="fa-solid fa-xmark"></i>
                             </button>
@@ -252,7 +252,7 @@ export default function AssetsHelp({ open, handleClose, handleAssetsHelp }) {
                       <div class="col-md-12 text-center">
                         <div class="mb-0 rounded-0 d-flex justify-content-between">
                           <div className="mb-0 d-flex justify-content-start">
-                            <h1 className="h1">Assets Help</h1>
+                            <h1 className="h1">Assets Allocation Help</h1>
                           </div>
                           <div className="mb-0 d-flex justify-content-end ">
                             <button onClick={handleClose} className="closebtn2" required title="Close">

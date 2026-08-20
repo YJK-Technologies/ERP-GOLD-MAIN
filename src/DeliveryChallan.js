@@ -1117,7 +1117,7 @@ function DeliveryChallan() {
         }
 
         if (rowData.length === 0) {
-            toast.warning('No DC details or tax details found to save.');
+            toast.warning('No DC details found to save.');
             return;
         }
 
