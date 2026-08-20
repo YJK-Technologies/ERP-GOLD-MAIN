@@ -54,8 +54,35 @@ const AdjustmnetPrint = () => {
     }
   };
 
+  const bufferToBase64 = (buffer) => {
+        const bytes = new Uint8Array(buffer);
+        let binary = '';
+
+        for (let i = 0; i < bytes.byteLength; i += 1024) {
+            const chunk = bytes.subarray(i, i + 1024);
+            binary += String.fromCharCode.apply(null, chunk);
+        }
+
+        return `data:image/jpeg;base64,${window.btoa(binary)}`;
+    };
+
+  const processItemImages = () => {
+        if (headerData[0].company_logo && headerData[0].company_logo.data) {
+            return bufferToBase64(headerData[0].company_logo.data);
+        }
+        return '';
+    };
+
+    const processSignatureImages = () => {
+        if (headerData[0].authorisedSignatur && headerData[0].authorisedSignatur.data) {
+            return bufferToBase64(headerData[0].authorisedSignatur.data);
+        }
+        return '';
+    };
+
   useEffect(() => {
     const header = sessionStorage.getItem('ADheaderData');
+    console.log (header)
     const detail = sessionStorage.getItem('ADdetailData');
 
     if (header && detail ) {
@@ -76,14 +103,34 @@ if (!headerData || !detailData) {
     <>
       <div className="invoice-container" ref={componentRef}>
         <div className="invoice-header">
-          <div className="company-details">
-            <h2>{headerData[0].company_code}</h2>
-            {/* <p>Phone no: 9790876453</p> */}
-          </div>
-          <div className="logo">
-            {/* <img src="logo.png" alt="Company Logo" /> */}
-          </div>
-        </div>
+                    <div className="d-flex align-items-start">
+  {headerData[0]?.company_logo && (
+    <div className="ms-3 mt-1">
+      <img
+        className="rounded-0"
+        src={processItemImages(headerData[0].company_logo)}
+        width={100}
+        height={100}
+        alt="Company Logo"
+      />
+    </div>
+  )}
+
+  <div className="mt-3 p-1">
+    <strong>{headerData[0]?.company_name}</strong>
+    <br />
+
+    {[headerData[0]?.address1, headerData[0]?.address2, headerData[0]?.address3]
+      .filter((addr) => addr)
+      .join(", ")}
+
+    {headerData[0]?.city && `, ${headerData[0].city}`}
+    {headerData[0]?.pincode && ` - ${headerData[0].pincode}`}
+
+    <br />
+  </div>
+</div>
+                </div>
         <h1 className="invoice-title">Adjustment</h1>
         <div className="invoice-info">
           <div className="bill-to">
