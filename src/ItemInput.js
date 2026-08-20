@@ -1429,6 +1429,7 @@ function ItemInput({}) {
                     </div>
                   </div>
                 </div>
+                
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
                     <div>
@@ -1436,7 +1437,7 @@ function ItemInput({}) {
                         Status<span className="text-danger">*</span>
                       </label>
                     </div>
-                    <div title="Select the Our Brand ">
+                    <div title="Select the Status ">
                       <Select
                         id="ahsts"
                         value={selectedStatus}

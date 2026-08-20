@@ -21,6 +21,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { showConfirmationToast } from './ToastConfirmation';
 import LoadingScreen from './Loading';
+import PurchaseOrderPopup from './PurchaseOrderPopup';
 
 const config = require('./Apiconfig');
 
@@ -497,15 +498,27 @@ const UnplannedReceipt = () => {
     console.log('Opening popup...');
   };
 
+  const handlePurchaseOpen = (params) => {
+    const GlobalSerialNumber = params.data.serialNumber
+    setGlobal(GlobalSerialNumber)
+    const GLobalItem = params.data.itemCode
+    console.log(GLobalItem)
+    setGlobalItem(GLobalItem)
+    setOpen3(true);
+  };
+
   //Item Name Popup
   const [open, setOpen] = React.useState(false);
   const [open1, setOpen1] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
+  const [open3, setOpen3] = React.useState(false);
 
   const handleClose = () => {
     setOpen(false);
     setOpen1(false);
     setOpen2(false);
+    setOpen3(false);
+    
   };
 
 
@@ -651,13 +664,54 @@ const UnplannedReceipt = () => {
       sortable: false
     },
     {
-      headerName: 'PurchaseOrder ID',
+      headerName: 'Purchase Order ID',
       field: 'purchaseOrderID',
       editable: !showExcelButton,
       filter: true,
-      sortable: false,
       cellEditorParams: {
-        maxLength: 20,
+        maxLength: 18,
+      },
+      // onCellValueChanged: function (params) {
+      //   handleWarehouseCode(params);
+      // },
+      sortable: false,
+      autoComplete: false,
+      cellRenderer: (params) => {
+        const cellWidth = params.column.getActualWidth();
+        const isWideEnough = cellWidth > 30;
+        const showSearchIcon = isWideEnough;
+
+        return (
+          <div className="position-relative d-flex align-items-center" style={{ minHeight: '100%' }}>
+            <div className="flex-grow-1">
+              {params.editing ? (
+                <input
+                  type="text"
+                  className="form-control"
+                  value={params.value || ''}
+                  onChange={(e) => params.setValue(e.target.value)}
+                  style={{ width: '100%' }}
+                />
+              ) : (
+                params.value
+              )}
+            </div>
+            {showSearchIcon && (
+              <span
+                className="icon searchIcon"
+                style={{
+                  position: 'absolute',
+                  right: '-10px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                }}
+                onClick={() => handlePurchaseOpen(params)}
+              >
+                <i className="fa fa-search"></i>
+              </span>
+            )}
+          </div>
+        );
       },
     },
     {
@@ -702,14 +756,14 @@ const UnplannedReceipt = () => {
     //   maxWidth: 315,
     //   sortable: false,
     // },
-    // {
-    //   headerName: 'Notes',
-    //   field: 'notes',
-    //   editable: true,
-    //   maxWidth: 150,
-    //   filter: true,
-    //   sortable: false
-    // },
+    {
+      headerName: 'Notes',
+      field: 'notes',
+      editable: !showExcelButton,
+      // maxWidth: 250,
+      filter: true,
+      sortable: false
+    },
   ];
 
   const handleItem = async (selectedData) => {
@@ -1178,8 +1232,14 @@ const UnplannedReceipt = () => {
     }
   };
 
+  
+
   const handleInvReceipt = () => {
     setOpen2(true);
+  };
+
+  const handlePurchase = () => {
+    setOpen3(true);
   };
 
   const InvReceiptData = async (data) => {
@@ -1218,6 +1278,8 @@ const UnplannedReceipt = () => {
       console.log("Data not fetched...!");
     }
   };
+
+  
 
   const InventoryReceipt = async (ReceiptID) => {
     try {
@@ -1305,6 +1367,8 @@ const UnplannedReceipt = () => {
   //   XLSX.writeFile(workbook, "Inventory_Receipt.xlsx");
   // };
 
+  const companyName = sessionStorage.getItem('selectedCompanyName')
+
   const handleExcelDownload = () => {
 
   const filteredRowData = rowData.filter(row => row.quantityReceived > 0);
@@ -1325,7 +1389,7 @@ const UnplannedReceipt = () => {
   // Header Sheet
   const headerSheet = XLSX.utils.aoa_to_sheet([
     ["Inventory Receipt"],
-    [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+    [`Company Name : ${companyName}`],
     [],
   ]);
 
@@ -1415,6 +1479,30 @@ const UnplannedReceipt = () => {
     } else {
       toast.warning('Transaction date must be between April 1st, 2024 and March 31st, 2025.');
     }
+  };
+
+  const handlePoData = (data) => {
+    console.log('Data received by handleWarehouse:', data);
+
+    const updatedRowData = rowData.map(row => {
+      if (row.serialNumber === global) {
+        const matchedItem = data.find(item => item.id === row.id);
+
+        if (matchedItem) {
+          return {
+            ...row,
+            purchaseOrderID: matchedItem.TransactionNo
+          };
+        } else {
+          console.log('No matching item found for row.id:', row.id);
+        }
+      } else {
+        console.log('No match for row.serialNumber:', row.serialNumber, global);
+      }
+      return row;
+    });
+
+    setRowData(updatedRowData);
   };
 
   return (
@@ -1635,6 +1723,7 @@ const UnplannedReceipt = () => {
         <InventoryReceiptItemPopup open={open} handleClose={handleClose} handleItem={handleItem} />
         <InventoryReceiptWarehousePopup open={open1} handleClose={handleClose} handleWarehouse={handleWarehouse} />
         <InvReceiptPopup open={open2} handleClose={handleClose} InvReceiptData={InvReceiptData} />
+        <PurchaseOrderPopup open={open3} handleClose={handleClose} handlePoData={handlePoData} />
       </div>
       <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
         <div className="row ms-2">

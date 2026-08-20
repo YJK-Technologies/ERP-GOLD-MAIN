@@ -756,6 +756,8 @@ function AdjustmentGrid() {
   //   XLSX.writeFile(workbook, "Adjustmnet.xlsx");
   // };
 
+  const companyName = sessionStorage.getItem('selectedCompanyName')
+
 const handleExportToExcel = () => {
   const filteredData = rowData.filter((row) => row.qty > 0);
 
@@ -776,7 +778,7 @@ const handleExportToExcel = () => {
 console.log(transaction_type)
   const headerData = [
     ["Adjustment Report"],
-    [`Company Code: ${sessionStorage.getItem("selectedCompanyCode")}`],
+    [`Company Name: ${companyName}`],
     [`Transaction No: ${transaction_no}`],
     [`Transaction Date: ${formatDate(transaction_date)}`],
     [`Transaction Type: ${selectedTransaction?.label || ""}`],
