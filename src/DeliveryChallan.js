@@ -2936,7 +2936,7 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                     </div>
                                     <div className="col-md-12 form-group mb-2">
                                         <div className="exp-form-floating">
-                                            <label htmlFor="" className={`${error && !salesType ? 'red' : ''}`}>Sales Type {!showAsterisk && <span className="text-danger">*</span>}</label>
+                                            <label htmlFor="" className={`${error && !salesType ? 'red' : ''}`}>Sales Type{!showAsterisk && <span className="text-danger">*</span>}</label>
                                             <Select
                                                 id="salesType"
                                                 value={selectedSales}
