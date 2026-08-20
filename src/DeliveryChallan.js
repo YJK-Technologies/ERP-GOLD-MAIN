@@ -1117,7 +1117,7 @@ function DeliveryChallan() {
         }
 
         if (rowData.length === 0) {
-            toast.warning('No DC details or tax details found to save.');
+            toast.warning('No DC details found to save.');
             return;
         }
 
@@ -1809,7 +1809,7 @@ const handleExcelDownload = () => {
     // Header sheet with title
     const headerSheet = XLSX.utils.aoa_to_sheet([
         ["Delivery Challan"], // Heading
-        [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+        [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
         [],                   // Empty row
     ]);
 
@@ -1960,9 +1960,9 @@ autoFitColumns(rowDataSheet, filteredRowData);
 
 
             setrowdatapatch([
-                { fieldName: 'Delivery Note', Notes: Dispatched_through },
+                { fieldName: 'Delivery Note', Notes: Delivery_note },
                 { fieldName: 'Dispatched Through', Notes: destination },
-                { fieldName: 'Destination', Notes: Delivery_note },
+                { fieldName: 'Destination', Notes: Dispatched_through},
                 { fieldName: 'Note For Sale', Notes: Note_not_for_sale }
 
             ]);
@@ -2936,7 +2936,7 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                     </div>
                                     <div className="col-md-12 form-group mb-2">
                                         <div className="exp-form-floating">
-                                            <label htmlFor="" className={`${error && !salesType ? 'red' : ''}`}>Sales Type {!showAsterisk && <span className="text-danger">*</span>}</label>
+                                            <label htmlFor="" className={`${error && !salesType ? 'red' : ''}`}>Sales Type{!showAsterisk && <span className="text-danger">*</span>}</label>
                                             <Select
                                                 id="salesType"
                                                 value={selectedSales}
