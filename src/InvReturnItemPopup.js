@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import * as React from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { toast } from 'react-toastify';
 import LoadingScreen from './Loading';
+import Select from "react-select";
 
 const config = require('./Apiconfig');
 
@@ -163,6 +164,66 @@ export default function InventoryReturnItemPopup({ open, handleClose, handleItem
   const [status, setstatus] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // For Dropdown
+    const [selectedBrand, setSelectedBrand] = useState("");
+    const [ourbranddrop, setourbranddrop] = useState([]);
+    const ourbrand = useRef(null);
+    const Status = useRef(null);
+  
+    const [selectedStatus, setSelectedStatus] = useState("");
+    const [statusDrop, setStatusDrop] = useState("");
+    const [statusdropDown, setStatusdropDown] = useState([]);
+
+    const handleChangeBrand = (selectedBrand) => {
+    setSelectedBrand(selectedBrand);
+    setItem_Our_Brand(selectedBrand ? selectedBrand.value : "");
+  };
+
+  const filteredOptionBrand = ourbranddrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  useEffect(() => {
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+
+    fetch(`${config.apiBaseUrl}/ourbrand`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ company_code }),
+    })
+      .then((data) => data.json())
+      .then((val) => setourbranddrop(val))
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
+
+  const handleChangeStatus = (selectedStatus) => {
+    setSelectedStatus(selectedStatus);
+    setstatus(selectedStatus ? selectedStatus.value : "");
+  };
+
+  const filteredOptionStatus = statusdropDown.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  useEffect(() => {
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+
+    fetch(`${config.apiBaseUrl}/status`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ company_code }),
+    })
+      .then((data) => data.json())
+      .then((val) => setStatusdropDown(val))
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
+
   const handleSearchItem = async () => {
     setLoading(true)
     try {
@@ -310,32 +371,36 @@ export default function InventoryReturnItemPopup({ open, handleClose, handleItem
                               autoComplete="off"
                             />
                           </div>
+
                           <div className="col-sm mb-2">
-                            <input
-                              type="text"
-                              id="OurBrand"
-                              className="exp-input-field form-control"
-                              placeholder="Our Brand"
-                              title='Please enter the our brand'
-                              value={Item_Our_Brand}
-                              onChange={(e) => setItem_Our_Brand(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
+                              <div title="Select the Our Brand ">
+                                <Select
+                                  id="ahsts"
+                                  value={selectedBrand}
+                                  onChange={handleChangeBrand}
+                                  options={filteredOptionBrand}
+                                  className="exp-input-field"
+                                  placeholder="Our Brand"
+                                  isClearable
+                                  ref={ourbrand}
+                                />
+                              </div>
                           </div>
+
                           <div className="col-sm mb-2">
-                            <input
-                              type="text"
-                              id="Status"
-                              className="exp-input-field form-control"
-                              placeholder="Status"
-                              title='Please enter the status'
-                              value={status}
-                              onChange={(e) => setstatus(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
+                              <div title="Select the Status ">
+                                <Select
+                                  id="ahsts"
+                                  value={selectedStatus}
+                                  onChange={handleChangeStatus}
+                                  options={filteredOptionStatus}
+                                  className="exp-input-field"
+                                  placeholder="Status"
+                                  isClearable
+                                />
+                              </div>
                           </div>
+
                           <div className="mb-3 mt-3 d-flex justify-content-end">
                             <icon className="icon popups-btn" title='Search' onClick={handleSearchItem}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
@@ -436,30 +501,36 @@ export default function InventoryReturnItemPopup({ open, handleClose, handleItem
                               autoComplete="off"
                             />
                           </div>
+
                           <div className="col-sm mb-2">
-                            <input
-                              type="text"
-                              id="OurBrand"
-                              className="exp-input-field form-control"
-                              placeholder="Our Brand"
-                              value={Item_Our_Brand}
-                              onChange={(e) => setItem_Our_Brand(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
+                              <div title="Select the Our Brand ">
+                                <Select
+                                  id="ahsts"
+                                  value={selectedBrand}
+                                  onChange={handleChangeBrand}
+                                  options={filteredOptionBrand}
+                                  className="exp-input-field"
+                                  placeholder="Our Brand"
+                                  isClearable
+                                  ref={ourbrand}
+                                />
+                              </div>
                           </div>
+
                           <div className="col-sm mb-2">
-                            <input
-                              type="text"
-                              id="Status"
-                              className="exp-input-field form-control"
-                              placeholder="Status"
-                              value={status}
-                              onChange={(e) => setstatus(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
+                              <div title="Select the Status ">
+                                <Select
+                                  id="ahsts"
+                                  value={selectedStatus}
+                                  onChange={handleChangeStatus}
+                                  options={filteredOptionStatus}
+                                  className="exp-input-field"
+                                  placeholder="Status"
+                                  isClearable
+                                />
+                              </div>
                           </div>
+
                           <div className="mb-3 mt-3 d-flex justify-content-end">
                             <button className="" onClick={handleSearchItem}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />

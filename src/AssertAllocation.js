@@ -731,7 +731,7 @@ function AssertAllocation({ }) {
       if (!row.itemCode || row.itemCode.trim() === '') missingFields.push("Item Code");
       if (!row.itemName || row.itemName.trim() === '') missingFields.push("Item Name");
       if (!row.EmployeeNO || row.EmployeeNO.trim() === '') missingFields.push("Employee ID");
-      if (!row.serialno || row.serialno.trim() === '') missingFields.push("Serial No");
+      if (!row.serialno || String(row.serialno ?? '').trim() === '') missingFields.push("Serial No");
       if (!row.qty || row.qty.toString().trim() === '' || isNaN(row.qty)) missingFields.push("Quantity");
 
       if (missingFields.length > 0) {
@@ -1062,11 +1062,11 @@ function AssertAllocation({ }) {
         }
 
         const formattedData = excelData.slice(1).map((row) => ({
-          serialNumber: row[0],
+          serialNumber: String(row[0] ?? ''),
           itemCode: row[1],
           itemName: row[2],
           EmployeeNO: row[3],
-          serialno: row[4],
+          serialno: String(row[4] ?? ''),
           qty: row[5],
         }));
 

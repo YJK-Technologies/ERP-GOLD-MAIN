@@ -1150,7 +1150,7 @@ const handleExcelDownload = () => {
   // Header Sheet
   const headerSheet = XLSX.utils.aoa_to_sheet([
     ["Inventory Issued"], // Heading
-    [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+    [`Company Name: ${sessionStorage.getItem("selectedCompanyName")}`],
     [],
   ]);
 
@@ -1556,7 +1556,7 @@ const handleExcelDownload = () => {
                 {!showAsterisk && <span className="text-danger">*</span>}
               </label>
               <div class="exp-form-floating">
-                <div title="select the transaction type">
+                <div title="Select the transaction type">
                 <Select
                   id="issuedType"
                   className="exp-input-field"
@@ -1574,18 +1574,18 @@ const handleExcelDownload = () => {
               <div class="exp-form-floating">
                 <div class="d-flex justify-content-start">
                   <div>
-                    <label for="rid" class="exp-form-labels">Department ID</label>
+                    <label for="rid" class="exp-form-labels">Default Department</label>
                   </div>
                 </div>
                  <div class="exp-form-floating">
-                  <div title="select a department ID">
+                  <div title="Select a Default Department">
                   <Select
                     id="deptid"
                     value={selecteddept}
                     onChange={handleChangedept}
                     options={filteredOptionDepartment}
                     className=" exp-input-field position-relative "
-                    data-tip="Please select a department ID"
+                    data-tip="Please select a Default Department"
                     placeholder=""
                   />
                   </div>

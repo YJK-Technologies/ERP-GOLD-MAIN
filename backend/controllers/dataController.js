@@ -13691,7 +13691,7 @@ const getInventoryReturn = async (req, res) => {
 };
 
 const getInventoryReturnDetails = async (req, res) => {
-  const { transaction_no } = req.body;
+  const { transaction_no,company_code } = req.body;
 
   try {
     // Connect to the database
@@ -13702,7 +13702,8 @@ const getInventoryReturnDetails = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "IRD")
       .input("transaction_no", sql.NVarChar, transaction_no)
-      .query(`EXEC sp_getdata @mode,@transaction_no,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
+      .input("company_code", sql.NVarChar, company_code)
+      .query(`EXEC sp_getdata @mode,@transaction_no,@company_code,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
 
     // Send response
     if (result.recordset.length > 0) {
