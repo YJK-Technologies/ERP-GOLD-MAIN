@@ -28,6 +28,7 @@ const UnplannedReturn = () => {
 
   //code added by Pavun purpose of set user permisssion
   const permissions = JSON.parse(sessionStorage.getItem('permissions')) || {};
+  
   const returnPermission = permissions
     .filter(permission => permission.screen_type === 'UnplannedReturn')
     .map(permission => permission.permission_type.toLowerCase());
@@ -62,6 +63,9 @@ const UnplannedReturn = () => {
   const [showAsterisk, setShowAsterisk] = useState(false);
   const [loading, setLoading] = useState(false);
   const [warehouse, setWarehouse] = useState('');
+
+  const company_code = sessionStorage.getItem('selectedCompanyCode') ;
+  
 
   useEffect(() => {
     const companyCode = sessionStorage.getItem('selectedCompanyCode');
@@ -1118,7 +1122,7 @@ const UnplannedReturn = () => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ transaction_no: ReturnID })
+        body: JSON.stringify({ transaction_no: ReturnID,company_code })
       });
 
       if (response.ok) {

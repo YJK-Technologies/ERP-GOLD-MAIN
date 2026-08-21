@@ -1717,7 +1717,7 @@ const UnplannedReceipt = () => {
               onCellValueChanged={handleCellValueChanged}
             />
           </div>
-        </div>
+        </div>  
       </div>
       <div>
         <InventoryReceiptItemPopup open={open} handleClose={handleClose} handleItem={handleItem} />

@@ -85,7 +85,7 @@ const InvReturnPrint = () => {
       }}
     >
       {/* Header Section */}
-      <div 
+      {/* <div 
         className="invoice-header" 
         style={{
           display: "flex",
@@ -95,13 +95,16 @@ const InvReturnPrint = () => {
         }}
       >
         <div className="company-details">
-          <h2 style={{ margin: 0 }}>{headerData[0]?.company_code}</h2>
+          <h2 style={{ margin: 0 }}>{headerData[0]?.company_code}</h2> */}
           {/* <p>Phone no: 9790876453</p> */}
-        </div>
-        <div className="logo">
+        {/* </div>
+        <div className="logo"> */}
           {/* <img src="logo.png" alt="Company Logo" /> */}
-        </div>
-      </div>
+        {/* </div>
+      </div> */}
+
+      <h2 style={{ margin: 0 }}>{headerData[0]?.company_code}</h2>
+      <h2 style={{ margin: 0 }}>{sessionStorage.getItem('selectedCompanyName')}</h2>
 
       {/* Top Line */}
       <hr style={{ border: "none", borderTop: "1px solid currentColor", margin: "16px 0 10px 0" }} />

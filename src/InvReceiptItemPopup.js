@@ -504,31 +504,6 @@ export default function InventoryReceiptItemPopup({ open, handleClose, handleIte
                             />
                           </div>
 
-                          {/* <div className="col-sm mb-2">
-                            <input
-                              type="text"
-                              id="OurBrand"
-                              className="exp-input-field form-control"
-                              placeholder="Our Brand"
-                              value={Item_Our_Brand}
-                              onChange={(e) => setItem_Our_Brand(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
-                          </div>
-                          <div className="col-sm mb-2">
-                            <input
-                              type="text"
-                              id="Status"
-                              className="exp-input-field form-control"
-                              placeholder="Status"
-                              value={status}
-                              onChange={(e) => setstatus(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
-                          </div> */}
-
                           <div className="col-sm mb-2">
                               <div title="Select the Our Brand ">
                                 <Select
