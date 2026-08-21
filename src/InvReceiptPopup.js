@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as React from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -10,6 +10,8 @@ import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 import LoadingScreen from './Loading';
+import Select from 'react-select';
+
 
 const config = require('./Apiconfig');
 
@@ -111,6 +113,39 @@ export default function InvReceiptPopup({ open, handleClose, InvReceiptData }) {
   const [Receipt_Type, setReceipt_Type] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [issuedType, setIssuedType] = useState('');
+  
+
+   const [selectedIssued, setSelectedIssued] = useState(null);
+   const [issuedDrop, setIssuedDrop] = useState([]);
+   
+
+   const handleChangeIssued = (selected) => {
+    setSelectedIssued(selected);
+    setIssuedType(selected ? selected.value : '');
+  };
+
+    const filteredOptionIssued = issuedDrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  useEffect(() => {
+        const companyCode = sessionStorage.getItem('selectedCompanyCode');
+        fetch(`${config.apiBaseUrl}/getInventoryTransaction`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            company_code: companyCode,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => setIssuedDrop(data))
+          .catch((error) => console.error("Error fetching purchase types:", error));
+      }, []);
+
   const handleSearch = async () => {
     setLoading(true);
     try {
@@ -119,7 +154,8 @@ export default function InvReceiptPopup({ open, handleClose, InvReceiptData }) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({  company_code : sessionStorage.getItem('selectedCompanyCode'),ReceiptID, DateReceived, Receipt_Type })
+        body: JSON.stringify({  company_code : sessionStorage.getItem('selectedCompanyCode'),
+          ReceiptID, DateReceived, Receipt_Type: issuedType })
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -152,6 +188,8 @@ export default function InvReceiptPopup({ open, handleClose, InvReceiptData }) {
     setReceiptID("");
     setDateReceived("");
     setReceipt_Type("");
+    setIssuedType("");
+    setSelectedIssued(null);
   };
 
   const [selectedRows, setSelectedRows] = useState([]);
@@ -238,7 +276,7 @@ export default function InvReceiptPopup({ open, handleClose, InvReceiptData }) {
                               autoComplete='off'
                             />
                           </div>
-                          <div className="col-sm mb-2">
+                          {/* <div className="col-sm mb-2">
                             <input
                               type='text'
                               id='Receipt_Type'
@@ -250,7 +288,25 @@ export default function InvReceiptPopup({ open, handleClose, InvReceiptData }) {
                               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                               autoComplete='off'
                             />
-                          </div>
+                          </div> */}
+                                     <div className="col-md-3 form-group mb-2">
+                                        
+                                        <div class="exp-form-floating">
+                                          <div title="select the transaction type">
+                                          <Select
+                                            id="issuedType"
+                                            className="exp-input-field"
+                                            placeholder="Transaction Type"
+                                            required
+                                            value={selectedIssued}
+                                            onChange={handleChangeIssued}
+                                            options={filteredOptionIssued}
+                                            data-tip="Please select a transaction type"
+                                          />
+                                        </div>
+                                        </div>
+                                      </div>
+
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <icon className="icon popups-btn" onClick={handleSearch} title="Search">
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
