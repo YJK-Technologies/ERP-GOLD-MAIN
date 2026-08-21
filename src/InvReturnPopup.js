@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
@@ -9,6 +9,7 @@ import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 import LoadingScreen from './Loading';
+import Select from 'react-select';
 
 const config = require('./Apiconfig');
 
@@ -113,7 +114,38 @@ export default function InvReturnPopup({ open, handleClose, InvReturnData }) {
   const [ReturnID, setReturnID] = useState("");
   const [DateReturned, setDateReturned] = useState("");
   const [Return_Type, setReturn_Type] = useState("");
-  const [loading, setLoading] =useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const [issuedType, setIssuedType] = useState('');
+  const [selectedIssued, setSelectedIssued] = useState(null);
+  const [issuedDrop, setIssuedDrop] = useState([]);
+
+
+  const handleChangeIssued = (selected) => {
+    setSelectedIssued(selected);
+    setIssuedType(selected ? selected.value : '');
+  };
+
+  const filteredOptionIssued = issuedDrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  useEffect(() => {
+    const companyCode = sessionStorage.getItem('selectedCompanyCode');
+    fetch(`${config.apiBaseUrl}/getInventoryTransaction`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        company_code: companyCode,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setIssuedDrop(data))
+      .catch((error) => console.error("Error fetching purchase types:", error));
+  }, []);
 
   const handleSearch = async () => {
     setLoading(true);
@@ -123,7 +155,10 @@ export default function InvReturnPopup({ open, handleClose, InvReturnData }) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code : sessionStorage.getItem('selectedCompanyCode'),ReturnID, DateReturned, Return_Type}) // Send company_no and company_name as search criteria
+        body: JSON.stringify({
+          company_code: sessionStorage.getItem('selectedCompanyCode'),
+          ReturnID, DateReturned, Return_Type: issuedType
+        }) // Send company_no and company_name as search criteria
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -132,10 +167,10 @@ export default function InvReturnPopup({ open, handleClose, InvReturnData }) {
         console.log("data fetched successfully")
       } else if (response.status === 404) {
         toast.warning("Data Not Found")
-        .then(() => {
-          setRowData([]);
-          clearInputs([])
-        });
+          .then(() => {
+            setRowData([]);
+            clearInputs([])
+          });
         console.log("Data not found"); // Log the message for 404 Not Found
       } else {
         console.log("Bad request"); // Log the message for other errors
@@ -205,7 +240,7 @@ export default function InvReturnPopup({ open, handleClose, InvReturnData }) {
                           <div className="purbut mb-0 d-flex justify-content-between" >
                             <h1 align="left" className="purbut">Inventory Return Help</h1>
                             <button onClick={handleClose} className="purbut btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
-                            <i class="fa-solid fa-xmark"></i>
+                              <i class="fa-solid fa-xmark"></i>
                             </button>
                           </div>
                           <div class="d-flex justify-content-between">
@@ -242,7 +277,7 @@ export default function InvReturnPopup({ open, handleClose, InvReturnData }) {
                               autoComplete='off'
                             />
                           </div>
-                          <div className="col-sm mb-2">
+                          {/* <div className="col-sm mb-2">
                             <input
                               type='text'
                               id='Return_Type'
@@ -254,7 +289,26 @@ export default function InvReturnPopup({ open, handleClose, InvReturnData }) {
                               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                               autoComplete='off'
                             />
+                          </div> */}
+
+                          <div className="col-sm mb-2">
+
+                            <div class="exp-form-floating">
+                              <div title="select the transaction type">
+                                <Select
+                                  id="issuedType"
+                                  className="exp-input-field"
+                                  placeholder="Transaction Type"
+                                  required
+                                  value={selectedIssued}
+                                  onChange={handleChangeIssued}
+                                  options={filteredOptionIssued}
+                                  data-tip="Please select a transaction type"
+                                />
+                              </div>
+                            </div>
                           </div>
+
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <icon className="icon popups-btn" onClick={handleSearch} title="Search">
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
@@ -296,7 +350,7 @@ export default function InvReturnPopup({ open, handleClose, InvReturnData }) {
                           </div>
                           <div className="mb-0 d-flex justify-content-end" >
                             <button onClick={handleClose} className="closebtn2" required title="Close">
-                            <i class="fa-solid fa-xmark"></i>
+                              <i class="fa-solid fa-xmark"></i>
                             </button>
                           </div>
                         </div>
