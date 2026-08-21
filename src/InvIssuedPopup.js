@@ -184,6 +184,135 @@ export default function InvIssuedPopup({ open, handleClose, InvIssuedData }) {
     setRowData([]);
   }
 
+  // Transaction No drop down 
+    const filteredOptionIssued = issuedDrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+ const [selectedIssued, setSelectedIssued] = useState(null);
+ 
+    const handleIssueId = async (code) => {
+      setLoading(true);
+      try {
+        const response = await fetch(`${config.apiBaseUrl}/getInventoryIssued`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ transaction_no: code, company_code: sessionStorage.getItem("selectedCompanyCode") }) // Send company_no and company_name as search criteria
+        });
+        if (response.ok) {
+          setSaveButtonVisible(false);
+          setShowExcelButton(true);
+          setShowAsterisk(true);
+          const searchData = await response.json();
+          if (searchData.Header && searchData.Header.length > 0) {
+            const item = searchData.Header[0];
+            setIssuedDate(formatDate(item.DateIssued));
+            setIssuedId(item.IssuanceID);
+            const selectedIssued = filteredOptionIssued.find(option => option.value === item.Issued_Type);
+            setSelectedIssued(selectedIssued);
+  
+          } else {
+            console.log("Header Data is empty or not found");
+            setIssuedDate('');
+            setIssuedId('');
+            setIssuedType('')
+          }
+  
+          if (searchData.Detail && searchData.Detail.length > 0) {
+            const updatedRowData = searchData.Detail.map(item => {
+  
+              return {
+                serialNumber: item.ItemSNo,
+                itemCode: item.ItemCode,
+                itemName: item.ItemName,
+                warehouse: item.Warehouse,
+                department: item.Department,
+                quantityIssued: item.QuantityIssued,
+                reasonForIssuance: item.ReasonForIssuance,
+                issuedBy: item.IssuedBy,
+                approvalStatus: item.ApprovalStatus,
+                actionTaken: item.ActionTaken,
+                notes: item.Notes,
+                serialno: item.Serial_No
+              };
+            });
+  
+            setRowData(updatedRowData);
+          } else {
+            console.log("Detail Data is empty or not found");
+            setRowData([{ serialNumber: 1, itemCode: '', itemName: '', warehouse: '', department: '', quantityIssued: '', reasonForIssuance: '', issuedBy: '', approvalStatus: '', actionTaken: '', notes: '' }]);
+          }
+  
+          console.log("data fetched successfully")
+        } else if (response.status === 404) {
+          toast.warning('Data not found');
+  
+          setIssuedDate('');
+          setIssuedId('');
+          setIssuedType('');
+          setRowData([{ serialNumber: 1, itemCode: '', itemName: '', warehouse: '', department: '', quantityIssued: '', reasonForIssuance: '', issuedBy: '', approvalStatus: '', actionTaken: '', notes: '' }]);
+  
+        } else {
+          const errorResponse = await response.json();
+          toast.warning(errorResponse.message || "Failed to insert sales data");
+        }
+      } catch (error) {
+        console.error("Error fetching search data:", error);
+        toast.error(error.message || "Failed to fetch data");
+      } finally {
+        setLoading(false);
+      }
+    };
+    const InvIssuedData = async (data) => {
+    setSaveButtonVisible(false);
+    setShowExcelButton(true);
+    setShowAsterisk(true);
+    if (data && data.length > 0) {
+      const [{ IssuanceID, DateIssued, Issued_Type }] = data;
+
+      const issuedId = document.getElementById('issuedId');
+      if (issuedId) {
+        issuedId.value = IssuanceID;
+        setIssuedId(IssuanceID);
+      } else {
+        console.error('issuedId element not found');
+      }
+
+      const issuedDate = document.getElementById('issuedDate');
+      if (issuedDate) {
+        issuedDate.value = DateIssued;
+        setIssuedDate(formatDate(DateIssued));
+      } else {
+        console.error('issuedDate element not found');
+      }
+
+      const issuedType = document.getElementById('issuedType');
+      if (issuedType) {
+        const selectedIssued = filteredOptionIssued.find(option => option.value === Issued_Type);
+        setSelectedIssued(selectedIssued);
+      } else {
+        console.error('issuedType element not found');
+      }
+
+      await InventoryIssued(IssuanceID);
+
+    } else {
+      console.log("Data not fetched...!");
+    }
+  };  
+  const handleChangeIssued = (selected) => {
+    setSelectedIssued(selected);
+    setIssuedType(selected ? selected.value : '');
+  };
+
+
+
+
+
+
   return (
     <div>
       {open && (
@@ -237,7 +366,7 @@ export default function InvIssuedPopup({ open, handleClose, InvIssuedData }) {
                               autoComplete='off'
                             />
                           </div>
-                          <div className="col-sm mb-2">
+                          {/* <div className="col-sm mb-2">
                             <input
                               type='text'
                               id='Issued_Type'
@@ -249,7 +378,23 @@ export default function InvIssuedPopup({ open, handleClose, InvIssuedData }) {
                               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                               autoComplete='off'
                             />
-                          </div>
+                          </div> */}
+                          <div className="col-md-3 form-group mb-2">
+              <div class="exp-form-floating">
+                <div title="select the transaction type">
+                <Select
+                  id="issuedType"
+                  className="exp-input-field"
+                  placeholder=""
+                  required
+                  value={selectedIssued}
+                  onChange={handleChangeIssued}
+                  options={filteredOptionIssued}
+                  data-tip="Please select a transaction type"
+                />
+              </div>
+              </div>
+            </div>
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <icon className="icon popups-btn" onClick={handleSearch} title="Search">
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
