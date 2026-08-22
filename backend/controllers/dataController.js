@@ -7624,14 +7624,20 @@ const addstocktransferdetail = async (req, res) => {
       return res.status(200).json({ success: true, message: 'Data inserted successfully' });
     }
   } catch (err) {
-    // Check if the error is a primary key violation
-    if (err.code === 'EREQUEST' && err.number === 2627) {
-      return res.status(400).json({ success: false, message: 'This transation no stock already transfer or assigned' });
-    } else {
-      console.error('Error adding company  data:', err);
-      return res.status(500).json({ success: false, message: 'Internal Server Error' });
-    }
+  if (err.code === 'EREQUEST' && err.number === 2627) {
+    return res.status(400).json({
+      success: false,
+      message: 'This transaction number stock is already transferred or assigned'
+    });
+  } else {
+    console.error('Error adding stock transfer detail:', err);
+
+    return res.status(500).json({
+      success: false,
+      message: err.message || 'Internal Server Error'
+    });
   }
+}
 };
 
 const getstocktransferSearch = async (req, res) => {
@@ -7765,9 +7771,13 @@ const addstocktransferhdr = async (req, res) => {
     if (err.code === 'EREQUEST' && err.number === 2627) {
       return res.status(400).json({ success: false, message: 'This transation no stock already transfer or assigned' });
     } else {
-      console.error('Error adding company  data:', err);
-      return res.status(500).json({ success: false, message: 'Internal Server Error' });
-    }
+  console.error('Error adding stock transfer header:', err);
+
+  return res.status(500).json({
+    success: false,
+    message: err.message || 'Internal Server Error'
+  });
+}
   }
 };
 

@@ -562,7 +562,7 @@ function AccNameGrid() {
 
 
     const reportWindow = window.open("", "_blank");
-    reportWindow.document.write("<html><head><title>Charts of Accounts</title>");
+    reportWindow.document.write("<html><head><title>Chart of Accounts</title>");
     reportWindow.document.write("<style>");
     reportWindow.document.write(`
       body {
@@ -841,7 +841,7 @@ function AccNameGrid() {
           <div class="d-flex justify-content-between" >
             <div className="d-flex justify-content-start">
               <h1 className="purbut">
-                Charts of Accounts
+                Chart of Accounts
               </h1>
             </div>
             <div class="d-flex justify-content-end purbut me-3" >
@@ -869,7 +869,7 @@ function AccNameGrid() {
               <div className="d-flex justify-content-between">
                 <div className="d-flex justify-content-start">
                   <h1 className="h1">
-                    Charts of Accounts
+                    Chart of Accounts
                   </h1>
                 </div>
                 <div className="d-flex justify-content-end">

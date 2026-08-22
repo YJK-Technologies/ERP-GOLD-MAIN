@@ -489,7 +489,7 @@ function AccNameInput({ }) {
         <div class="">
           <div className="shadow-lg p-0 bg-body-tertiary rounded mb-2">
             <div className="purbut mb-0 d-flex justify-content-between" >
-              <h1 align="left" class="purbut">  Add Accounts</h1>
+              <h1 align="left" class="purbut">Add Chart of Accounts</h1>
               <button onClick={handleNavigate} className="purbut btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
                 <i class="fa-solid fa-xmark"></i>
               </button>
@@ -524,26 +524,21 @@ function AccNameInput({ }) {
               <div className="col-md-3 form-group ">
                 <div class="exp-form-floating">
                   <div class="">
-                    <label for="rid" class="exp-form-labels">
-                      User Account Code
+                    <label for="cusad4" class="exp-form-labels" className={`${error && !user_accgroup_code ? 'text-danger' : ''}`}>
+                      User Account Code<span className="text-danger">*</span>
                     </label>
-                      <div title="Select the User Account Code">
-                    <Select
-                      id="UserAccCode"
-                      value={selectedUser}
-                      onChange={handleChangeUser}
-                      options={filteredOptionUser}
-                      className=""
-                      placeholder=""
-                      ref={User}
-                      onKeyDown={(e) => handleKeyDown(e, Accountant, User)}
-                    />
-                    {error && !user_accgroup_code && (
-                      <div className="text-danger">
-                        User Account Code should not be blank
-                      </div>
-                    )}
-                  </div>
+                    <div title="Select the User Account Code">
+                      <Select
+                        id="UserAccCode"
+                        value={selectedUser}
+                        onChange={handleChangeUser}
+                        options={filteredOptionUser}
+                        className=""
+                        placeholder=""
+                        ref={User}
+                        onKeyDown={(e) => handleKeyDown(e, Accountant, User)}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -551,7 +546,7 @@ function AccNameInput({ }) {
                 <div class="exp-form-floating">
                   <div class="d-flex justify-content-start">
                     <div>
-                      <label for="rid" class="exp-form-labels">
+                      <label for="cusad4" class="exp-form-labels" className={`${error && !account_name ? 'text-danger' : ''}`}>
                         Accountant Name<span className="text-danger">*</span>
                       </label>
                     </div>
@@ -570,18 +565,13 @@ function AccNameInput({ }) {
                     ref={Accountant}
                     onKeyDown={(e) => handleKeyDown(e, Address1, Accountant)}
                   />
-                  {error && !account_name && (
-                    <div className="text-danger">
-                      Accountant Name should not be blank
-                    </div>
-                  )}
                 </div>
               </div>
               <div className="col-md-3 form-group">
                 <div class="exp-form-floating">
                   <div class="d-flex justify-content-start">
                     <div>
-                      <label for="rid" class="exp-form-labels">
+                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_addr_1 ? 'text-danger' : ''}`}>
                         Address 1<span className="text-danger">*</span>
                       </label>
                     </div>
@@ -598,16 +588,13 @@ function AccNameInput({ }) {
                     ref={Address1}
                     onKeyDown={(e) => handleKeyDown(e, Address2, Address1)}
                   />
-                  {error && !acc_addr_1 && (
-                    <div className="text-danger">Address should not be blank</div>
-                  )}
                 </div>
               </div>
               <div className="col-md-3 form-group ">
                 <div class="exp-form-floating">
                   <div class="d-flex justify-content-start">
                     <div>
-                      <label for="rid" class="exp-form-labels">
+                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_addr_2 ? 'text-danger' : ''}`}>
                         Address 2<span className="text-danger">*</span>
                       </label>
                     </div>
@@ -625,9 +612,6 @@ function AccNameInput({ }) {
                     ref={Address2}
                     onKeyDown={(e) => handleKeyDown(e, Address3, Address2)}
                   />
-                  {error && !acc_addr_2 && (
-                    <div className="text-danger">Address should not be blank</div>
-                  )}
                 </div>
               </div>
               <div className="col-md-3 form-group ">
@@ -674,81 +658,72 @@ function AccNameInput({ }) {
                 <div class="exp-form-floating">
                   <div class="d-flex justify-content-start">
                     <div>
-                      <label for="rid" class="exp-form-labels">
+                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_area_code ? 'text-danger' : ''}`}>
                         City<span className="text-danger">*</span>
                       </label>
                     </div>
                   </div>
-                   <div title="Select the City"> 
-                  <Select
-                    id="city"
-                    value={selectedCity}
-                    onChange={handleChangeCity}
-                    options={filteredOptionCity}
-                    className="exp-input-field"
-                    placeholder=""
-                    ref={City}
-                    onKeyDown={(e) => handleKeyDown(e, State, City)}
-                  />
-                  {error && !acc_area_code && (
-                    <div className="text-danger">City should not be blank</div>
-                  )}
+                  <div title="Select the City">
+                    <Select
+                      id="city"
+                      value={selectedCity}
+                      onChange={handleChangeCity}
+                      options={filteredOptionCity}
+                      className="exp-input-field"
+                      placeholder=""
+                      ref={City}
+                      onKeyDown={(e) => handleKeyDown(e, State, City)}
+                    />
+                  </div>
                 </div>
-              </div>
               </div>
               <div className="col-md-3 form-group ">
                 <div class="exp-form-floating">
-                  <label for="rid" class="exp-form-labels">
+                  <label for="cusad4" class="exp-form-labels" className={`${error && !acc_state_code ? 'text-danger' : ''}`}>
                     State<span className="text-danger">*</span>
                   </label>
-                   <div title="Select the State"> 
-                  <Select
-                    id="state"
-                    value={selectedState}
-                    onChange={handleChangeState}
-                    options={filteredOptionState}
-                    className="exp-input-field"
-                    placeholder=""
-                    ref={State}
-                    onKeyDown={(e) => handleKeyDown(e, Country, State)}
-                  />
-                  {error && !acc_state_code && (
-                    <div className="text-danger">State should not be blank</div>
-                  )}
+                  <div title="Select the State">
+                    <Select
+                      id="state"
+                      value={selectedState}
+                      onChange={handleChangeState}
+                      options={filteredOptionState}
+                      className="exp-input-field"
+                      placeholder=""
+                      ref={State}
+                      onKeyDown={(e) => handleKeyDown(e, Country, State)}
+                    />
+                  </div>
                 </div>
-              </div>
               </div>
               <div className="col-md-3 form-group ">
                 <div class="exp-form-floating">
                   <div class="d-flex justify-content-start">
                     <div>
-                      <label for="rid" class="exp-form-labels">
+                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_country_code ? 'text-danger' : ''}`}>
                         Country<span className="text-danger">*</span>
                       </label>
                     </div>
                   </div>
-                  <div title="Select the Country"> 
-                  <Select
-                    id="country"
-                    value={selectedCountry}
-                    onChange={handleChangeCountry}
-                    options={filteredOptionCountry}
-                    className="exp-input-field"
-                    placeholder=""
-                    ref={Country}
-                    onKeyDown={(e) => handleKeyDown(e, IMEX, Country)}
-                  />
-                  {error && !acc_country_code && (
-                    <div className="text-danger">Country should not be blank</div>
-                  )}
-                </div>
+                  <div title="Select the Country">
+                    <Select
+                      id="country"
+                      value={selectedCountry}
+                      onChange={handleChangeCountry}
+                      options={filteredOptionCountry}
+                      className="exp-input-field"
+                      placeholder=""
+                      ref={Country}
+                      onKeyDown={(e) => handleKeyDown(e, IMEX, Country)}
+                    />
+                  </div>
                 </div>
               </div>
               <div className="col-md-3 form-group mb-2">
                 <div class="exp-form-floating">
                   <div class="d-flex justify-content-start">
                     <div>
-                      <label for="rid" class="exp-form-labels">
+                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_imex_no ? 'text-danger' : ''}`}>
                         IMEX No<span className="text-danger">*</span>
                       </label>
                     </div>
@@ -766,9 +741,6 @@ function AccNameInput({ }) {
                     ref={IMEX}
                     onKeyDown={(e) => handleKeyDown(e, Office, IMEX)}
                   />
-                  {error && !acc_imex_no && (
-                    <div className="text-danger">IMEX No should not be blank</div>
-                  )}
                 </div>
               </div>
               <div className="col-md-3 form-group mb-2">
@@ -815,7 +787,7 @@ function AccNameInput({ }) {
                 <div class="exp-form-floating">
                   <div class="d-flex justify-content-start">
                     <div>
-                      <label for="rid" class="exp-form-labels">
+                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_mobile_no ? 'text-danger' : ''}`}>
                         Mobile No<span className="text-danger">*</span>
                       </label>
                     </div>
@@ -833,18 +805,13 @@ function AccNameInput({ }) {
                     ref={Mobile}
                     onKeyDown={(e) => handleKeyDown(e, Fax, Mobile)}
                   />
-                  {error && !acc_mobile_no && (
-                    <div className="text-danger">
-                      Mobile Number should not be blank
-                    </div>
-                  )}
                 </div>
               </div>
               <div className="col-md-3 form-group mb-2">
                 <div class="exp-form-floating">
                   <div class="d-flex justify-content-start">
                     <div>
-                      <label for="rid" class="exp-form-labels">
+                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_fax_no ? 'text-danger' : ''}`}>
                         Fax No<span className="text-danger">*</span>
                       </label>
                     </div>
@@ -862,18 +829,13 @@ function AccNameInput({ }) {
                     ref={Fax}
                     onKeyDown={(e) => handleKeyDown(e, Email, Fax)}
                   />
-                  {error && !acc_fax_no && (
-                    <div className="text-danger">
-                      FAX Number should not be blank
-                    </div>
-                  )}
                 </div>
               </div>
               <div className="col-md-3 form-group mb-2">
                 <div class="exp-form-floating">
                   <div class="d-flex justify-content-start">
                     <div>
-                      <label for="rid" class="exp-form-labels">
+                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_email_id ? 'text-danger' : ''}`}>
                         Email ID<span className="text-danger">*</span>
                       </label>
                     </div>
@@ -891,16 +853,13 @@ function AccNameInput({ }) {
                     ref={Email}
                     onKeyDown={(e) => handleKeyDown(e, Credit, Email)}
                   />
-                  {error && !validateEmail(acc_email_id) && (
-                    <div className="text-danger">Please Enter Valid Email Id</div>
-                  )}
                 </div>
               </div>
               <div className="col-md-3 form-group mb-2">
                 <div class="exp-form-floating">
                   <div class="d-flex justify-content-start">
                     <div>
-                      <label for="rid" class="exp-form-labels">
+                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_credit_limit ? 'text-danger' : ''}`}>
                         Credit Limit<span className="text-danger">*</span>
                       </label>
                     </div>
@@ -918,11 +877,6 @@ function AccNameInput({ }) {
                     ref={Credit}
                     onKeyDown={(e) => handleKeyDown(e, Transport, Credit)}
                   />
-                  {error && !acc_credit_limit && (
-                    <div className="text-danger">
-                      Credit Limit should not be blank
-                    </div>
-                  )}
                 </div>
               </div>
               <div className="col-md-3 form-group mb-2">
@@ -930,18 +884,18 @@ function AccNameInput({ }) {
                   <label for="custrans" class="exp-form-labels">
                     Transport Code
                   </label>
-                   <div title="Select the Transport Code"> 
-                  <Select
-                    id="custrans"
-                    value={selectedTransport}
-                    onChange={handleChangeTransport}
-                    options={filteredOptionTransaction}
-                    className="exp-input-field"
-                    placeholder=""
-                    ref={Transport}
-                    onKeyDown={(e) => handleKeyDown(e, Salesman, Transport)}
-                  />
-                </div>
+                  <div title="Select the Transport Code">
+                    <Select
+                      id="custrans"
+                      value={selectedTransport}
+                      onChange={handleChangeTransport}
+                      options={filteredOptionTransaction}
+                      className="exp-input-field"
+                      placeholder=""
+                      ref={Transport}
+                      onKeyDown={(e) => handleKeyDown(e, Salesman, Transport)}
+                    />
+                  </div>
                 </div>
               </div>
               <div className="col-md-3 form-group mb-2">
@@ -949,18 +903,18 @@ function AccNameInput({ }) {
                   <label for="cussales" class="exp-form-labels">
                     Salesman Code
                   </label>
-                  <div title="Select the Salesman Code"> 
-                  <Select
-                    id="cussales"
-                    value={selectedSales}
-                    onChange={handleChangeSales}
-                    options={filteredOptionSales}
-                    className="exp-input-field"
-                    placeholder=""
-                    ref={Salesman}
-                    onKeyDown={(e) => handleKeyDown(e, Broker, Salesman)}
-                  />
-                </div>
+                  <div title="Select the Salesman Code">
+                    <Select
+                      id="cussales"
+                      value={selectedSales}
+                      onChange={handleChangeSales}
+                      options={filteredOptionSales}
+                      className="exp-input-field"
+                      placeholder=""
+                      ref={Salesman}
+                      onKeyDown={(e) => handleKeyDown(e, Broker, Salesman)}
+                    />
+                  </div>
                 </div>
               </div>
               <div className="col-md-3 form-group mb-2">
@@ -968,18 +922,18 @@ function AccNameInput({ }) {
                   <label for="cusbro" class="exp-form-labels">
                     Broker Code
                   </label>
-                  <div title="Select the Broker Code"> 
-                  <Select
-                    id="cusbro"
-                    value={selectedBroker}
-                    onChange={handleChangeBroker}
-                    options={filteredOptionBroker}
-                    className="exp-input-field"
-                    placeholder=""
-                    ref={Broker}
-                    onKeyDown={(e) => handleKeyDown(e, Weekday, Broker)}
-                  />
-                </div>
+                  <div title="Select the Broker Code">
+                    <Select
+                      id="cusbro"
+                      value={selectedBroker}
+                      onChange={handleChangeBroker}
+                      options={filteredOptionBroker}
+                      className="exp-input-field"
+                      placeholder=""
+                      ref={Broker}
+                      onKeyDown={(e) => handleKeyDown(e, Weekday, Broker)}
+                    />
+                  </div>
                 </div>
               </div>
               <div className="col-md-3 form-group mb-2 ">
@@ -1006,26 +960,23 @@ function AccNameInput({ }) {
                 <div class="exp-form-floating">
                   <div class="d-flex justify-content-start">
                     <div>
-                      <label for="rid" class="exp-form-labels">
+                      <label for="cusad4" class="exp-form-labels" className={`${error && !status ? 'text-danger' : ''}`}>
                         Status<span className="text-danger">*</span>
                       </label>
                     </div>
                   </div>
-                  <div title="Select the Status"> 
-                  <Select
-                    id="status"
-                    value={selectedStatus}
-                    onChange={handleChangeStatus}
-                    options={filteredOptionStatus}
-                    className="exp-input-field"
-                    placeholder=""
-                    ref={Status}
-                    onKeyDown={(e) => handleKeyDown}
-                  />
-                  {error && !status && (
-                    <div className="text-danger">Status should not be blank</div>
-                  )}
-                </div>
+                  <div title="Select the Status">
+                    <Select
+                      id="status"
+                      value={selectedStatus}
+                      onChange={handleChangeStatus}
+                      options={filteredOptionStatus}
+                      className="exp-input-field"
+                      placeholder=""
+                      ref={Status}
+                      onKeyDown={(e) => handleKeyDown}
+                    />
+                  </div>
                 </div>
               </div>
               {/* <div className="col-md-3 form-group  mb-2">
@@ -1060,7 +1011,7 @@ function AccNameInput({ }) {
         <div class="">
           <div className="shadow-lg p-0 bg-body-tertiary rounded mb-2">
             <div className=" mb-0 d-flex justify-content-between" >
-              <h1 align="left" class="h1">  Add Accounts</h1>
+              <h1 align="left" class="h1">Add Chart of Accounts</h1>
               <button onClick={handleNavigate} className=" btn btn-danger shadow-none borde-shape h-70 fs-5" required title="Close">
                 <i class="fa-solid fa-xmark"></i>
               </button>
@@ -1095,24 +1046,21 @@ function AccNameInput({ }) {
               <div className="col-md-3 form-group ">
                 <div class="exp-form-floating">
                   <div class="">
-                    <label for="rid" class="exp-form-labels">
-                      User Account Code
+                    <label for="cusad4" class="exp-form-labels" className={`${error && !user_accgroup_code ? 'text-danger' : ''}`}>
+                      User Account Code<span className="text-danger">*</span>
                     </label>
-                    <Select
-                      id="UserAccCode"
-                      value={selectedUser}
-                      onChange={handleChangeUser}
-                      options={filteredOptionUser}
-                      className=""
-                      placeholder=""
-                      ref={User}
-                      onKeyDown={(e) => handleKeyDown(e, Accountant, User)}
-                    />
-                    {error && !user_accgroup_code && (
-                      <div className="text-danger">
-                        User Account Code should not be blank
-                      </div>
-                    )}
+                    <div title="Select the User Account Code">
+                      <Select
+                        id="UserAccCode"
+                        value={selectedUser}
+                        onChange={handleChangeUser}
+                        options={filteredOptionUser}
+                        className=""
+                        placeholder=""
+                        ref={User}
+                        onKeyDown={(e) => handleKeyDown(e, Accountant, User)}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1120,7 +1068,7 @@ function AccNameInput({ }) {
                 <div class="exp-form-floating">
                   <div class="d-flex justify-content-start">
                     <div>
-                      <label for="rid" class="exp-form-labels">
+                      <label for="cusad4" class="exp-form-labels" className={`${error && !account_name ? 'text-danger' : ''}`}>
                         Accountant Name<span className="text-danger">*</span>
                       </label>
                     </div>
@@ -1139,18 +1087,13 @@ function AccNameInput({ }) {
                     ref={Accountant}
                     onKeyDown={(e) => handleKeyDown(e, Address1, Accountant)}
                   />
-                  {error && !account_name && (
-                    <div className="text-danger">
-                      Accountant Name should not be blank
-                    </div>
-                  )}
                 </div>
               </div>
               <div className="col-md-3 form-group">
                 <div class="exp-form-floating">
                   <div class="d-flex justify-content-start">
                     <div>
-                      <label for="rid" class="exp-form-labels">
+                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_addr_1 ? 'text-danger' : ''}`}>
                         Address 1<span className="text-danger">*</span>
                       </label>
                     </div>
@@ -1167,16 +1110,13 @@ function AccNameInput({ }) {
                     ref={Address1}
                     onKeyDown={(e) => handleKeyDown(e, Address2, Address1)}
                   />
-                  {error && !acc_addr_1 && (
-                    <div className="text-danger">Address should not be blank</div>
-                  )}
                 </div>
               </div>
               <div className="col-md-3 form-group ">
                 <div class="exp-form-floating">
                   <div class="d-flex justify-content-start">
                     <div>
-                      <label for="rid" class="exp-form-labels">
+                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_addr_2 ? 'text-danger' : ''}`}>
                         Address 2<span className="text-danger">*</span>
                       </label>
                     </div>
@@ -1194,9 +1134,6 @@ function AccNameInput({ }) {
                     ref={Address2}
                     onKeyDown={(e) => handleKeyDown(e, Address3, Address2)}
                   />
-                  {error && !acc_addr_2 && (
-                    <div className="text-danger">Address should not be blank</div>
-                  )}
                 </div>
               </div>
               <div className="col-md-3 form-group ">
@@ -1243,75 +1180,72 @@ function AccNameInput({ }) {
                 <div class="exp-form-floating">
                   <div class="d-flex justify-content-start">
                     <div>
-                      <label for="rid" class="exp-form-labels">
+                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_area_code ? 'text-danger' : ''}`}>
                         City<span className="text-danger">*</span>
                       </label>
                     </div>
                   </div>
-                  <Select
-                    id="city"
-                    value={selectedCity}
-                    onChange={handleChangeCity}
-                    options={filteredOptionCity}
-                    className="exp-input-field"
-                    placeholder=""
-                    ref={City}
-                    onKeyDown={(e) => handleKeyDown(e, State, City)}
-                  />
-                  {error && !acc_area_code && (
-                    <div className="text-danger">City should not be blank</div>
-                  )}
+                  <div title="Select the City">
+                    <Select
+                      id="city"
+                      value={selectedCity}
+                      onChange={handleChangeCity}
+                      options={filteredOptionCity}
+                      className="exp-input-field"
+                      placeholder=""
+                      ref={City}
+                      onKeyDown={(e) => handleKeyDown(e, State, City)}
+                    />
+                  </div>
                 </div>
               </div>
               <div className="col-md-3 form-group ">
                 <div class="exp-form-floating">
-                  <label for="rid" class="exp-form-labels">
+                  <label for="cusad4" class="exp-form-labels" className={`${error && !acc_state_code ? 'text-danger' : ''}`}>
                     State<span className="text-danger">*</span>
                   </label>
-                  <Select
-                    id="state"
-                    value={selectedState}
-                    onChange={handleChangeState}
-                    options={filteredOptionState}
-                    className="exp-input-field"
-                    placeholder=""
-                    ref={State}
-                    onKeyDown={(e) => handleKeyDown(e, Country, State)}
-                  />
-                  {error && !acc_state_code && (
-                    <div className="text-danger">State should not be blank</div>
-                  )}
+                  <div title="Select the State">
+                    <Select
+                      id="state"
+                      value={selectedState}
+                      onChange={handleChangeState}
+                      options={filteredOptionState}
+                      className="exp-input-field"
+                      placeholder=""
+                      ref={State}
+                      onKeyDown={(e) => handleKeyDown(e, Country, State)}
+                    />
+                  </div>
                 </div>
               </div>
               <div className="col-md-3 form-group ">
                 <div class="exp-form-floating">
                   <div class="d-flex justify-content-start">
                     <div>
-                      <label for="rid" class="exp-form-labels">
+                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_country_code ? 'text-danger' : ''}`}>
                         Country<span className="text-danger">*</span>
                       </label>
                     </div>
                   </div>
-                  <Select
-                    id="country"
-                    value={selectedCountry}
-                    onChange={handleChangeCountry}
-                    options={filteredOptionCountry}
-                    className="exp-input-field"
-                    placeholder=""
-                    ref={Country}
-                    onKeyDown={(e) => handleKeyDown(e, IMEX, Country)}
-                  />
-                  {error && !acc_country_code && (
-                    <div className="text-danger">Country should not be blank</div>
-                  )}
+                  <div title="Select the Country">
+                    <Select
+                      id="country"
+                      value={selectedCountry}
+                      onChange={handleChangeCountry}
+                      options={filteredOptionCountry}
+                      className="exp-input-field"
+                      placeholder=""
+                      ref={Country}
+                      onKeyDown={(e) => handleKeyDown(e, IMEX, Country)}
+                    />
+                  </div>
                 </div>
               </div>
               <div className="col-md-3 form-group mb-2">
                 <div class="exp-form-floating">
                   <div class="d-flex justify-content-start">
                     <div>
-                      <label for="rid" class="exp-form-labels">
+                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_imex_no ? 'text-danger' : ''}`}>
                         IMEX No<span className="text-danger">*</span>
                       </label>
                     </div>
@@ -1329,9 +1263,6 @@ function AccNameInput({ }) {
                     ref={IMEX}
                     onKeyDown={(e) => handleKeyDown(e, Office, IMEX)}
                   />
-                  {error && !acc_imex_no && (
-                    <div className="text-danger">IMEX No should not be blank</div>
-                  )}
                 </div>
               </div>
               <div className="col-md-3 form-group mb-2">
@@ -1378,7 +1309,7 @@ function AccNameInput({ }) {
                 <div class="exp-form-floating">
                   <div class="d-flex justify-content-start">
                     <div>
-                      <label for="rid" class="exp-form-labels">
+                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_mobile_no ? 'text-danger' : ''}`}>
                         Mobile No<span className="text-danger">*</span>
                       </label>
                     </div>
@@ -1396,18 +1327,13 @@ function AccNameInput({ }) {
                     ref={Mobile}
                     onKeyDown={(e) => handleKeyDown(e, Fax, Mobile)}
                   />
-                  {error && !acc_mobile_no && (
-                    <div className="text-danger">
-                      Mobile Number should not be blank
-                    </div>
-                  )}
                 </div>
               </div>
               <div className="col-md-3 form-group mb-2">
                 <div class="exp-form-floating">
                   <div class="d-flex justify-content-start">
                     <div>
-                      <label for="rid" class="exp-form-labels">
+                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_fax_no ? 'text-danger' : ''}`}>
                         Fax No<span className="text-danger">*</span>
                       </label>
                     </div>
@@ -1425,18 +1351,13 @@ function AccNameInput({ }) {
                     ref={Fax}
                     onKeyDown={(e) => handleKeyDown(e, Email, Fax)}
                   />
-                  {error && !acc_fax_no && (
-                    <div className="text-danger">
-                      FAX Number should not be blank
-                    </div>
-                  )}
                 </div>
               </div>
               <div className="col-md-3 form-group mb-2">
                 <div class="exp-form-floating">
                   <div class="d-flex justify-content-start">
                     <div>
-                      <label for="rid" class="exp-form-labels">
+                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_email_id ? 'text-danger' : ''}`}>
                         Email ID<span className="text-danger">*</span>
                       </label>
                     </div>
@@ -1453,17 +1374,14 @@ function AccNameInput({ }) {
                     maxLength={250}
                     ref={Email}
                     onKeyDown={(e) => handleKeyDown(e, Credit, Email)}
-                  />{" "}
-                  {error && !validateEmail(acc_email_id) && (
-                    <div className="text-danger">Please Enter Valid Email Id</div>
-                  )}
+                  />
                 </div>
               </div>
               <div className="col-md-3 form-group mb-2">
                 <div class="exp-form-floating">
                   <div class="d-flex justify-content-start">
                     <div>
-                      <label for="rid" class="exp-form-labels">
+                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_credit_limit ? 'text-danger' : ''}`}>
                         Credit Limit<span className="text-danger">*</span>
                       </label>
                     </div>
@@ -1481,11 +1399,6 @@ function AccNameInput({ }) {
                     ref={Credit}
                     onKeyDown={(e) => handleKeyDown(e, Transport, Credit)}
                   />
-                  {error && !acc_credit_limit && (
-                    <div className="text-danger">
-                      Credit Limit should not be blank
-                    </div>
-                  )}
                 </div>
               </div>
               <div className="col-md-3 form-group mb-2">
@@ -1493,16 +1406,18 @@ function AccNameInput({ }) {
                   <label for="custrans" class="exp-form-labels">
                     Transport Code
                   </label>
-                  <Select
-                    id="custrans"
-                    value={selectedTransport}
-                    onChange={handleChangeTransport}
-                    options={filteredOptionTransaction}
-                    className="exp-input-field"
-                    placeholder=""
-                    ref={Transport}
-                    onKeyDown={(e) => handleKeyDown(e, Salesman, Transport)}
-                  />
+                  <div title="Select the Transport Code">
+                    <Select
+                      id="custrans"
+                      value={selectedTransport}
+                      onChange={handleChangeTransport}
+                      options={filteredOptionTransaction}
+                      className="exp-input-field"
+                      placeholder=""
+                      ref={Transport}
+                      onKeyDown={(e) => handleKeyDown(e, Salesman, Transport)}
+                    />
+                  </div>
                 </div>
               </div>
               <div className="col-md-3 form-group mb-2">
@@ -1510,16 +1425,18 @@ function AccNameInput({ }) {
                   <label for="cussales" class="exp-form-labels">
                     Salesman Code
                   </label>
-                  <Select
-                    id="cussales"
-                    value={selectedSales}
-                    onChange={handleChangeSales}
-                    options={filteredOptionSales}
-                    className="exp-input-field"
-                    placeholder=""
-                    ref={Salesman}
-                    onKeyDown={(e) => handleKeyDown(e, Broker, Salesman)}
-                  />
+                  <div title="Select the Salesman Code">
+                    <Select
+                      id="cussales"
+                      value={selectedSales}
+                      onChange={handleChangeSales}
+                      options={filteredOptionSales}
+                      className="exp-input-field"
+                      placeholder=""
+                      ref={Salesman}
+                      onKeyDown={(e) => handleKeyDown(e, Broker, Salesman)}
+                    />
+                  </div>
                 </div>
               </div>
               <div className="col-md-3 form-group mb-2">
@@ -1527,16 +1444,18 @@ function AccNameInput({ }) {
                   <label for="cusbro" class="exp-form-labels">
                     Broker Code
                   </label>
-                  <Select
-                    id="cusbro"
-                    value={selectedBroker}
-                    onChange={handleChangeBroker}
-                    options={filteredOptionBroker}
-                    className="exp-input-field"
-                    placeholder=""
-                    ref={Broker}
-                    onKeyDown={(e) => handleKeyDown(e, Weekday, Broker)}
-                  />
+                  <div title="Select the Broker Code">
+                    <Select
+                      id="cusbro"
+                      value={selectedBroker}
+                      onChange={handleChangeBroker}
+                      options={filteredOptionBroker}
+                      className="exp-input-field"
+                      placeholder=""
+                      ref={Broker}
+                      onKeyDown={(e) => handleKeyDown(e, Weekday, Broker)}
+                    />
+                  </div>
                 </div>
               </div>
               <div className="col-md-3 form-group mb-2 ">
@@ -1563,24 +1482,23 @@ function AccNameInput({ }) {
                 <div class="exp-form-floating">
                   <div class="d-flex justify-content-start">
                     <div>
-                      <label for="rid" class="exp-form-labels">
-                        Status <span className="text-danger">*</span>
+                      <label for="cusad4" class="exp-form-labels" className={`${error && !status ? 'text-danger' : ''}`}>
+                        Status<span className="text-danger">*</span>
                       </label>
                     </div>
                   </div>
-                  <Select
-                    id="status"
-                    value={selectedStatus}
-                    onChange={handleChangeStatus}
-                    options={filteredOptionStatus}
-                    className="exp-input-field"
-                    placeholder=""
-                    ref={Status}
-                    onKeyDown={(e) => handleKeyDown}
-                  />
-                  {error && !status && (
-                    <div className="text-danger">Status should not be blank</div>
-                  )}
+                  <div title="Select the Status">
+                    <Select
+                      id="status"
+                      value={selectedStatus}
+                      onChange={handleChangeStatus}
+                      options={filteredOptionStatus}
+                      className="exp-input-field"
+                      placeholder=""
+                      ref={Status}
+                      onKeyDown={(e) => handleKeyDown}
+                    />
+                  </div>
                 </div>
               </div>
               {/* <div className="col-md-3 form-group  mb-2">
@@ -1589,10 +1507,10 @@ function AccNameInput({ }) {
                     <div>
                       <label for="state" class="exp-form-labels">
                         Created By
+
                       </label>
                     </div>
-                  </div>
-                  <input
+                  </div><input
                     id="emailid"
                     class="exp-input-field form-control"
                     type="text"

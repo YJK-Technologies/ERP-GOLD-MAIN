@@ -819,7 +819,10 @@ function BankAccInput({}) {
                     required
                     title="Please enter the Account Number"
                     value={account_number}
-                    onChange={(e) => setaccount_number(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '');
+                      setaccount_number(value);
+                    }}
                     maxLength={30}
                     ref={AccountNumber}
                     onKeyDown={(e) => handleKeyDown(e, IFSc, AccountNumber)}
@@ -890,7 +893,7 @@ function BankAccInput({}) {
                       title="Please enter the Branch "
                       value={branch}
                       onChange={(e) => setbranch(e.target.value)}
-                      maxLength={250}
+                      maxLength={100}
                       ref={Branch}
                       onKeyDown={(e) => handleKeyDown(e, Address1, Branch)}
                     />

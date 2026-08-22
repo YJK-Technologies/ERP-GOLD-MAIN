@@ -1331,6 +1331,7 @@ const UnplannedReceipt = () => {
       "Warehouse": row.warehouse.toString(),
       "Supplier": row.supplier.toString(),
       "PurchaseOrder ID": row.purchaseOrderID.toString(),
+      "Serial No": row.serialno.toString(),
       "Quantity Received": row.quantityReceived.toString(),
       "Condition": row.condition.toString(),
       "Received By": row.receivedBy.toString(),
