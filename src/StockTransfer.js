@@ -814,15 +814,25 @@ finally {
       
         toast.success("Stock Data inserted Successfully")
 
-        await saveStockTransferDetails(transaction_no);
-setDelButtonVisible(true)
-setprintButtonVisible(true)
-        setStatus('Saved...');
+        const detailsSaved = await saveStockTransferDetails(transaction_no);
+
+if (detailsSaved) {
+  setDelButtonVisible(true);
+  setprintButtonVisible(true);
+  setStatus('Saved...');
+
+  console.log("Stock Header and Detail Data inserted successfully");
+}
         console.log("Stock Header Data inserted successfully");
       } else {
-        const errorResponse = await response.json();
-        console.error(errorResponse.message); // Log error message
-      }
+  const errorResponse = await response.json();
+
+  console.error("Stock Transfer Header Error:", errorResponse.message);
+
+  toast.error(errorResponse.message || "Unable to save stock transfer.");
+
+  setStatus('Error: ' + (errorResponse.message || "Unable to save stock transfer."));
+}
     } catch (error) {
       console.error("Error inserting data:", error);
      
@@ -837,44 +847,74 @@ finally {
 
   //CODE TO SAVE PURCHASE DETAILS
   const saveStockTransferDetails = async (transaction_no) => {
-    try {
-      for (const row of rowData) {
-        const Details = {
-          created_by: sessionStorage.getItem('selectedUserCode'),
-          company_code: sessionStorage.getItem('selectedCompanyCode'),
-          ItemSNo: row.serialNumber,
-          transaction_no: transaction_no.toString(),
-          item_code: row.itemCode,
-          Item_name: row.itemName,
-          transfer_Qty: row.purchaseQty,
-          weight: row.unitWeight,
-          total_weight: row.ItemTotalWight,
-          from_Warehouse: row.warehouse,
-          to_Warehouse: row.warehouseTo,
-          transaction_date: transactionDate
+  try {
 
-        };
-        const response = await fetch(`${config.apiBaseUrl}/addstocktransferdetail`, {
+    const validRows = rowData.filter(row =>
+      row.serialNumber != null &&
+      row.itemCode != null &&
+      row.itemCode !== "" &&
+      row.itemName != null &&
+      row.itemName !== "" &&
+      row.purchaseQty != null &&
+      row.purchaseQty !== "" &&
+      row.unitWeight != null &&
+      row.unitWeight !== "" &&
+      row.ItemTotalWight != null &&
+      row.ItemTotalWight !== "" &&
+      row.warehouse != null &&
+      row.warehouse !== "" &&
+      row.warehouseTo != null &&
+      row.warehouseTo !== ""
+    );
+
+    for (const row of validRows) {
+      const Details = {
+        created_by: sessionStorage.getItem('selectedUserCode'),
+        company_code: sessionStorage.getItem('selectedCompanyCode'),
+        ItemSNo: row.serialNumber,
+        transaction_no: transaction_no.toString(),
+        item_code: row.itemCode,
+        Item_name: row.itemName,
+        transfer_Qty: row.purchaseQty,
+        weight: row.unitWeight,
+        total_weight: row.ItemTotalWight,
+        from_Warehouse: row.warehouse,
+        to_Warehouse: row.warehouseTo,
+        transaction_date: transactionDate
+      };
+
+      const response = await fetch(
+        `${config.apiBaseUrl}/addstocktransferdetail`,
+        {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(Details),
-        });
-
-        if (response.ok) {
-          console.log("Stock Detail Data inserted successfully");
-        } else if (response.status === 400) {
-          const errorResponse = await response.json();
-          console.error(errorResponse.error);
-        } else {
-          console.error("Failed to insert data for row");
         }
+      );
+
+      const responseData = await response.json();
+
+      if (response.ok) {
+        console.log("Stock Detail Data inserted successfully");
+      } else {
+        console.error("Stock Detail Error:", responseData.message);
+
+        throw new Error(
+          responseData.message ||
+          "Failed to insert stock transfer detail."
+        );
       }
-    } catch (error) {
-      console.error("Error inserting data:", error);
     }
-  };
+
+    return true;
+
+  } catch (error) {
+    console.error("Error inserting stock transfer details:", error);
+    throw error;
+  }
+};
 
 
 
