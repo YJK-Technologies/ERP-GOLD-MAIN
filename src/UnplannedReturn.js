@@ -40,6 +40,7 @@ const UnplannedReturn = () => {
   const [globalItem, setGlobalItem] = useState(null)
   const [returnType, setReturnType] = useState('');
   const [returnDate, setReturnDate] = useState('');
+  
   const [returnId, setReturnId] = useState('');
   const [returnDrop, setReturnDrop] = useState([]);
   const [selectedReturn, setSelectedReturn] = useState(null);
@@ -1337,7 +1338,7 @@ const UnplannedReturn = () => {
   // Header Sheet
   const headerSheet = XLSX.utils.aoa_to_sheet([
     ["Inventory Return"],
-    [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+    [`Company Name : ${sessionStorage.getItem("selectedCompanyName Forty two market forty two can't see our points of the virtue or the common field is solid message field ticket number two W four oin vehicle ticket for the closed module at direct message direct message direct message twelve fourteen open ticket Pakistan feedback and then writing color it don't match and the blows number all you under the bright correct the proper of distance level process sixty eight I mean in the month school I'm gonna find the face of the land is different the part of Christmas college that was to like a example six years joint twenty four years my God and the automatic right some taste real cream no I can close our adjustment close on a close the people six eleven for the number")}`],
     [],
   ]);
 
