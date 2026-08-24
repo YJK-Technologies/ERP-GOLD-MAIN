@@ -90,6 +90,31 @@ function Purchase() {
   const location = useLocation();
 
   const savedPath = sessionStorage.getItem('currentPath');
+
+    // For default warehouse
+    useEffect(() => {
+    if (!selectedWarehouse) {
+      return;
+    }
+  
+    setRowData(prevRowData =>
+      prevRowData.map(row => {
+        // Only set default warehouse if the row has no warehouse
+        if (!row.warehouse || row.warehouse.trim() === '') {
+          return {
+            ...row,
+            warehouse: selectedWarehouse.value,
+            unitWeight: 0,
+            purchaseQty: 0,
+            purchaseAmt: 0 
+          };
+        }
+  
+        // Keep existing warehouse value
+        return row;
+      })
+    );
+  }, [selectedWarehouse]);
   
   useEffect(() => {
     fetch(`${config.apiBaseUrl}/getDefaultoptions`, {

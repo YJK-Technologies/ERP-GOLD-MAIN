@@ -257,7 +257,9 @@ const UnplannedReceipt = () => {
       } else if (response.status === 404) {
         toast.warning('Data not found!', {
           onClose: () => {
-            const updatedRowData = rowData.map(row => {
+            // const updatedRowData = rowData.map(row => {
+              setRowData(prevRowData =>
+              prevRowData.map(row => {
               if (row.itemCode === params.data.itemCode) {
                 return {
                   ...row,
@@ -272,8 +274,9 @@ const UnplannedReceipt = () => {
                 };
               }
               return row;
-            });
-            setRowData(updatedRowData);
+              })
+            );
+            // setRowData(updatedRowData);
           }
         });
       } else {
@@ -1481,6 +1484,28 @@ const UnplannedReceipt = () => {
       toast.warning('Transaction date must be between April 1st, 2024 and March 31st, 2025.');
     }
   };
+
+  // For default warehouse
+  useEffect(() => {
+  if (!selectedWarehouse) {
+    return;
+  }
+
+  setRowData(prevRowData =>
+    prevRowData.map(row => {
+      // Only set default warehouse if the row has no warehouse
+      if (!row.warehouse || row.warehouse.trim() === '') {
+        return {
+          ...row,
+          warehouse: selectedWarehouse.value
+        };
+      }
+
+      // Keep existing warehouse value
+      return row;
+    })
+  );
+}, [selectedWarehouse]);
 
   const handlePoData = (data) => {
     console.log('Data received by handleWarehouse:', data);
