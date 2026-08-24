@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import Swal from 'sweetalert2';
 import LoadingScreen from './Loading';
+import { toast } from 'react-toastify';
 const config = require('./Apiconfig');
 
 
@@ -109,16 +110,46 @@ export default function StockTransferToWarehousePopup({ open, handleClose, handl
     setSelectedRows(event.api.getSelectedRows());
   };
 
+  // const handleConfirm1 = () => {
+  //   const selectedData1 = selectedRows.map(row => ({
+  //     warehouse: row.warehouse_code
+  //   }));
+  //   console.log('Selected Data:', selectedData1);
+  //   handleWarehouse(selectedData1);
+  //   handleClose();
+  //   clearInputs([])
+  //   setRowData([])
+  // }
+
   const handleConfirm1 = () => {
+  
+    // Check whether a warehouse row is selected
+    if (selectedRows.length === 0) {
+      toast.warning("Please select a warehouse.");
+      return;
+    }
+  
+    // Get the selected warehouse row
+    const selectedWarehouse = selectedRows[0];
+  
+    // Validate warehouse status
+    if (selectedWarehouse.status?.toLowerCase() !== "active") {
+      toast.warning("The selected warehouse is not active.");
+      return;
+    }
+  
+    // Only active warehouse will reach here
     const selectedData1 = selectedRows.map(row => ({
       warehouse: row.warehouse_code
     }));
-    console.log('Selected Data:', selectedData1);
+  
     handleWarehouse(selectedData1);
+  
     handleClose();
-    clearInputs([])
-    setRowData([])
-  }
+    clearInputs();
+    setRowData([]);
+    setSelectedRows([]);
+  };
 
 
   const handleReload = () => {
