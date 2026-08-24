@@ -97,17 +97,47 @@ export default function SalesWarehousePopup({ open, handleClose, handleWarehouse
     setSelectedRows(event.api.getSelectedRows());
   };
 
+  // const handleConfirm1 = () => {
+  //   const selectedData1 = selectedRows.map(row => ({
+  //     warehouse: row.warehouse_code
+  //   }));
+  //   console.log('Selected Data:', selectedData1);
+  //   handleWarehouse(selectedData1);
+  //   handleClose();
+  //   clearInputs([]);
+  //   setRowData([]);
+  //   setSelectedRows([]);
+  // }
+
   const handleConfirm1 = () => {
+  
+    // Check whether a warehouse row is selected
+    if (selectedRows.length === 0) {
+      toast.warning("Please select a warehouse.");
+      return;
+    }
+  
+    // Get the selected warehouse row
+    const selectedWarehouse = selectedRows[0];
+  
+    // Validate warehouse status
+    if (selectedWarehouse.status?.toLowerCase() !== "active") {
+      toast.warning("The selected warehouse is not active.");
+      return;
+    }
+  
+    // Only active warehouse will reach here
     const selectedData1 = selectedRows.map(row => ({
       warehouse: row.warehouse_code
     }));
-    console.log('Selected Data:', selectedData1);
+  
     handleWarehouse(selectedData1);
+  
     handleClose();
-    clearInputs([]);
+    clearInputs();
     setRowData([]);
     setSelectedRows([]);
-  }
+  };
 
   const handleReload = () => {
     clearInputs([])

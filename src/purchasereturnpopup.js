@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as React from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -11,6 +11,7 @@ import { format } from 'date-fns';
 import { ToastContainer, toast } from 'react-toastify';
 import LoadingScreen from './Loading';
 import 'react-toastify/dist/ReactToastify.css';
+import Select from 'react-select'
 const config = require('./Apiconfig');
 
 
@@ -130,6 +131,69 @@ export default function ItemPopup({ open, handleClose, handleItem }) {
   const [pay_type, setpay_type] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // For Dropdown field
+    const [selected, setSelected] = useState(null);
+    const [purchaseType, setPurchaseType] = useState("");
+    const [status, setStatus] = useState([]);
+    const [purchasedrop, setPurchasedrop] = useState([]);
+  
+    const [selectedPay, setselectedPay] = useState('');
+    const [payType, setPayType] = useState("");
+    const [paydrop, setPaydrop] = useState([]);
+  
+    const handleChangePurchase = (selected) => {
+      setSelected(selected);
+      setPurchaseType(selected ? selected.value : '');
+      setStatus('Typing...');
+    };
+  
+    const filteredOptionPurchase = purchasedrop.map((option) => ({
+      value: option.attributedetails_name,
+      label: option.attributedetails_name,
+    }));
+  
+    const handleChangePay = (selectedPay) => {
+      setselectedPay(selectedPay);
+      setPayType(selectedPay ? selectedPay.value : '');
+    };
+  
+    const filteredOptionPay = paydrop.map((option) => ({
+      value: option.attributedetails_name,
+      label: option.attributedetails_name,
+    }));
+  
+    useEffect(() => {
+      const companyCode = sessionStorage.getItem('selectedCompanyCode');
+  
+      fetch(`${config.apiBaseUrl}/paytype`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          company_code: companyCode,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => setPaydrop(data))
+        .catch((error) => console.error("Error fetching payment types:", error));
+  
+      fetch(`${config.apiBaseUrl}/purchasetype`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          company_code: companyCode,
+        }),
+      })
+  
+        .then((response) => response.json())
+        .then((data) => setPurchasedrop(data))
+        .catch((error) => console.error("Error fetching purchase types:", error));
+  
+    }, []);
+
   const handleSearch = async () => {
         setLoading(true);
 
@@ -139,7 +203,8 @@ export default function ItemPopup({ open, handleClose, handleItem }) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code:sessionStorage.getItem("selectedCompanyCode"), transaction_no, transaction_date, vendor_code, vendor_name, purchase_type, pay_type }) // Send company_no and company_name as search criteria
+        body: JSON.stringify({ company_code:sessionStorage.getItem("selectedCompanyCode"), 
+          transaction_no, transaction_date, vendor_code, vendor_name, purchase_type: purchaseType, pay_type: payType }) // Send company_no and company_name as search criteria
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -209,7 +274,6 @@ export default function ItemPopup({ open, handleClose, handleItem }) {
         <fieldset>
           <div>
                     {loading && <LoadingScreen />}
-          <ToastContainer position="top-right" className="toast-design" theme="colored" />
             <div className="purbut">
               <div className="modal mt-5 Topnav-screen popup popupadj" tabIndex="-1" role="dialog" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
                 <div className="modal-dialog modal-xl ps-5 p-1 pe-5" role="document">
@@ -278,30 +342,41 @@ export default function ItemPopup({ open, handleClose, handleItem }) {
                               autoComplete="off"
                             />
                           </div>
+
                           <div className="col-md-2 mb-2">
-                            <input
-                              type='text'
-                              id='purchase_type'
-                              className='exp-input-field form-control'
-                              placeholder='Purchase Type'
-                              value={purchase_type}
-                              onChange={(e) => setpurchase_type(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                              autoComplete="off"
-                            />
+                            <div class="exp-form-floating">
+                              <div title="select a payment type">
+                                <Select
+                                  id="purchaseType"
+                                  value={selected}
+                                  onChange={handleChangePurchase}
+                                  options={filteredOptionPurchase}
+                                  className="exp-input-field"
+                                  placeholder="Purchase"
+                                  isClearable
+                                />
+                              </div>
+                            </div>
                           </div>
+
                           <div className="col-md-2 mb-2">
-                            <input
-                              type='text'
-                              id='Pay_type'
-                              className='exp-input-field form-control'
-                              placeholder='Paytype'
-                              value={pay_type}
-                              onChange={(e) => setpay_type(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                              autoComplete="off"
-                            />
+                            <div class="exp-form-floating">
+                              <div title="select a payment type">
+                                <Select
+                                  id="paytype"
+                                  value={selectedPay}
+                                  onChange={handleChangePay}
+                                  options={filteredOptionPay}
+                                  className="exp-input-field"
+                                  placeholder="Pay Type"
+                                  required
+                                  data-tip="Please select a payment type"
+                                  isClearable
+                                />
+                              </div>
+                            </div>
                           </div>
+
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <icon className="icon popups-btn" onClick={handleSearch}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
@@ -400,30 +475,41 @@ export default function ItemPopup({ open, handleClose, handleItem }) {
                               autoComplete="off"
                             />
                           </div>
+
                           <div className="col-md-2 mb-2">
-                            <input
-                              type='text'
-                              id='purchase_type'
-                              className='exp-input-field form-control'
-                              placeholder='Purchase Type'
-                              value={purchase_type}
-                              onChange={(e) => setpurchase_type(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                              autoComplete="off"
-                            />
+                            <div class="exp-form-floating">
+                              <div title="select a payment type">
+                                <Select
+                                  id="purchaseType"
+                                  value={selected}
+                                  onChange={handleChangePurchase}
+                                  options={filteredOptionPurchase}
+                                  className="exp-input-field"
+                                  placeholder="Purchase Type"
+                                  isClearable
+                                />
+                              </div>
+                            </div>
                           </div>
+
                           <div className="col-md-2 mb-2">
-                            <input
-                              type='text'
-                              id='Pay_type'
-                              className='exp-input-field form-control'
-                              placeholder='Paytype'
-                              value={pay_type}
-                              onChange={(e) => setpay_type(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                              autoComplete="off"
-                            />
+                            <div class="exp-form-floating">
+                              <div title="select a payment type">
+                                <Select
+                                  id="paytype"
+                                  value={selectedPay}
+                                  onChange={handleChangePay}
+                                  options={filteredOptionPay}
+                                  className="exp-input-field"
+                                  placeholder="Pay Type"
+                                  required
+                                  data-tip="Please select a payment type"
+                                  isClearable
+                                />
+                              </div>
+                            </div>
                           </div>
+
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <button className="" onClick={handleSearch}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
