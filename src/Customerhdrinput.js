@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import LoadingScreen from './Loading';
 
-const config = require('./Apiconfig');
+const config = require('./Apiconfig'); 
 
 function CustomerHdrInput({ open, handleClose }) {
   const navigate = useNavigate();
