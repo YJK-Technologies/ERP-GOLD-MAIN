@@ -1125,6 +1125,7 @@ const UnplannedIssued = () => {
       "Item Name": row.itemName.toString(),
       "Warehouse": row.warehouse.toString(),
       "Department": row.department.toString(),
+      "Serial No": row.serialno.toString(),
       "Quantity Issued": row.quantityIssued.toString(),
       "Reason For Issuance": row.reasonForIssuance.toString(),
       "Issued By": row.issuedBy.toString(),

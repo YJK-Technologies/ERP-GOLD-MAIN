@@ -1155,13 +1155,13 @@ setselectedCust("");
             <div className="col-md-3 form-group">
               <div class="exp-form-floating">
                 <label for="contactno" class="exp-form-labels">
-                  Contact No
+                  Mobile No
                 </label><input
                   id="contactno"
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the contact number here"
+                  required title="Please fill the mobile number here"
                   value={customer_mobile_no}
                   onChange={(e) => setcustomer_mobile_no(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}

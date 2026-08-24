@@ -801,7 +801,7 @@ function BankAccGrid() {
                   value={account_name}
                   onChange={(e) => setaccount_name(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  maxLength={250}
+                  maxLength={100}
                 />
               </div>
             </div>
@@ -904,7 +904,7 @@ function BankAccGrid() {
                   value={branch}
                   onChange={(e) => setbranch(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  maxLength={20}
+                  maxLength={100}
                 />
               </div>
             </div>
