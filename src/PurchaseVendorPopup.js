@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as React from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -10,6 +10,7 @@ import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import LoadingScreen from './Loading';
+import Select from "react-select";
 
 const config = require('./Apiconfig');
 
@@ -282,8 +283,37 @@ export default function PurchaseVendorPopup({ open, handleClose, handleVendor })
   const [vendor_country_code, setCountryCode] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // For dropdown field
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [statusdrop, setStatusdrop] = useState([]);
+
+  const handleChangeStatus = (selectedStatus) => {
+    setSelectedStatus(selectedStatus);
+    setStatus(selectedStatus ? selectedStatus.value : "");
+  };
+
+  const filteredOptionStatus = statusdrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  useEffect(() => {
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+
+    fetch(`${config.apiBaseUrl}/status`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ company_code }),
+    })
+      .then((data) => data.json())
+      .then((val) => setStatusdrop(val))
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
+
   const handleSearchItem = async () => {
-        setLoading(true);
+    setLoading(true);
 
     try {
       const response = await fetch(`${config.apiBaseUrl}/vendorsearchdata`, {
@@ -309,7 +339,7 @@ export default function PurchaseVendorPopup({ open, handleClose, handleVendor })
       }
     } catch (error) {
       console.error("Error fetching search data:", error);
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -360,8 +390,8 @@ export default function PurchaseVendorPopup({ open, handleClose, handleVendor })
       {open && (
         <fieldset>
           <div className="purbut">
-                    {loading && <LoadingScreen />}
-            
+            {loading && <LoadingScreen />}
+
             <div className="modal mt-5  Topnav-screen popup popupadj" tabIndex="-1" role="dialog" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
               <div className="modal-dialog modal-xl ps-5 p-1 pe-5" role="document">
                 <div className="modal-content">
@@ -406,18 +436,25 @@ export default function PurchaseVendorPopup({ open, handleClose, handleVendor })
                             autoComplete="off"
                           />
                         </div>
+
                         <div className="col-sm mb-2">
-                          <input
-                            type='text'
-                            id='Status'
-                            className='exp-input-field form-control'
-                            placeholder='Status'
-                            value={status}
-                            onChange={(e) => setStatus(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                            autoComplete="off"
-                          />
+                          <div class="exp-form-floating">
+                            <div>
+                            </div>
+                            <div title="Select the Status ">
+                              <Select
+                                id="ahsts"
+                                value={selectedStatus}
+                                onChange={handleChangeStatus}
+                                options={filteredOptionStatus}
+                                className="exp-input-field"
+                                placeholder="Status"
+                                isClearable
+                              />
+                            </div>
+                          </div>
                         </div>
+
                         {/* <div className="col-sm mb-2">
                           <input
                             type='text'
@@ -505,18 +542,25 @@ export default function PurchaseVendorPopup({ open, handleClose, handleVendor })
                             autoComplete="off"
                           />
                         </div>
+
                         <div className="col-sm mb-2">
-                          <input
-                            type='text'
-                            id='Status'
-                            className='exp-input-field form-control'
-                            placeholder='Status'
-                            value={status}
-                            onChange={(e) => setStatus(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                            autoComplete="off"
-                          />
+                          <div class="exp-form-floating">
+                            <div>
+                            </div>
+                            <div title="Select the Status ">
+                              <Select
+                                id="ahsts"
+                                value={selectedStatus}
+                                onChange={handleChangeStatus}
+                                options={filteredOptionStatus}
+                                className="exp-input-field"
+                                placeholder="Status"
+                                isClearable
+                              />
+                            </div>
+                          </div>
                         </div>
+
                         <div className="col-sm mb-2">
                           <input
                             type='text'

@@ -260,23 +260,24 @@ const UnplannedIssued = () => {
       } else if (response.status === 404) {
         toast.warning('Data not found!', {
           onClose: () => {
-            const updatedRowData = rowData.map(row => {
-              if (row.itemCode === params.data.itemCode) {
-                return {
-                  ...row,
-                  itemCode: '',
-                  itemName: '',
-                  unitWeight: 0,
-                  purchaseAmt: 0,
-                  taxType: '',
-                  taxDetails: '',
-                  taxPer: '',
-                  warehouse: ''
-                };
-              }
-              return row;
-            });
-            setRowData(updatedRowData);
+            setRowData(prevRowData =>
+              prevRowData.map(row => {
+                if (row.itemCode === params.data.itemCode) {
+                  return {
+                    ...row,
+                    itemCode: '',
+                    itemName: '',
+                    unitWeight: 0,
+                    purchaseAmt: 0,
+                    taxType: '',
+                    taxDetails: '',
+                    taxPer: '',
+                    warehouse: ''
+                  };
+                }
+                return row;
+              })
+            );
           }
         });
       } else {
@@ -1132,80 +1133,80 @@ const UnplannedIssued = () => {
     }));
   };
 
-const handleExcelDownload = () => {
-  const filteredRowData = rowData.filter(row => row.quantityIssued > 0);
+  const handleExcelDownload = () => {
+    const filteredRowData = rowData.filter(row => row.quantityIssued > 0);
 
-  if (rowData.length === 0 || !issuedId || !issuedDate || !selectedIssued) {
-    toast.warning("No Data Available");
-    return;
-  }
+    if (rowData.length === 0 || !issuedId || !issuedDate || !selectedIssued) {
+      toast.warning("No Data Available");
+      return;
+    }
 
-  const headerData = [{
-    "Transaction ID": issuedId,
-    "Transaction Date": issuedDate,
-    "Transaction Type": selectedIssued.value,
-  }];
+    const headerData = [{
+      "Transaction ID": issuedId,
+      "Transaction Date": issuedDate,
+      "Transaction Type": selectedIssued.value,
+    }];
 
-  const transformedData = transformRowData(filteredRowData);
+    const transformedData = transformRowData(filteredRowData);
 
-  // Header Sheet
-  const headerSheet = XLSX.utils.aoa_to_sheet([
-    ["Inventory Issued"], // Heading
-    [`Company Name: ${sessionStorage.getItem("selectedCompanyName")}`],
-    [],
-  ]);
+    // Header Sheet
+    const headerSheet = XLSX.utils.aoa_to_sheet([
+      ["Inventory Issued"], // Heading
+      [`Company Name: ${sessionStorage.getItem("selectedCompanyName")}`],
+      [],
+    ]);
 
-  XLSX.utils.sheet_add_json(headerSheet, headerData, {
-    origin: "A4",
-  });
-
-  // Merge Heading
-  headerSheet["!merges"] = [
-    {
-      s: { r: 0, c: 0 }, // A1
-      e: { r: 0, c: 7 }, // H1
-    },
-    {
-      s: { r: 1, c: 0 }, // A2
-      e: { r: 1, c: 7 }, // H2
-    },
-  ];
-
-  // Details Sheet
-  const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
-
-  // Auto Fit Function
-  const autoFitColumns = (worksheet, data) => {
-    const cols = [];
-
-    data.forEach((row) => {
-      Object.keys(row).forEach((key, i) => {
-        const value = row[key] == null ? "" : row[key].toString();
-
-        cols[i] = Math.max(
-          cols[i] || key.length,
-          key.length,
-          value.length
-        );
-      });
+    XLSX.utils.sheet_add_json(headerSheet, headerData, {
+      origin: "A4",
     });
 
-    worksheet["!cols"] = cols.map((width) => ({
-      wch: width + 5,
-    }));
+    // Merge Heading
+    headerSheet["!merges"] = [
+      {
+        s: { r: 0, c: 0 }, // A1
+        e: { r: 0, c: 7 }, // H1
+      },
+      {
+        s: { r: 1, c: 0 }, // A2
+        e: { r: 1, c: 7 }, // H2
+      },
+    ];
+
+    // Details Sheet
+    const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
+
+    // Auto Fit Function
+    const autoFitColumns = (worksheet, data) => {
+      const cols = [];
+
+      data.forEach((row) => {
+        Object.keys(row).forEach((key, i) => {
+          const value = row[key] == null ? "" : row[key].toString();
+
+          cols[i] = Math.max(
+            cols[i] || key.length,
+            key.length,
+            value.length
+          );
+        });
+      });
+
+      worksheet["!cols"] = cols.map((width) => ({
+        wch: width + 5,
+      }));
+    };
+
+    // Apply Auto Width
+    autoFitColumns(headerSheet, headerData);
+    autoFitColumns(rowDataSheet, transformedData);
+
+    // Workbook
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
+
+    XLSX.writeFile(workbook, "Inventory_Issued.xlsx");
   };
-
-  // Apply Auto Width
-  autoFitColumns(headerSheet, headerData);
-  autoFitColumns(rowDataSheet, transformedData);
-
-  // Workbook
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
-  XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
-
-  XLSX.writeFile(workbook, "Inventory_Issued.xlsx");
-};
 
   const handleAddRow = () => {
     const serialNumber = rowData.length + 1;
@@ -1526,7 +1527,7 @@ const handleExcelDownload = () => {
                   />
                   <div className='position-absolute mt-1 me-2'>
                     <span className="icon searchIcon"
-                     title='Inventory Issue Help'
+                      title='Inventory Issue Help'
                       onClick={handleInvIssued}>
                       <i class="fa fa-search"></i>
                     </span>
@@ -1558,17 +1559,17 @@ const handleExcelDownload = () => {
               </label>
               <div class="exp-form-floating">
                 <div title="Select the transaction type">
-                <Select
-                  id="issuedType"
-                  className="exp-input-field"
-                  placeholder=""
-                  required
-                  value={selectedIssued}
-                  onChange={handleChangeIssued}
-                  options={filteredOptionIssued}
-                  data-tip="Please select a transaction type"
-                />
-              </div>
+                  <Select
+                    id="issuedType"
+                    className="exp-input-field"
+                    placeholder=""
+                    required
+                    value={selectedIssued}
+                    onChange={handleChangeIssued}
+                    options={filteredOptionIssued}
+                    data-tip="Please select a transaction type"
+                  />
+                </div>
               </div>
             </div>
             <div className="col-md-3 form-group">
@@ -1578,37 +1579,37 @@ const handleExcelDownload = () => {
                     <label for="rid" class="exp-form-labels">Default Department</label>
                   </div>
                 </div>
-                 <div class="exp-form-floating">
+                <div class="exp-form-floating">
                   <div title="Select a Default Department">
-                  <Select
-                    id="deptid"
-                    value={selecteddept}
-                    onChange={handleChangedept}
-                    options={filteredOptionDepartment}
-                    className=" exp-input-field position-relative "
-                    data-tip="Please select a Default Department"
-                    placeholder=""
-                  />
+                    <Select
+                      id="deptid"
+                      value={selecteddept}
+                      onChange={handleChangedept}
+                      options={filteredOptionDepartment}
+                      className=" exp-input-field position-relative "
+                      data-tip="Please select a Default Department"
+                      placeholder=""
+                    />
                   </div>
                 </div>
               </div>
-            
+
             </div>
             <div className="col-md-3 form-group mb-2">
               <label for="">Default Warehouse</label>
               <div class="exp-form-floating">
                 <div title='Select a default warehouse'>
-                <Select
-                  id="returnType"
-                  className="exp-input-field"
-                  placeholder=""
-                  required
-                  value={selectedWarehouse}
-                  onChange={handleChangeWarehouse}
-                   options={filteredOptionWarehouse}
-                  data-tip="Please select a default warehouse"
-                />
-              </div>
+                  <Select
+                    id="returnType"
+                    className="exp-input-field"
+                    placeholder=""
+                    required
+                    value={selectedWarehouse}
+                    onChange={handleChangeWarehouse}
+                    options={filteredOptionWarehouse}
+                    data-tip="Please select a default warehouse"
+                  />
+                </div>
               </div>
             </div>
           </div>

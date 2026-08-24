@@ -1482,6 +1482,28 @@ const UnplannedReceipt = () => {
     }
   };
 
+  // For default warehouse
+  useEffect(() => {
+  if (!selectedWarehouse) {
+    return;
+  }
+
+  setRowData(prevRowData =>
+    prevRowData.map(row => {
+      // Only set default warehouse if the row has no warehouse
+      if (!row.warehouse || row.warehouse.trim() === '') {
+        return {
+          ...row,
+          warehouse: selectedWarehouse.value
+        };
+      }
+
+      // Keep existing warehouse value
+      return row;
+    })
+  );
+}, [selectedWarehouse]);
+
   const handlePoData = (data) => {
     console.log('Data received by handleWarehouse:', data);
 
