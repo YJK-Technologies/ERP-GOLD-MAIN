@@ -561,7 +561,7 @@ export default function PurchaseVendorPopup({ open, handleClose, handleVendor })
                           </div>
                         </div>
 
-                        <div className="col-sm mb-2">
+                        {/* <div className="col-sm mb-2">
                           <input
                             type='text'
                             id='ShortName'
@@ -572,7 +572,7 @@ export default function PurchaseVendorPopup({ open, handleClose, handleVendor })
                             onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
                             autoComplete="off"
                           />
-                        </div>
+                        </div> */}
                         <div className="mb-2 mt-2 d-flex justify-content-end">
                           <button className="" onClick={handleSearchItem}>
                             <FontAwesomeIcon icon={faMagnifyingGlass} />

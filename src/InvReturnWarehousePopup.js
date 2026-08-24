@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
@@ -8,6 +8,7 @@ import 'ag-grid-autocomplete-editor/dist/main.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import LoadingScreen from './Loading';
+import Select from "react-select";
 
 const config = require('./Apiconfig');
 
@@ -55,6 +56,55 @@ export default function InventoryReturnWarehousePopup({ open, handleClose, handl
   const [status, setstatus] = useState("");
   const [location_no, setlocation_no] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // For dropdown field
+    const [selectedStatus, setSelectedStatus] = useState("");
+    const [statusdrop, setStatusdrop] = useState([]);
+  
+    const [selectedLocation, setSelectedLocation] = useState('');
+    const [locationnodrop, setLocationdrop] = useState([]);
+  
+    const handleChangeStatus = (selectedStatus) => {
+      setSelectedStatus(selectedStatus);
+      setstatus(selectedStatus ? selectedStatus.value : "");
+    };
+  
+    const filteredOptionStatus = statusdrop.map((option) => ({
+      value: option.attributedetails_name,
+      label: option.attributedetails_name,
+    }));
+  
+    const handleChangeLocation = (selectedLocation) => {
+      setSelectedLocation(selectedLocation);
+      setlocation_no(selectedLocation ? selectedLocation.value : '');
+  
+    };
+  
+    const filteredOptionLocation = locationnodrop.map((option) => ({
+      value: option.location_no,
+      label: option.location_no,
+    }));
+  
+    useEffect(() => {
+      const company_code = sessionStorage.getItem("selectedCompanyCode");
+  
+      fetch(`${config.apiBaseUrl}/status`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ company_code }),
+      })
+        .then((data) => data.json())
+        .then((val) => setStatusdrop(val))
+        .catch((error) => console.error("Error fetching data:", error));
+    }, []);
+  
+    useEffect(() => {
+      fetch(`${config.apiBaseUrl}/locationno`)
+        .then((data) => data.json())
+        .then((val) => setLocationdrop(val));
+    }, []);
 
   const handlewarehouseSearch = async () => {
     setLoading(true);
@@ -167,32 +217,43 @@ export default function InventoryReturnWarehousePopup({ open, handleClose, handl
                               autoComplete="off"
                             />
                           </div>
+
                           <div className="col-sm mb-2">
-                            <input
-                              type='text'
-                              id='Status'
-                              className='exp-input-field form-control'
-                              placeholder=' Status'
-                              title='Please enter the status'
-                              value={status}
-                              onChange={(e) => setstatus(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handlewarehouseSearch()}
-                              autoComplete="off"
-                            />
+                            <div class="exp-form-floating">
+                              <div>
+                              </div>
+                              <div title="Select the Status ">
+                                <Select
+                                  id="ahsts"
+                                  value={selectedStatus}
+                                  onChange={handleChangeStatus}
+                                  options={filteredOptionStatus}
+                                  className="exp-input-field"
+                                  placeholder="Status"
+                                  isClearable
+                                />
+                              </div>
+                            </div>
                           </div>
-                          <div className="col-sm mb-2">
-                            <input
-                              type='text'
-                              id='LocationNo'
-                              className='exp-input-field form-control'
-                              placeholder=' Location No'
-                              title='Please enter the location no'
-                              value={location_no}
-                              onChange={(e) => setlocation_no(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handlewarehouseSearch()}
-                              autoComplete="off"
-                            />
+
+                          <div className="col-md-3 form-group">
+                            <div class="exp-form-floating">
+                              <div class="d-flex justify-content-start">
+                              </div>
+                              <div title="Select the Location No">
+                                <Select
+                                  id="status"
+                                  value={selectedLocation}
+                                  onChange={handleChangeLocation}
+                                  options={filteredOptionLocation}
+                                  className="exp-input-field"
+                                  placeholder="Location No"
+                                  isClearable
+                                />
+                              </div>
+                            </div>
                           </div>
+
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <icon className="icon popups-btn" title='Search' onClick={handlewarehouseSearch}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
@@ -269,30 +330,43 @@ export default function InventoryReturnWarehousePopup({ open, handleClose, handl
                               autoComplete="off"
                             />
                           </div>
+
                           <div className="col-sm mb-2">
-                            <input
-                              type='text'
-                              id='Status'
-                              className='exp-input-field form-control'
-                              placeholder=' Status'
-                              value={status}
-                              onChange={(e) => setstatus(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handlewarehouseSearch()}
-                              autoComplete="off"
-                            />
+                            <div class="exp-form-floating">
+                              <div>
+                              </div>
+                              <div title="Select the Status ">
+                                <Select
+                                  id="ahsts"
+                                  value={selectedStatus}
+                                  onChange={handleChangeStatus}
+                                  options={filteredOptionStatus}
+                                  className="exp-input-field"
+                                  placeholder="Status"
+                                  isClearable
+                                />
+                              </div>
+                            </div>
                           </div>
-                          <div className="col-sm mb-2">
-                            <input
-                              type='text'
-                              id='LocationNo'
-                              className='exp-input-field form-control'
-                              placeholder=' Location No'
-                              value={location_no}
-                              onChange={(e) => setlocation_no(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handlewarehouseSearch()}
-                              autoComplete="off"
-                            />
+
+                          <div className="col-md-3 form-group">
+                            <div class="exp-form-floating">
+                              <div class="d-flex justify-content-start">
+                              </div>
+                              <div title="Select the Location No">
+                                <Select
+                                  id="status"
+                                  value={selectedLocation}
+                                  onChange={handleChangeLocation}
+                                  options={filteredOptionLocation}
+                                  className="exp-input-field"
+                                  placeholder="Location No"
+                                  isClearable
+                                />
+                              </div>
+                            </div>
                           </div>
+                          
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <button className="" onClick={handlewarehouseSearch}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
