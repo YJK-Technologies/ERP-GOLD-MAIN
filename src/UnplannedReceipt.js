@@ -257,7 +257,9 @@ const UnplannedReceipt = () => {
       } else if (response.status === 404) {
         toast.warning('Data not found!', {
           onClose: () => {
-            const updatedRowData = rowData.map(row => {
+            // const updatedRowData = rowData.map(row => {
+              setRowData(prevRowData =>
+              prevRowData.map(row => {
               if (row.itemCode === params.data.itemCode) {
                 return {
                   ...row,
@@ -272,8 +274,9 @@ const UnplannedReceipt = () => {
                 };
               }
               return row;
-            });
-            setRowData(updatedRowData);
+              })
+            );
+            // setRowData(updatedRowData);
           }
         });
       } else {

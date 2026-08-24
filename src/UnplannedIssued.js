@@ -66,6 +66,51 @@ const UnplannedIssued = () => {
   const [warehouse, setWarehouse] = useState('');
   const [department, setDepartment] = useState('');
 
+    // For default warehouse
+    useEffect(() => {
+    if (!selectedWarehouse) {
+      return;
+    }
+  
+    setRowData(prevRowData =>
+      prevRowData.map(row => {
+        // Only set default warehouse if the row has no warehouse
+        if (!row.warehouse || row.warehouse.trim() === '') {
+          return {
+            ...row,
+            warehouse: selectedWarehouse.value
+          };
+        }
+  
+        // Keep existing warehouse value
+        return row;
+      })
+    );
+  }, [selectedWarehouse]);
+
+      // For default department
+    useEffect(() => {
+    if ( !selecteddept) {
+      return;
+    }
+  
+    setRowData(prevRowData =>
+      prevRowData.map(row => {
+        // Only set default department if the row has no department
+        if (!row.department || row.department.trim() === '') {
+          return {
+            ...row,
+            department: selecteddept.value
+          };
+        }
+  
+        // Keep existing department value
+        return row;
+      })
+    );
+  }, [ selecteddept]);
+
+
   useEffect(() => {
     const today = new Date();
     const currentYear = today.getFullYear();
