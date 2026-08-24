@@ -613,7 +613,7 @@ function AdjustmentGrid() {
   const AdjustmnetDetailDelete = async () => {
     try {
       const response = await fetch(
-        `${config.apiBaseUrl}/adjustmnetdele  tedetails`,
+        `${config.apiBaseUrl}/adjustmnetdeletedetails`,
         {
           method: "POST",
           headers: {
