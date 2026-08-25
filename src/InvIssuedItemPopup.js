@@ -285,6 +285,27 @@ export default function InventoryIssuedItemPopup({ open, handleClose, handleItem
   };
 
   const handleConfirm = () => {
+
+    // Check whether an item is selected
+    // Check whether an item is selected
+    if (selectedRows.length === 0) {
+      toast.warning("Please select an item.");
+      return;
+    }
+
+    // Get the selected item
+    const selectedItem = selectedRows[0];
+
+    // Debug - check the actual data
+    console.log("Selected Item:", selectedItem);
+    console.log("Item Status:", selectedItem.status);
+
+    // Validate item status
+    if (String(selectedItem.status ?? "").trim().toLowerCase() !== "active") {
+      toast.warning("The selected item is not active.");
+      return;
+    }
+    // Only active item will reach here    
     const selectedData = selectedRows.map(row => ({
       itemCode: row.Item_code,
       itemName: row.Item_name,
@@ -335,7 +356,7 @@ export default function InventoryIssuedItemPopup({ open, handleClose, handleItem
                               className="exp-input-field form-control"
                               placeholder="Item Code"
                               value={Item_code}
-                              title='Please enter the item code'
+                              title='Enter the Item Code'
                               onChange={(e) => setItem_code(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
                               autoComplete="off"
@@ -348,7 +369,7 @@ export default function InventoryIssuedItemPopup({ open, handleClose, handleItem
                               className="exp-input-field form-control"
                               placeholder="Variant"
                               value={Item_variant}
-                              title='Please enter the variant'
+                              title='Enter the Variant'
                               onChange={(e) => setItem_variant(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
                               autoComplete="off"
@@ -361,7 +382,7 @@ export default function InventoryIssuedItemPopup({ open, handleClose, handleItem
                               className="exp-input-field form-control"
                               placeholder="Item Name"
                               value={Item_name}
-                              title='Please enter the item name'
+                              title='Enter the Item Name'
                               onChange={(e) => setItem_name(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
                               autoComplete="off"
@@ -374,7 +395,7 @@ export default function InventoryIssuedItemPopup({ open, handleClose, handleItem
                               className="exp-input-field form-control"
                               placeholder="Short Name"
                               value={Item_short_name}
-                              title='Please enter the short name'
+                              title='Enter the Short Name'
                               onChange={(e) => setItem_short_name(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
                               autoComplete="off"

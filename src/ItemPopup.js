@@ -298,6 +298,27 @@ export default function SalesItemPopup({ open, handleClose, handleItem, type }) 
   };
 
   const handleConfirm = () => {
+    // Check whether an item is selected
+    // Check whether an item is selected
+    if (selectedRows.length === 0) {
+      toast.warning("Please select an item.");
+      return;
+    }
+
+    // Get the selected item
+    const selectedItem = selectedRows[0];
+
+    // Debug - check the actual data
+    console.log("Selected Item:", selectedItem);
+    console.log("Item Status:", selectedItem.status);
+
+    // Validate item status
+    if (String(selectedItem.status ?? "").trim().toLowerCase() !== "active") {
+      toast.warning("The selected item is not active.");
+      return;
+    }
+    // Only active item will reach here    
+    
     const selectedData = selectedRows.map(row => ({
       itemCode: row.Item_code,
       itemName: row.Item_name,
