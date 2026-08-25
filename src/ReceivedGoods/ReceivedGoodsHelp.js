@@ -322,6 +322,7 @@ export default function ReceivedGoodsPopup({ open, handleClose, handleRGData }) 
                               type='text'
                               id='bill_no'
                               className='exp-input-field form-control'
+                              title='Enter the Transaction No'
                               placeholder='Transaction No'
                               value={bill_no}
                               onChange={(e) => setbill_no(e.target.value)}
@@ -334,6 +335,7 @@ export default function ReceivedGoodsPopup({ open, handleClose, handleRGData }) 
                               type='date'
                               id='bill_date'
                               className='exp-input-field form-control'
+                              title='Enter the Transaction Date'
                               placeholder='Transaction Date'
                               value={bill_date}
                               onChange={(e) => setbill_date(e.target.value)}
@@ -346,6 +348,7 @@ export default function ReceivedGoodsPopup({ open, handleClose, handleRGData }) 
                               type='text'
                               id='item_code'
                               className='exp-input-field form-control'
+                              title='Enter the Item Code'
                               placeholder='Item Code'
                               value={item_code}
                               onChange={(e) => setitem_code(e.target.value)}
@@ -358,6 +361,7 @@ export default function ReceivedGoodsPopup({ open, handleClose, handleRGData }) 
                               type='text'
                               id='item_name'
                               className='exp-input-field form-control'
+                              title='Enter the Item Name'
                               placeholder='Item Name'
                               value={item_name}
                               onChange={(e) => setitem_name(e.target.value)}

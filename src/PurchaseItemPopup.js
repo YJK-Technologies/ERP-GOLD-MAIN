@@ -348,6 +348,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                               type="text"
                               id="ItemCode"
                               className="exp-input-field form-control"
+                              title="Enter the Item Code"
                               placeholder="Item Code"
                               value={Item_code}
                               onChange={(e) => setItem_code(e.target.value)}
@@ -360,6 +361,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                               type="text"
                               id="Variant"
                               className="exp-input-field form-control"
+                              title="Enter the Variant"
                               placeholder="Variant"
                               value={Item_variant}
                               onChange={(e) => setItem_variant(e.target.value)}
@@ -372,6 +374,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                               type="text"
                               id="ItemName"
                               className="exp-input-field form-control"
+                              title="Enter the Item Name"
                               placeholder="Item Name"
                               value={Item_name}
                               onChange={(e) => setItem_name(e.target.value)}
@@ -384,6 +387,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                               type="text"
                               id="ShortName"
                               className="exp-input-field form-control"
+                              title="Enter the Short Name"
                               placeholder="Short Name"
                               value={Item_short_name}
                               onChange={(e) => setItem_short_name(e.target.value)}
@@ -392,6 +396,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                             />
                           </div>
                           <div className="col-sm mb-2">
+                            <div title="Select a Our Brand">
                             <Select
                               id="OurBrand"
                               type="text"
@@ -400,8 +405,10 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                               onChange={handleChangeItemOurBrand}
                               options={filteredOptionItemOurBrand}
                             />
+                            </div>
                           </div>
                           <div className="col-sm mb-2">
+                            <div title="Select a Our Brand">
                             <Select
                               id="status"
                               type="text"
@@ -410,6 +417,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                               onChange={handleStatusChange}
                               options={filteredOptionStatus}
                             />
+                            </div>
                           </div>                          
                           {/* <div className="col-sm mb-2">
                             <input

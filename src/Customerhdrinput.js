@@ -217,21 +217,22 @@ function CustomerHdrInput({ open, handleClose }) {
                               <div> <span className="text-danger">*</span></div>
                             </div>
                             {/* <select
-                  name="status"
-                  id="status"
-                  className="exp-input-field form-control"
-                  placeholder="Select status"
-                   required title = " Please select a status"
-                  value={status}
-                  onChange={(e) => setstatus(e.target.value)}
-                >
-                  <option value=""></option>
-                  {statusdrop.map((option, index) => (
-                    <option key={index} value={option.attributedetails_name}>
-                      {option.attributedetails_name}
-                    </option>
-                  ))}
-                </select> */}
+                            name="status"
+                            id="status"
+                            className="exp-input-field form-control"
+                            placeholder="Select status"
+                             required title = " Please select a status"
+                            value={status}
+                            onChange={(e) => setstatus(e.target.value)}
+                            >
+                            <option value=""></option>
+                            {statusdrop.map((option, index) => (
+                              <option key={index} value={option.attributedetails_name}>
+                                {option.attributedetails_name}
+                              </option>
+                            ))}
+                            </select> */}
+                            <div title="Select the Status">
                             <Select
                               id="status"
                               value={selectedStatus}
@@ -243,6 +244,7 @@ function CustomerHdrInput({ open, handleClose }) {
                               // onKeyDown={(e) => handleKeyDown(e, Status)}
                               onKeyDown={(e) => handleKeyDown(e, PanNo, Status)}
                             />
+                            </div>
                             {/* {error && !status && <div className="text-danger">Status should not be blank</div>} */}
                           </div>
                         </div>

@@ -406,6 +406,7 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                               type='text'
                               id='Vendor_code'
                               className='form-control'
+                              title='Enter the Customer Code'
                               placeholder='Customer Code'
                               maxLength={10}
                               value={customer_code}
@@ -419,6 +420,7 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                               type='text'
                               id='Variant'
                               className='form-control'
+                              title='Enter the Customer Name'
                               placeholder='Customer Name'
                               value={customer_name}
                               maxLength={250}
