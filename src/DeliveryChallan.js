@@ -81,6 +81,85 @@ function DeliveryChallan() {
     const DcPermission = permissions
         .filter(permission => permission.screen_type === 'DeliveryChallan')
         .map(permission => permission.permission_type.toLowerCase());
+    const [transaction_no, settransaction_no] = useState("");
+        
+
+    //code added by Ramya  purpose of keyboard shortcut functionality
+            useEffect(() => {
+                const handleKeyDown = (e) => {
+                  // 1. Ensure keys only trigger on F-keys
+                  if (!['F2', 'F3', 'F4', 'F5', 'F6', 'F8'].includes(e.key)) {
+                    return;
+                  }
+            
+                  // 2. Prevent default browser shortcut actions (e.g., F1 Help, F5 Refresh)
+                  e.preventDefault();
+                  e.stopPropagation();
+            
+                  // 3. Prevent execution if screen is currently loading
+                  if (loading) return;
+            
+                  switch (e.key) {
+                    // case 'F1':
+                    //   // Open Item Search Popup
+                    //   setOpen(true); 
+                    //   break;
+            
+                    case 'F2':
+                      // Open Customer Search Popup
+                      setOpen2(true); 
+                      break;
+            
+                    case 'F3':
+                      // New / Reset Sales Invoice Form
+                      if (window.confirm("Start a new adjustment? Unsaved changes will be lost.")) {
+                        handleReload(); 
+                      }
+                      break;  
+            
+                    case 'F4':
+                      // Save / Complete Invoice (Same logic as Save Button)
+                      handleSaveButtonClick(); 
+                      break;
+            
+                    case 'F5':
+                      // Search Existing Invoices to Edit
+                      setOpen1(true); 
+                      break;
+            
+                    case 'F6':
+                      // Delete selected line item in AG Grid
+                      if ( new_running_no) {
+                        handleDeleteButtonClick();
+                      } else {
+                        alert("Please save the invoice before deleting.");
+                      }
+                      break;
+            
+                    case 'F8':
+                      // Print Invoice
+                      if (showExcelButton && new_running_no) {
+                        generateReport();
+                      } else {
+                        alert("Please save the invoice before printing.");
+                      }
+                      break;
+            
+                    default:
+                      break;
+                  }
+                };
+            
+                // Attach listener
+                window.addEventListener('keydown', handleKeyDown);
+            
+                // Clean up listener on unmount
+                return () => {
+                  window.removeEventListener('keydown', handleKeyDown);
+                };
+              }, [loading, showExcelButton, new_running_no, rowData]);
+    //code ended by Ramya  purpose of keyboard shortcut functionality
+
 
     useEffect(() => {
         const currentPath = location.pathname;
@@ -1110,7 +1189,7 @@ function DeliveryChallan() {
 
     //CODE TO SAVE PURCHASE HEADER 
     const handleSaveButtonClick = async () => {
-        if (!transactionDate) {
+        if (!transaction_no || !Transactiondate ||!payType ||!salesType ) {
             setError(" ");
             toast.warning('Error: Missing required fields');
             return;
