@@ -337,6 +337,27 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
   };
 
   const handleConfirm = () => {
+    // Check whether an Customer is selected
+    // Check whether an Customer is selected
+    if (selectedRows.length === 0) {
+      toast.warning("Please select an Customer.");
+      return;
+    }
+
+    // Get the selected Customer
+    const selectedCustomer = selectedRows[0];
+
+    // Debug - check the actual data
+    console.log("Selected Customer:", selectedCustomer);
+    console.log("Item Status:", selectedCustomer.status);
+
+    // Validate Customer status
+    if (String(selectedCustomer.status ?? "").trim().toLowerCase() !== "active") {
+      toast.warning("The selected Customer is not active.");
+      return;
+    }
+    // Only active Customer will reach here  
+
     const selectedData = selectedRows.map(row => ({
       CustomerCode: row.customer_code,
       CustomerName: row.customer_name,
