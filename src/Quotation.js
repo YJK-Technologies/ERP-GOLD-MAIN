@@ -3466,7 +3466,7 @@ const columDeletedPatch = [
                           className="exp-input-field form-control justify-content-start"
                           type="text"
                           placeholder=""
-                          title="Please enter the transaction no"
+                          title="Enter the Transaction No"
                           required
                           value={transactionNo}
                           onChange={(e) => setTransactionNo(e.target.value)}
@@ -3493,7 +3493,7 @@ const columDeletedPatch = [
                         className="exp-input-field form-control"
                         type="date"
                         placeholder=""
-                        title="Please enter the transaction date"
+                        title="Enter the Transaction Date"
                         required
                         min={financialYearStart}
                         max={financialYearEnd}
@@ -3549,7 +3549,7 @@ const columDeletedPatch = [
                       id="totalPurchaseAmount"
                       class="exp-input-field form-control input"
                       type="text"
-                      title="Total"
+                      title="Enter the Total"
                       placeholder=""
                       required
                       value={TotalPurchase}
@@ -3567,7 +3567,7 @@ const columDeletedPatch = [
                       name="totalTaxAmount"
                       id="totalTaxAmount"
                       text="text"
-                      title="Total tax"
+                      title="Enter the Total tax"
                       className="exp-input-field form-control input"
                       placeholder=""
                       required
@@ -3588,7 +3588,7 @@ const columDeletedPatch = [
                       type="text"
                       className="exp-input-field form-control input"
                       placeholder=""
-                      title="Round off"
+                      title="Enter the Round off"
                       required
                       value={round_difference}
                       onChange={(e) => setRoundDifference(e.target.value)}
@@ -3604,7 +3604,7 @@ const columDeletedPatch = [
                     <input
                       name=""
                       id="totalBillAmount"
-                      title="Grand total"
+                      title="Enter the Grand total"
                       type="text"
                       className="exp-input-field form-control input"
                       placeholder=""
@@ -3618,7 +3618,9 @@ const columDeletedPatch = [
                 <div className="col-md-3 form-group mb-2" style={{ justifyContent: "center" }}>
                   <label htmlFor="party_code">Product/Items Filter</label>
                   <div className="exp-form-floating">
+                    <div title="Select the Product/Items Filter">
                     <div class="d-flex justify-content-between">
+                      
                       <Select
                         id="Product"
                         value={selectedProduct}
@@ -3630,11 +3632,13 @@ const columDeletedPatch = [
                         title="Please select the product/items filter"
                       />
                     </div>
+                    </div>
                   </div>
                 </div>
                 <div className="col-md-3 form-group mb-2" style={{ justifyContent: "center" }}>
                   <label htmlFor="party_code">Product/Items Name</label>
                   <div className="exp-form-floating">
+                    <div title="Select the Product/Items Name">
                     <div class="d-flex justify-content-between">
                       <Select
                         className="exp-input-field"
@@ -3647,6 +3651,7 @@ const columDeletedPatch = [
                         onChange={handleChangeDynamicOption}
                         title="Please select the product/items name"
                       />
+                    </div>
                     </div>
                   </div>
                 </div>

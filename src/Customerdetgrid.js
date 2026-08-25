@@ -1025,7 +1025,7 @@ setselectedCust("");
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the code here"
+                  required title="Enter the Code"
                   value={customer_code}
                   onChange={(e) => setcustomer_code(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -1042,7 +1042,7 @@ setselectedCust("");
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the name here"
+                  required title="Enter the Name "
                   value={customer_name}
                   onChange={(e) => setcustomer_name(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -1059,7 +1059,7 @@ setselectedCust("");
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the Pan number here"
+                  required title="Enter the Pan No"
                   value={panno}
                   onChange={(e) => setpanno(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -1076,7 +1076,7 @@ setselectedCust("");
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the GST number here"
+                  required title="Enter the GST No"
                   value={customer_gst_no}
                   onChange={(e) => setcustomer_gst_no(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -1093,7 +1093,7 @@ setselectedCust("");
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the address here"
+                  required title="Enter the Address"
                   value={customer_addr_1}
                   onChange={(e) => setcustomer_addr_1(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -1110,7 +1110,7 @@ setselectedCust("");
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the area here"
+                  required title="Enter the City"
                   value={customer_area}
                   onChange={(e) => setcustomer_area(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -1127,7 +1127,7 @@ setselectedCust("");
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the state here"
+                  required title="Enter the State"
                   value={customer_state}
                   onChange={(e) => setcustomer_state(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -1144,7 +1144,7 @@ setselectedCust("");
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the country here"
+                  required title="Enter the Country"
                   value={customer_country}
                   onChange={(e) => setcustomer_country(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -1161,7 +1161,7 @@ setselectedCust("");
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the mobile number here"
+                  required title="Enter the Mobile No"
                   value={customer_mobile_no}
                   onChange={(e) => setcustomer_mobile_no(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -1174,6 +1174,7 @@ setselectedCust("");
                 <label class="exp-form-labels">
                   Status
                 </label>
+                <div title="Select the Status">
                 <Select
                   id="status"
                   value={selectedStatus}
@@ -1183,6 +1184,7 @@ setselectedCust("");
                   className="exp-input-field"
                   placeholder=""
                 />
+                </div>
               </div>
             </div>
             <div className="col-md-3 form-group mb-2 ">
@@ -1190,6 +1192,7 @@ setselectedCust("");
                 <label for="cusweek" class="exp-form-labels">
                   Default Customer
                 </label>
+                <div title="Select the Default Customer">
                 <Select
                   id="officeType"
                   value={selectedCustomer}
@@ -1198,6 +1201,7 @@ setselectedCust("");
                   className="exp-input-field"
                   placeholder=""
                 />
+                </div>
               </div>
             </div>
             <div className="col-md-3 form-group mt-4">

@@ -425,6 +425,7 @@ function AssetsReturn({ }) {
                                         className="exp-input-field form-control"
                                         type="text"
                                         placeholder=""
+                                        title="Enter the Transaction No"
                                         required
                                         autoComplete="off"
                                         value={transactionNo}
@@ -447,6 +448,7 @@ function AssetsReturn({ }) {
                                     name="transactionDate"
                                     id="transactionDate"
                                     className="exp-input-field form-control"
+                                    title="Enter the Transaction Date"
                                     type="date"
                                     placeholder=""
                                     required

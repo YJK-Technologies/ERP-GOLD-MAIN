@@ -524,7 +524,8 @@ function Purchase() {
       } else if (response.status === 404) {
         toast.warning('Data not found!', {
           onClose: () => {
-            const updatedRowData = rowData.map(row => {
+            setRowData(prevRowData =>
+              prevRowData.map(row => {
               if (row.itemCode === params.data.itemCode) {
                 return {
                   ...row,
@@ -538,8 +539,8 @@ function Purchase() {
                 };
               }
               return row;
-            });
-            setRowData(updatedRowData);
+            })
+          );
           }
         });
       } else {
@@ -3235,8 +3236,8 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                 {showDropdown && (
                   <div className="col-md-3 form-group mb-2">
                     <label for="" className={`${error && !status ? 'red' : ''}`}>Status</label>
-                                        <span className="text-danger">*</span>
-
+                    <span className="text-danger">*</span>
+                    <div title="Select an option">
                     <div class="exp-form-floating">
                       <Select
                         id="returnType"
@@ -3248,6 +3249,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                         getOptionLabel={(option) => option.label || ""}
                         getOptionValue={(option) => option.value || ""}
                       />
+                      </div>
                     </div>
                   </div>
                 )}
@@ -3260,6 +3262,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                         className="exp-input-field form-control justify-content-start"
                         type="text"
                         placeholder=""
+                        title='Enter the Transaction No'
                         required
                         value={transactionNumber}
                         onChange={(e) => setTransactionNumber(e.target.value)}
@@ -3286,6 +3289,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                       className="exp-input-field form-control"
                       type="date"
                       placeholder=""
+                      title='Enter the Transaction Date'
                       required
                       min={financialYearStart}
                       max={financialYearEnd}
@@ -3306,6 +3310,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                         className="exp-input-field form-control justify-content-start"
                         id='party_code'
                         required
+                        title='Enter the Vendor Code'
                         value={vendor_code}
                         onChange={handleChange}
                         onKeyPress={handleKeyPress}
@@ -3330,10 +3335,10 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                     <input
                       className="exp-input-field form-control"
                       id='party_name'
+                      title='Enter the Vendor Name'
                       required
                       value={vendor_name}
                       onChange={(e) => setVendorName(e.target.value)}
-                      title="please fill out this field"
                       readOnly
                     />
                   </div>
@@ -3342,7 +3347,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                   <span className="text-danger">*</span>
                 </label>
                   <div class="exp-form-floating">
-                    <div title="select a payment type">
+                    <div title="Select a Pay Type">
                     <Select
                       id="paytype"
                       value={selectedPay}
@@ -3363,7 +3368,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                     <label className={`${error && !purchaseType ? 'red' : ''}`}> Purchase Type</label>
                     <span className="text-danger">*</span>
                      <div class="exp-form-floating">
-                      <div title="select a payment type">
+                      <div title="Select a Purchase Type">
                     <Select
                       id="purchaseType"
                       value={selected}
@@ -3385,6 +3390,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                       id="entryDate"
                       className="exp-input-field form-control"
                       type="date"
+                      title="Enter the Entry Date"
                       placeholder=""
                       required
                       min={financialYearStart}
@@ -3398,7 +3404,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                 <div className="col-md-3 form-group mb-2">
                   <label for="">Default Warehouse</label>
                   <div class="exp-form-floating">
-                    <div title="Select a Default warehouse">
+                    <div title="Select a Default Warehouse">
                     <Select
                       id="returnType"
                       className="exp-input-field"
@@ -3421,6 +3427,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                       <input
                         id="totalPurchaseAmount"
                         class="exp-input-field form-control input"
+                        title="Enter the Total Amount"
                         type="text"
                         placeholder=""
                         required
@@ -3436,6 +3443,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                       <input
                         name="totalTaxAmount"
                         id="totalTaxAmount"
+                        title="Enter the Total Tax"
                         text="text"
                         className="exp-input-field form-control input"
                         placeholder=""
@@ -3452,6 +3460,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                       <input
                         name=""
                         id="roundOff"
+                        title="Enter the Round Off"
                         type="text"
                         className="exp-input-field form-control input"
                         placeholder=""
@@ -3468,6 +3477,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                       <input
                         name=""
                         id="totalBillAmount"
+                        title="Enter the Total Bill Amount"
                         type="text"
                         className="exp-input-field form-control input"
                         placeholder=""
@@ -3481,16 +3491,16 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                 </div>
                 <div className="col-md-3 form-group mb-2" style={{ display: "none" }}>
                 <div className="exp-form-floating">
-    <label id="customer">Screen Type</label>
-    <input
-      className="exp-input-field form-control"
-      id="customername"
-      required
-      value={Type}
-      onChange={(e) => setType(e.target.value)}
-    />
-  </div>
-  </div>
+                  <label id="customer">Screen Type</label>
+                  <input
+                    className="exp-input-field form-control"
+                    id="customername"
+                    required
+                    value={Type}
+                    onChange={(e) => setType(e.target.value)}
+                  />
+                </div>
+                </div>
               </div>
               <div class="d-flex justify-content-between " style={{ marginBlock: "", marginTop: "10px" }} >
                 <div className="purbut">
@@ -3529,12 +3539,14 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                     <icon
                       type="button"
                       className="popups-btn "
+                      title="Add Row"
                       onClick={handleAddRow}>
                       <FontAwesomeIcon icon={faPlus} />
                     </icon>
                     <icon
                       type="button"
                       className="popups-btn"
+                      title="Remove Row"
                       onClick={handleRemoveRow}>
                       <FontAwesomeIcon icon={faMinus} />
                     </icon>
@@ -3545,12 +3557,14 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                     <icon
                       type="button"
                       className="popups-btn fs-6 ms-0 text-dark "
+                      title="Add Row"
                       onClick={handleAddRow}>
                       <FontAwesomeIcon icon={faPlus} />
                     </icon>
                     <icon
                       type="button"
                       className="popups-btn fs-6 ms-0 text-dark"
+                      title="Remove Row"
                       onClick={handleRemoveRow}>
                       <FontAwesomeIcon icon={faMinus} />
                     </icon>
@@ -3645,6 +3659,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                           className="exp-input-field form-control justify-content-start"
                           type="text"
                           placeholder=""
+                          title='Enter the Transaction No'
                           maxLength={50}
                           required
                           value={refNo}
@@ -3676,7 +3691,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                         max={financialYearEnd}
                         value={deleteTransactionDate}
                         onChange={(e) => setDeleteTransactionDate(e.target.value)}
-                        title="please Enter the Transaction date"
+                        title="Enter the Transaction date"
                         readOnly
                       />
                     </div>
@@ -3696,7 +3711,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                           maxLength={18}
                           autoComplete='off'
                           readOnly
-                          title='please fill out of this field'
+                          title='Enter the Vendor Code'
                         />
                       </div>
                     </div>
@@ -3710,7 +3725,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                         value={deleteVendorName}
                         onChange={(e) => setDeleteVendorName(e.target.value)}
                         readOnly
-                        title='please fill out of this field'
+                        title='Enter the Vendor Name'
                       />
                     </div>
                   </div>
@@ -3726,7 +3741,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                         required
                         isDisabled={true}
                         data-tip="Please select a payment type"
-                        title='please fill out of this field'
+                        title='Enter the Pay Type'
                       />
                     </div>
                   </div>
@@ -3740,7 +3755,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                         className="exp-input-field form-control"
                         placeholder=""
                         isDisabled={true}
-                        title='please fill out of this field'
+                        title='Enter the Purchase Type'
                       />
                     </div>
                   </div>
@@ -3759,7 +3774,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                         value={deleteEntryDate}
                         onChange={(e) => setDeleteEntryDate(e.target.value)}
                         readOnly
-                        title="please enter the entrydate"
+                        title='Enter the Entry Date'
                       />
                     </div>
                   </div>
