@@ -230,15 +230,29 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
   const [customer_state, setCustomer_state] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // For dropdown field
   const [selectedStatus, setSelectedStatus] = useState("");
   const [statusdrop, setStatusdrop] = useState([]);
-  
+
+  const [selectedState, setselectedState] = useState('');
+  const [statedrop, setStatedrop] = useState([]);
+
   const handleChangeStatus = (selectedStatus) => {
     setSelectedStatus(selectedStatus);
     setStatus(selectedStatus ? selectedStatus.value : "");
   };
 
   const filteredOptionStatus = statusdrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  const handleChangeState = (selectedState) => {
+    setselectedState(selectedState);
+    setCustomer_state(selectedState ? selectedState.value : '');
+  };
+
+  const filteredOptionState = statedrop.map((option) => ({
     value: option.attributedetails_name,
     label: option.attributedetails_name,
   }));
@@ -256,6 +270,21 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
       .then((data) => data.json())
       .then((val) => setStatusdrop(val))
       .catch((error) => console.error("Error fetching data:", error));
+  }, []);
+
+  useEffect(() => {
+    const company_code = sessionStorage.getItem('selectedCompanyCode');
+
+    fetch(`${config.apiBaseUrl}/state`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ company_code })
+    })
+      .then((data) => data.json())
+      .then((val) => setStatedrop(val))
+      .catch((error) => console.error('Error fetching data:', error));
   }, []);
 
   const handleSearchItem = async () => {
@@ -361,7 +390,6 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                               type='text'
                               id='Vendor_code'
                               className='form-control'
-                              title='Enter the Customer Code'
                               placeholder='Customer Code'
                               maxLength={10}
                               value={customer_code}
@@ -375,7 +403,6 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                               type='text'
                               id='Variant'
                               className='form-control'
-                              title='Enter the Customer Name'
                               placeholder='Customer Name'
                               value={customer_name}
                               maxLength={250}
@@ -384,20 +411,6 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                               autoComplete="off"
                             />
                           </div>
-                          {/* <div className="col-sm mb-2">
-                            <input
-                              type='text'
-                              id='ItemName'
-                              className='form-control'
-                              title='Enter the Status'
-                              placeholder='Status'
-                              value={status}
-                              maxLength={18}
-                              onChange={(e) => setStatus(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
-                          </div> */}
                           <div className="col-sm mb-2">
                             <div class="exp-form-floating">
                               <div>
@@ -414,20 +427,22 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                                 />
                               </div>
                             </div>
-                          </div>                          
-                          <div className="col-sm mb-2">
-                            <input
-                              type='text'
-                              id='ShortName'
-                              className='form-control'
-                              title='Enter the State'
-                              placeholder='State'
-                              value={customer_state}
-                              maxLength={100}
-                              onChange={(e) => setCustomer_state(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
+                          </div>
+
+                          <div className="col-md-3 form-group mb-2">
+                            <div class="exp-form-floating">
+                              <div title="Select the State">
+                                <Select
+                                  id="state"
+                                  value={selectedState}
+                                  onChange={handleChangeState}
+                                  options={filteredOptionState}
+                                  className="exp-input-field"
+                                  placeholder="State"
+                                  isClearable
+                                />
+                              </div>
+                            </div>
                           </div>
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <icon className="icon popups-btn" onClick={handleSearchItem}>
@@ -506,19 +521,7 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                               autoComplete="off"
                             />
                           </div>
-                          {/* <div className="col-sm mb-2">
-                            <input
-                              type='text'
-                              id='ItemName'
-                              className='form-control'
-                              placeholder='Status'
-                              value={status}
-                              maxLength={18}
-                              onChange={(e) => setStatus(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
-                          </div> */}
+
                           <div className="col-sm mb-2">
                             <div class="exp-form-floating">
                               <div>
@@ -535,19 +538,22 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                                 />
                               </div>
                             </div>
-                          </div>                          
-                          <div className="col-sm mb-2">
-                            <input
-                              type='text'
-                              id='ShortName'
-                              className='form-control'
-                              placeholder='State'
-                              value={customer_state}
-                              maxLength={100}
-                              onChange={(e) => setCustomer_state(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
+                          </div>
+
+                          <div className="col-md-3 form-group mb-2">
+                            <div class="exp-form-floating">
+                              <div title="Select the State">
+                                <Select
+                                  id="state"
+                                  value={selectedState}
+                                  onChange={handleChangeState}
+                                  options={filteredOptionState}
+                                  className="exp-input-field"
+                                  placeholder="State"
+                                  isClearable
+                                />
+                              </div>
+                            </div>
                           </div>
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <button className="" onClick={handleSearchItem}>

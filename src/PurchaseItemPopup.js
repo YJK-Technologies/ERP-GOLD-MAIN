@@ -277,21 +277,44 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
   };
 
   const handleConfirm = () => {
-    const selectedData = selectedRows.map(row => ({
-      itemCode: row.Item_code,
-      itemName: row.Item_name,
-      unitWeight: row.Item_wigh,
-      purchaseAmt: row.Item_std_purch_price,
-      taxType: row.Item_purch_tax_type,
-      taxDetails: row.combined_tax_details,
-      taxPer: row.combined_tax_percent,
-    }));
-    handleItem(selectedData);
-    handleClose();
-    clearInputs([]);
-    setRowData([]);
-    setSelectedRows([]);
+
+  // Check whether an item is selected
+  if (selectedRows.length === 0) {
+    toast.warning("Please select an item.");
+    return;
   }
+
+  // Get the selected item
+  const selectedItem = selectedRows[0];
+
+  // Debug - check the actual data
+  console.log("Selected Item:", selectedItem);
+  console.log("Item Status:", selectedItem.status);
+
+  // Validate item status
+  if (String(selectedItem.status ?? "").trim().toLowerCase() !== "active") {
+    toast.warning("The selected item is not active.");
+    return;
+  }
+
+  // Only active item will reach here
+  const selectedData = selectedRows.map(row => ({
+    itemCode: row.Item_code,
+    itemName: row.Item_name,
+    unitWeight: row.Item_wigh,
+    purchaseAmt: row.Item_std_purch_price,
+    taxType: row.Item_purch_tax_type,
+    taxDetails: row.combined_tax_details,
+    taxPer: row.combined_tax_percent,
+  }));
+
+  handleItem(selectedData);
+
+  handleClose();
+  clearInputs([]);
+  setRowData([]);
+  setSelectedRows([]);
+};
 
   return (
     <div>
