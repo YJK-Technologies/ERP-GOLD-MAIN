@@ -2891,6 +2891,7 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                                     className="exp-input-field form-control justify-content-start"
                                                     type="text"
                                                     placeholder=""
+                                                    title='Enter the Transaction No'
                                                     required
                                                     value={new_running_no}
                                                     onChange={(e) => setNew_running_no(e.target.value)}
@@ -2916,6 +2917,7 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                                 name="transactionDate"
                                                 id="transactionDate"
                                                 className="exp-input-field form-control"
+                                                title='Enter the Transaction Date'
                                                 type="date"
                                                 placeholder=""
                                                 required
@@ -2931,6 +2933,7 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                         <div className="exp-form-floating">
                                             <label htmlFor="" className={`${error && !payType ? 'red' : ''}`}>Pay Type</label>
                                             {!showAsterisk && <span className="text-danger">*</span>}
+                                            <div title='Select a Pay Type'>
                                             <Select
                                                 id="payType"
                                                 value={selectedPay}
@@ -2944,10 +2947,12 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                                 ref={payTypeRef}
                                             />
                                         </div>
+                                        </div>
                                     </div>
                                     <div className="col-md-12 form-group mb-2">
                                         <div className="exp-form-floating">
                                             <label htmlFor="" className={`${error && !salesType ? 'red' : ''}`}>Sales Type{!showAsterisk && <span className="text-danger">*</span>}</label>
+                                            <div title='Select a Sales Type'>
                                             <Select
                                                 id="salesType"
                                                 value={selectedSales}
@@ -2960,6 +2965,7 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                                 autoComplete="off"
                                                 ref={salesTypeRef}
                                             />
+                                        </div>
                                         </div>
                                     </div>
                                 </div>
@@ -3023,6 +3029,7 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                         <input
                                             id="totalPurchaseAmount"
                                             class="exp-input-field form-control input"
+                                            title='Enter the Total'
                                             type="text"
                                             placeholder=""
                                             required
@@ -3040,6 +3047,7 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                             name="totalTaxAmount"
                                             id="transport"
                                             type="text"
+                                            title='Enter the Transport'
                                             className="exp-input-field form-control input"
                                             placeholder=""
                                             maxLength={18}
@@ -3064,6 +3072,7 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                             name=""
                                             id="roundOff"
                                             type="text"
+                                            title='Enter the Round Off'
                                             className="exp-input-field form-control input"
                                             placeholder=""
                                             required
@@ -3082,6 +3091,7 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                             id="totalBillAmount"
                                             type="text"
                                             className="exp-input-field form-control input"
+                                            title='Enter the Grand Total'
                                             placeholder=""
                                             required
                                             value={TotalBill}
@@ -3094,6 +3104,7 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                 <div className="col-md-3 form-group mb-2" style={{ justifyContent: "center" }}>
                                     <label htmlFor="party_code">Product/Items Filter</label>
                                     <div className="exp-form-floating">
+                                        <div title='Select a Product/Items Filter'>
                                         <div class="d-flex justify-content-between">
                                             <Select
                                                 id="Product"
@@ -3106,11 +3117,13 @@ autoFitColumns(rowDataSheet, filteredRowData);
 
                                             />
                                         </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="col-md-3 form-group mb-2" style={{ justifyContent: "center" }}>
                                     <label htmlFor="party_code">Product/Items Name</label>
                                     <div className="exp-form-floating">
+                                        <div title='Select a Product/Items Name'>
                                         <div class="d-flex justify-content-between">
                                             <Select
                                                 className="exp-input-field"
@@ -3122,6 +3135,7 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                                 options={dynamicOptions}
                                                 onChange={handleItemCode}
                                             />
+                                        </div>
                                         </div>
                                     </div>
                                 </div>
@@ -3218,6 +3232,7 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                                     className="exp-input-field form-control justify-content-start"
                                                     type="text"
                                                     placeholder=""
+                                                    title="Enter the Transaction No"
                                                     required
                                                     value={transactionNo}
                                                     maxLength={50}
@@ -3240,6 +3255,7 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                             <input
                                                 name="transactionDate"
                                                 id="Transactiondate"
+                                                title="Enter the Transaction Date"
                                                 className="exp-input-field form-control"
                                                 type="date"
                                                 placeholder=""
@@ -3258,6 +3274,7 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                                 value={PayType}
                                                 onChange={(e) => setPaytype(e.target.value)}
                                                 className="exp-input-field form-control"
+                                                title="Enter the Pay Type"
                                                 placeholder=""
                                                 required
                                                 data-tip="Please select a payment type"
@@ -3275,6 +3292,7 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                                 value={SalesType}
                                                 onChange={(e) => setSalestype(e.target.value)}
                                                 className="exp-input-field  form-control"
+                                                title="Enter the Sales Type"
                                                 placeholder=""
                                                 required
                                                 data-tip="Please select a sales type"
@@ -3344,6 +3362,7 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                             class="exp-input-field form-control input"
                                             type="text"
                                             placeholder=""
+                                            title="Enter the Total"
                                             required
                                             value={Total}
                                             onChange={(e) => setTotal(e.target.value)}
@@ -3359,6 +3378,7 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                             id="Transport"
                                             type="text"
                                             className="exp-input-field form-control input"
+                                            title="Enter the Transport"
                                             placeholder=""
                                             maxLength={18}
                                             required
@@ -3376,6 +3396,7 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                             id="RoundOff"
                                             type="text"
                                             className="exp-input-field form-control input"
+                                            title="Enter the Round Off"
                                             placeholder=""
                                             required
                                             value={RoundOff}
@@ -3392,6 +3413,7 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                             id="GrandTotal"
                                             type="text"
                                             className="exp-input-field form-control input"
+                                            title="Enter the Grand Total"
                                             placeholder=""
                                             required
                                             value={GrandTotal}

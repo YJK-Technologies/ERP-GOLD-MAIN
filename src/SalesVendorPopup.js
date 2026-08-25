@@ -337,22 +337,27 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
   };
 
   const handleConfirm = () => {
+    // Check whether an Customer is selected
+    // Check whether an Customer is selected
+    if (selectedRows.length === 0) {
+      toast.warning("Please select an Customer.");
+      return;
+    }
 
-    // Check whether a row is selected
-  if (selectedRows.length === 0) {
-    toast.warning("Please select a customer.");
-    return;
-  }
+    // Get the selected Customer
+    const selectedCustomer = selectedRows[0];
 
-  // Get the selected row
-  const selectedCustomer = selectedRows[0];
+    // Debug - check the actual data
+    console.log("Selected Customer:", selectedCustomer);
+    console.log("Item Status:", selectedCustomer.status);
 
-  // Validate customer status
-  if (selectedCustomer.status?.toLowerCase() !== "active") {
-    toast.warning("The selected customer is not active.");
-    return;
-  }
-  
+    // Validate Customer status
+    if (String(selectedCustomer.status ?? "").trim().toLowerCase() !== "active") {
+      toast.warning("The selected Customer is not active.");
+      return;
+    }
+    // Only active Customer will reach here  
+
     const selectedData = selectedRows.map(row => ({
       CustomerCode: row.customer_code,
       CustomerName: row.customer_name,
@@ -406,7 +411,6 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                               type='text'
                               id='Vendor_code'
                               className='form-control'
-                              title='Enter the Customer Code'
                               placeholder='Customer Code'
                               maxLength={10}
                               value={customer_code}
@@ -420,7 +424,6 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                               type='text'
                               id='Variant'
                               className='form-control'
-                              title='Enter the Customer Name'
                               placeholder='Customer Name'
                               value={customer_name}
                               maxLength={250}
@@ -429,7 +432,6 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                               autoComplete="off"
                             />
                           </div>
-
                           <div className="col-sm mb-2">
                             <div class="exp-form-floating">
                               <div>
@@ -463,7 +465,6 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                               </div>
                             </div>
                           </div>
-
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <icon className="icon popups-btn" onClick={handleSearchItem}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
@@ -575,7 +576,6 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                               </div>
                             </div>
                           </div>
-
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <button className="" onClick={handleSearchItem}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />

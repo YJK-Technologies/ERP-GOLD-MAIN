@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as React from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -9,9 +9,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { toast } from "react-toastify";
 import LoadingScreen from './Loading';
+import Select from "react-select";
+
 const config = require('./Apiconfig');
-
-
 
 const columnDefs = [
   {
@@ -186,7 +186,35 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
   const [Item_Our_Brand, setItem_Our_Brand] = useState("");
   const [status, setstatus] = useState("");
     const [loading, setLoading] = useState(false);
-  
+
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [statusDrop, setStatusDrop] = useState("");
+  const [statusdropDown, setStatusdropDown] = useState([]);
+
+  const handleChangeStatus = (selectedStatus) => {
+    setSelectedStatus(selectedStatus);
+    setstatus(selectedStatus ? selectedStatus.value : "");
+  };
+
+  const filteredOptionStatus = statusdropDown.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  useEffect(() => {
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+
+    fetch(`${config.apiBaseUrl}/status`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ company_code }),
+    })
+      .then((data) => data.json())
+      .then((val) => setStatusdropDown(val))
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);  
 
   const handleSearchItem = async () => {
         setLoading(true);
@@ -242,6 +270,27 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
   };
 
   const handleConfirm = () => {
+    // Check whether an item is selected
+    // Check whether an item is selected
+    if (selectedRows.length === 0) {
+      toast.warning("Please select an item.");
+      return;
+    }
+
+    // Get the selected item
+    const selectedItem = selectedRows[0];
+
+    // Debug - check the actual data
+    console.log("Selected Item:", selectedItem);
+    console.log("Item Status:", selectedItem.status);
+
+    // Validate item status
+    if (String(selectedItem.status ?? "").trim().toLowerCase() !== "active") {
+      toast.warning("The selected item is not active.");
+      return;
+    }
+    // Only active item will reach here    
+
     const selectedData = selectedRows.map(row => ({
       itemCode: row.Item_code,
       itemName: row.Item_name,
@@ -351,18 +400,19 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                               autoComplete="off"
                             />
                           </div>
+
                           <div className="col-sm mb-2">
-                            <input
-                              type="text"
-                              id="Status"
-                              className="exp-input-field form-control"
-                              title="Enter the Status"
-                              placeholder="Status"
-                              value={status}
-                              onChange={(e) => setstatus(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
+                            <div title="Select the Status ">
+                              <Select
+                                id="ahsts"
+                                value={selectedStatus}
+                                onChange={handleChangeStatus}
+                                options={filteredOptionStatus}
+                                className="exp-input-field"
+                                placeholder="Status"
+                                isClearable
+                              />
+                            </div>
                           </div>
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <icon className="icon popups-btn" onClick={handleSearchItem}>
@@ -476,17 +526,19 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                             />
                           </div>
                           <div className="col-sm mb-2">
-                            <input
-                              type="text"
-                              id="Status"
-                              className="exp-input-field form-control"
-                              placeholder="Status"
-                              value={status}
-                              onChange={(e) => setstatus(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
+                            <div title="Select the Status ">
+                              <Select
+                                id="ahsts"
+                                value={selectedStatus}
+                                onChange={handleChangeStatus}
+                                options={filteredOptionStatus}
+                                className="exp-input-field"
+                                placeholder="Status"
+                                isClearable
+                              />
+                            </div>
                           </div>
+
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <button className="" onClick={handleSearchItem}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />

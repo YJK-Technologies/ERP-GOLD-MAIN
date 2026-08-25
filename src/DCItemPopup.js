@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as React from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { toast } from 'react-toastify';
 import LoadingScreen from './Loading';
+import Select from "react-select";
 
 const config = require('./Apiconfig');
 
@@ -193,6 +194,34 @@ export default function DCItemPopup({ open, handleClose, handleItem }) {
   const [status, setstatus] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [statusdrop, setStatusdrop] = useState([]);
+
+  const handleChangeStatus = (selectedStatus) => {
+    setSelectedStatus(selectedStatus);
+    setstatus(selectedStatus ? selectedStatus.value : "");
+  };
+
+  const filteredOptionStatus = statusdrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  useEffect(() => {
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+
+    fetch(`${config.apiBaseUrl}/status`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ company_code }),
+    })
+      .then((data) => data.json())
+      .then((val) => setStatusdrop(val))
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
+
   const handleSearchItem = async () => {
     setLoading(true);
     try {
@@ -295,6 +324,7 @@ export default function DCItemPopup({ open, handleClose, handleItem }) {
                               type="text"
                               id="ItemCode"
                               className="exp-input-field form-control"
+                              title="Enter the Item Code"
                               placeholder="Item Code"
                               value={Item_code}
                               onChange={(e) => setItem_code(e.target.value)}
@@ -307,6 +337,7 @@ export default function DCItemPopup({ open, handleClose, handleItem }) {
                               type="text"
                               id="Variant"
                               className="exp-input-field form-control"
+                              title="Enter the Variant"
                               placeholder="Variant"
                               value={Item_variant}
                               onChange={(e) => setItem_variant(e.target.value)}
@@ -319,6 +350,7 @@ export default function DCItemPopup({ open, handleClose, handleItem }) {
                               type="text"
                               id="ItemName"
                               className="exp-input-field form-control"
+                              title="Enter the Item Name"
                               placeholder="Item Name"
                               value={Item_name}
                               onChange={(e) => setItem_name(e.target.value)}
@@ -331,6 +363,7 @@ export default function DCItemPopup({ open, handleClose, handleItem }) {
                               type="text"
                               id="ShortName"
                               className="exp-input-field form-control"
+                              title="Enter the Short Name"
                               placeholder="Short Name"
                               value={Item_short_name}
                               onChange={(e) => setItem_short_name(e.target.value)}
@@ -343,6 +376,7 @@ export default function DCItemPopup({ open, handleClose, handleItem }) {
                               type="text"
                               id="OurBrand"
                               className="exp-input-field form-control"
+                              title="Enter the Our Brand"
                               placeholder="Our Brand"
                               value={Item_Our_Brand}
                               onChange={(e) => setItem_Our_Brand(e.target.value)}
@@ -350,18 +384,36 @@ export default function DCItemPopup({ open, handleClose, handleItem }) {
                               autoComplete="off"
                             />
                           </div>
-                          <div className="col-sm mb-2">
+                          {/* <div className="col-sm mb-2">
                             <input
                               type="text"
                               id="Status"
                               className="exp-input-field form-control"
+                              title="Enter the Status"
                               placeholder="Status"
                               value={status}
                               onChange={(e) => setstatus(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
                               autoComplete="off"
                             />
-                          </div>
+                          </div> */}
+                          <div className="col-sm mb-2">
+                            <div class="exp-form-floating">
+                              <div>
+                              </div>
+                              <div title="Select the Status ">
+                                <Select
+                                  id="ahsts"
+                                  value={selectedStatus}
+                                  onChange={handleChangeStatus}
+                                  options={filteredOptionStatus}
+                                  className="exp-input-field"
+                                  placeholder="Status"
+                                  isClearable
+                                />
+                              </div>
+                            </div>
+                          </div>                          
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <icon className="icon popups-btn" onClick={handleSearchItem}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
@@ -474,7 +526,7 @@ export default function DCItemPopup({ open, handleClose, handleItem }) {
                               autoComplete="off"
                             />
                           </div>
-                          <div className="col-sm mb-2">
+                          {/* <div className="col-sm mb-2">
                             <input
                               type="text"
                               id="Status"
@@ -485,7 +537,24 @@ export default function DCItemPopup({ open, handleClose, handleItem }) {
                               onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
                               autoComplete="off"
                             />
-                          </div>
+                          </div> */}
+                          <div className="col-sm mb-2">
+                            <div class="exp-form-floating">
+                              <div>
+                              </div>
+                              <div title="Select the Status ">
+                                <Select
+                                  id="ahsts"
+                                  value={selectedStatus}
+                                  onChange={handleChangeStatus}
+                                  options={filteredOptionStatus}
+                                  className="exp-input-field"
+                                  placeholder="Status"
+                                  isClearable
+                                />
+                              </div>
+                            </div>
+                          </div>                             
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <button className="" onClick={handleSearchItem}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
