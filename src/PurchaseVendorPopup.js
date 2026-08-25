@@ -417,6 +417,7 @@ export default function PurchaseVendorPopup({ open, handleClose, handleVendor })
                             type='text'
                             id='Vendor_code'
                             className='exp-input-field form-control'
+                            title='Enter the Vendor Code'
                             placeholder='Vendor Code'
                             value={vendor_code}
                             onChange={(e) => setVendorCode(e.target.value)}
@@ -429,6 +430,7 @@ export default function PurchaseVendorPopup({ open, handleClose, handleVendor })
                             type='text'
                             id='Vendor Name'
                             className='exp-input-field form-control'
+                            title='Enter the Vendor Name'
                             placeholder='Vendor Name'
                             value={vendor_name}
                             onChange={(e) => setVendorName(e.target.value)}

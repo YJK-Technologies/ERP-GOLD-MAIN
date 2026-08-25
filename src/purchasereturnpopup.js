@@ -300,6 +300,7 @@ export default function ItemPopup({ open, handleClose, handleItem }) {
                               type='text'
                               id='transaction_no'
                               className='exp-input-field form-control'
+                              title='Enter the Transaction No'
                               placeholder='Transaction No'
                               value={transaction_no}
                               onChange={(e) => settransaction_no(e.target.value)}
@@ -312,6 +313,7 @@ export default function ItemPopup({ open, handleClose, handleItem }) {
                               type='date'
                               id='transaction_date'
                               className='exp-input-field form-control'
+                              title='Enter the Transaction Date'
                               placeholder='Transaction Date'
                               value={transaction_date}
                               onChange={(e) => settransaction_date(e.target.value)}
@@ -323,6 +325,7 @@ export default function ItemPopup({ open, handleClose, handleItem }) {
                               type='text'
                               id='vendor_code'
                               className='exp-input-field form-control'
+                              title='Enter the Vendor Code'
                               placeholder='Vendor Code'
                               value={vendor_code}
                               onChange={(e) => setvendor_code(e.target.value)}
@@ -335,6 +338,7 @@ export default function ItemPopup({ open, handleClose, handleItem }) {
                               type='text'
                               id='vendor_code'
                               className='exp-input-field form-control'
+                              title='Enter the Vendor Name'
                               placeholder='Vendor Name'
                               value={vendor_name}
                               onChange={(e) => setvendor_name(e.target.value)}
@@ -345,7 +349,7 @@ export default function ItemPopup({ open, handleClose, handleItem }) {
 
                           <div className="col-md-2 mb-2">
                             <div class="exp-form-floating">
-                              <div title="select a payment type">
+                              <div title="Select a Purchase Type">
                                 <Select
                                   id="purchaseType"
                                   value={selected}
@@ -361,7 +365,7 @@ export default function ItemPopup({ open, handleClose, handleItem }) {
 
                           <div className="col-md-2 mb-2">
                             <div class="exp-form-floating">
-                              <div title="select a payment type">
+                              <div title="Select a Pay Type">
                                 <Select
                                   id="paytype"
                                   value={selectedPay}
@@ -370,7 +374,7 @@ export default function ItemPopup({ open, handleClose, handleItem }) {
                                   className="exp-input-field"
                                   placeholder="Pay Type"
                                   required
-                                  data-tip="Please select a payment type"
+                                  data-tip="Please select a Pay Type"
                                   isClearable
                                 />
                               </div>
