@@ -3690,7 +3690,7 @@ setLoading(true)
               <div className="row  ms-3 me-3">
                 {showDropdown && (
                   <div className="col-md-3 form-group mb-2">
-     <label className={`${deleteError && !selectedStatus   ? 'red' : ''}`}>Status<span className="text-danger">*</span></label>
+                  <label className={`${deleteError && !selectedStatus   ? 'red' : ''}`}>Status<span className="text-danger">*</span></label>
                     <div class="exp-form-floating">
                        <div title="Select the Status">
                       <Select
@@ -3716,6 +3716,7 @@ setLoading(true)
                         className="exp-input-field form-control justify-content-start"
                         type="text"
                         placeholder=""
+                        title="Enter the Bill No"
                         required
                         value={billNo}
                         onChange={handleChangeNo}
@@ -3732,7 +3733,7 @@ setLoading(true)
                   </div>
                 </div>
                 <div className="col-md-3 form-group mb-2">
-                  <label htmlFor="party_code" className={`${error && !customerCode ? 'red' : ''}`}>
+                  <label htmlFor="party_code" tittle="Enter the Customer Code" className={`${error && !customerCode ? 'red' : ''}`}>
                     Customer Code{!showAsterisk && <span className="text-danger">*</span>}
                   </label>
                   <div className="exp-form-floating">
@@ -3740,6 +3741,7 @@ setLoading(true)
                       <input
                         className="exp-input-field form-control justify-content-start"
                         id='customercode'
+                        title="Enter the Customer Code"
                         required
                         value={customerCode}
                         maxLength={18}
@@ -3855,6 +3857,7 @@ setLoading(true)
                       type="text"
                       className="exp-input-field form-control"
                       placeholder=""
+                      title="Enter the DC No"
                       required
                       value={delvychellanno}
                       maxLength={18}
@@ -3910,6 +3913,7 @@ setLoading(true)
                         <label htmlFor="paidAmount" className="">Paid Amount</label>
                         <input
                           id="paidAmount"
+                          title='Enter the Paid Amount'
                           type="number"
                           className="form-control exp-input-field"
                           value={paidAmount}
@@ -3923,6 +3927,7 @@ setLoading(true)
                         <label htmlFor="returnAmount" className="">Return Amount</label>
                         <input
                           id="returnAmount"
+                          title='Enter the Return Amount'
                           type="number"
                           className="form-control exp-input-field"
                           value={returnAmount}
@@ -3938,6 +3943,7 @@ setLoading(true)
                         <label htmlFor="totalSaleAmount" className="">Total Sales Amount</label>
                         <input
                           id="totalSaleAmount"
+                          title='Enter the Total Sales Amount'
                           type="text"
                           className="form-control exp-input-field"
                           value={Totalsales}
@@ -3950,6 +3956,7 @@ setLoading(true)
                         <label htmlFor="totalTaxAmount" className="">Total Tax</label>
                         <input
                           id="totalTaxAmount"
+                          title='Enter the Total Tax'
                           type="text"
                           className="form-control exp-input-field"
                           value={TotalTax}
@@ -3964,6 +3971,7 @@ setLoading(true)
                         <label htmlFor="roundOff" className="">Round Off</label>
                         <input
                           id="roundOff"
+                          title='Enter the Round Off'
                           type="text"
                           className="form-control exp-input-field"
                           value={round_difference}
@@ -3976,6 +3984,7 @@ setLoading(true)
                         <label htmlFor="totalBillAmount" className="">Total Bill Amount</label>
                         <input
                           id="totalBillAmount"
+                          title='Enter the Total Bill Amount'
                           type="text"
                           className="form-control exp-input-field"
                           value={TotalBill}
@@ -3986,8 +3995,9 @@ setLoading(true)
                   </div>
                   <div className="row">
                   <div className="col-md-6 mb-2">
+                    <label htmlFor="totalBillAmount" className="">Item Code</label>
                     <div className="exp-form-floating">
-                      <label htmlFor="totalBillAmount" className="">Item Code</label>
+                      <div title="Please select the Item Code">
                       <Select
                         id="salesMode"
                         className="exp-input-field"
@@ -3998,6 +4008,7 @@ setLoading(true)
                         onChange={handleChangeItem}
                         options={filteredOptionItem}
                       />
+                      </div>
                     </div>
                   </div>
                   <div className="d-none">
@@ -4046,12 +4057,14 @@ setLoading(true)
                   <icon
                     type="button"
                     className="popups-btn"
+                    title="Add Row"
                     onClick={handleAddRow}>
                     <FontAwesomeIcon icon={faPlus} />
                   </icon>
                   <icon
                     type="button"
                     className="popups-btn"
+                    title="Remove Row"
                     onClick={handleRemoveRow}>
                     <FontAwesomeIcon icon={faMinus} />
                   </icon>

@@ -3467,6 +3467,7 @@ function PurchaseOrder() {
                           className="exp-input-field form-control justify-content-start"
                           type="text"
                           placeholder=""
+                          title='Enter the Transaction No'
                           required
                           value={transactionNo}
                           onChange={(e) => setTransactionNo(e.target.value)}
@@ -3492,13 +3493,12 @@ function PurchaseOrder() {
                         className="exp-input-field form-control"
                         type="date"
                         placeholder=""
+                        title='Enter the Transaction Date'
                         required
                         min={financialYearStart}
                         max={financialYearEnd}
                         value={entryDate}
                         onChange={handleDateChange}
-
-                        title="please fill the Transaction date"
                       />
                     </div>
                   </div>
@@ -3568,6 +3568,7 @@ function PurchaseOrder() {
                       class="exp-input-field form-control input"
                       type="text"
                       placeholder=""
+                      title='Enter the Total Amount'
                       required
                       value={TotalPurchase}
                       onChange={(e) => setTotalPurchase(e.target.value)}
@@ -3584,6 +3585,7 @@ function PurchaseOrder() {
                       text="text"
                       className="exp-input-field form-control input"
                       placeholder=""
+                      title='Enter the Total Tax'
                       required
                       value={TotalTax}
                       onChange={(e) => setTotalTax(e.target.value)}
@@ -3599,6 +3601,7 @@ function PurchaseOrder() {
                       id="roundOff"
                       type="text"
                       className="exp-input-field form-control input"
+                      title='Enter the Round Off'
                       placeholder=""
                       required
                       value={round_difference}
@@ -3615,6 +3618,7 @@ function PurchaseOrder() {
                       id="totalBillAmount"
                       type="text"
                       className="exp-input-field form-control input"
+                      title='Enter the Total Bill Amount'
                       placeholder=""
                       required
                       value={TotalBill}
@@ -3637,12 +3641,14 @@ function PurchaseOrder() {
                   <icon
                     type="button"
                     className="popups-btn"
+                    title="Add Row"
                     onClick={handleAddRow}>
                     <FontAwesomeIcon icon={faPlus} />
                   </icon>
                   <icon
                     type="button"
                     className="popups-btn"
+                    title="Remove Row"
                     onClick={handleRemoveRow}>
                     <FontAwesomeIcon icon={faMinus} />
                   </icon>

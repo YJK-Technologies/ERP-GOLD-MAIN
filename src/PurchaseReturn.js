@@ -1798,12 +1798,12 @@ function PurchaseReturn() {
             </div>
             <div className="d-flex justify-content-end purbut me-3">
               { saveButtonVisible && ['add', 'all permission'].some(permission => purchaseReturnPermission.includes(permission)) && (
-                <savebutton class="purbut" onClick={handleSaveButtonClick} >
+                <savebutton class="purbut" title="Save" onClick={handleSaveButtonClick} >
                   <i class="fa-regular fa-floppy-disk"></i>
                 </savebutton>
               )}
               { authButtonVisible &&(
-                    <savebutton className="purbut" onClick={handleAuthorizedButtonClick} title="Authorize">
+                    <savebutton className="purbut"  onClick={handleAuthorizedButtonClick} title="Authorize">
                 <i class="fa-solid fa-check"></i>
               </savebutton>
               )}
@@ -1874,6 +1874,7 @@ function PurchaseReturn() {
               <div className="col-md-3 form-group mb-2">
                 <label for=""className={`${error && !selectedStatus ? 'red' : ''}`}>Status</label><span className="text-danger">*</span>
                 <div class="exp-form-floating">
+                  <div title='Select the Status'>
                   <Select
                     id="returnType"
                     className="exp-input-field"
@@ -1884,6 +1885,7 @@ function PurchaseReturn() {
                     getOptionLabel={(option) => option.label || ""}
                     getOptionValue={(option) => option.value || ""}
                   />
+                </div>
                 </div>
               </div>
             )}
@@ -1898,6 +1900,7 @@ function PurchaseReturn() {
                     className="exp-input-field form-control justify-content-start"
                     id='PurchaseNo'
                     type="text"
+                    title='Enter the Transaction No'
                     placeholder=""
                     required
                     value={purch_autono}
@@ -1923,6 +1926,7 @@ function PurchaseReturn() {
                 <span className="text-danger">*</span>
                 <input
                   id='Returndate'
+                  title='Enter the Return Date'
                   class="exp-input-field form-control"
                   type="date"
                   placeholder=""
@@ -1940,6 +1944,7 @@ function PurchaseReturn() {
                   <input
                     name="purchasetype"
                     id="returnnumber"
+                    title='Enter the Return No'
                     className="exp-input-field form-control justify-content-start"
                     placeholder=""
                     required
@@ -1966,11 +1971,11 @@ function PurchaseReturn() {
                 <label for="Return Person" className={`${error && !returnperson ? 'red' : ''} `}>
                   Return Person
                 </label>
-                                <span className="text-danger">*</span>
-
+                <span className="text-danger">*</span>
                 <input
                   id='returnperson'
                   class="exp-input-field form-control"
+                  title='Enter the Return Person'
                   type="text"
                   placeholder=""
                   required
@@ -1998,6 +2003,7 @@ function PurchaseReturn() {
                   id="returnreason"
                   type="text"
                   className="exp-input-field form-control"
+                  title='Enter the Return Reason'
                   placeholder=""
                   pattern="[A-Za-z\s]*"
                   maxLength={200}
@@ -2020,6 +2026,7 @@ function PurchaseReturn() {
               <div class="exp-form-floating">
                 <input
                   className="exp-input-field form-control"
+                  title='Enter the Vendor Code'
                   id='party_code'
                   value={vendorcode}
                   onChange={(e) => setvendor_code(e.target.value)}
@@ -2036,6 +2043,7 @@ function PurchaseReturn() {
               <div class="exp-form-floating">
                 <input
                   className="exp-input-field form-control"
+                  title='Enter the Vendor Name'
                   id='party_name'
                   value={vendor_name}
                   onChange={(e) => setVendorName(e.target.value)}
@@ -2053,6 +2061,7 @@ function PurchaseReturn() {
                 <input
                   id='entryDate'
                   class="exp-input-field form-control"
+                  title='Enter the Entry Date'
                   type="date"
                   placeholder=""
                   required
@@ -2072,6 +2081,7 @@ function PurchaseReturn() {
                   name="paytype"
                   id="payType"
                   className="exp-input-field form-control"
+                  title='Enter the Pay Type'
                   placeholder=""
                   type=""
                   required
@@ -2091,6 +2101,7 @@ function PurchaseReturn() {
                   name="purchasetype"
                   id="purchasetype"
                   className="exp-input-field form-control"
+                  title='Enter the Purchase Type'
                   placeholder=""
                   required
                   value={purchaseType}
@@ -2109,6 +2120,7 @@ function PurchaseReturn() {
                 <input
                   id='transactiondate'
                   class="exp-input-field form-control"
+                  title='Enter the Transaction Date'
                   type="date"
                   placeholder=""
                   required
@@ -2127,6 +2139,7 @@ function PurchaseReturn() {
                 <input
                   id="totalPurchaseAmount"
                   class="exp-input-field form-control"
+                  title='Enter the Total Purchase'
                   type="text"
                   placeholder=""
                   required
@@ -2145,6 +2158,7 @@ function PurchaseReturn() {
                 <input
                   name="totalTaxAmount"
                   id="totalTaxAmount"
+                  title='Enter the Total Tax'
                   text="text"
                   className="exp-input-field form-control"
                   placeholder=""
@@ -2164,6 +2178,7 @@ function PurchaseReturn() {
                   id="roundOff"
                   type="text"
                   className="exp-input-field form-control input"
+                  title='Enter the Round Off'
                   placeholder=""
                   required
                   value={round_difference}
@@ -2183,6 +2198,7 @@ function PurchaseReturn() {
                   id="totalBillAmount"
                   type="text"
                   className="exp-input-field form-control"
+                  title='Enter the Total Bill Amount'
                   placeholder=""
                   required
                   value={TotalBillAmount}
