@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as React from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { toast } from 'react-toastify';
 import LoadingScreen from './Loading';
+import Select from "react-select";
 
 const config = require('./Apiconfig');
 
@@ -229,6 +230,34 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
   const [customer_state, setCustomer_state] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [statusdrop, setStatusdrop] = useState([]);
+  
+  const handleChangeStatus = (selectedStatus) => {
+    setSelectedStatus(selectedStatus);
+    setStatus(selectedStatus ? selectedStatus.value : "");
+  };
+
+  const filteredOptionStatus = statusdrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  useEffect(() => {
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+
+    fetch(`${config.apiBaseUrl}/status`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ company_code }),
+    })
+      .then((data) => data.json())
+      .then((val) => setStatusdrop(val))
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
+
   const handleSearchItem = async () => {
     setLoading(true);
     try {
@@ -355,7 +384,7 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                               autoComplete="off"
                             />
                           </div>
-                          <div className="col-sm mb-2">
+                          {/* <div className="col-sm mb-2">
                             <input
                               type='text'
                               id='ItemName'
@@ -368,7 +397,24 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                               onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
                               autoComplete="off"
                             />
-                          </div>
+                          </div> */}
+                          <div className="col-sm mb-2">
+                            <div class="exp-form-floating">
+                              <div>
+                              </div>
+                              <div title="Select the Status ">
+                                <Select
+                                  id="ahsts"
+                                  value={selectedStatus}
+                                  onChange={handleChangeStatus}
+                                  options={filteredOptionStatus}
+                                  className="exp-input-field"
+                                  placeholder="Status"
+                                  isClearable
+                                />
+                              </div>
+                            </div>
+                          </div>                          
                           <div className="col-sm mb-2">
                             <input
                               type='text'
@@ -460,7 +506,7 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                               autoComplete="off"
                             />
                           </div>
-                          <div className="col-sm mb-2">
+                          {/* <div className="col-sm mb-2">
                             <input
                               type='text'
                               id='ItemName'
@@ -472,7 +518,24 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                               onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
                               autoComplete="off"
                             />
-                          </div>
+                          </div> */}
+                          <div className="col-sm mb-2">
+                            <div class="exp-form-floating">
+                              <div>
+                              </div>
+                              <div title="Select the Status ">
+                                <Select
+                                  id="ahsts"
+                                  value={selectedStatus}
+                                  onChange={handleChangeStatus}
+                                  options={filteredOptionStatus}
+                                  className="exp-input-field"
+                                  placeholder="Status"
+                                  isClearable
+                                />
+                              </div>
+                            </div>
+                          </div>                          
                           <div className="col-sm mb-2">
                             <input
                               type='text'
