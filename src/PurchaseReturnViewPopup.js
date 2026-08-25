@@ -345,6 +345,7 @@ export default function PurchaseReturnView({ open, handleClose, handleItemView }
                               type='text'
                               id='transaction_no'
                               className='exp-input-field form-control'
+                              title='Enter the Transaction No'
                               placeholder='Transaction No'
                               value={transaction_no}
                               onChange={(e) => settransaction_no(e.target.value)}
@@ -357,6 +358,7 @@ export default function PurchaseReturnView({ open, handleClose, handleItemView }
                               type='text'
                               id='Return_No'
                               className='exp-input-field form-control'
+                              title='Enter the Return No'
                               placeholder='Return No'
                               value={return_no}
                               onChange={(e) => setReturn_no(e.target.value)}
@@ -369,6 +371,7 @@ export default function PurchaseReturnView({ open, handleClose, handleItemView }
                               type='date'
                               id='transaction_date'
                               className='exp-input-field form-control'
+                              title='Enter the Transaction Date'
                               placeholder='Transaction Date'
                               value={transaction_date}
                               onChange={(e) => settransaction_date(e.target.value)}
@@ -381,6 +384,7 @@ export default function PurchaseReturnView({ open, handleClose, handleItemView }
                               type='text'
                               id='vendor_code'
                               className='exp-input-field form-control'
+                              title='Enter the Vendor Code'
                               placeholder='Vendor Code'
                               value={vendor_code}
                               onChange={(e) => setvendor_code(e.target.value)}
@@ -393,6 +397,7 @@ export default function PurchaseReturnView({ open, handleClose, handleItemView }
                               type='text'
                               id='vendor_code'
                               className='exp-input-field form-control'
+                              title='Enter the Vendor Name'
                               placeholder='Vendor Name'
                               value={vendor_name}
                               onChange={(e) => setvendor_name(e.target.value)}
@@ -403,7 +408,7 @@ export default function PurchaseReturnView({ open, handleClose, handleItemView }
 
                           <div className="col-md-3 mb-2">
                             <div class="exp-form-floating">
-                              <div title="select a payment type">
+                              <div title="Select a Payment Type">
                                 <Select
                                   id="purchaseType"
                                   value={selected}
@@ -419,7 +424,7 @@ export default function PurchaseReturnView({ open, handleClose, handleItemView }
 
                           <div className="col-md-3 mb-2">
                             <div class="exp-form-floating">
-                              <div title="select a payment type">
+                              <div title="Select a Pay Type">
                                 <Select
                                   id="paytype"
                                   value={selectedPay}

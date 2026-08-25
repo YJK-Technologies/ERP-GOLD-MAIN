@@ -126,21 +126,21 @@ export default function InvIssuedPopup({ open, handleClose, InvIssuedData }) {
   }));
 
   useEffect(() => {
-      const companyCode = sessionStorage.getItem('selectedCompanyCode');
-      fetch(`${config.apiBaseUrl}/getInventoryTransaction`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          company_code: companyCode,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => setIssuedDrop(data))
-        .catch((error) => console.error("Error fetching purchase types:", error));
-    }, []);
-  
+    const companyCode = sessionStorage.getItem('selectedCompanyCode');
+    fetch(`${config.apiBaseUrl}/getInventoryTransaction`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        company_code: companyCode,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setIssuedDrop(data))
+      .catch((error) => console.error("Error fetching purchase types:", error));
+  }, []);
+
 
   const handleSearch = async () => {
     setLoading(true);
@@ -150,8 +150,10 @@ export default function InvIssuedPopup({ open, handleClose, InvIssuedData }) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), 
-          IssuanceID, DateIssued, Issued_Type: issuedType })
+        body: JSON.stringify({
+          company_code: sessionStorage.getItem('selectedCompanyCode'),
+          IssuanceID, DateIssued, Issued_Type: issuedType
+        })
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -285,29 +287,29 @@ export default function InvIssuedPopup({ open, handleClose, InvIssuedData }) {
                             />
                           </div> */}
 
-                          <div className="col-md-3 form-group mb-2">
-                                        
-                                        <div class="exp-form-floating">
-                                          <div title="select the transaction type">
-                                          <Select
-                                            id="issuedType"
-                                            className="exp-input-field"
-                                            placeholder="Transaction Type"
-                                            required
-                                            value={selectedIssued}
-                                            onChange={handleChangeIssued}
-                                            options={filteredOptionIssued}
-                                            data-tip="Please select a transaction type"
-                                          />
-                                        </div>
-                                        </div>
-                                      </div>
+                          <div className="col-sm mb-2">
+
+                            <div class="exp-form-floating">
+                              <div title="select the transaction type">
+                                <Select
+                                  id="issuedType"
+                                  className="exp-input-field"
+                                  placeholder="Transaction Type"
+                                  required
+                                  value={selectedIssued}
+                                  onChange={handleChangeIssued}
+                                  options={filteredOptionIssued}
+                                  data-tip="Please select a transaction type"
+                                />
+                              </div>
+                            </div>
+                          </div>
 
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <icon className="icon popups-btn" onClick={handleSearch} title="Search">
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
                             </icon>
-                            <icon className="icon popups-btn"  onClick={handleReload} title="Reload">
+                            <icon className="icon popups-btn" onClick={handleReload} title="Reload">
                               <i class="fa-solid fa-arrow-rotate-right"></i>
                             </icon>
                             <icon className="icon popups-btn" onClick={handleConfirm} title="Confirm">
@@ -379,23 +381,23 @@ export default function InvIssuedPopup({ open, handleClose, InvIssuedData }) {
                               autoComplete='off'
                             />
                           </div>
-                          <div className="col-md-3 form-group mb-2">
-                                        
-                                        <div class="exp-form-floating">
-                                          <div title="select the transaction type">
-                                          <Select
-                                            id="issuedType"
-                                            className="exp-input-field"
-                                            placeholder="Transaction Type"
-                                            required
-                                            value={selectedIssued}
-                                            onChange={handleChangeIssued}
-                                            options={filteredOptionIssued}
-                                            data-tip="Please select a transaction type"
-                                          />
-                                        </div>
-                                        </div>
-                                      </div>
+                          <div className="col-sm mb-2">
+
+                            <div class="exp-form-floating">
+                              <div title="select the transaction type">
+                                <Select
+                                  id="issuedType"
+                                  className="exp-input-field"
+                                  placeholder="Transaction Type"
+                                  required
+                                  value={selectedIssued}
+                                  onChange={handleChangeIssued}
+                                  options={filteredOptionIssued}
+                                  data-tip="Please select a transaction type"
+                                />
+                              </div>
+                            </div>
+                          </div>
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <button className="" onClick={handleSearch} title="Search">
                               <FontAwesomeIcon icon={faMagnifyingGlass} />

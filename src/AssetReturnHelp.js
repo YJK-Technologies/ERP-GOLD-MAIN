@@ -249,30 +249,6 @@ export default function AssetsHelp({ open, handleClose, AssetReturnHelp }) {
                                                             autoComplete="off"
                                                         />
                                                     </div>
-                                                    <div className="col-sm mb-2">
-                                                        <input
-                                                            type="text"
-                                                            id="ItemName"
-                                                            className="exp-input-field form-control"
-                                                            placeholder="Return No"
-                                                            value={return_person}
-                                                            onChange={(e) => setreturn_person(e.target.value)}
-                                                            onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                                                            autoComplete="off"
-                                                        />
-                                                    </div>
-                                                    <div className="col-sm mb-2">
-                                                        <input
-                                                            type="text"
-                                                            id="ItemName"
-                                                            className="exp-input-field form-control"
-                                                            placeholder="Return No"
-                                                            value={return_reason}
-                                                            onChange={(e) => setreturn_reason(e.target.value)}
-                                                            onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                                                            autoComplete="off"
-                                                        />
-                                                    </div>
                                                     <div className="mb-2 mt-2  d-flex justify-content-end ">
                                                         <icon className="icon popups-btn" onClick={handleSearchItem}>
                                                             <FontAwesomeIcon icon={faMagnifyingGlass} />
@@ -367,30 +343,6 @@ export default function AssetsHelp({ open, handleClose, AssetReturnHelp }) {
                                                             placeholder="Return Date"
                                                             value={return_date}
                                                             onChange={(e) => setreturn_date(e.target.value)}
-                                                            onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                                                            autoComplete="off"
-                                                        />
-                                                    </div>
-                                                    <div className="col-sm mb-2">
-                                                        <input
-                                                            type="text"
-                                                            id="ItemName"
-                                                            className="exp-input-field form-control"
-                                                            placeholder="Return No"
-                                                            value={return_person}
-                                                            onChange={(e) => setreturn_person(e.target.value)}
-                                                            onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                                                            autoComplete="off"
-                                                        />
-                                                    </div>
-                                                    <div className="col-sm mb-2">
-                                                        <input
-                                                            type="text"
-                                                            id="ItemName"
-                                                            className="exp-input-field form-control"
-                                                            placeholder="Return No"
-                                                            value={return_reason}
-                                                            onChange={(e) => setreturn_reason(e.target.value)}
                                                             onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
                                                             autoComplete="off"
                                                         />

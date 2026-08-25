@@ -258,6 +258,7 @@ export default function QuotationPopup({ open, handleClose, handleQuotationData 
                               type='text'
                               id='transaction_no'
                               className='exp-input-field form-control'
+                              title='Enter the Transaction No'
                               placeholder='Transaction No'
                               value={transaction_no}
                               onChange={(e) => settransaction_no(e.target.value)}
@@ -270,6 +271,7 @@ export default function QuotationPopup({ open, handleClose, handleQuotationData 
                               type='date'
                               id='transaction_date'
                               className='exp-input-field form-control'
+                              title='Enter the Entry Date'
                               placeholder='Entry Date'
                               value={Entry_date}
                               onChange={(e) => setEntry_date(e.target.value)}
@@ -282,6 +284,7 @@ export default function QuotationPopup({ open, handleClose, handleQuotationData 
                               type='text'
                               id='vendor_code'
                               className='exp-input-field form-control'
+                              title='Enter the Customer Code'
                               placeholder='Customer Code'
                               value={customer_name}
                               onChange={(e) => setcustomer_name(e.target.value)}
@@ -294,6 +297,7 @@ export default function QuotationPopup({ open, handleClose, handleQuotationData 
                               type='text'
                               id='vendor_code'
                               className='exp-input-field form-control'
+                              title='Enter the Contact Person'
                               placeholder='Contact Person'
                               value={contact_person}
                               onChange={(e) => setcontact_person(e.target.value)}

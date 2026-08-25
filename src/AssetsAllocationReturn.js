@@ -196,7 +196,7 @@ function AssetsReturn({ }) {
       sortable: false
     },
     {
-      headerName: ' Employee No',
+      headerName: 'Employee ID',
       field: 'employeeNO',
       editable: false,
       filter: true,
@@ -231,7 +231,7 @@ function AssetsReturn({ }) {
       "S.No": row.serialNumber,
       "Item Code": row.itemCode.toString(),
       "Item Name": row.itemName.toString(),
-      "Employee No": row.employeeNO.toString(),
+      "Employee ID": row.employeeNO.toString(),
       "Quantity": row.qty.toString(),
       "Return Quantity": row.returnQty.toString()
     }));
@@ -477,7 +477,7 @@ function AssetsReturn({ }) {
   };
 
   const handleAssetsHelp = async (data) => {
-    setSaveButtonVisible(false)
+    setSaveButtonVisible(true)
     setShowExcelButton(true)
     if (data && data.length > 0) {
       const [{ AllocationNO, AllocationDate }] = data;
@@ -617,7 +617,7 @@ function AssetsReturn({ }) {
         body: JSON.stringify({ transaction_no: code, company_code: sessionStorage.getItem('selectedCompanyCode') })
       });
       if (response.ok) {
-        setSaveButtonVisible(false);
+        setSaveButtonVisible(true);
         setShowExcelButton(true);
         const searchData = await response.json();
         if (searchData.Header && searchData.Header.length > 0) {
@@ -676,7 +676,7 @@ function AssetsReturn({ }) {
 
   const AssetReturnHelp = async (data) => {
     if (data && data.length > 0) {
-      setSaveButtonVisible(false);
+      setSaveButtonVisible(true);
       setShowExcelButton(true);
       const [{ AllocationNO, AllocationDate, ReturnNo, ReturnDate, ReturnPerson, ReturnReason }] = data;
 

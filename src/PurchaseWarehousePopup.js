@@ -237,6 +237,7 @@ export default function PurchaseWarehousePopup({ open, handleClose, handleWareho
                               type='text'
                               id='WarehouseCode'
                               className='exp-input-field form-control'
+                              title='Enter the Warehouse Code'
                               placeholder=' Warehouse Code'
                               value={warehouse_code}
                               onChange={(e) => setwarehouse_code(e.target.value)}
@@ -249,6 +250,7 @@ export default function PurchaseWarehousePopup({ open, handleClose, handleWareho
                               type='text'
                               id='WarehouseName'
                               className='exp-input-field form-control'
+                              title='Enter the Warehouse Name'
                               placeholder='Warehouse Name'
                               value={warehouse_name}
                               onChange={(e) => setwarehouse_name(e.target.value)}
