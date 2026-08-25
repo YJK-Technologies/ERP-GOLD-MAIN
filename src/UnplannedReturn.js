@@ -1539,7 +1539,7 @@ const UnplannedReturn = () => {
             </div>
             <div class="d-flex justify-content-end me-5">
               {saveButtonVisible && ['add', 'all permission'].some(permission => returnPermission.includes(permission)) && (
-                <savebutton className="purbut" title='save' onClick={handleSaveButtonClick}>
+                <savebutton className="purbut" title='Save' onClick={handleSaveButtonClick}>
                   <i class="fa-regular fa-floppy-disk"></i>
                 </savebutton>
               )}
@@ -1549,21 +1549,21 @@ const UnplannedReturn = () => {
                 </printbutton>
               )} */}
               {['delete', 'all permission'].some(permission => returnPermission.includes(permission)) && (
-                <delbutton className="purbut" onClick={handleDeleteButtonClick} title='delete' >
+                <delbutton className="purbut" onClick={handleDeleteButtonClick} title='Delete' >
                   <i class="fa-solid fa-trash"></i>
                 </delbutton>
               )}
               {['all permission', 'view'].some(permission => returnPermission.includes(permission)) && (
-                <printbutton className="purbut" title="print" onClick={generateReport}>
+                <printbutton className="purbut" title="Print" onClick={generateReport}>
                   <i class="fa-solid fa-file-pdf"></i>
                 </printbutton>
               )}
               {showExcelButton && (
-                <printbutton className="purbut" title='excel' onClick={handleExcelDownload}>
+                <printbutton className="purbut" title='Excel' onClick={handleExcelDownload}>
                   <i class="fa-solid fa-file-excel"></i>
                 </printbutton>
               )}
-              <printbutton className="purbut" onClick={handleReload}>
+              <printbutton className="purbut" title='Reload' onClick={handleReload}>
                 <i class="fa-solid fa-arrow-rotate-right"></i>
               </printbutton>
             </div>
@@ -1639,7 +1639,7 @@ const UnplannedReturn = () => {
                     className="exp-input-field form-control justify-content-start"
                     type="text"
                     placeholder=""
-                    title='Please enter the transaction ID'
+                    title='Enter the Transaction ID'
                     required
                     value={returnId}
                     onChange={(e) => setReturnId(e.target.value)}
@@ -1665,7 +1665,7 @@ const UnplannedReturn = () => {
                   id="returnDate"
                   className="exp-input-field form-control"
                   type="date"
-                  title='Please enter the transaction date'
+                  title='Enter the Transaction Date'
                   placeholder=""
                   required
                   value={returnDate}
@@ -1678,7 +1678,7 @@ const UnplannedReturn = () => {
                 {!showAsterisk && <span className="text-danger">*</span>}
               </label>
               <div class="exp-form-floating">
-                <div title="select a transaction type">
+                <div title="Select a Transaction Type">
                 <Select
                   id="returnType"
                   className="exp-input-field"
@@ -1695,7 +1695,7 @@ const UnplannedReturn = () => {
             <div className="col-md-3 form-group mb-2">
               <label for="">Default Warehouse</label>
               <div class="exp-form-floating">
-                <div title="select a default warehouse">
+                <div title="Select the Default Warehouse">
                 <Select
                   id="returnType"
                   className="exp-input-field"
@@ -1706,8 +1706,7 @@ const UnplannedReturn = () => {
                   options={filteredOptionWarehouse}
                   data-tip="Please select a default warehouse"
                 />
-                
-</div>
+                </div>
               </div>
             </div>
           </div>
@@ -1731,7 +1730,7 @@ const UnplannedReturn = () => {
               </icon>
               <icon
                 type="button"
-                title='Less row'
+                title='Remove row'
                 class="popups-btn"
                 onClick={handleRemoveRow}>
                 <FontAwesomeIcon icon={faMinus} />

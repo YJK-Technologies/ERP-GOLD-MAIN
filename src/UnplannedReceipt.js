@@ -1719,7 +1719,7 @@ const UnplannedReceipt = () => {
                     onChange={(e) => setReceiptId(e.target.value)}
                     onKeyPress={handleKeyPress}
                     maxLength={50}
-                    title='Please enter the transaction ID'
+                    title='Enter the Transaction ID'
                     autoComplete='off'
                   />
                   <div className='position-absolute mt-1 me-2'>
@@ -1741,7 +1741,7 @@ const UnplannedReceipt = () => {
                   className="exp-input-field form-control"
                   type="date"
                   placeholder=""
-                  title='Please enter the transaction date'
+                  title='Enter the Transaction Date'
                   required
                   min={financialYearStart}
                   max={financialYearEnd}
@@ -1799,12 +1799,14 @@ const UnplannedReceipt = () => {
               <icon
                 type="button"
                 class="popups-btn"
+                title="Add Row"
                 onClick={handleAddRow}>
                 <FontAwesomeIcon icon={faPlus} />
               </icon>
               <icon
                 type="button"
                 class="popups-btn"
+                title="Remove Row"
                 onClick={handleRemoveRow}>
                 <FontAwesomeIcon icon={faMinus} />
               </icon>

@@ -368,6 +368,7 @@ export default function ItemPopup({ open, handleClose, handleDcData }) {
                               type='text'
                               id='transaction_no'
                               className='exp-input-field form-control'
+                              title='Enter the Transaction No'
                               placeholder='Transaction No'
                               value={transaction_no}
                               onChange={(e) => settransaction_no(e.target.value)}
@@ -380,6 +381,7 @@ export default function ItemPopup({ open, handleClose, handleDcData }) {
                               type='date'
                               id='transaction_date'
                               className='exp-input-field form-control'
+                              title='Enter the Transaction Date'
                               placeholder='Transaction Date'
                               value={transaction_date}
                               onChange={(e) => settransaction_date(e.target.value)}
@@ -392,6 +394,7 @@ export default function ItemPopup({ open, handleClose, handleDcData }) {
                               type='text'
                               id='vendor_code'
                               className='exp-input-field form-control'
+                              title='Enter the Customer Name'
                               placeholder='Customer Name'
                               value={customer_name}
                               onChange={(e) => setcustomer_name(e.target.value)}
@@ -404,6 +407,7 @@ export default function ItemPopup({ open, handleClose, handleDcData }) {
                               type='text'
                               id='vendor_code'
                               className='exp-input-field form-control'
+                              title='Enter the Ship to Customer Name'
                               placeholder='Ship to Customer Name'
                               value={ShipTo_customer_name}
                               onChange={(e) => setShipTo_customer_name(e.target.value)}

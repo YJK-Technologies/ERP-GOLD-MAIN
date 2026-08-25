@@ -1537,7 +1537,7 @@ const UnplannedIssued = () => {
             </div>
             <div className="d-flex justify-content-end purbut me-3">
               {saveButtonVisible && ['add', 'all permission'].some(permission => issuedPermission.includes(permission)) && (
-                <savebutton className="purbut" title='save' onClick={handleSaveButtonClick} >
+                <savebutton className="purbut" title='Save' onClick={handleSaveButtonClick} >
                   <i class="fa-regular fa-floppy-disk"></i>
                 </savebutton>
               )}
@@ -1547,21 +1547,21 @@ const UnplannedIssued = () => {
                 </printbutton>
               )} */}
               {['delete', 'all permission'].some(permission => issuedPermission.includes(permission)) && (
-                <delbutton className="purbut" title='delete' onClick={handleDeleteButtonClick}>
+                <delbutton className="purbut" title='Delete' onClick={handleDeleteButtonClick}>
                   <i class="fa-solid fa-trash"></i>
                 </delbutton>
               )}
               {['all permission', 'view'].some(permission => issuedPermission.includes(permission)) && (
-                <printbutton className="purbut" title="print" onClick={generateReport}>
+                <printbutton className="purbut" title="Print" onClick={generateReport}>
                   <i class="fa-solid fa-file-pdf"></i>
                 </printbutton>
               )}
               {showExcelButton && (
-                <printbutton className="purbut" title='excel' onClick={handleExcelDownload}>
+                <printbutton className="purbut" title='Excel' onClick={handleExcelDownload}>
                   <i class="fa-solid fa-file-excel"></i>
                 </printbutton>
               )}
-              <printbutton className="purbut" onClick={handleReload}>
+              <printbutton className="purbut" title='Reload' onClick={handleReload}>
                 <i class="fa-solid fa-arrow-rotate-right"></i>
               </printbutton>
             </div>
@@ -1642,7 +1642,7 @@ const UnplannedIssued = () => {
                     onKeyPress={handleKeyPress}
                     maxLength={50}
                     autoComplete='off'
-                    title='Please enter the transaction ID'
+                    title='Enter the Transaction ID'
                   />
                   <div className='position-absolute mt-1 me-2'>
                     <span className="icon searchIcon"
@@ -1664,7 +1664,7 @@ const UnplannedIssued = () => {
                   type="date"
                   placeholder=""
                   required
-                  title='Please enter the transaction date'
+                  title='Enter the Transaction Date'
                   min={financialYearStart}
                   max={financialYearEnd}
                   value={issuedDate}
@@ -1677,7 +1677,7 @@ const UnplannedIssued = () => {
                 {!showAsterisk && <span className="text-danger">*</span>}
               </label>
               <div class="exp-form-floating">
-                <div title="Select the transaction type">
+                <div title="Select the Transaction Type">
                   <Select
                     id="issuedType"
                     className="exp-input-field"
@@ -1717,7 +1717,7 @@ const UnplannedIssued = () => {
             <div className="col-md-3 form-group mb-2">
               <label for="">Default Warehouse</label>
               <div class="exp-form-floating">
-                <div title='Select a default warehouse'>
+                <div title='Select a Default Warehouse'>
                   <Select
                     id="returnType"
                     className="exp-input-field"
@@ -1747,7 +1747,7 @@ const UnplannedIssued = () => {
               <icon type="button" onClick={handleAddRow} title='Add row' class="popups-btn">
                 <FontAwesomeIcon icon={faPlus} />
               </icon>
-              <icon type="button" onClick={handleRemoveRow} title='Less row' class="popups-btn">
+              <icon type="button" onClick={handleRemoveRow} title='Remove row' class="popups-btn">
                 <FontAwesomeIcon icon={faMinus} />
               </icon>
             </div>
