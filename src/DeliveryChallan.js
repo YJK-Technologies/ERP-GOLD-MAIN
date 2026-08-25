@@ -2064,32 +2064,43 @@ autoFitColumns(rowDataSheet, filteredRowData);
     };
 
     const BalanceAmountCalculation = async () => {
-        try {
-            const response = await fetch(`${config.apiBaseUrl}/taxInvoiceBalanceAmountCalculation`, {
+    try {
+        const transportAmount = parseFloat(Totaltransport) || 0;
+        const purchaseAmount = parseFloat(TotalPurchase) || 0;
+
+        const response = await fetch(
+            `${config.apiBaseUrl}/taxInvoiceBalanceAmountCalculation`,
+            {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ TotalAmount: parseFloat(TotalPurchase), AdvanceAmount: parseFloat(Totaltransport) }),
-            });
-            if (response.ok) {
-                const data = await response.json();
-                const [{ Balance_Amount }] = data;
-                setTotalBill(formatToTwoDecimalPoints(Balance_Amount))
-            } else {
-                const errorMessage = await response.text();
-                console.error(`Server responded with error: ${errorMessage}`);
+                body: JSON.stringify({
+                    TotalAmount: purchaseAmount,
+                    AdvanceAmount: transportAmount,
+                }),
             }
-        } catch (error) {
-            console.error("Error fetching data:", error);
+        );
+
+        if (response.ok) {
+            const data = await response.json();
+            const [{ Balance_Amount }] = data;
+
+            setTotalBill(formatToTwoDecimalPoints(Balance_Amount));
+        } else {
+            const errorMessage = await response.text();
+            console.error(
+                `Server responded with error: ${errorMessage}`
+            );
         }
-    };
+    } catch (error) {
+        console.error("Error fetching data:", error);
+    }
+};
 
     useEffect(() => {
-        if (Totaltransport) { // Runs only if Totaltransport is truthy
-            BalanceAmountCalculation();
-        }
-    }, [TotalPurchase, Totaltransport]);
+    BalanceAmountCalculation();
+}, [TotalPurchase, Totaltransport]);
 
     useEffect(() => {
         const company_code = sessionStorage.getItem('selectedCompanyCode');
