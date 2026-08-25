@@ -672,30 +672,140 @@ function AssertAllocation({ }) {
   };
 
 
+  // const handleExcelDownload = () => {
+
+  //   const filteredRowData = rowData.filter(row => row.qty > 0);
+  //   if (rowData.length === 0 || !Allocationno || !allocationadate) {
+  //     toast.warning('There is no data to export.');
+  //     return;
+  //   }
+
+  //   const headerData = [{
+  //     "Company Code": sessionStorage.getItem('selectedCompanyCode'),
+  //     "Allocation No": Allocationno,
+  //     "Allocation Date": allocationadate
+  //   }];
+
+  //   const transformedData = transformRowData(filteredRowData);
+  //   const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
+  //   const headerSheet = XLSX.utils.json_to_sheet(headerData);
+
+  //   const workbook = XLSX.utils.book_new();
+  //   XLSX.utils.book_append_sheet(workbook, headerSheet, "Assets Allocation Header");
+  //   XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Assets Allocation Details");
+
+  //   XLSX.writeFile(workbook, "Assets_Allocation.xlsx");
+  // };
+
   const handleExcelDownload = () => {
+  // Filter only rows having quantity > 0
+  const filteredRowData = rowData.filter(row => row.qty > 0);
 
-    const filteredRowData = rowData.filter(row => row.qty > 0);
-    if (rowData.length === 0 || !Allocationno || !allocationadate) {
-      toast.warning('There is no data to export.');
-      return;
-    }
+  // Validation
+  if (rowData.length === 0 || !Allocationno || !allocationadate) {
+    toast.warning("There is no data to export.");
+    return;
+  }
 
-    const headerData = [{
-      "Company Code": sessionStorage.getItem('selectedCompanyCode'),
-      "Allocation No": Allocationno,
-      "Allocation Date": allocationadate
-    }];
+  // Header Data
+  const headerData = [{
+    "Company Code": sessionStorage.getItem("selectedCompanyCode"),
+    "Allocation No": Allocationno,
+    "Allocation Date": allocationadate
+  }];
 
-    const transformedData = transformRowData(filteredRowData);
-    const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
-    const headerSheet = XLSX.utils.json_to_sheet(headerData);
+  // Transform Details Data
+  const transformedData = transformRowData(filteredRowData);
 
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, headerSheet, "Assets Allocation Header");
-    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Assets Allocation Details");
+  // =========================================================
+  // HEADER SHEET
+  // =========================================================
 
-    XLSX.writeFile(workbook, "Assets_Allocation.xlsx");
+  const headerSheet = XLSX.utils.aoa_to_sheet([
+    ["Asset Allocation"], // A1
+    [`Company Name: ${sessionStorage.getItem("selectedCompanyName") || ""}`], // A2
+    [], // A3 - Empty row
+  ]);
+
+  // Add Header Data starting from A4
+  XLSX.utils.sheet_add_json(headerSheet, headerData, {
+    origin: "A4",
+  });
+
+  // Merge A1:H1 and A2:H2
+  headerSheet["!merges"] = [
+    {
+      s: { r: 0, c: 0 }, // A1
+      e: { r: 0, c: 7 }, // H1
+    },
+    {
+      s: { r: 1, c: 0 }, // A2
+      e: { r: 1, c: 7 }, // H2
+    },
+  ];
+
+  // =========================================================
+  // DETAILS SHEET
+  // =========================================================
+
+  const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
+
+  // =========================================================
+  // AUTO FIT COLUMNS
+  // =========================================================
+
+  const autoFitColumns = (worksheet, data) => {
+    const cols = [];
+
+    data.forEach((row) => {
+      Object.keys(row).forEach((key, i) => {
+        const value = row[key] == null ? "" : row[key].toString();
+
+        cols[i] = Math.max(
+          cols[i] || key.length,
+          key.length,
+          value.length
+        );
+      });
+    });
+
+    worksheet["!cols"] = cols.map((width) => ({
+      wch: width + 5,
+    }));
   };
+
+  // Auto fit Header Sheet
+  autoFitColumns(headerSheet, headerData);
+
+  // Auto fit Details Sheet
+  autoFitColumns(rowDataSheet, transformedData);
+
+  // =========================================================
+  // WORKBOOK
+  // =========================================================
+
+  const workbook = XLSX.utils.book_new();
+
+  // Add Header Sheet
+  XLSX.utils.book_append_sheet(
+    workbook,
+    headerSheet,
+    "Assets Allocation Header"
+  );
+
+  // Add Details Sheet
+  XLSX.utils.book_append_sheet(
+    workbook,
+    rowDataSheet,
+    "Assets Allocation Details"
+  );
+
+  // =========================================================
+  // DOWNLOAD
+  // =========================================================
+
+  XLSX.writeFile(workbook, "Assets_Allocation.xlsx");
+};
 
   const handleInsert = async () => {
     if (!allocationadate) {
@@ -1106,7 +1216,7 @@ function AssertAllocation({ }) {
         <div className="shadow-lg p-1 bg-body-tertiary rounded mb-2 mt-2">
           <div className="d-flex justify-content-between">
             <div className=" d-flex justify-content-start">
-              <h1 className="purbut me-5">Assets Allocation</h1>
+              <h1 className="purbut me-5">Asset Allocation</h1>
             </div>
             <div className="d-flex justify-content-end purbut me-3">
               {saveButtonVisible && ['add', 'all permission'].some(permission => purchasePermission.includes(permission)) && (
@@ -1131,7 +1241,7 @@ function AssertAllocation({ }) {
             <div class="mobileview">
               <div class="d-flex justify-content-between ">
                 <div className="d-flex justify-content-start">
-                  <h1 className="h1">Assets Allocation</h1>
+                  <h1 className="h1">Asset Allocation</h1>
                 </div>
                 <div class="dropdown mt-2 me-3">
                   <button class="btn btn-primary dropdown-toggle p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">

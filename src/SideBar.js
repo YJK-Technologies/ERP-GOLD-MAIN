@@ -1046,7 +1046,7 @@ setCRMCollapsed(false);  };
               <Link
                 to="/AssertAllocation"
                 className="nav-link"
-                title="Assets Allocation"
+                title="Asset Allocation"
                 onClick={() => handleLinkClick("AssertAllocation")}
               >
                 <div class="menu-item">
@@ -1062,7 +1062,7 @@ setCRMCollapsed(false);  };
                   </svg>
                   <span className={collapsed ? "hidden" : ""} class="ms-1">
                     {" "}
-                    Assets Allocation
+                    Asset Allocation
                   </span>
                 </div>
               </Link>

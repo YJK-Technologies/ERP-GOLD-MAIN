@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as React from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { toast } from 'react-toastify';
 import LoadingScreen from './Loading';
+import Select from "react-select";
 
 const config = require('./Apiconfig');
 
@@ -229,6 +230,63 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
   const [customer_state, setCustomer_state] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // For dropdown field
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [statusdrop, setStatusdrop] = useState([]);
+
+  const [selectedState, setselectedState] = useState('');
+  const [statedrop, setStatedrop] = useState([]);
+
+  const handleChangeStatus = (selectedStatus) => {
+    setSelectedStatus(selectedStatus);
+    setStatus(selectedStatus ? selectedStatus.value : "");
+  };
+
+  const filteredOptionStatus = statusdrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  const handleChangeState = (selectedState) => {
+    setselectedState(selectedState);
+    setCustomer_state(selectedState ? selectedState.value : '');
+  };
+
+  const filteredOptionState = statedrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  useEffect(() => {
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+
+    fetch(`${config.apiBaseUrl}/status`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ company_code }),
+    })
+      .then((data) => data.json())
+      .then((val) => setStatusdrop(val))
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
+
+  useEffect(() => {
+    const company_code = sessionStorage.getItem('selectedCompanyCode');
+
+    fetch(`${config.apiBaseUrl}/state`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ company_code })
+    })
+      .then((data) => data.json())
+      .then((val) => setStatedrop(val))
+      .catch((error) => console.error('Error fetching data:', error));
+  }, []);
+
   const handleSearchItem = async () => {
     setLoading(true);
     try {
@@ -279,6 +337,22 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
   };
 
   const handleConfirm = () => {
+
+    // Check whether a row is selected
+  if (selectedRows.length === 0) {
+    toast.warning("Please select a customer.");
+    return;
+  }
+
+  // Get the selected row
+  const selectedCustomer = selectedRows[0];
+
+  // Validate customer status
+  if (selectedCustomer.status?.toLowerCase() !== "active") {
+    toast.warning("The selected customer is not active.");
+    return;
+  }
+  
     const selectedData = selectedRows.map(row => ({
       CustomerCode: row.customer_code,
       CustomerName: row.customer_name,
@@ -353,32 +427,41 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                               autoComplete="off"
                             />
                           </div>
+
                           <div className="col-sm mb-2">
-                            <input
-                              type='text'
-                              id='ItemName'
-                              className='form-control'
-                              placeholder='Status'
-                              value={status}
-                              maxLength={18}
-                              onChange={(e) => setStatus(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
+                            <div class="exp-form-floating">
+                              <div>
+                              </div>
+                              <div title="Select the Status ">
+                                <Select
+                                  id="ahsts"
+                                  value={selectedStatus}
+                                  onChange={handleChangeStatus}
+                                  options={filteredOptionStatus}
+                                  className="exp-input-field"
+                                  placeholder="Status"
+                                  isClearable
+                                />
+                              </div>
+                            </div>
                           </div>
-                          <div className="col-sm mb-2">
-                            <input
-                              type='text'
-                              id='ShortName'
-                              className='form-control'
-                              placeholder='State'
-                              value={customer_state}
-                              maxLength={100}
-                              onChange={(e) => setCustomer_state(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
+
+                          <div className="col-md-3 form-group mb-2">
+                            <div class="exp-form-floating">
+                              <div title="Select the State">
+                                <Select
+                                  id="state"
+                                  value={selectedState}
+                                  onChange={handleChangeState}
+                                  options={filteredOptionState}
+                                  className="exp-input-field"
+                                  placeholder="State"
+                                  isClearable
+                                />
+                              </div>
+                            </div>
                           </div>
+
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <icon className="icon popups-btn" onClick={handleSearchItem}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
@@ -456,32 +539,41 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                               autoComplete="off"
                             />
                           </div>
+
                           <div className="col-sm mb-2">
-                            <input
-                              type='text'
-                              id='ItemName'
-                              className='form-control'
-                              placeholder='Status'
-                              value={status}
-                              maxLength={18}
-                              onChange={(e) => setStatus(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
+                            <div class="exp-form-floating">
+                              <div>
+                              </div>
+                              <div title="Select the Status ">
+                                <Select
+                                  id="ahsts"
+                                  value={selectedStatus}
+                                  onChange={handleChangeStatus}
+                                  options={filteredOptionStatus}
+                                  className="exp-input-field"
+                                  placeholder="Status"
+                                  isClearable
+                                />
+                              </div>
+                            </div>
                           </div>
-                          <div className="col-sm mb-2">
-                            <input
-                              type='text'
-                              id='ShortName'
-                              className='form-control'
-                              placeholder='State'
-                              value={customer_state}
-                              maxLength={100}
-                              onChange={(e) => setCustomer_state(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
+
+                          <div className="col-md-3 form-group mb-2">
+                            <div class="exp-form-floating">
+                              <div title="Select the State">
+                                <Select
+                                  id="state"
+                                  value={selectedState}
+                                  onChange={handleChangeState}
+                                  options={filteredOptionState}
+                                  className="exp-input-field"
+                                  placeholder="State"
+                                  isClearable
+                                />
+                              </div>
+                            </div>
                           </div>
+
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <button className="" onClick={handleSearchItem}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
