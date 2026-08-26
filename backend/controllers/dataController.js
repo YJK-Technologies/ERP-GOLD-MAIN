@@ -15512,14 +15512,34 @@ const SalesReturnAuthHdr = async (req, res) => {
       .input("authroization_status", sql.NVarChar, authroization_status)
       .query(`EXEC sp_sales_return_hdr @mode,@company_code,'','','',@return_no,'','','','','','',0,0,0,0,0,0,0,0,0,0,0,0,0,
                           '','','','','','','','','','','',0,0,0,@authroization_status,'','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
-    if (result.recordset.length > 0) {
-      res.status(200).json(result.recordset);
-    } else {
-      res.status(404).json("Data not found");
+//     if (result.recordset.length > 0) {
+//       res.status(200).json(result.recordset);
+//     } else {
+//       res.status(404).json("Data not found");
+//     }
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: err.message || 'Internal Server Error' });
+//   }
+// };
+    // recordset exists and has data
+    if (result?.recordset && result.recordset.length > 0) {
+      return res.status(200).json(result.recordset);
     }
+
+    // No recordset returned by stored procedure
+    return res.status(200).json({
+      success: true,
+      message: "Authorization completed."
+    });
+
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: err.message || 'Internal Server Error' });
+    console.error("SalesReturnAuthHdr Error:", err);
+
+    return res.status(400).json({
+      success: false,
+      message: err.message || "Authorization failed."
+    });
   }
 };
 
@@ -25459,32 +25479,9 @@ const getReceivedGoodsReport = async (req, res) => {
 // Code Added by Harish 29-01-2025
 
 const AddTransactionSettinngs = async (req, res) => {
-  const {
-    company_code,
-    Party_code,
-    Party_name,
-    pay_type,
-    Transaction_type,
-    order_type,
-    warehouse_code,
-    Screen_Type,
-    Negative_stock	,
-    Sales_mode,
-    No_of_Reports,
-    Print_options,
-    Print_copies,
-    Print_templates,
-    created_by,
-    modified_by,
-    tempstr1,
-    tempstr2,
-    tempstr3,
-    tempstr4,
-    datetime1,
-    datetime2,
-    datetime3,
-    datetime4
-  } = req.body;
+  const { company_code, Party_code, Party_name, pay_type, Transaction_type, order_type, warehouse_code, Screen_Type, Negative_stock	, Sales_mode,
+    No_of_Reports, Print_options, Print_copies, Print_templates, created_by, modified_by, tempstr1, tempstr2,
+    tempstr3, tempstr4, datetime1, datetime2, datetime3, datetime4} = req.body;
   let pool;
   try {
     pool = await sql.connect(dbConfig);

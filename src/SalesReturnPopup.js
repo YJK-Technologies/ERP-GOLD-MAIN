@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as React from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { toast } from 'react-toastify';
 import LoadingScreen from './Loading';
+import Select from 'react-select';
 
 const config = require('./Apiconfig');
 
@@ -112,6 +113,98 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
   const [order_type, setorder_type] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [salesdrop, setSalesdrop] = useState([]);
+  const [salesType, setSalesType] = useState("");
+  const [selectedSales, setSelectedSales] = useState(null);
+
+  const [selectedPay, setSelectedPay] = useState(null);
+  const [payType, setPayType] = useState("");
+  const [paydrop, setPaydrop] = useState([]);
+
+  const [orderdrop, setOrderdrop] = useState([]);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [orderType, setOrderType] = useState(null);
+
+  useEffect(() => {
+    fetch(`${config.apiBaseUrl}/paytype`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
+
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setPaydrop(data))
+      .catch((error) => console.error("Error fetching payment types:", error));
+
+    fetch(`${config.apiBaseUrl}/salestype`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
+
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setSalesdrop(data))
+      .catch((error) => console.error("Error fetching sales types:", error));
+
+    fetch(`${config.apiBaseUrl}/ordertype`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
+
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setOrderdrop(data))
+      .catch((error) => console.error("Error fetching Order type:", error));
+  }, []);
+  
+  const handleChangePay = (selectedOption) => {
+    setSelectedPay(selectedOption);
+    setPayType(selectedOption ? selectedOption.value : '');
+  };
+
+  const handleChangeSales = (selectedOption) => {
+    setSelectedSales(selectedOption);
+    setSalesType(selectedOption ? selectedOption.value : '');
+  };
+
+  const handleChangeOrder = (selectedOption) => {
+    setSelectedOrder(selectedOption);
+    setOrderType(selectedOption ? selectedOption.value : '');
+  };
+
+  const filteredOptionPay = paydrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  const filteredOptionSales = salesdrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  const filteredOptionOrder = orderdrop.map((option) => {
+    const words = option.attributedetails_name.trim().split(/\s+/);
+
+    const formattedName = words.map((word, index) => {
+      if (index === 0) {
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      } else {
+        return word.toLowerCase();
+      }
+    }).join(' ');
+
+    return {
+      value: formattedName,
+      label: formattedName,
+    };
+  });
+
   const handleSearchItem = async () => {
     setLoading(true);
     try {
@@ -120,7 +213,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ bill_date, bill_no, dely_chlno, sales_type, customer_code, customer_name, pay_type, order_type, company_code: sessionStorage.getItem("selectedCompanyCode") })
+        body: JSON.stringify({ bill_date, bill_no, dely_chlno, sales_type:salesType, customer_code, customer_name, pay_type:payType, order_type:orderType, company_code: sessionStorage.getItem("selectedCompanyCode") })
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -150,11 +243,14 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
     setbill_date("");
     setbill_no("");
     setdely_chlno("");
-    setsales_type("");
+    setSalesType("");
     setcustomer_code("");
     setcustomer_name("");
-    setpay_type("");
-    setorder_type("");
+    setPayType("");
+    setOrderType("");
+    setSelectedOrder("");
+    setSelectedSales("");
+    setSelectedPay("");
   };
 
   const [selectedRows, setSelectedRows] = useState([]);
@@ -218,6 +314,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                               type="date"
                               id="billdate"
                               className="form-control"
+                              title="Enter the Bill Date"
                               placeholder="Bill Date"
                               value={bill_date}
                               onChange={(e) => setbill_date(e.target.value)}
@@ -231,6 +328,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                               id="billno"
                               className="form-control"
                               maxLength={10}
+                              title="Enter the Bill No"
                               placeholder="Bill No"
                               value={bill_no}
                               onChange={(e) => setbill_no(e.target.value)}
@@ -244,6 +342,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                               id="cuscode"
                               className="form-control"
                               maxLength={18}
+                              title="Enter the Customer Code"
                               placeholder="Customer Code"
                               value={customer_code}
                               onChange={(e) => setcustomer_code(e.target.value)}
@@ -256,6 +355,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                               type="text"
                               id="cusname"
                               className="form-control"
+                              title="Enter the Customer Name"
                               placeholder="Customer Name"
                               maxLength={50}
                               value={customer_name}
@@ -265,51 +365,52 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                             />
                           </div>
                         </div>
-                        <div className="row mb-3 ms-4 me-4">
+                          <div className="row mb-3 ms-4 me-4">
                           <div className="col-sm mb-2">
-                            <input
-                              type="text"
-                              id="salestype"
-                              className="form-control"
-                              maxLength={10}
-                              placeholder="Sales Type"
-                              value={sales_type}
-                              onChange={(e) => setsales_type(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
-                          </div>
+                            <div title="Select the Sales type">
+                              <Select
+                                id="SalesType"
+                                value={selectedSales}
+                                onChange={handleChangeSales}
+                                options={filteredOptionSales}
+                                className="exp-input-field"
+                                placeholder="Sales type"
+                                isClearable
+                              />
+                            </div>
+                          </div>                        
                           <div className="col-sm mb-2">
-                            <input
-                              type="text"
-                              id="paytype"
-                              className="form-control"
-                              placeholder="Pay Type"
-                              maxLength={10}
-                              value={pay_type}
-                              onChange={(e) => setpay_type(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
-                          </div>
+                            <div title="Select the Pay type">
+                              <Select
+                                id="PayType"
+                                value={selectedPay}
+                                onChange={handleChangePay}
+                                options={filteredOptionPay}
+                                className="exp-input-field"
+                                placeholder="Pay type"
+                                isClearable
+                              />
+                            </div>
+                          </div>                        
                           <div className="col-sm mb-2">
-                            <input
-                              type="text"
-                              id="ordertype"
-                              className="form-control"
-                              placeholder="Order Type"
-                              maxLength={18}
-                              value={order_type}
-                              onChange={(e) => setorder_type(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
-                          </div>
+                            <div title="Select the Order Type">
+                              <Select
+                                id="OrderType"
+                                value={selectedOrder}
+                                onChange={handleChangeOrder}
+                                options={filteredOptionOrder}
+                                className="exp-input-field"
+                                placeholder="Order Type"
+                                isClearable
+                              />
+                            </div>
+                          </div>                        
                           <div className="col-sm mb-2">
                             <input
                               type="text"
                               id="delychlno"
                               className="form-control"
+                              title="Enter the Delivery Challan No"
                               placeholder="Delivery Challan No"
                               maxLength={10}
                               value={dely_chlno}
@@ -319,13 +420,13 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                             />
                           </div>
                           <div className="mb-3 mt-3 d-flex justify-content-end">
-                            <icon className="icon popups-btn" onClick={handleSearchItem}>
+                            <icon className="icon popups-btn" title='Search' onClick={handleSearchItem}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
                             </icon>
-                            <icon className="icon popups-btn" onClick={handleReload}>
+                            <icon className="icon popups-btn" title='Reload' onClick={handleReload}>
                               <i class="fa-solid fa-arrow-rotate-right"></i>
                             </icon>
-                            <icon className="icon popups-btn" onClick={handleConfirm}>
+                            <icon className="icon popups-btn" title='Confirm' onClick={handleConfirm}>
                               <FontAwesomeIcon icon="fa-solid fa-check" />
                             </icon>
                           </div>
@@ -375,6 +476,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                               type="date"
                               id="billdate"
                               className="form-control"
+                              title="Enter the Bill Date"
                               placeholder="Bill Date"
                               value={bill_date}
                               onChange={(e) => setbill_date(e.target.value)}
@@ -388,6 +490,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                               id="billno"
                               className="form-control"
                               maxLength={10}
+                              title="Enter the Bill No"
                               placeholder="Bill No"
                               value={bill_no}
                               onChange={(e) => setbill_no(e.target.value)}
@@ -401,6 +504,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                               id="cuscode"
                               className="form-control"
                               maxLength={18}
+                              title="Enter the Customer Code"
                               placeholder="Customer Code"
                               value={customer_code}
                               onChange={(e) => setcustomer_code(e.target.value)}
@@ -413,6 +517,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                               type="text"
                               id="cusname"
                               className="form-control"
+                              title="Enter the Customer Name"
                               placeholder="Customer Name"
                               maxLength={50}
                               value={customer_name}
@@ -424,49 +529,50 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                         </div>
                         <div className="row mb-3 ms-3 me-3">
                           <div className="col-sm mb-2">
-                            <input
-                              type="text"
-                              id="salestype"
-                              className="form-control"
-                              maxLength={10}
-                              placeholder="Sales Type"
-                              value={sales_type}
-                              onChange={(e) => setsales_type(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
-                          </div>
+                            <div title="Select the Sales type">
+                              <Select
+                                id="SalesType"
+                                value={selectedSales}
+                                onChange={handleChangeSales}
+                                options={filteredOptionSales}
+                                className="exp-input-field"
+                                placeholder="Sales type"
+                                isClearable
+                              />
+                            </div>
+                          </div>                        
                           <div className="col-sm mb-2">
-                            <input
-                              type="text"
-                              id="paytype"
-                              className="form-control"
-                              placeholder="Pay Type"
-                              maxLength={10}
-                              value={pay_type}
-                              onChange={(e) => setpay_type(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
-                          </div>
+                            <div title="Select the Pay type">
+                              <Select
+                                id="PayType"
+                                value={selectedPay}
+                                onChange={handleChangePay}
+                                options={filteredOptionPay}
+                                className="exp-input-field"
+                                placeholder="Pay type"
+                                isClearable
+                              />
+                            </div>
+                          </div>                        
                           <div className="col-sm mb-2">
-                            <input
-                              type="text"
-                              id="ordertype"
-                              className="form-control"
-                              placeholder="Order Type"
-                              maxLength={18}
-                              value={order_type}
-                              onChange={(e) => setorder_type(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
-                          </div>
+                            <div title="Select the Order Type">
+                              <Select
+                                id="OrderType"
+                                value={selectedOrder}
+                                onChange={handleChangeOrder}
+                                options={filteredOptionOrder}
+                                className="exp-input-field"
+                                placeholder="Order Type"
+                                isClearable
+                              />
+                            </div>
+                          </div> 
                           <div className="col-sm mb-2">
                             <input
                               type="text"
                               id="delychlno"
                               className="form-control"
+                              title="Enter the Delivery Challan No"
                               placeholder="Delivery Challan No"
                               maxLength={10}
                               value={dely_chlno}
@@ -476,13 +582,13 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                             />
                           </div>
                           <div className="mb-3 mt-3 d-flex justify-content-end">
-                            <button className="" onClick={handleSearchItem}>
+                            <button className="" title='Search' onClick={handleSearchItem}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
                             </button>
-                            <button className="" onClick={handleReload}>
+                            <button className="" title='Reload' onClick={handleReload}>
                               <i class="fa-solid fa-arrow-rotate-right"></i>
                             </button>
-                            <button type="button" className="" onClick={handleConfirm}>
+                            <button type="button" title='Confirm' className="" onClick={handleConfirm}>
                               <FontAwesomeIcon icon="fa-solid fa-check" />
                             </button>
                           </div>

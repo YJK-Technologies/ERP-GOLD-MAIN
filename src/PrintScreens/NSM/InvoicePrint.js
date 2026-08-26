@@ -70,6 +70,9 @@ const Invoice = () => {
         return <div>Loading...</div>;
     }
 
+    const companyLogo = processItemImages();
+const authorizedSignature = processSignatureImages();
+
     const totalAmount = parseFloat(headerData[0]?.bill_amt || 0);
     const taxAmount = parseFloat(headerData[0]?.tax_amount || 0);
     const purchaseAmount = parseFloat(headerData[0]?.sale_amt || 0);
@@ -101,13 +104,17 @@ const Invoice = () => {
                                 <tr>
                                     <td colSpan="2" className="border border-dark">
                                         <div className="d-flex align-items-start">
-                                            <div className="ms-3 mt-1">
-                                                <img className="rounded-0"
-                                                    src={processItemImages(headerData[0].company_logo)}
-                                                    width={100}
-                                                    height={100}
-                                                    alt="Company Logo" />
-                                            </div>
+                                            {companyLogo && (
+                                                <div className="ms-3 mt-1">
+                                                    <img
+                                                        className="rounded-0"
+                                                        src={companyLogo}
+                                                        width={100}
+                                                        height={100}
+                                                        alt=""
+                                                    />
+                                                </div>
+                                            )}
                                             <div className="mt-3 p-1">
                                                 <strong>{headerData[0].company_name}</strong>
                                                 <br />
@@ -275,16 +282,17 @@ const Invoice = () => {
                                 <p style={{ fontSize: "12px" }}>
                                     For <strong>{headerData[0].company_name}</strong>
                                 </p>
-                                <img
-                                    src={processSignatureImages(headerData[0].authorisedSignatur)}
-                                    alt="Authorized Signature"
-                                    style={{
-                                        width: "250px",
-                                        height: "200px",
-                                        objectFit: "contain",
-                                    }}
-                                />
-
+                                {authorizedSignature && (
+                                    <img
+                                        src={authorizedSignature}
+                                        alt=""
+                                        style={{
+                                            width: "250px",
+                                            height: "200px",
+                                            objectFit: "contain",
+                                        }}
+                                    />
+                                )}
                                 <p style={{ fontSize: "12px" }}>
                                     <strong>Authority Signature</strong>
                                 </p>

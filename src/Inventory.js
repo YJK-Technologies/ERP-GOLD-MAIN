@@ -1708,6 +1708,7 @@ setLoading(true)
       setShowAsterisk(true);
       setupdated(true);
       setPrintButtonVisible(true)
+      setDeleteButtonVisible(true)
       setAuthorizeButton(true);
       const [{ BillNo, BillDate, SalesType, RoundOff, PaidAmount, ReturnAmount, SalesMode, DCNo, SaleAmount, TotalAmount, TotalTax, PayType, CustomerName, CustomerCode, OrderType, inventory_autono }] = data;
       console.table(data);
@@ -2260,6 +2261,7 @@ setLoading(true)
       setShowDropdown(true);
       setAuthorizeButton(true);
       setPrintButtonVisible(true)
+      setDeleteButtonVisible(true)
       setupdated(true);
       TransactionStatus(code)
       if (searchData.table1 && searchData.table1.length > 0) {
@@ -3073,7 +3075,7 @@ setLoading(true)
       row.salesQty > 0 &&
       row.TotalItemAmount > 0 &&
       row.purchaseAmt > 0
-  );
+  )
 
   const filteredRowDataTax = rowDataTax.filter(
     taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0

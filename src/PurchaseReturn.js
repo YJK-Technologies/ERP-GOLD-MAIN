@@ -1912,7 +1912,7 @@ function PurchaseReturn() {
                   <div className='position-absolute mt-1 me-2'>
                      <span className="icon searchIcon"
                       onClick={handleClickOpen}>
-                      <i class="fa fa-search"></i>
+                      <i class="fa fa-search" title="Help"></i>
                     </span>
                   </div>
                 </div>
@@ -1960,7 +1960,7 @@ function PurchaseReturn() {
                   <div className='position-absolute mt-1 me-2'>
                      <span className="icon searchIcon"
                       onClick={handleClickReturn}>
-                      <i class="fa fa-search"></i>
+                      <i class="fa fa-search" title="Help"></i>
                     </span>
                   </div>
                 </div>
