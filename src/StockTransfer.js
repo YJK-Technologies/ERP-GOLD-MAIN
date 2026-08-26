@@ -579,94 +579,200 @@ finally {
       autoComplete: false
     },
     {
-      headerName: 'Item Name',
-      field: 'itemName',
-      editable: false,
-      // maxwidth: 150,
-      filter: true,
-      cellEditorParams: {
-        maxLength: 40,
-      },
-      sortable: false
-    },
-    {
-      headerName: '',
-      field: 'Search',
-      editable: true,
-      maxWidth: 25,
-      tooltipValueGetter: (params) =>
-        "Item Help",
-      onCellClicked: handleClickOpen,
-      cellRenderer: function () {
-        return <FontAwesomeIcon icon="fa-solid fa-magnifying-glass-plus" style={{ cursor: 'pointer', marginRight: "12px" }} />
-      },
-      cellStyle: { display: 'flex', justifyContent: 'center', alignItems: 'center' },
-      sortable: false,
-      filter: false
+  headerName: 'Item Name',
+  field: 'itemName',
+  editable: false,
+  filter: true,
+  cellEditorParams: {
+    maxLength: 40,
+  },
+  sortable: false,
+
+  cellRenderer: (params) => {
+    const cellWidth = params.column.getActualWidth();
+
+    // Show search icon only when column has enough width
+    const showSearchIcon = cellWidth > 30;
+
+    return (
+      <div
+        className="position-relative d-flex align-items-center"
+        style={{
+          minHeight: '100%',
+          width: '100%'
+        }}
+      >
+        {/* Item Name */}
+        <div
+          className="flex-grow-1"
+          style={{
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            paddingRight: '20px'
+          }}
+        >
+          {params.value || ''}
+        </div>
+
+        {/* Search Icon */}
+        {showSearchIcon && (
+          <span
+            className="icon searchIcon"
+            title="Item Help"
+            style={{
+              position: 'absolute',
+              right: '-5px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              cursor: 'pointer',
+              zIndex: 10
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleClickOpen(params);
+            }}
+          >
+            <i className="fa fa-search"></i>
+          </span>
+        )}
+      </div>
+    );
+  }
     },
 
     {
-      headerName: 'From Warehouse',
-      field: 'warehouse',
-      editable: true,
-      filter: true,
-      // maxWidth: 170,
-      cellEditorParams: {
-        maxLength: 18,
-      },
-      onCellValueChanged: function (params) {
-        handleWarehouseCodeFrom(params);
-      },
-      sortable: false,
-      autoComplete: false
-    },
-    {
-      headerName: '',
-      field: 'Search',
-      editable: true,
-      maxWidth: 25,
-      tooltipValueGetter: (params) =>
-        "Warehouse Help",
-      onCellClicked: handleOpen,
-      filter: true,
-      cellRenderer: function () {
-        return <FontAwesomeIcon icon="fa-solid fa-magnifying-glass-plus" style={{ cursor: 'pointer', marginRight: "12px" }} />
-      },
-      cellStyle: { display: 'flex', justifyContent: 'center', alignItems: 'center' },
-      sortable: false,
-      filter: false
+  headerName: 'From Warehouse',
+  field: 'warehouse',
+  editable: true,
+  filter: true,
+
+  cellEditorParams: {
+    maxLength: 18,
+  },
+
+  onCellValueChanged: function (params) {
+    handleWarehouseCodeFrom(params);
+  },
+
+  sortable: false,
+  autoComplete: false,
+
+  cellRenderer: (params) => {
+    const cellWidth = params.column.getActualWidth();
+
+    return (
+      <div
+        className="position-relative d-flex align-items-center"
+        style={{
+          minHeight: '100%',
+          width: '100%'
+        }}
+      >
+        {/* Warehouse Code */}
+        <div
+          className="flex-grow-1"
+          style={{
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            paddingRight: '20px'
+          }}
+        >
+          {params.value || ''}
+        </div>
+
+        {/* Warehouse Search Icon */}
+        {cellWidth > 30 && (
+          <span
+            className="icon searchIcon"
+            title="Warehouse Help"
+            style={{
+              position: 'absolute',
+              right: '-5px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              cursor: 'pointer',
+              zIndex: 10
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleOpen(params);
+            }}
+          >
+            <i className="fa fa-search"></i>
+          </span>
+        )}
+      </div>
+    );
+  }
     },
 
     {
-      headerName: 'To  Warehouse',
-      field: 'warehouseTo',
-      editable: true,
-      filter: true,
-      // maxWidth: 150,
-      cellEditorParams: {
-        maxLength: 18,
-      },
-      onCellValueChanged: function (params) {
-        handleWarehouseCodeTo(params);
-      },
-      sortable: false,
-      autoComplete: false
-    },
-    {
-      headerName: '',
-      field: 'Search',
-      editable: true,
-      maxWidth: 25,
-      tooltipValueGetter: (params) =>
-        "Warehouse Help",
-      onCellClicked: handleOpenpopup,
-      filter: true,
-      cellRenderer: function () {
-        return <FontAwesomeIcon icon="fa-solid fa-magnifying-glass-plus" style={{ cursor: 'pointer', marginRight: "12px" }} />
-      },
-      cellStyle: { display: 'flex', justifyContent: 'center', alignItems: 'center' },
-      sortable: false,
-      filter: false
+    headerName: 'To Warehouse',
+  field: 'warehouseTo',
+  editable: true,
+  filter: true,
+
+  cellEditorParams: {
+    maxLength: 18,
+  },
+
+  onCellValueChanged: function (params) {
+    handleWarehouseCodeTo(params);
+  },
+
+  sortable: false,
+  autoComplete: false,
+
+  cellRenderer: (params) => {
+    const cellWidth = params.column.getActualWidth();
+
+      return (
+        <div
+          className="position-relative d-flex align-items-center"
+          style={{
+            minHeight: '100%',
+            width: '100%'
+          }}
+        >
+          {/* To Warehouse Code */}
+          <div
+            className="flex-grow-1"
+            style={{
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              paddingRight: '20px'
+            }}
+          >
+            {params.value || ''}
+          </div>
+
+          {/* Warehouse Search Icon */}
+          {cellWidth > 30 && (
+            <span
+              className="icon searchIcon"
+              title="Warehouse Help"
+              style={{
+                position: 'absolute',
+                right: '-5px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                cursor: 'pointer',
+                zIndex: 10
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleOpenpopup(params);
+              }}
+            >
+              <i className="fa fa-search"></i>
+            </span>
+          )}
+        </div>
+      );
+    }
     },
     {
       headerName: 'Qty',
@@ -1092,53 +1198,43 @@ finally {
   };
 
 
-  const handleToWarehouse = (data) => {
-    console.log('Data received by handleToWarehouse:', data);
+const handleToWarehouse = async (data) => {
+  console.log("Data received by handleToWarehouse:", data);
 
-    const updatedRowData = rowData.map(row => {
-      if (row.serialNumber === global) {
-        console.log('1st if condition met, row:', row);
-        const matchedItem = data.find(item => item.id === row.id);
+  const updatedRowData = rowData.map(row => {
+    if (row.serialNumber === global) {
+      const matchedItem = data.find(item => item.id === row.id);
 
-        if (matchedItem) {
-          console.log('2nd if condition met, matchedItem:', matchedItem);
+      if (matchedItem) {
 
-          // Check if From Warehouse and To Warehouse are the same
-          if (row.warehouse === matchedItem.warehouse) {
-            
-            toast.warning("From Warehouse and To Warehouse cannot be the same!").then(() => {
-              // Clear To Warehouse field
-              setRowData(prevRowData =>
-                prevRowData.map(prevRow => {
-                  if (prevRow.serialNumber === global) {
-                    return {
-                      ...prevRow,
-                      warehouseTo: '', // Clear the To Warehouse field
-                    };
-                  }
-                  return prevRow;
-                })
-              );
-            });
-            return row; // Return early if warehouse codes are the same
-          }
+        if (row.warehouse === matchedItem.warehouse) {
+          toast.warning(
+            "From Warehouse and To Warehouse cannot be the same!"
+          );
 
           return {
             ...row,
-            warehouseTo: matchedItem.warehouse
+            warehouseTo: ""
           };
-        } else {
-          console.log('No matching item found for row.id:', row.id);
         }
-      } else {
-        console.log('No match for row.serialNumber:', row.serialNumber, global);
-      }
-      return row;
-    });
 
-    setRowData(updatedRowData);
-    console.log('Updated rowData:', updatedRowData);
-  };
+        return {
+          ...row,
+          warehouseTo: matchedItem.warehouse
+        };
+      }
+    }
+
+    return row;
+  });
+
+  setRowData(updatedRowData);
+
+  // Fetch transaction date also
+  if (new_running_no) {
+    await StockDetail(new_running_no);
+  }
+};
 
   const currentDate = new Date().toISOString().split('T')[0];
 
@@ -1189,13 +1285,17 @@ finally {
     setNew_running_no(refNo); setStatus('Typing...');
   }
 
-  const formatDate = (isoDateString) => {
-    const date = new Date(isoDateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
+const formatDate = (isoDateString) => {
+  if (!isoDateString) return "";
+
+  const date = new Date(isoDateString);
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
 
   const formatToTwoDecimalPoints = (number) => {
     return parseFloat(number).toFixed(2);
@@ -1324,97 +1424,209 @@ finally {
 
   };
 
+  // const handlePurchaseData = async (data) => {
+  //   if (data && data.length > 0) {
+  //     const [{ TransactionNo, transaction_date, }] = data;
+
+  //     const transactiondate = document.getElementById('transactionDate');
+  //     if (transactiondate) {
+  //       transactiondate.value = transaction_date;
+  //       setTransactionDate(formatDate(transaction_date));  // You can choose to use formattedDate instead if required
+  //     } else {
+  //       console.error('entry element not found');
+  //     }
+
+  //     const transactionNo = document.getElementById('RefNo');
+  //     if (transactionNo) {
+  //       transactionNo.value = TransactionNo;
+  //       setNew_running_no(TransactionNo);
+  //     } else {
+  //       console.error('transactionNumber element not found');
+  //     }
+
+  //     await StockDetail(TransactionNo)
+  //     setprintButtonVisible(true)
+  //     setDelButtonVisible(true)
+  //     setSaveButtonVisible(false)
+  //   } else {
+  //     console.log("Data not fetched...!");
+  //   }
+  //   console.log(data);
+
+  // };
+
   const handlePurchaseData = async (data) => {
-    if (data && data.length > 0) {
-      const [{ TransactionNo, transaction_date, }] = data;
+  if (data && data.length > 0) {
+    const [{ TransactionNo, transaction_date }] = data;
 
-      const transactiondate = document.getElementById('transactionDate');
-      if (transactiondate) {
-        transactiondate.value = transaction_date;
-        setTransactionDate(formatDate(transaction_date));  // You can choose to use formattedDate instead if required
-      } else {
-        console.error('entry element not found');
-      }
+    // Format transaction date for input type="date"
+    const formattedTransactionDate = formatDate(transaction_date);
 
-      const transactionNo = document.getElementById('RefNo');
-      if (transactionNo) {
-        transactionNo.value = TransactionNo;
-        setNew_running_no(TransactionNo);
-      } else {
-        console.error('transactionNumber element not found');
-      }
+    console.log("API Transaction Date:", transaction_date);
+    console.log("Formatted Transaction Date:", formattedTransactionDate);
 
-      await StockDetail(TransactionNo)
-      setprintButtonVisible(true)
-      setDelButtonVisible(true)
-      setSaveButtonVisible(false)
+    // Set transaction date
+    setTransactionDate(formattedTransactionDate);
+
+    // Set transaction number
+    const transactionNoInput = document.getElementById("RefNo");
+
+    if (transactionNoInput) {
+      transactionNoInput.value = TransactionNo;
     } else {
-      console.log("Data not fetched...!");
+      console.error("transactionNumber element not found");
     }
-    console.log(data);
 
-  };
+    setNew_running_no(TransactionNo);
+
+    // Fetch stock details
+    await StockDetail(TransactionNo);
+
+    setprintButtonVisible(true);
+    setDelButtonVisible(true);
+    setSaveButtonVisible(false);
+
+  } else {
+    console.log("Data not fetched...!");
+  }
+
+  console.log("Purchase data:", data);
+  };  
 
   const StockDetail = async (TransactionNo) => {
-    setLoading(true)
-    try {
-      const response = await fetch(`${config.apiBaseUrl}/StockTransferDetail`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ transaction_no: TransactionNo })
+  setLoading(true);
+
+  try {
+    const response = await fetch(`${config.apiBaseUrl}/StockTransferDetail`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        transaction_no: TransactionNo
+      })
+    });
+
+    if (response.ok) {
+      const searchData = await response.json();
+
+      console.log("StockTransferDetail API Data:", searchData);
+
+      // =========================
+      // FETCH TRANSACTION DATE
+      // =========================
+      if (searchData && searchData.length > 0) {
+        const transaction_date = searchData[0].transaction_date;
+
+        if (transaction_date) {
+          const formattedDate = formatDate(transaction_date);
+
+          console.log("Transaction Date from StockDetail:", transaction_date);
+          console.log("Formatted Transaction Date:", formattedDate);
+
+          setTransactionDate(formattedDate);
+        }
+      }
+
+      // =========================
+      // FETCH STOCK DETAILS
+      // =========================
+      const newRowData = [];
+
+      searchData.forEach(item => {
+        const {
+          ItemSNo,
+          item_code,
+          Item_name,
+          weight,
+          from_Warehouse,
+          to_Warehouse,
+          transfer_Qty,
+          total_weight
+        } = item;
+
+        newRowData.push({
+          serialNumber: ItemSNo,
+          itemCode: item_code,
+          itemName: Item_name,
+          unitWeight: weight,
+          purchaseQty: transfer_Qty,
+          warehouse: from_Warehouse,
+          warehouseTo: to_Warehouse,
+          ItemTotalWight: parseFloat(total_weight || 0).toFixed(2)
+        });
       });
 
-      if (response.ok) {
-        const searchData = await response.json();
+      setRowData(newRowData);
 
-        const newRowData = [];
-        searchData.forEach(item => {
-          const {
-            ItemSNo,
-            item_code,
-            Item_name,
-            weight,
-            from_Warehouse,
-            to_Warehouse,
-            transfer_Qty,
-            total_weight,
-
-          } = item;
-
-          newRowData.push({
-            serialNumber: ItemSNo,
-            itemCode: item_code,
-            itemName: Item_name,
-            unitWeight: weight,
-            purchaseQty: transfer_Qty,
-            warehouse: from_Warehouse,
-            warehouseTo: to_Warehouse,
-          
-
-            ItemTotalWight: parseFloat(total_weight).toFixed(2),
-          });
-        });
-        setRowData(newRowData);
-
-      } else if (response.status === 404) {
-        console.log("Data not found");
-      } else {
-        console.log("Bad request");
-      }
-    } catch (error) {
-      console.error("Error fetching search data:", error);
-    }
-finally {
-      setLoading(false);
+    } else if (response.status === 404) {
+      console.log("Data not found");
+    } else {
+      console.log("Bad request");
     }
 
-  };
+  } catch (error) {
+    console.error("Error fetching search data:", error);
+  } finally {
+    setLoading(false);
+  }
+};
 
+  // const StockDetail = async (TransactionNo) => {
+  //   setLoading(true)
+  //   try {
+  //     const response = await fetch(`${config.apiBaseUrl}/StockTransferDetail`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json"
+  //       },
+  //       body: JSON.stringify({ transaction_no: TransactionNo })
+  //     });
 
+  //     if (response.ok) {
+  //       const searchData = await response.json();
 
+  //       const newRowData = [];
+  //       searchData.forEach(item => {
+  //         const {
+  //           ItemSNo,
+  //           item_code,
+  //           Item_name,
+  //           weight,
+  //           from_Warehouse,
+  //           to_Warehouse,
+  //           transfer_Qty,
+  //           total_weight,
 
+  //         } = item;
+
+  //         newRowData.push({
+  //           serialNumber: ItemSNo,
+  //           itemCode: item_code,
+  //           itemName: Item_name,
+  //           unitWeight: weight,
+  //           purchaseQty: transfer_Qty,
+  //           warehouse: from_Warehouse,
+  //           warehouseTo: to_Warehouse,
+
+  //           ItemTotalWight: parseFloat(total_weight).toFixed(2),
+  //         });
+  //       });
+  //       setRowData(newRowData);
+
+  //     } else if (response.status === 404) {
+  //       console.log("Data not found");
+  //     } else {
+  //       console.log("Bad request");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching search data:", error);
+  //   }
+  //   finally {
+  //     setLoading(false);
+  //   }
+
+  // };
 
   //CODE FOR TOTAL WEIGHT, TOTAL TAX AND TOTAL AMOUNT CALCULATION
   const ItemAmountCalculation = async (params) => {
@@ -1583,67 +1795,83 @@ finally {
     }
   };
 
-  const handleDeleteButtonClick = async () => {
-    // Check for required fields
-    if (!new_running_no || !transactionDate) {
-      setError(" ");
-      setStatus("Error: Missing required fields");
-      return;
-    }
-     showConfirmationToast(
-          "Are you sure you want to delete the data ?",
-          async () => {
-    setStatus("Deleting...");
-    setLoading(true)
-    try {
-      // Attempt to delete details first
-      const detailResult = await handleDeleteDetail();
-      console.log("Detail deletion result:", detailResult);
-setprintButtonVisible(true)
-      if (detailResult) {
-        // If detail deletion is successful, proceed to delete the header
-        const headerResult = await handleDeleteHeader();
+const handleDeleteButtonClick = async () => {
+  // Check for required fields
+  if (!new_running_no || !transactionDate) {
+    setError(" ");
+    setStatus("Error: Missing required fields");
+    toast.warning("Error: Missing required fields");
+    return;
+  }
+
+  showConfirmationToast(
+    "Are you sure you want to delete the data ?",
+
+    async () => {
+      setLoading(true);
+      setStatus("Deleting...");
+
+      try {
+        // Delete Detail
+        const detailResult = await handleDeleteDetail();
+        console.log("Detail deletion result:", detailResult);
+
+        // Delete Header
+        const headerResult =
+          detailResult === true
+            ? await handleDeleteHeader()
+            : "Failed to delete details.";
+
         console.log("Header deletion result:", headerResult);
 
-        if (headerResult) {
+        // Check both results
+        if (detailResult === true && headerResult === true) {
           console.log("Both details and header deleted successfully");
-        
-          toast.success("Successfully Deleted").then(() => {
-            window.location.reload(); // Reload the page after successful deletion
+
+          toast.success("Data Deleted Successfully", {
+            autoClose: true,
+            onClose: () => {
+              window.location.reload();
+            }
           });
+
           setStatus("Deleted Successfully...");
+          setprintButtonVisible(false);
+
         } else {
-          // If header deletion failed, show error
-          console.log("Failed to delete header");
-      
-          toast.error("Failed to delete header.")
-          setStatus("Failed to delete header");
+          // Get actual error message
+          const errorMessage =
+            detailResult !== true
+              ? detailResult
+              : headerResult !== true
+                ? headerResult
+                : "An unknown error occurred.";
+
+          console.error("Delete failed:", errorMessage);
+
+          toast.error(errorMessage);
+          setStatus(errorMessage);
         }
-      } else {
-        // If detail deletion failed, show error
-        console.log("Failed to delete details");
-      
-        toast.error("Reference Number Does Not Exist or Failed to delete details.")
-        setStatus("Reference Number Does Not Exist or Failed to delete details");
+
+      } catch (error) {
+        console.error("Error executing delete APIs:", error);
+
+        const errorMessage =
+          error?.message || "An error occurred while deleting data.";
+
+        toast.error(errorMessage);
+        setStatus(errorMessage);
+
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      // Handle any errors that occur during the API call execution
-      console.error("Error executing API calls:", error);
+    },
 
-      toast.error("Reference Number Does Not Exist or Failed to delete details.")
-      setStatus("Error occurred while deleting data");
+    () => {
+      toast.info("Data deletion cancelled.");
     }
-finally {
-      setLoading(false);
-    }
-
-  },
-        () => {
-          toast.info("Data deleted cancelled.");
-        }
-  
-      );
-    };
+  );
+};
 
   const handleReload = () => {
     setLoading(true)

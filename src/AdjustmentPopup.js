@@ -164,7 +164,8 @@ export default function AdjustmentPopup({ open, handleClose, adjustmentData }) {
                               id='ItemCode'
                               maxLength={18}
                               className='exp-input-field form-control'
-                              placeholder=' Transaction No'
+                              title='Enter the Transaction No'
+                              placeholder='Transaction No'
                               value={transaction_no}
                               onChange={(e) => settransaction_no(e.target.value)}
                               autoComplete="off"
@@ -176,6 +177,7 @@ export default function AdjustmentPopup({ open, handleClose, adjustmentData }) {
                               type='Date'
                               id='Variant'
                               className='exp-input-field form-control'
+                              title='Enter the Transaction Date'
                               placeholder=' Transaction Date'
                               value={transaction_date}
                               maxLength={18}
@@ -189,6 +191,7 @@ export default function AdjustmentPopup({ open, handleClose, adjustmentData }) {
                               type='text'
                               id='ItemName'
                               className='exp-input-field form-control'
+                              title='Enter the Transaction Type'
                               placeholder=' Transaction Type'
                               maxLength={40}
                               value={transaction_type}
@@ -198,13 +201,13 @@ export default function AdjustmentPopup({ open, handleClose, adjustmentData }) {
                             />
                           </div>
                           <div className="mb-2 mt-2 d-flex justify-content-end">
-                            <icon className="icon popups-btn" onClick={handleSearchItem}>
+                            <icon className="icon popups-btn" title="Search" onClick={handleSearchItem}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
                             </icon>
-                            <icon className="icon popups-btn" onClick={handleReload}>
+                            <icon className="icon popups-btn" title="Reload" onClick={handleReload}>
                               <i class="fa-solid fa-arrow-rotate-right"></i>
                             </icon>
-                            <icon className="icon popups-btn" onClick={handleConfirm}>
+                            <icon className="icon popups-btn" title="Confirm" onClick={handleConfirm}>
                               <FontAwesomeIcon icon="fa-solid fa-check" />
                             </icon>
                           </div>

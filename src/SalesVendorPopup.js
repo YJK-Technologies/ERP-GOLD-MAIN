@@ -411,6 +411,7 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                               type='text'
                               id='Vendor_code'
                               className='form-control'
+                              title='Enter the Customer Code'
                               placeholder='Customer Code'
                               maxLength={10}
                               value={customer_code}
@@ -424,6 +425,7 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                               type='text'
                               id='Variant'
                               className='form-control'
+                              title='Enter the Customer Name'
                               placeholder='Customer Name'
                               value={customer_name}
                               maxLength={250}
@@ -466,13 +468,13 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                             </div>
                           </div>
                           <div className="mb-2 mt-2 d-flex justify-content-end">
-                            <icon className="icon popups-btn" onClick={handleSearchItem}>
+                            <icon className="icon popups-btn" title="Search" onClick={handleSearchItem}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
                             </icon>
-                            <icon className="icon popups-btn" onClick={handleReload}>
+                            <icon className="icon popups-btn" title="Reload" onClick={handleReload}>
                               <i class="fa-solid fa-arrow-rotate-right"></i>
                             </icon>
-                            <icon className="icon popups-btn" onClick={handleConfirm}>
+                            <icon className="icon popups-btn" title="Confirm" onClick={handleConfirm}>
                               <FontAwesomeIcon icon="fa-solid fa-check" />
                             </icon>
                           </div>

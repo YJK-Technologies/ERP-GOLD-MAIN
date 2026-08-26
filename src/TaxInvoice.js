@@ -1356,18 +1356,21 @@ function TaxInvoice() {
     //CODE TO SAVE PURCHASE HEADER 
     const handleSaveButtonClick = async () => {
 
-        if (!bill_date || !payType || !salesType) {
+        const billToData = headerRowData.reduce((acc, row) => {
+            acc[row.fieldName] = row.billTo;
+            return acc;
+        }, {});
+
+        if (!bill_date || !payType || !salesType ||
+            !billToData['Customer Code'] ||
+            !billToData['Customer Code'].trim()
+        ) {
             setError(" ");
             toast.warning("Error: Missing required fields");
             return;
         }
         setLoading(true)
         try {
-
-            const billToData = headerRowData.reduce((acc, row) => {
-                acc[row.fieldName] = row.billTo;
-                return acc;
-            }, {});
 
             const Notes = notesRowData.reduce((acc, row) => {
                 acc[row.fieldName] = row.notes;

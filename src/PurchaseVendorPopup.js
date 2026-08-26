@@ -363,6 +363,27 @@ export default function PurchaseVendorPopup({ open, handleClose, handleVendor })
   };
 
   const handleConfirm = () => {
+
+    // Check whether an Vendor is selected
+    if (selectedRows.length === 0) {
+      toast.warning("Please select an Vendor.");
+      return;
+    }
+
+    // Get the selected Vendor
+    const selectedVendor = selectedRows[0];
+
+    // Check the actual data
+    console.log("Selected Vendor:", selectedVendor);
+    console.log("Vendor Status:", selectedVendor.status);
+
+    // Validate Vendor status
+    if (String(selectedVendor.status ?? "").trim().toLowerCase() !== "active") {
+      toast.warning("The selected Vendor is not active.");
+      return;
+    }
+
+    // Only active Vendor will reach here    
     const selectedData = selectedRows.map(row => ({
       VendorCode: row.vendor_code,
       VendorName: row.vendor_name,
@@ -470,13 +491,13 @@ export default function PurchaseVendorPopup({ open, handleClose, handleVendor })
                           />
                         </div> */}
                         <div className="mb-2 mt-2 d-flex justify-content-end">
-                          <icon className="icon popups-btn" onClick={handleSearchItem}>
+                          <icon className="icon popups-btn" title="Search" onClick={handleSearchItem}>
                             <FontAwesomeIcon icon={faMagnifyingGlass} />
                           </icon>
-                          <icon className="icon popups-btn" onClick={handleReload}>
+                          <icon className="icon popups-btn" title="Reload" onClick={handleReload}>
                             <i class="fa-solid fa-arrow-rotate-right"></i>
                           </icon>
-                          <icon className="icon popups-btn" onClick={handleConfirm}>
+                          <icon className="icon popups-btn" title="Confirm" onClick={handleConfirm}>
                             <FontAwesomeIcon icon="fa-solid fa-check" />
                           </icon>
                         </div>

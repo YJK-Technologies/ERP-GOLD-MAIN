@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as React from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -10,6 +10,7 @@ import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { toast } from 'react-toastify';
 import { format } from 'date-fns';
 import LoadingScreen from './Loading';
+import Select from 'react-select';
 
 const config = require('./Apiconfig');
 
@@ -125,6 +126,61 @@ export default function SalesRetrunView({ open, handleClose, handleDataView }) {
   const [return_no, setReturn_no] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [salesdrop, setSalesdrop] = useState([]);
+  const [salesType, setSalesType] = useState("");
+  const [selectedSales, setSelectedSales] = useState(null);
+
+  const [selectedPay, setSelectedPay] = useState(null);
+  const [payType, setPayType] = useState("");
+  const [paydrop, setPaydrop] = useState([]);
+
+    useEffect(() => {
+    fetch(`${config.apiBaseUrl}/paytype`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
+
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setPaydrop(data))
+      .catch((error) => console.error("Error fetching payment types:", error));
+
+    fetch(`${config.apiBaseUrl}/salestype`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
+
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setSalesdrop(data))
+      .catch((error) => console.error("Error fetching sales types:", error));
+
+  }, []);
+  
+  const handleChangePay = (selectedOption) => {
+    setSelectedPay(selectedOption);
+    setPayType(selectedOption ? selectedOption.value : '');
+  };
+
+  const handleChangeSales = (selectedOption) => {
+    setSelectedSales(selectedOption);
+    setSalesType(selectedOption ? selectedOption.value : '');
+  };
+
+  const filteredOptionPay = paydrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  const filteredOptionSales = salesdrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
   const handleSearchItem = async () => {
     setLoading(true);
     try {
@@ -133,7 +189,7 @@ export default function SalesRetrunView({ open, handleClose, handleDataView }) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ bill_date, company_code: sessionStorage.getItem('selectedCompanyCode'), bill_no, return_no, dely_chlno, sales_type, customer_code, customer_name, pay_type, order_type })
+        body: JSON.stringify({ bill_date, company_code: sessionStorage.getItem('selectedCompanyCode'), bill_no, return_no, dely_chlno, sales_type:salesType, customer_code, customer_name, pay_type:payType, order_type })
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -163,13 +219,14 @@ export default function SalesRetrunView({ open, handleClose, handleDataView }) {
     setbill_date("");
     setbill_no("");
     setdely_chlno("");
-    setsales_type("");
+    setSalesType("");
     setcustomer_code("");
     setcustomer_name("");
-    setpay_type("");
+    setPayType("");
     setorder_type("");
     setReturn_no("");
-
+    setSelectedSales("");
+    setSelectedPay("");
   };
 
   const [selectedRows, setSelectedRows] = useState([]);
@@ -234,6 +291,7 @@ export default function SalesRetrunView({ open, handleClose, handleDataView }) {
                             type="date"
                             id="billdate"
                             className="form-control"
+                            title="Enter the Bill Date"
                             placeholder="Bill Date"
                             value={bill_date}
                             onChange={(e) => setbill_date(e.target.value)}
@@ -246,6 +304,7 @@ export default function SalesRetrunView({ open, handleClose, handleDataView }) {
                             type="text"
                             id="billno"
                             className="form-control"
+                            title="Enter the Bill No"
                             placeholder="Bill No"
                             maxLength={10}
                             value={bill_no}
@@ -259,6 +318,7 @@ export default function SalesRetrunView({ open, handleClose, handleDataView }) {
                             type="text"
                             id="Return no"
                             className="form-control"
+                            title="Enter the Sales Return  No"
                             placeholder="Sales Return  No"
                             value={return_no}
                             maxLength={10}
@@ -272,6 +332,7 @@ export default function SalesRetrunView({ open, handleClose, handleDataView }) {
                             type="text"
                             id="cuscode"
                             className="form-control"
+                            title="Enter the Customer Code"
                             placeholder="Customer Code"
                             value={customer_code}
                             maxLength={18}
@@ -285,6 +346,7 @@ export default function SalesRetrunView({ open, handleClose, handleDataView }) {
                             type="text"
                             id="cusname"
                             className="form-control"
+                            title="Enter the Customer Name"
                             placeholder="Customer Name"
                             maxLength={50}
                             value={customer_name}
@@ -295,40 +357,40 @@ export default function SalesRetrunView({ open, handleClose, handleDataView }) {
                         </div>
                       </div>
                       <div className="row ms-3 me-3">
-                        <div className="col-sm mb-2">
-                          <input
-                            type="text"
-                            id="salestype"
-                            className="form-control"
-                            placeholder="Sales Type"
-                            maxLength={10}
-                            value={sales_type}
-                            onChange={(e) => setsales_type(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                            autoComplete="off"
-                          />
-                        </div>
-                        <div className="col-sm mb-2">
-                          <input
-                            type="text"
-                            id="paytype"
-                            className="form-control"
-                            maxLength={10}
-                            placeholder="Pay Type"
-                            value={pay_type}
-                            onChange={(e) => setpay_type(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                            autoComplete="off"
-                          />
-                        </div>
+                          <div className="col-sm mb-2">
+                            <div title="Select the Sales type">
+                              <Select
+                                id="SalesType"
+                                value={selectedSales}
+                                onChange={handleChangeSales}
+                                options={filteredOptionSales}
+                                className="exp-input-field"
+                                placeholder="Sales type"
+                                isClearable
+                              />
+                            </div>
+                          </div>                        
+                          <div className="col-sm mb-2">
+                            <div title="Select the Pay type">
+                              <Select
+                                id="PayType"
+                                value={selectedPay}
+                                onChange={handleChangePay}
+                                options={filteredOptionPay}
+                                className="exp-input-field"
+                                placeholder="Pay type"
+                                isClearable
+                              />
+                            </div>
+                          </div>  
                         <div className="mb-2 mt-2 d-flex justify-content-end">
-                          <icon className="icon popups-btn" onClick={handleSearchItem}>
+                          <icon className="icon popups-btn" title="Search" onClick={handleSearchItem}>
                             <FontAwesomeIcon icon={faMagnifyingGlass} />
                           </icon>
-                          <icon className="icon popups-btn" onClick={handleReload}>
+                          <icon className="icon popups-btn" title="Reload" onClick={handleReload}>
                             <i class="fa-solid fa-arrow-rotate-right"></i>
                           </icon>
-                          <icon className="icon popups-btn" onClick={handleConfirm}>
+                          <icon className="icon popups-btn" title="Confirm" onClick={handleConfirm}>
                             <FontAwesomeIcon icon="fa-solid fa-check" />
                           </icon>
                         </div>
@@ -439,32 +501,32 @@ export default function SalesRetrunView({ open, handleClose, handleDataView }) {
                         </div>
                       </div>
                       <div className="row ms-3 me-3">
-                        <div className="col-sm mb-2">
-                          <input
-                            type="text"
-                            id="salestype"
-                            className="form-control"
-                            placeholder="Sales Type"
-                            maxLength={10}
-                            value={sales_type}
-                            onChange={(e) => setsales_type(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                            autoComplete="off"
-                          />
-                        </div>
-                        <div className="col-sm mb-2">
-                          <input
-                            type="text"
-                            id="paytype"
-                            className="form-control"
-                            maxLength={10}
-                            placeholder="Pay Type"
-                            value={pay_type}
-                            onChange={(e) => setpay_type(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                            autoComplete="off"
-                          />
-                        </div>
+                          <div className="col-sm mb-2">
+                            <div title="Select the Sales type">
+                              <Select
+                                id="SalesType"
+                                value={selectedSales}
+                                onChange={handleChangeSales}
+                                options={filteredOptionSales}
+                                className="exp-input-field"
+                                placeholder="Sales type"
+                                isClearable
+                              />
+                            </div>
+                          </div>                        
+                          <div className="col-sm mb-2">
+                            <div title="Select the Pay type">
+                              <Select
+                                id="PayType"
+                                value={selectedPay}
+                                onChange={handleChangePay}
+                                options={filteredOptionPay}
+                                className="exp-input-field"
+                                placeholder="Pay type"
+                                isClearable
+                              />
+                            </div>
+                          </div>  
                         <div className="mb-2 mt-2 d-flex justify-content-end">
                           <button className="" onClick={handleSearchItem}>
                             <FontAwesomeIcon icon={faMagnifyingGlass} />

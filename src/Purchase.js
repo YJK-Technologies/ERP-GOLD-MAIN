@@ -3001,8 +3001,8 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
       return;
     }
     try {
-      const headerResponse = await AuthorizedHeader();
-      const detailsResponse = await AuthorizedDetails();
+      const headerResponse =      await AuthorizedHeader();
+      const detailsResponse =     await AuthorizedDetails();
       const taxDetailsResponse = await AuthorizedTaxDetails();
 
       if (headerResponse && detailsResponse && taxDetailsResponse) {
