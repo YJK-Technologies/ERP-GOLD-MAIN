@@ -639,7 +639,7 @@ function AssertAllocation({ }) {
       "S.No": row.serialNumber,
       "Item Code": row.itemCode.toString(),
       "Item Name": row.itemName.toString(),
-      "Employee No": row.EmployeeNO.toString(),
+      "Employee ID": row.EmployeeNO.toString(),
       "Quantity": row.qty.toString(),
       "Serial No": row.serialno.toString()
     }));
