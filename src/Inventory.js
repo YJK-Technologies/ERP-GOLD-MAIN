@@ -556,7 +556,8 @@ function Sales() {
       } else if (response.status === 404) {
         toast.warning('Data not found!', {
           onClose: () => {
-            const updatedRowData = rowData.map(row => {
+            setRowData(prevRowData =>
+              prevRowData.map(row => {
               if (row.itemCode === params.data.itemCode) {
                 return {
                   ...row,
@@ -572,8 +573,8 @@ function Sales() {
                 };
               }
               return row;
-            });
-            setRowData(updatedRowData);
+            })
+            );
           }
         });
         return false;
@@ -3210,10 +3211,13 @@ setLoading(true)
     }
     setLoading(true)
     try {
-      await AuthorizedHeader();
-      await AuthorizedDetails();
-      await AuthorizedTaxDetails();
+     const headerResponse =    await AuthorizedHeader();
+     const detailsResponse =   await AuthorizedDetails();
+     const taxDetailsResponse =await AuthorizedTaxDetails();
       console.log("All functions executed successfully.");
+      if (headerResponse && detailsResponse && taxDetailsResponse) {
+              toast.success("Sales Status Updated Successfully");
+            }
     } catch (error) {
       console.error("Error executing handleAuthorizedButtonClick:", error);
     }finally {
@@ -3547,6 +3551,101 @@ setLoading(true)
       toast.error("Error: " + error.message);
     }
   };
+
+//   const handleChangeItem = async (selectedOption, rowIndex) => {
+//     setSelectedItem(selectedOption);
+
+//     const selectedItemCode = selectedOption?.value;
+//     const company_code = sessionStorage.getItem("selectedCompanyCode");
+
+//     if (!selectedItemCode) return;
+
+//     try {
+//         const response = await fetch(
+//             `${config.apiBaseUrl}/getItemCodeSalesData`,
+//             {
+//                 method: "POST",
+//                 headers: {
+//                     "Content-Type": "application/json"
+//                 },
+//                 body: JSON.stringify({
+//                     company_code,
+//                     Item_code: selectedItemCode,
+//                     type: salesMode
+//                 })
+//             }
+//         );
+
+//         if (!response.ok) {
+//             toast.warning("Item not found.");
+//             return;
+//         }
+
+//         const searchData = await response.json();
+//         const matchedItem = searchData[0];
+
+//         if (!matchedItem) {
+//             toast.warning("No item data found.");
+//             return;
+//         }
+
+//         setRowData(prevRows => {
+
+//             // Update the EXACT row where the user entered the item
+//             if (rowIndex !== undefined && rowIndex < prevRows.length) {
+
+//                 const updatedRows = [...prevRows];
+
+//                 const currentRow = updatedRows[rowIndex];
+
+//                 updatedRows[rowIndex] = {
+//                     ...currentRow,
+//                     itemCode: matchedItem.Item_code,
+//                     itemName: matchedItem.Item_name,
+//                     unitWeight: matchedItem.Item_wigh,
+//                     discount: matchedItem.discount_Percentage,
+//                     purchaseAmt: matchedItem.Item_std_sales_price,
+//                     taxType: matchedItem.Item_sales_tax_type,
+//                     taxDetails: matchedItem.combined_tax_details,
+//                     taxPer: matchedItem.combined_tax_percent,
+//                     keyField: `${currentRow.serialNumber || ''}-${matchedItem.Item_code || ''}`,
+//                     warehouse: selectedWarehouse
+//                         ? selectedWarehouse.value
+//                         : '',
+//                 };
+
+//                 return updatedRows;
+//             }
+
+//             // Existing logic for adding a new row
+//             const newRow = {
+//                 serialNumber: prevRows.length + 1,
+//                 itemCode: matchedItem.Item_code,
+//                 itemName: matchedItem.Item_name,
+//                 unitWeight: matchedItem.Item_wigh,
+//                 discount: matchedItem.discount_Percentage,
+//                 purchaseAmt: matchedItem.Item_std_sales_price,
+//                 taxType: matchedItem.Item_sales_tax_type,
+//                 taxDetails: matchedItem.combined_tax_details,
+//                 taxPer: matchedItem.combined_tax_percent,
+//                 keyField: `${prevRows.length + 1}-${matchedItem.Item_code || ''}`,
+//                 warehouse: selectedWarehouse
+//                     ? selectedWarehouse.value
+//                     : '',
+//             };
+
+//             return [...prevRows, newRow];
+//         });
+
+//     } catch (error) {
+//         console.error(
+//             "Error fetching item data from dropdown:",
+//             error
+//         );
+
+//         toast.error("Error: " + error.message);
+//     }
+// };
 
   return (
     <div className="">

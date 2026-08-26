@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as React from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { ToastContainer, toast } from 'react-toastify';
 import LoadingScreen from './Loading';
+import Select from 'react-select'
 const config = require('./Apiconfig');
 
 const columnDefs = [
@@ -158,8 +159,107 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
   const [order_type, setorder_type] = useState("");
   const [inventry_autono, setinventry_autono] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // For Dropdown field
+  const [selectedPay, setselectedPay] = useState('');
+  const [paydrop, setPaydrop] = useState([]);
+
+  const [selectedSales, setSelectedSales] = useState(null);
+  const [salesdrop, setSalesdrop] = useState([]);
+
+  const [orderdrop, setOrderdrop] = useState([]);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+
+  const handleChangePay = (selectedPay) => {
+    setselectedPay(selectedPay);
+    setpay_type(selectedPay ? selectedPay.value : '');
+  };
+
+  const filteredOptionPay = paydrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  const handleChangeSales = (selectedOption) => {
+    setSelectedSales(selectedOption);
+    setsales_type(selectedOption ? selectedOption.value : '');
+  };
+
+  const filteredOptionSales = salesdrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  const handleChangeOrder = (selectedOption) => {
+    setSelectedOrder(selectedOption);
+    setorder_type(selectedOption ? selectedOption.value : '');
+  };
+
+  const filteredOptionOrder = orderdrop.map((option) => {
+    const words = option.attributedetails_name.trim().split(/\s+/);
+
+    const formattedName = words.map((word, index) => {
+      if (index === 0) {
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      } else {
+        return word.toLowerCase();
+      }
+    }).join(' ');
+
+    return {
+      value: formattedName,
+      label: formattedName,
+    };
+  });
+
+  useEffect(() => {
+    const companyCode = sessionStorage.getItem('selectedCompanyCode');
+
+    fetch(`${config.apiBaseUrl}/paytype`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        company_code: companyCode,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setPaydrop(data))
+      .catch((error) => console.error("Error fetching payment types:", error));
+  }, []);
+
+  useEffect(() => {
+
+    fetch(`${config.apiBaseUrl}/salestype`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
+        // Screen_Type: Type
+
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setSalesdrop(data))
+      .catch((error) => console.error("Error fetching sales types:", error));
+
+    fetch(`${config.apiBaseUrl}/ordertype`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
+        // Screen_Type: Type
+
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setOrderdrop(data))
+      .catch((error) => console.error("Error fetching Order type:", error));
+  }, []);
+
   const handleSearchItem = async () => {
-   setLoading(true);
+    setLoading(true);
     try {
       const response = await fetch(`${config.apiBaseUrl}/salessearchdata`, {
         method: "POST",
@@ -174,15 +274,15 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
         console.log("data fetched successfully")
       } else if (response.status === 404) {
         toast.warning("Data not found")
-          setRowData([]);
-          clearInputs([])
+        setRowData([]);
+        clearInputs([])
         console.log("Data not found");
       } else {
-        console.log("Bad request"); 
+        console.log("Bad request");
       }
     } catch (error) {
       console.error("Error fetching search data:", error);
-    }finally {
+    } finally {
       setLoading(false);
     }
 
@@ -254,7 +354,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                           <div className="purbut mb-0 d-flex justify-content-between" >
                             <h1 align="left" className="purbut">Sales Help</h1>
                             <button onClick={handleClose} className="purbut btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
-                            <i class="fa-solid fa-xmark"></i>
+                              <i class="fa-solid fa-xmark"></i>
                             </button>
                           </div>
                           <div class="d-flex justify-content-between">
@@ -315,42 +415,63 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                           </div>
                         </div>
                         <div className="row ms-3 me-3">
+
                           <div className="col-sm mb-2">
-                            <input
-                              type="text"
-                              id="salestype"
-                              className="form-control"
-                              placeholder="Sales Type"
-                              value={sales_type}
-                              onChange={(e) => setsales_type(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
+                            <div className="exp-form-floating">
+                              <div title="Select the Sales type">
+                                <Select
+                                  id="salesType"
+                                  value={selectedSales}
+                                  onChange={handleChangeSales}
+                                  options={filteredOptionSales}
+                                  className="exp-input-field"
+                                  placeholder="Sales Type"
+                                  required
+                                  isClearable
+                                  data-tip="Please select a payment type"
+                                  autoComplete="off"
+                                />
+                              </div>
+                            </div>
                           </div>
+
                           <div className="col-sm mb-2">
-                            <input
-                              type="text"
-                              id="paytype"
-                              className="form-control"
-                              placeholder="Pay Type"
-                              value={pay_type}
-                              onChange={(e) => setpay_type(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
+                            <div class="exp-form-floating">
+                              <div title="select a Payment Type">
+                                <Select
+                                  id="paytype"
+                                  value={selectedPay}
+                                  onChange={handleChangePay}
+                                  options={filteredOptionPay}
+                                  className="exp-input-field"
+                                  placeholder="Pay Type"
+                                  required
+                                  isClearable
+                                  data-tip="Please select a Payment Type"
+                                />
+                              </div>
+                            </div>
                           </div>
+
                           <div className="col-sm mb-2">
-                            <input
-                              type="text"
-                              id="ordertype"
-                              className="form-control"
-                              placeholder="Order Type"
-                              value={order_type}
-                              onChange={(e) => setorder_type(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
+                            <div className="exp-form-floating">
+                              <div title="Select the Order Type">
+                                <Select
+                                  id="ordertype"
+                                  value={selectedOrder}
+                                  onChange={handleChangeOrder}
+                                  options={filteredOptionOrder}
+                                  className="exp-input-field"
+                                  placeholder="Order Type"
+                                  required
+                                  data-tip="Please select a payment type"
+                                  autoComplete="off"
+                                  isClearable
+                                />
+                              </div>
+                            </div>
                           </div>
+
                           <div className="col-sm mb-2">
                             <input
                               type="text"
@@ -403,7 +524,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                           </div>
                           <div className="mb-0 d-flex justify-content-end" >
                             <button onClick={handleClose} className="closebtn2" required title="Close">
-                            <i class="fa-solid fa-xmark"></i>
+                              <i class="fa-solid fa-xmark"></i>
                             </button>
                           </div>
                         </div>
@@ -465,40 +586,59 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                         </div>
                         <div className="row ms-3 me-3">
                           <div className="col-sm mb-2">
-                            <input
-                              type="text"
-                              id="salestype"
-                              className="form-control"
-                              placeholder="Sales Type"
-                              value={sales_type}
-                              onChange={(e) => setsales_type(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
+                            <div className="exp-form-floating">
+                              <div title="Select the Sales type">
+                                <Select
+                                  id="salesType"
+                                  value={selectedSales}
+                                  onChange={handleChangeSales}
+                                  options={filteredOptionSales}
+                                  className="exp-input-field"
+                                  placeholder="Sales Type"
+                                  required
+                                  isClearable
+                                  data-tip="Please select a payment type"
+                                  autoComplete="off"
+                                />
+                              </div>
+                            </div>
                           </div>
+
                           <div className="col-sm mb-2">
-                            <input
-                              type="text"
-                              id="paytype"
-                              className="form-control"
-                              placeholder="Pay Type"
-                              value={pay_type}
-                              onChange={(e) => setpay_type(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
+                            <div class="exp-form-floating">
+                              <div title="select a Payment Type">
+                                <Select
+                                  id="paytype"
+                                  value={selectedPay}
+                                  onChange={handleChangePay}
+                                  options={filteredOptionPay}
+                                  className="exp-input-field"
+                                  placeholder="Pay Type"
+                                  required
+                                  isClearable
+                                  data-tip="Please select a Payment Type"
+                                />
+                              </div>
+                            </div>
                           </div>
+
                           <div className="col-sm mb-2">
-                            <input
-                              type="text"
-                              id="ordertype"
-                              className="form-control"
-                              placeholder="Order Type"
-                              value={order_type}
-                              onChange={(e) => setorder_type(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
+                            <div className="exp-form-floating">
+                              <div title="Select the Order Type">
+                                <Select
+                                  id="ordertype"
+                                  value={selectedOrder}
+                                  onChange={handleChangeOrder}
+                                  options={filteredOptionOrder}
+                                  className="exp-input-field"
+                                  placeholder="Order Type"
+                                  required
+                                  data-tip="Please select a payment type"
+                                  autoComplete="off"
+                                  isClearable
+                                />
+                              </div>
+                            </div>
                           </div>
                           <div className="col-sm mb-2">
                             <input
@@ -512,7 +652,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                               autoComplete="off"
                             />
                           </div>
-                          <div className="col-sm mb-2">
+                          {/* <div className="col-sm mb-2">
                             <input
                               type="text"
                               id="RefNo"
@@ -523,7 +663,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                               onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
                               autoComplete="off"
                             />
-                          </div>
+                          </div> */}
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <button className="" onClick={handleSearchItem}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />

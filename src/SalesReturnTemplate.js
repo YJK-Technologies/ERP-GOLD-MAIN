@@ -143,117 +143,493 @@ const Template = () => {
 
   
     return (
-        <>
-            <div className="invoice-container" ref={componentRef}>
-                <div className="invoice-header">
-                    <div className="company-details">
-                        <h2>{headerData[0].company_code}</h2>
-                        {/* <p>Phone no: 9790876453</p> */}
-                    </div>
-                    <div className="logo">
-                        {/* <img src="logo.png" alt="Company Logo" /> */}
-                    </div>
-                </div>
-                <h1 className="invoice-title">Sales Return</h1>
-                <div className="invoice-info">
-                    <div className="bill-to">
-                      <p>Customer Code :{headerData[0].customer_code}</p>
-                      <p>Customer Name :{headerData[0].customer_name}</p>
-                      <p>Return Date :{new Date(headerData[0].return_date).toLocaleDateString()}</p>
-                      <p>Return Reason :{headerData[0].return_reason}</p>
-                    </div>
-                    <div className="invoice-details">
-                        <p>Return No   : {headerData[0].return_no}</p>
-                        <p>Transaction Date : {new Date(headerData[0].bill_date).toLocaleDateString()}</p>
-                        <p>Purchase Type    : {headerData[0].sales_type}</p>
-                        <p>Pay Type         : {headerData[0].pay_type}</p>
-                    </div>
-                </div>
-                <table className="invoice-table">
-                    <thead>
-                        <tr>
-                            <th>S.No</th>
-                            <th>Item Name</th>
-                            <th>Unit Weight</th>
-                            <th>Qty</th>
-                            <th>Return Qty</th>
-                            <th>Return Weight</th>
-                            <th>Unit Price</th>
-                            <th>Tax</th>
-                            <th>Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {detailData.map((row, index) => (
-                            <tr key={index}>
-                                <td>{index+1}</td>
-                                <td>{row.item_name}</td>
-                                <td>{row.weight}</td>
-                                <td>{row.bill_qty}</td>
-                                <td>{row.return_qty}</td>
-                                <td>{row.return_weight}</td>
-                                <td>{row.item_amt}</td>
-                                <td>{row.tax_amt}</td>
-                                <td  style={{textAlign:"right"}}>{parseFloat(row.return_amt).toFixed(2)}</td>
-                            </tr>
-                               ))}
-                        <tr className="total">
-                            <td colSpan="8" style={{textAlign:"left"}}>Total</td>
-                            <td  style={{textAlign:"right"}}>₹ {sales}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div className="invoice-summary">
-                    <table>
-                        <tr>
-                            <td>Sub Total</td>
-                            <td>₹ {sales}</td>
-                        </tr>
-                        {taxData.map((row, index) => (
-                       <tr key={index}>
-                            <td>{row.tax_name_details}@{row.tax_per}%</td>
-                            <td>₹ {tax}</td>
-                        </tr>
-                        ))}
-                        <tr>
-                            <td>Round off</td>
-                            <td>₹ {headerData[0].roff_amt}</td>
-                        </tr>
-                        <tr>
-                            <td>Total</td>
-                            <td>₹ {total}</td>
-                        </tr>
-                    </table>
-                    <p className="invoice-amount-words">Invoice Amount In Words: <span className="amount-in-words">{totalAmountInWords}</span></p>
-                    <p style={{fontSize:"13px"}}>Terms and Conditions: Thanks for doing business with us!</p>
-                </div>
-                <div className="invoice-footer">
-                    <p>For: My Company</p>
-                    {/* <p>Authorized Signatory</p> */}
-                </div>
-              </div>
-            
-              <div class="d-flex justify-content-between" style={{ marginLeft: "45%", marginTop: "5px" }} >
-                <div align="left" class="d-flex justify-content-start">
-                    <button
-                        type="button"
-                        onClick={handleDownload}
-                        className='PrintButton'
-                        >
-                        <FontAwesomeIcon icon="fa-solid fa-download" />
-                    </button>
-                    <button
-                        type="button"
-                        onClick={handlePrint}
-                        className='PrintButton'
-                        >
-                        <FontAwesomeIcon icon="fa-solid fa-print" />
-                    </button>
+  <>
+    <div
+      className="invoice-container"
+      ref={componentRef}
+      style={{
+        maxWidth: "900px",
+        margin: "20px auto",
+        padding: "24px",
+        boxSizing: "border-box"
+      }}
+    >
+      {/* Company Header */}
+      <h2 style={{ margin: 0 }}>
+        {headerData[0]?.company_code}
+      </h2>
 
-                </div>
-            </div>
-        </>
-    );
-}
+      <h2 style={{ margin: 0 }}>
+        {sessionStorage.getItem("selectedCompanyName")}
+      </h2>
+
+      {/* Top Line */}
+      <hr
+        style={{
+          border: "none",
+          borderTop: "1px solid currentColor",
+          margin: "16px 0 10px 0"
+        }}
+      />
+
+      {/* Title In Between Lines */}
+      <h1
+        className="invoice-title"
+        style={{
+          textAlign: "center",
+          margin: "0",
+          padding: "8px 0"
+        }}
+      >
+        Sales Return
+      </h1>
+
+      {/* Bottom Line */}
+      <hr
+        style={{
+          border: "none",
+          borderTop: "1px solid currentColor",
+          margin: "10px 0 20px 0"
+        }}
+      />
+
+      {/* Sales Return Information */}
+      <div
+        className="invoice-info"
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginBottom: "24px"
+        }}
+      >
+        {/* Customer / Return Information */}
+        <div
+          className="bill-to"
+          style={{
+            lineHeight: "1.6"
+          }}
+        >
+          <p style={{ margin: "4px 0" }}>
+            <strong>Customer Code:</strong>{" "}
+            {headerData[0]?.customer_code}
+          </p>
+
+          <p style={{ margin: "4px 0" }}>
+            <strong>Customer Name:</strong>{" "}
+            {headerData[0]?.customer_name}
+          </p>
+
+          <p style={{ margin: "4px 0" }}>
+            <strong>Return Date:</strong>{" "}
+            {headerData[0]?.return_date
+              ? new Date(
+                  headerData[0].return_date
+                ).toLocaleDateString()
+              : ""}
+          </p>
+
+          <p style={{ margin: "4px 0" }}>
+            <strong>Return Reason:</strong>{" "}
+            {headerData[0]?.return_reason}
+          </p>
+        </div>
+
+        {/* Return Transaction Information */}
+        <div
+          className="invoice-details"
+          style={{
+            lineHeight: "1.6",
+            textAlign: "left"
+          }}
+        >
+          <p style={{ margin: "4px 0" }}>
+            <strong>Return No:</strong>{" "}
+            {headerData[0]?.return_no}
+          </p>
+
+          <p style={{ margin: "4px 0" }}>
+            <strong>Transaction Date:</strong>{" "}
+            {headerData[0]?.bill_date
+              ? new Date(
+                  headerData[0].bill_date
+                ).toLocaleDateString()
+              : ""}
+          </p>
+
+          <p style={{ margin: "4px 0" }}>
+            <strong>Purchase Type:</strong>{" "}
+            {headerData[0]?.sales_type}
+          </p>
+
+          <p style={{ margin: "4px 0" }}>
+            <strong>Pay Type:</strong>{" "}
+            {headerData[0]?.pay_type}
+          </p>
+        </div>
+      </div>
+
+      {/* Table Section */}
+      <div
+        style={{
+          width: "100%",
+          overflowX: "auto",
+          marginBottom: "32px"
+        }}
+      >
+        <table
+          className="invoice-table"
+          style={{
+            width: "100%",
+            borderCollapse: "collapse",
+            textAlign: "left"
+          }}
+        >
+          <thead>
+            <tr>
+              <th
+                style={{
+                  padding: "8px 12px",
+                  textAlign: "center"
+                }}
+              >
+                S.No
+              </th>
+
+              <th style={{ padding: "8px 12px" }}>
+                Item Name
+              </th>
+
+              <th style={{ padding: "8px 12px" }}>
+                Unit Weight
+              </th>
+
+              <th
+                style={{
+                  padding: "8px 12px",
+                  textAlign: "right"
+                }}
+              >
+                Qty
+              </th>
+
+              <th
+                style={{
+                  padding: "8px 12px",
+                  textAlign: "right"
+                }}
+              >
+                Return Qty
+              </th>
+
+              <th
+                style={{
+                  padding: "8px 12px",
+                  textAlign: "right"
+                }}
+              >
+                Return Weight
+              </th>
+
+              <th
+                style={{
+                  padding: "8px 12px",
+                  textAlign: "right"
+                }}
+              >
+                Unit Price
+              </th>
+
+              <th
+                style={{
+                  padding: "8px 12px",
+                  textAlign: "right"
+                }}
+              >
+                Tax
+              </th>
+
+              <th
+                style={{
+                  padding: "8px 12px",
+                  textAlign: "right"
+                }}
+              >
+                Amount
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {detailData?.map((row, index) => (
+              <tr key={index}>
+                <td
+                  style={{
+                    padding: "8px 12px",
+                    textAlign: "center"
+                  }}
+                >
+                  {index + 1}
+                </td>
+
+                <td style={{ padding: "8px 12px" }}>
+                  {row.item_name}
+                </td>
+
+                <td style={{ padding: "8px 12px" }}>
+                  {row.weight}
+                </td>
+
+                <td
+                  style={{
+                    padding: "8px 12px",
+                    textAlign: "right"
+                  }}
+                >
+                  {row.bill_qty}
+                </td>
+
+                <td
+                  style={{
+                    padding: "8px 12px",
+                    textAlign: "right"
+                  }}
+                >
+                  {row.return_qty}
+                </td>
+
+                <td
+                  style={{
+                    padding: "8px 12px",
+                    textAlign: "right"
+                  }}
+                >
+                  {row.return_weight}
+                </td>
+
+                <td
+                  style={{
+                    padding: "8px 12px",
+                    textAlign: "right"
+                  }}
+                >
+                  {row.item_amt}
+                </td>
+
+                <td
+                  style={{
+                    padding: "8px 12px",
+                    textAlign: "right"
+                  }}
+                >
+                  {row.tax_amt}
+                </td>
+
+                <td
+                  style={{
+                    padding: "8px 12px",
+                    textAlign: "right"
+                  }}
+                >
+                  {parseFloat(row.return_amt).toFixed(2)}
+                </td>
+              </tr>
+            ))}
+
+            {/* Total Row */}
+            <tr className="total">
+              <td
+                colSpan="8"
+                style={{
+                  padding: "8px 12px",
+                  textAlign: "left"
+                }}
+              >
+                <strong>Total</strong>
+              </td>
+
+              <td
+                style={{
+                  padding: "8px 12px",
+                  textAlign: "right"
+                }}
+              >
+                <strong>₹ {sales}</strong>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      {/* Summary Section */}
+      <div
+        className="invoice-summary"
+        style={{
+          marginTop: "20px"
+        }}
+      >
+        <table
+          style={{
+            width: "100%",
+            borderCollapse: "collapse"
+          }}
+        >
+          <tbody>
+            <tr>
+              <td
+                style={{
+                  padding: "8px 12px",
+                  textAlign: "right"
+                }}
+              >
+                Sub Total
+              </td>
+
+              <td
+                style={{
+                  padding: "8px 12px",
+                  textAlign: "right",
+                  width: "180px"
+                }}
+              >
+                ₹ {sales}
+              </td>
+            </tr>
+
+            {taxData.map((row, index) => (
+              <tr key={index}>
+                <td
+                  style={{
+                    padding: "8px 12px",
+                    textAlign: "right"
+                  }}
+                >
+                  {row.tax_name_details}@{row.tax_per}%
+                </td>
+
+                <td
+                  style={{
+                    padding: "8px 12px",
+                    textAlign: "right"
+                  }}
+                >
+                  ₹ {tax}
+                </td>
+              </tr>
+            ))}
+
+            <tr>
+              <td
+                style={{
+                  padding: "8px 12px",
+                  textAlign: "right"
+                }}
+              >
+                Round off
+              </td>
+
+              <td
+                style={{
+                  padding: "8px 12px",
+                  textAlign: "right"
+                }}
+              >
+                ₹ {headerData[0]?.roff_amt}
+              </td>
+            </tr>
+
+            <tr>
+              <td
+                style={{
+                  padding: "8px 12px",
+                  textAlign: "right",
+                  fontWeight: "bold"
+                }}
+              >
+                Total
+              </td>
+
+              <td
+                style={{
+                  padding: "8px 12px",
+                  textAlign: "right",
+                  fontWeight: "bold"
+                }}
+              >
+                ₹ {total}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        {/* Amount In Words */}
+        <p
+          className="invoice-amount-words"
+          style={{
+            marginTop: "20px"
+          }}
+        >
+          <strong>Invoice Amount In Words:</strong>{" "}
+          <span className="amount-in-words">
+            {totalAmountInWords}
+          </span>
+        </p>
+
+        {/* Terms and Conditions */}
+        <p style={{ fontSize: "13px", marginTop: "12px" }}>
+          Terms and Conditions: Thanks for doing business with us!
+        </p>
+      </div>
+
+      {/* Footer Section */}
+      <div
+        className="invoice-footer"
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          textAlign: "right",
+          marginTop: "40px"
+        }}
+      >
+        <div>
+          <p style={{ margin: 0 }}>
+            For: My Company
+          </p>
+
+          {/* <p style={{ marginTop: "40px" }}>
+            Authorized Signatory
+          </p> */}
+        </div>
+      </div>
+    </div>
+
+    {/* Action Buttons */}
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: "12px",
+        margin: "16px 0"
+      }}
+    >
+      <button
+        type="button"
+        onClick={handleDownload}
+        className="PrintButton"
+      >
+        <FontAwesomeIcon icon="fa-solid fa-download" />
+      </button>
+
+      <button
+        type="button"
+        onClick={handlePrint}
+        className="PrintButton"
+      >
+        <FontAwesomeIcon icon="fa-solid fa-print" />
+      </button>
+    </div>
+  </>
+);
+};
 
 export default Template;

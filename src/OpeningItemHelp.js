@@ -271,6 +271,7 @@ export default function OIPopup({ open, handleClose, handleOb }) {
                               className="exp-input-field form-control"
                               placeholder="Transaction No"
                               value={transaction_no}
+                              title='Please enter the transaction no'
                               onChange={(e) => settransaction_no(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
                               autoComplete="off"
@@ -282,6 +283,7 @@ export default function OIPopup({ open, handleClose, handleOb }) {
                               id="Variant"
                               className="exp-input-field form-control"
                               placeholder="Transaction Date"
+                              title='Please enter the transaction date'
                               value={transaction_date}
                               onChange={(e) => settransaction_date(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
@@ -292,7 +294,9 @@ export default function OIPopup({ open, handleClose, handleOb }) {
                             <input
                               type="text"
                               id="ShortName"
-                              className="Item Code"
+                              className="exp-input-field form-control"
+                              placeholder="Item Code"
+                              title='Please enter the item code'
                               value={Item_code}
                               onChange={(e) => setItem_code(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
@@ -305,6 +309,7 @@ export default function OIPopup({ open, handleClose, handleOb }) {
                               id="OurBrand"
                               className="exp-input-field form-control"
                               placeholder="Item Name"
+                              title='Please enter the item name'
                               value={Item_name}
                               onChange={(e) => setItem_name(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}

@@ -580,7 +580,7 @@ function SalesReturn() {
 
   //CODE TO SAVE PURCHASE HEADER 
   const handleSaveButtonClick = async () => {
-    if (!return_date || !billNo || !billDate || !customerCode || !payType) {
+    if (!return_date || !billNo || !billDate || !customerCode || !payType || !return_person || !return_reason) {
       setError(" ");
       toast.warning('Error: Missing required fields');
       return;
@@ -1288,7 +1288,7 @@ function SalesReturn() {
               taxAmt: item.tax_amt,
               totalReturnAmt: item.bill_rate,
               ReturnWeight: item.return_weight,
-              warehousecode: item.warehouse_code,
+              warehouse: item.warehouse_code,
               totalReturnAmt: item.return_amt,
               taxType: taxType || null,
               taxPer: taxPer || null,
