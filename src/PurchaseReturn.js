@@ -1688,56 +1688,136 @@ function PurchaseReturn() {
     console.log("Selected option:", selectedOption);
   };
 
+  // const handleAuthorizedButtonClick = async () => {
+  //   if (!returnnumber || !selectedStatus) {
+  //     setError(" ");
+  //     toast.warning('Error: Missing required fields');
+  //     return;
+  //   }
+  //   setLoading(true);
+  //   try {
+  //     const headerResponse = await AuthorizedHeader();
+  //     const detailsResponse = await AuthorizedDetails();
+  //     const taxDetailsResponse = await AuthorizedTaxDetails();
+  //       setSaveButtonVisible(false);
+  //       setPrintButtonVisible(true);
+  //       setShowExcelButton(true);
+
+
+  //     if (headerResponse && detailsResponse && taxDetailsResponse) {
+  //       toast.success("All functions executed successfully.");
+  //     }
+  //   } catch (error) {
+  //     toast.error('Error inserting data: ' + error.message);
+  //   }finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleAuthorizedButtonClick = async () => {
-    if (!returnnumber || !selectedStatus) {
-      setError(" ");
-      toast.warning('Error: Missing required fields');
+  if (!returnnumber || !selectedStatus) {
+    setError(" ");
+    toast.warning("Error: Missing required fields");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    // STEP 1: Header
+    const headerResponse = await AuthorizedHeader();
+
+    // If Header failed, execution will NOT reach here
+    if (!headerResponse) {
       return;
     }
-    setLoading(true);
-    try {
-      const headerResponse = await AuthorizedHeader();
-      const detailsResponse = await AuthorizedDetails();
-      const taxDetailsResponse = await AuthorizedTaxDetails();
-        setSaveButtonVisible(false);
-        setPrintButtonVisible(true);
-        setShowExcelButton(true);
 
+    // STEP 2: Details
+    const detailsResponse = await AuthorizedDetails();
 
-      if (headerResponse && detailsResponse && taxDetailsResponse) {
-        toast.success("All functions executed successfully.");
-      }
-    } catch (error) {
-      toast.error('Error inserting data: ' + error.message);
-    }finally {
-      setLoading(false);
+    // If Details failed, execution will NOT reach here
+    if (!detailsResponse) {
+      return;
     }
-  };
+
+    // STEP 3: Tax Details
+    const taxDetailsResponse = await AuthorizedTaxDetails();
+
+    // If Tax Details failed, stop
+    if (!taxDetailsResponse) {
+      return;
+    }
+
+    // Only when all 3 are successful
+    setSaveButtonVisible(false);
+    setPrintButtonVisible(true);
+    setShowExcelButton(true);
+
+    // toast.success("All functions executed successfully.");
+
+  } catch (error) {
+    console.error("Authorization process failed:", error);
+    toast.error(error.message || "Authorization failed.");
+  } finally {
+    setLoading(false);
+  }
+};
+
+  // const AuthorizedHeader = async () => {
+  //   try {
+  //     const response = await fetch(`${config.apiBaseUrl}/PurchReturnAuthHdr`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json"
+  //       },
+  //       body: JSON.stringify({
+  //         return_no: returnnumber,
+  //         company_code: sessionStorage.getItem('selectedCompanyCode'),
+  //         authroization_status: selectedStatus.value
+  //       })
+  //     });
+  //     if (response.ok) {
+  //       return true
+  //     } else {
+  //       console.log("Failed to fetch some data");
+  //       toast.error("Failed to Update data");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error executing API calls:", error);
+  //     toast.error('Error inserting data: ' + error.message);
+  //   }
+  // };
 
   const AuthorizedHeader = async () => {
-    try {
-      const response = await fetch(`${config.apiBaseUrl}/PurchReturnAuthHdr`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          return_no: returnnumber,
-          company_code: sessionStorage.getItem('selectedCompanyCode'),
-          authroization_status: selectedStatus.value
-        })
-      });
-      if (response.ok) {
-        return true
-      } else {
-        console.log("Failed to fetch some data");
-        toast.error("Failed to Update data");
-      }
-    } catch (error) {
-      console.error("Error executing API calls:", error);
-      toast.error('Error inserting data: ' + error.message);
+  try {
+    const response = await fetch(`${config.apiBaseUrl}/PurchReturnAuthHdr`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        return_no: returnnumber,
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
+        authroization_status: selectedStatus.value
+      })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      toast.success(data.message || "Authorization updated successfully.");
+      return true;
     }
-  };
+
+    toast.error(data.message || "Failed to update data.");
+    return false;
+
+  } catch (error) {
+    console.error("Error executing API calls:", error);
+    toast.error("Error updating data: " + error.message);
+    return false;
+  }
+};
 
   const AuthorizedDetails = async () => {
     try {
@@ -1752,14 +1832,29 @@ function PurchaseReturn() {
           authroization_status: selectedStatus.value
         })
       });
-      if (response.ok) {
-        return true
-      } else {
-        toast.error("Failed to Update data");
-      }
-    } catch (error) {
-      toast.error('Error inserting data: ' + error.message);
+    //   if (response.ok) {
+    //     return true
+    //   } else {
+    //     toast.error("Failed to Update data");
+    //   }
+    // } catch (error) {
+    //   toast.error('Error inserting data: ' + error.message);
+    // }
+    const data = await response.json();
+
+    if (response.ok) {
+      toast.success(data.message || "Authorization updated successfully.");
+      return true;
     }
+
+    toast.error(data.message || "Failed to update data.");
+    return false;
+
+  } catch (error) {
+    console.error("Error executing API calls:", error);
+    toast.error("Error updating data: " + error.message);
+    return false;
+  }
   };
 
   const AuthorizedTaxDetails = async () => {
@@ -1775,15 +1870,30 @@ function PurchaseReturn() {
           authroization_status: selectedStatus.value
         })
       });
-      if (response.ok) {
-        return true
-      } else {
-        toast.error("Failed to Update data");;
-      }
-    } catch (error) {
-      console.error("Error executing API calls:", error);
-      toast.error('Error inserting data: ' + error.message);
+    //   if (response.ok) {
+    //     return true
+    //   } else {
+    //     toast.error("Failed to Update data");;
+    //   }
+    // } catch (error) {
+    //   console.error("Error executing API calls:", error);
+    //   toast.error('Error inserting data: ' + error.message);
+    // }
+    const data = await response.json();
+
+    if (response.ok) {
+      toast.success(data.message || "Authorization updated successfully.");
+      return true;
     }
+
+    toast.error(data.message || "Failed to update data.");
+    return false;
+
+  } catch (error) {
+    console.error("Error executing API calls:", error);
+    toast.error("Error updating data: " + error.message);
+    return false;
+  }
   };
 
   return (

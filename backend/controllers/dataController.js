@@ -15440,14 +15440,28 @@ const PurchReturnAuthHdr = async (req, res) => {
       .input("authroization_status", sql.NVarChar, authroization_status)
       .query(`EXEC sp_purchase_return_hdr @mode,@company_code,'',@return_no,'','','','','','',
 '','','',0,0,0,0,0,0,0,0,0,'','','',0,@authroization_status,'','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
-    if (result.recordset.length > 0) {
-      res.status(200).json(result.recordset);
-    } else {
-      res.status(404).journal_amountson("Data not found");
-    }
+  //   if (result.recordset.length > 0) {
+  //     res.status(200).json(result.recordset);
+  //   } else {
+  //     res.status(404).journal_amountson("Data not found");
+  //   }
+  // } catch (err) {
+  //   console.error(err);
+  //   res.status(500).json(err.message || "Internal Server Error");
+  // }
+  return res.status(200).json({
+      success: true,
+      data: result.recordset || []
+    });
+
   } catch (err) {
-    console.error(err);
-    res.status(500).json(err.message || "Internal Server Error");
+
+    console.error("PurchReturnAuthHdr Error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: err.message || "Internal Server Error"
+    });
   }
 };
 
@@ -15463,14 +15477,28 @@ const PurchReturnAuthDetail = async (req, res) => {
       .input("return_no", sql.NVarChar, return_no)
       .input("authroization_status", sql.NVarChar, authroization_status)
       .query(`EXEC sp_purchase_return_details @mode,@company_code,'','','',@return_no,'','','','','',0,0,0,0,0,0,0,'','','','','','','','','','','','',0,'',0,0,@authroization_status,'','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
-    if (result.recordset.length > 0) {
-      res.status(200).json(result.recordset);
-    } else {
-      res.status(404).json("Data not found");
-    }
+  //   if (result.recordset.length > 0) {
+  //     res.status(200).json(result.recordset);
+  //   } else {
+  //     res.status(404).json("Data not found");
+  //   }
+  // } catch (err) {
+  //   console.error(err);
+  //   res.status(500).json(err.message || "Internal Server Error");
+  // }
+  return res.status(200).json({
+      success: true,
+      data: result.recordset || []
+    });
+
   } catch (err) {
-    console.error(err);
-    res.status(500).json(err.message || "Internal Server Error");
+
+    console.error("PurchReturnAuthDetail Error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: err.message || "Internal Server Error"
+    });
   }
 };
 
@@ -15487,14 +15515,28 @@ const PurchReturnAuthTaxDetail = async (req, res) => {
       .input("authroization_status", sql.NVarChar, authroization_status)
       .query(`EXEC sp_purchase_return_tax_details @mode,@company_code,'',@return_no,'','','','','','',0,0,'','','','',0,0,'',@authroization_status,'',''
 ,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
-    if (result.recordset.length > 0) {
-      res.status(200).json(result.recordset);
-    } else {
-      res.status(404).json("Data not found");
-    }
+  //   if (result.recordset.length > 0) {
+  //     res.status(200).json(result.recordset);
+  //   } else {
+  //     res.status(404).json("Data not found");
+  //   }
+  // } catch (err) {
+  //   console.error(err);
+  //   res.status(500).json(err.message || "Internal Server Error");
+  // }
+  return res.status(200).json({
+      success: true,
+      data: result.recordset || []
+    });
+
   } catch (err) {
-    console.error(err);
-    res.status(500).json(err.message || "Internal Server Error");
+
+    console.error("PurchReturnAuthTaxDetail Error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: err.message || "Internal Server Error"
+    });
   }
 };
 

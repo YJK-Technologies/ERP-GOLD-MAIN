@@ -580,7 +580,7 @@ function SalesReturn() {
 
   //CODE TO SAVE PURCHASE HEADER 
   const handleSaveButtonClick = async () => {
-    if (!return_date || !billNo || !billDate || !customerCode || !payType) {
+    if (!return_date || !billNo || !billDate || !customerCode || !payType || !return_person || !return_reason) {
       setError(" ");
       toast.warning('Error: Missing required fields');
       return;
@@ -1288,7 +1288,7 @@ function SalesReturn() {
               taxAmt: item.tax_amt,
               totalReturnAmt: item.bill_rate,
               ReturnWeight: item.return_weight,
-              warehousecode: item.warehouse_code,
+              warehouse: item.warehouse_code,
               totalReturnAmt: item.return_amt,
               taxType: taxType || null,
               taxPer: taxPer || null,
@@ -2037,7 +2037,7 @@ const handleExcelDownload = () => {
             </div>
             <div className="col-md-3 form-group mb-2">
               <div className="exp-form-floating">
-                <label htmlFor="retper">Return Person{!showAsterisk && <span className="text-danger">*</span>}</label>
+                <label htmlFor="retper" className={`${error && !return_person ? 'red' : ''}`}>Return Person{!showAsterisk && <span className="text-danger">*</span>}</label>
                 <input
                   name="retper"
                   id="retper"
@@ -2057,7 +2057,7 @@ const handleExcelDownload = () => {
             </div>
             <div className="col-md-3 form-group mb-2">
               <div className="exp-form-floating">
-                <label htmlFor="retreason" >Return Reason{!showAsterisk && <span className="text-danger">*</span>}</label>
+                <label htmlFor="retreason" className={`${error && !return_reason ? 'red' : ''}`}>Return Reason{!showAsterisk && <span className="text-danger">*</span>}</label>
                 <input
                   name="retreason"
                   id="retreason"

@@ -236,7 +236,7 @@ export default function ItemPopup({ open, handleClose, handlePurchaseData }) {
     setvendor_code("");
     setvendor_name("");
     setpurchase_type("");
-    setpay_type("");
+    setPayType("");
   };
 
   const [selectedRows, setSelectedRows] = useState([]);
