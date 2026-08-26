@@ -361,6 +361,7 @@ export default function StockTransferItemPopup({ open, handleClose, handleItem }
                               id='ItemCode'
                               className='form-control'
                               maxLength={18}
+                              title='Enter the Item Code'
                               placeholder=' Item Code'
                               value={Item_code}
                               onChange={(e) => setItem_code(e.target.value)}
@@ -373,6 +374,7 @@ export default function StockTransferItemPopup({ open, handleClose, handleItem }
                               type='text'
                               id='Variant'
                               className='form-control'
+                              title='Enter the Variant'
                               placeholder=' Variant'
                               maxLength={18}
                               value={Item_variant}
@@ -386,6 +388,7 @@ export default function StockTransferItemPopup({ open, handleClose, handleItem }
                               type='text'
                               id='ItemName'
                               className='form-control'
+                              title='Enter the Item Name'
                               placeholder=' Item Name'
                               maxLength={40}
                               value={Item_name}
@@ -399,6 +402,7 @@ export default function StockTransferItemPopup({ open, handleClose, handleItem }
                               type='text'
                               id='ShortName'
                               className='form-control'
+                              title='Enter the Short Name'
                               placeholder=' Short Name'
                               maxLength={50}
                               value={Item_short_name}
@@ -412,6 +416,7 @@ export default function StockTransferItemPopup({ open, handleClose, handleItem }
                               type='text'
                               id='OurBrand'
                               className='form-control'
+                              title='Enter the Our Brand'
                               placeholder=' Our Brand'
                               maxLength={30}
                               value={Item_Our_Brand}
@@ -435,13 +440,13 @@ export default function StockTransferItemPopup({ open, handleClose, handleItem }
                           </div>
 
                           <div className="mb-3 mt-3 d-flex justify-content-end">
-                            <icon className="icon popups-btn" onClick={handleSearchItem}>
+                            <icon className="icon popups-btn" title="Search" onClick={handleSearchItem}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
                             </icon>
-                            <icon className="icon popups-btn" onClick={handleReload}>
+                            <icon className="icon popups-btn" title="Reload" onClick={handleReload}>
                               <i class="fa-solid fa-arrow-rotate-right"></i>
                             </icon>
-                            <icon className="icon popups-btn" onClick={handleConfirm}>
+                            <icon className="icon popups-btn" title="Confirm" onClick={handleConfirm}>
                               <FontAwesomeIcon icon="fa-solid fa-check" />
                             </icon>
                           </div>

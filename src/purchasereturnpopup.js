@@ -382,13 +382,13 @@ export default function ItemPopup({ open, handleClose, handleItem }) {
                           </div>
 
                           <div className="mb-2 mt-2 d-flex justify-content-end">
-                            <icon className="icon popups-btn" onClick={handleSearch}>
+                            <icon className="icon popups-btn" title="Search" onClick={handleSearch}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
                             </icon>
-                            <icon className="icon popups-btn" onClick={handleReload}>
+                            <icon className="icon popups-btn" title="Reload" onClick={handleReload}>
                               <i class="fa-solid fa-arrow-rotate-right"></i>
                             </icon>
-                            <icon className="icon popups-btn" onClick={handleConfirm}>
+                            <icon className="icon popups-btn" title="Confirm" onClick={handleConfirm}>
                               <FontAwesomeIcon icon="fa-solid fa-check" />
                             </icon>
                           </div>

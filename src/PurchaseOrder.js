@@ -2363,11 +2363,13 @@ function PurchaseOrder() {
     row => row.purchaseQty > 0 &&
            row.TotalItemAmount > 0 &&
            row.purchaseAmt > 0
-  );
+  )
+   .map(({ taxType, taxPer, taxDetails, keyField, ...row }) => row);
 
   const filteredRowDataTax = rowDataTax.filter(
     taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0
-  );
+  )
+  .map(({ TaxName, keyfield, ...taxRow }) => taxRow);
 
   const headerData = [{
     "Transaction No": transactionNo,
@@ -2410,7 +2412,7 @@ function PurchaseOrder() {
   // Header Sheets
   const billToSheet = XLSX.utils.aoa_to_sheet([
     ["Purchase Order - Bill To"],
-    [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+    [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
     [],
   ]);
 
@@ -2420,7 +2422,7 @@ function PurchaseOrder() {
 
   const shipToSheet = XLSX.utils.aoa_to_sheet([
     ["Purchase Order - Ship To"],
-    [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+    [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
     [],
   ]);
 

@@ -183,13 +183,16 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
   const [Item_variant, setItem_variant] = useState("");
   const [Item_name, setItem_name] = useState("");
   const [Item_short_name, setItem_short_name] = useState("");
-  const [Item_Our_Brand, setItem_Our_Brand] = useState("");
   const [status, setstatus] = useState("");
-    const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [selectedStatus, setSelectedStatus] = useState("");
   const [statusDrop, setStatusDrop] = useState("");
   const [statusdropDown, setStatusdropDown] = useState([]);
+
+  const [ourbranddrop, setourbranddrop] = useState([]);
+  const [selectedBrand, setSelectedBrand] = useState("");
+  const [Item_Our_Brand, setItem_Our_Brand] = useState("");
 
   const handleChangeStatus = (selectedStatus) => {
     setSelectedStatus(selectedStatus);
@@ -215,6 +218,31 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
       .then((val) => setStatusdropDown(val))
       .catch((error) => console.error("Error fetching data:", error));
   }, []);  
+
+  const handleChangeBrand = (selectedBrand) => {
+    setSelectedBrand(selectedBrand);
+    setItem_Our_Brand(selectedBrand ? selectedBrand.value : "");
+  };
+
+  const filteredOptionBrand = ourbranddrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  useEffect(() => {
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+
+    fetch(`${config.apiBaseUrl}/ourbrand`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ company_code }),
+    })
+      .then((data) => data.json())
+      .then((val) => setourbranddrop(val))
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
 
   const handleSearchItem = async () => {
         setLoading(true);
@@ -261,6 +289,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
     setItem_name("");
     setItem_short_name("");
     setItem_Our_Brand("");
+    setSelectedBrand("");
     setstatus("");
   };
   const [selectedRows, setSelectedRows] = useState([]);
@@ -388,19 +417,18 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                             />
                           </div>
                           <div className="col-sm mb-2">
-                            <input
-                              type="text"
-                              id="OurBrand"
-                              className="exp-input-field form-control"
-                              title="Enter the Our Brand"
-                              placeholder="Our Brand"
-                              value={Item_Our_Brand}
-                              onChange={(e) => setItem_Our_Brand(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
+                            <div title="Select the Our Brand ">
+                              <Select
+                                id="ahsts"
+                                value={selectedBrand}
+                                onChange={handleChangeBrand}
+                                options={filteredOptionBrand}
+                                className="exp-input-field"
+                                placeholder="Our Brand"
+                                isClearable
+                              />
+                            </div>
                           </div>
-
                           <div className="col-sm mb-2">
                             <div title="Select the Status ">
                               <Select
@@ -415,13 +443,13 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                             </div>
                           </div>
                           <div className="mb-2 mt-2 d-flex justify-content-end">
-                            <icon className="icon popups-btn" onClick={handleSearchItem}>
+                            <icon className="icon popups-btn" title="Search" onClick={handleSearchItem}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
                             </icon>
-                            <icon className="icon popups-btn" onClick={handleReload}>
+                            <icon className="icon popups-btn" title="Reload" onClick={handleReload}>
                               <i class="fa-solid fa-arrow-rotate-right"></i>
                             </icon>
-                            <icon className="icon popups-btn" onClick={handleConfirm}>
+                            <icon className="icon popups-btn" title="Confirm" onClick={handleConfirm}>
                               <FontAwesomeIcon icon="fa-solid fa-check" />
                             </icon>
                           </div>
@@ -514,16 +542,17 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                             />
                           </div>
                           <div className="col-sm mb-2">
-                            <input
-                              type="text"
-                              id="OurBrand"
-                              className="exp-input-field form-control"
-                              placeholder="Our Brand"
-                              value={Item_Our_Brand}
-                              onChange={(e) => setItem_Our_Brand(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
+                            <div title="Select the Our Brand ">
+                              <Select
+                                id="ahsts"
+                                value={selectedBrand}
+                                onChange={handleChangeBrand}
+                                options={filteredOptionBrand}
+                                className="exp-input-field"
+                                placeholder="Our Brand"
+                                isClearable
+                              />
+                            </div>
                           </div>
                           <div className="col-sm mb-2">
                             <div title="Select the Status ">
