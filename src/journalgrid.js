@@ -110,7 +110,7 @@ function  JournalGrid() {
     
             case 'F5':
               // Search Existing Invoices to Edit
-              setOpen1(true); 
+              // setOpen1(true); 
               break;
     
             case 'F6':
