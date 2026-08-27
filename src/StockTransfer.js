@@ -176,26 +176,169 @@ function StockTransfer() {
 
 
   //ITEM CODE TO SEARCH IN AG GRID
-  const handleItemCode = async (params) => {
-    const company_code = sessionStorage.getItem("selectedCompanyCode");
-    setLoading(true);
-    try {
-      const response = await fetch(`${config.apiBaseUrl}/getitemcodepurdata`, {
+  // const handleItemCode = async (params) => {
+  //   const company_code = sessionStorage.getItem("selectedCompanyCode");
+  //   setLoading(true);
+  //   try {
+  //     const response = await fetch(`${config.apiBaseUrl}/getitemcodepurdata`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json"
+  //       },
+  //       body: JSON.stringify({ company_code, Item_code: params.data.itemCode })
+  //     });
+
+
+  //     if (response.ok) {
+  //       const searchData = await response.json();
+  //       const updatedRow = rowData.map(row => {
+  //         if (row.itemCode === params.data.itemCode) {
+  //           const matchedItem = searchData.find(item => item.id === row.id);
+  //           if (matchedItem) {
+  //             return {
+  //               ...row,
+  //               itemCode: matchedItem.Item_code,
+  //               itemName: matchedItem.Item_name,
+  //               unitWeight: matchedItem.Item_wigh,
+  //               purchaseAmt: matchedItem.Item_std_purch_price,
+  //               taxType: matchedItem.Item_purch_tax_type,
+  //               taxDetails: matchedItem.combined_tax_details,
+  //               taxPer: matchedItem.combined_tax_percent,
+  //               warehouse: matchedItem.warehouse // Update warehouse if needed
+  //             };
+  //           }
+  //         }
+  //         return row;
+  //       });
+  //       setRowData(updatedRow);
+  //       console.log(updatedRow);
+  //     } else if (response.status === 404) {
+  //       toast.warning("Data Not Found").then(() => {
+  //         // Remove text from the field
+  //         setRowData(prevRowData =>
+  //             prevRowData.map(row => {
+  //           if (row.itemCode === params.data.itemCode) {
+  //             return {
+  //               ...row,
+  //               itemCode: '', // Clear the itemCode field
+  //               itemName: '',
+  //               unitWeight: 0,
+  //               purchaseAmt: 0,
+  //               taxType: '',
+  //               taxDetails: '',
+  //               taxPer: '',
+  //               warehouse: '' // Clear the warehouse field
+  //             };
+  //           }
+  //           return row;
+  //         })
+  //       );
+  //       }
+  //       );
+  //     } else {
+  //       console.log("Bad request");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching search data:", error);
+  //   }
+  //   finally {
+  //     setLoading(false);
+  //   }
+
+  // };
+
+const handleItemCode = async (params) => {
+  const company_code = sessionStorage.getItem("selectedCompanyCode");
+
+  const enteredItemCode = params.data.itemCode?.trim();
+  const serialNumber = params.data.serialNumber;
+
+  if (!enteredItemCode) {
+    return false;
+  }
+
+  setLoading(true);
+
+  try {
+    const response = await fetch(
+      `${config.apiBaseUrl}/getitemcodepurdata`,
+      {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code, Item_code: params.data.itemCode })
-      });
+        body: JSON.stringify({
+          company_code,
+          Item_code: enteredItemCode
+        })
+      }
+    );
 
+    if (response.ok) {
+      const searchData = await response.json();
 
-      if (response.ok) {
-        const searchData = await response.json();
-        const updatedRow = rowData.map(row => {
-          if (row.itemCode === params.data.itemCode) {
-            const matchedItem = searchData.find(item => item.id === row.id);
-            if (matchedItem) {
-              return {
+      console.log("Item API Response:", searchData);
+
+      if (!searchData || searchData.length === 0) {
+        toast.warning("Data Not Found");
+
+        setRowData(prevRowData =>
+          prevRowData.map(row =>
+            row.serialNumber === serialNumber
+              ? {
+                  ...row,
+                  itemCode: "",
+                  itemName: "",
+                  unitWeight: 0,
+                  purchaseAmt: 0,
+                  taxType: "",
+                  taxDetails: "",
+                  taxPer: "",
+                  warehouse: ""
+                }
+              : row
+          )
+        );
+
+        return false;
+      }
+
+      const matchedItem = searchData.find(
+        item =>
+          item.Item_code?.trim().toLowerCase() ===
+          enteredItemCode.toLowerCase()
+      );
+
+      if (!matchedItem) {
+        toast.warning("Item Code Not Found");
+
+        setRowData(prevRowData =>
+          prevRowData.map(row =>
+            row.serialNumber === serialNumber
+              ? {
+                  ...row,
+                  itemCode: "",
+                  itemName: "",
+                  unitWeight: 0,
+                  purchaseAmt: 0,
+                  taxType: "",
+                  taxDetails: "",
+                  taxPer: "",
+                  warehouse: ""
+                }
+              : row
+          )
+        );
+
+        return false;
+      }
+
+      // IMPORTANT:
+      // Always use the latest rowData state
+      setRowData(prevRowData =>
+        prevRowData.map(row =>
+          row.serialNumber === serialNumber
+            ? {
                 ...row,
                 itemCode: matchedItem.Item_code,
                 itemName: matchedItem.Item_name,
@@ -204,46 +347,61 @@ function StockTransfer() {
                 taxType: matchedItem.Item_purch_tax_type,
                 taxDetails: matchedItem.combined_tax_details,
                 taxPer: matchedItem.combined_tax_percent,
-                warehouse: matchedItem.warehouse // Update warehouse if needed
-              };
-            }
-          }
-          return row;
-        });
-        setRowData(updatedRow);
-        console.log(updatedRow);
-      } else if (response.status === 404) {
-        toast.warning("Data Not Found").then(() => {
-          // Remove text from the field
-          const updatedRowData = rowData.map(row => {
-            if (row.itemCode === params.data.itemCode) {
-              return {
-                ...row,
-                itemCode: '', // Clear the itemCode field
-                itemName: '',
-                unitWeight: 0,
-                purchaseAmt: 0,
-                taxType: '',
-                taxDetails: '',
-                taxPer: '',
-                warehouse: '' // Clear the warehouse field
-              };
-            }
-            return row;
-          });
-          setRowData(updatedRowData);
-        });
-      } else {
-        console.log("Bad request");
-      }
-    } catch (error) {
-      console.error("Error fetching search data:", error);
-    }
-    finally {
-      setLoading(false);
+                warehouse: matchedItem.warehouse || ""
+              }
+            : row
+        )
+      );
+
+      console.log(
+        "Item fetched successfully:",
+        matchedItem
+      );
+
+      return true;
     }
 
-  };
+    if (response.status === 404) {
+      toast.warning("Data Not Found");
+
+      setRowData(prevRowData =>
+        prevRowData.map(row =>
+          row.serialNumber === serialNumber
+            ? {
+                ...row,
+                itemCode: "",
+                itemName: "",
+                unitWeight: 0,
+                purchaseAmt: 0,
+                taxType: "",
+                taxDetails: "",
+                taxPer: "",
+                warehouse: ""
+              }
+            : row
+        )
+      );
+
+      return false;
+    }
+
+    toast.error("There was an issue fetching the item.");
+
+    return false;
+
+  } catch (error) {
+    console.error("Error fetching item data:", error);
+
+    toast.error(
+      "An error occurred while fetching the item data."
+    );
+
+    return false;
+
+  } finally {
+    setLoading(false);
+  }
+};
 
 
   const handleWarehouseCodeFrom = async (params) => {
@@ -254,7 +412,7 @@ function StockTransfer() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ warehouse_code: params.data.warehouse })
+        body: JSON.stringify({ warehouse_code: params.data.warehouse, company_code: sessionStorage.getItem('selectedCompanyCode')})
       });
 
       if (response.ok) {
@@ -290,7 +448,8 @@ function StockTransfer() {
         setRowData(updatedRowData);
         console.log(updatedRowData);
       } else if (response.status === 404) {
-        toast.warning("Data Not Found").then(() => {
+        toast.warning('Data not found!', {
+                  onClose: () => {
           // Remove text from the field
           const updatedRowData = rowData.map(row => {
             if (row.itemCode === params.data.itemCode) {
@@ -302,6 +461,7 @@ function StockTransfer() {
             return row;
           });
           setRowData(updatedRowData);
+        }
         });
       } else {
         console.log("Bad request");
@@ -323,7 +483,7 @@ function StockTransfer() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ warehouse_code: params.data.warehouseTo })
+        body: JSON.stringify({ warehouse_code: params.data.warehouseTo, company_code: sessionStorage.getItem('selectedCompanyCode') })
       });
 
       if (response.ok) {
@@ -361,7 +521,8 @@ function StockTransfer() {
         setRowData(updatedRowData);
         console.log(updatedRowData);
       } else if (response.status === 404) {
-        toast.warning("Data not found!").then(() => {
+        toast.warning('Data not found!', {
+                  onClose: () => {
           // Remove text from the field
           const updatedRowData = rowData.map(row => {
             if (row.itemCode === params.data.itemCode) {
@@ -373,6 +534,7 @@ function StockTransfer() {
             return row;
           });
           setRowData(updatedRowData);
+        }
         });
       } else {
         console.log("Bad request");
@@ -572,9 +734,9 @@ function StockTransfer() {
       cellEditorParams: {
         maxLength: 18,
       },
-      onCellValueChanged: function (params) {
-        handleItemCode(params);
-      },
+      // onCellValueChanged: function (params) {
+      //   handleItemCode(params);
+      // },
       sortable: false,
       autoComplete: false
     },
@@ -876,7 +1038,7 @@ function StockTransfer() {
   const handleSaveButtonClick = async () => {
     if (!transactionDate) {
       setError(" ");
-      setStatus('Error: Missing required fields');
+      toast.warning('Error: Missing required fields');
       return;
     }
 
@@ -2041,12 +2203,12 @@ function StockTransfer() {
                       title='Enter the Transaction No'
                       value={new_running_no}
                       onChange={handleChangeNo}
-                      onKeyDown={(e) => {
-                        // Allow only numbers and certain special keys like Backspace and Arrow keys
-                        if (!/^\d$/.test(e.key) && e.key.length === 1 && !['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete'].includes(e.key)) {
-                          e.preventDefault();
-                        }
-                      }}
+                      // onKeyDown={(e) => {
+                      //   // Allow only numbers and certain special keys like Backspace and Arrow keys
+                      //   if (!/^\d$/.test(e.key) && e.key.length === 1 && !['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete'].includes(e.key)) {
+                      //     e.preventDefault();
+                      //   }
+                      // }}
                       onKeyPress={handleKeyPressRef}
                       autoComplete='off'
                     />
@@ -2116,7 +2278,7 @@ function StockTransfer() {
           </div>
 
           <div className="ag-theme-alpine" style={{ height: 437, width: "100%" }}>
-            <AgGridReact
+            {/* <AgGridReact
               columnDefs={activeTable === 'myTable' ? columnDefs : columnDefsTax}
               rowData={activeTable === 'myTable' ? rowData : rowDataTax}
               defaultColDef={{ editable: true, resizable: true }}
@@ -2130,7 +2292,36 @@ function StockTransfer() {
               onColumnMoved={onColumnMoved}
               RowData={gridData}
               onRowSelected={onRowSelected}
-            />
+            /> */}
+            <AgGridReact
+  columnDefs={activeTable === 'myTable' ? columnDefs : columnDefsTax}
+  rowData={activeTable === 'myTable' ? rowData : rowDataTax}
+  defaultColDef={{
+    editable: true,
+    resizable: true
+  }}
+
+  onCellValueChanged={async (event) => {
+
+    // When Item Code changes
+    if (event.colDef.field === "itemCode") {
+      await handleItemCode(event);
+      return;
+    }
+
+    // For Qty and other fields
+    await ItemAmountCalculation(event);
+
+    handleCellValueChanged(event);
+  }}
+
+  onGridReady={onGridReady}
+  onRowClicked={handleRowClicked}
+  onColumnMoved={onColumnMoved}
+  RowData={gridData}
+  onRowSelected={onRowSelected}
+  
+/>
           </div>
         </div>
         <div>
