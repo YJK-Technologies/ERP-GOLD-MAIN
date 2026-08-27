@@ -207,8 +207,21 @@ export default function StockTransferItemPopup({ open, handleClose, handleItem }
   const [status, setstatus] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [selectedBrand, setSelectedBrand] = useState("");
+  const [ourbranddrop, setourbranddrop] = useState([]);
+
   const [selectedStatus, setSelectedStatus] = useState("");
   const [statusdropDown, setStatusdropDown] = useState([]);
+
+  const handleChangeBrand = (selectedBrand) => {
+    setSelectedBrand(selectedBrand);
+    setItem_Our_Brand(selectedBrand ? selectedBrand.value : "");
+  };
+
+  const filteredOptionBrand = ourbranddrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
 
   const handleChangeStatus = (selectedStatus) => {
     setSelectedStatus(selectedStatus);
@@ -219,6 +232,21 @@ export default function StockTransferItemPopup({ open, handleClose, handleItem }
     value: option.attributedetails_name,
     label: option.attributedetails_name,
   }));
+
+  useEffect(() => {
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+
+    fetch(`${config.apiBaseUrl}/ourbrand`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ company_code }),
+    })
+      .then((data) => data.json())
+      .then((val) => setourbranddrop(val))
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
 
   useEffect(() => {
     const company_code = sessionStorage.getItem("selectedCompanyCode");
@@ -412,18 +440,17 @@ export default function StockTransferItemPopup({ open, handleClose, handleItem }
                             />
                           </div>
                           <div className="col-sm mb-2">
-                            <input
-                              type='text'
-                              id='OurBrand'
-                              className='form-control'
-                              title='Enter the Our Brand'
-                              placeholder=' Our Brand'
-                              maxLength={30}
-                              value={Item_Our_Brand}
-                              onChange={(e) => setItem_Our_Brand(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
+                            <div title="Select the Our Brand ">
+                              <Select
+                                id="ahsts"
+                                value={selectedBrand}
+                                onChange={handleChangeBrand}
+                                options={filteredOptionBrand}
+                                className="exp-input-field"
+                                placeholder="Our Brand"
+                                isClearable
+                              />
+                            </div>
                           </div>
                           <div className="col-sm mb-2">
                             <div title="Select the Status ">
@@ -543,17 +570,17 @@ export default function StockTransferItemPopup({ open, handleClose, handleItem }
                             />
                           </div>
                           <div className="col-sm mb-2">
-                            <input
-                              type='text'
-                              id='OurBrand'
-                              className='form-control'
-                              placeholder=' Our Brand'
-                              maxLength={30}
-                              value={Item_Our_Brand}
-                              onChange={(e) => setItem_Our_Brand(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                              autoComplete="off"
-                            />
+                            <div title="Select the Our Brand ">
+                              <Select
+                                id="ahsts"
+                                value={selectedBrand}
+                                onChange={handleChangeBrand}
+                                options={filteredOptionBrand}
+                                className="exp-input-field"
+                                placeholder="Our Brand"
+                                isClearable
+                              />
+                            </div>
                           </div>
                           <div className="col-sm mb-2">
                             <div title="Select the Status ">

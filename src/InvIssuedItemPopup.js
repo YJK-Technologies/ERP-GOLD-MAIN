@@ -167,11 +167,8 @@ export default function InventoryIssuedItemPopup({ open, handleClose, handleItem
   // For Dropdown
   const [selectedBrand, setSelectedBrand] = useState("");
   const [ourbranddrop, setourbranddrop] = useState([]);
-  const ourbrand = useRef(null);
-  const Status = useRef(null);
 
   const [selectedStatus, setSelectedStatus] = useState("");
-  const [statusDrop, setStatusDrop] = useState("");
   const [statusdropDown, setStatusdropDown] = useState([]);
 
   const handleChangeBrand = (selectedBrand) => {
@@ -439,7 +436,6 @@ export default function InventoryIssuedItemPopup({ open, handleClose, handleItem
                                 className="exp-input-field"
                                 placeholder="Our Brand"
                                 isClearable
-                                ref={ourbrand}
                               />
                             </div>
                           </div>
@@ -569,7 +565,6 @@ export default function InventoryIssuedItemPopup({ open, handleClose, handleItem
                                 className="exp-input-field"
                                 placeholder="Our Brand"
                                 isClearable
-                                ref={ourbrand}
                               />
                             </div>
                           </div>
