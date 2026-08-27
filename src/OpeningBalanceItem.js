@@ -41,6 +41,80 @@ function OpeningbalanceGrid() {
     .filter((permission) => permission.screen_type === "OpeningItem")
     .map((permission) => permission.permission_type.toLowerCase());
 
+useEffect(() => {
+  const handleKeyDown = (e) => {
+    if (!["F1", "F3", "F4", "F5", "F6", "F8"].includes(e.key)) {
+      return;
+    }
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (loading) {
+      return;
+    }
+
+    switch (e.key) {
+      case "F1":
+        // Opening Item Help
+        setOpen(true);
+        break;
+
+      case "F3":
+        // New / Reset
+        if (
+          window.confirm(
+            "Start a new opening item? Unsaved changes will be lost."
+          )
+        ) {
+          handleReload();
+        }
+        break;
+
+      case "F4":
+        // Save
+        handleSaveButtonClick();
+        break;
+
+      case "F5":
+        // Search Existing Opening Item
+        setOpen1(true);
+        break;
+
+      case "F6":
+        // Delete
+        if (transaction_no) {
+          handleDeleteButtonClick();
+        } else {
+          alert("Please save the opening item before deleting.");
+        }
+        break;
+
+      case "F8":
+        // Excel Export
+        if (transaction_no) {
+          handleExcelDownload();
+        } else {
+          alert("Please save the opening item before exporting.");
+        }
+        break;
+
+      default:
+        break;
+    }
+  };
+
+  window.addEventListener("keydown", handleKeyDown);
+
+  return () => {
+    window.removeEventListener("keydown", handleKeyDown);
+  };
+}, [loading, transaction_no, rowData]);
+    
+
+
+
+
   useEffect(() => {
     const today = new Date();
     const currentYear = today.getFullYear();
@@ -135,6 +209,7 @@ function OpeningbalanceGrid() {
         const cellWidth = params.column.getActualWidth();
         const isWideEnough = cellWidth > 30;
         const showSearchIcon = isWideEnough;
+
 
         return (
           <div className="position-relative d-flex align-items-center" style={{ minHeight: '100%' }}>
@@ -789,6 +864,8 @@ function OpeningbalanceGrid() {
 
     XLSX.writeFile(workbook, "Opening_Item.xlsx");
   };
+
+  
   return (
     <div className="container-fluid Topnav-screen">
       {loading && <LoadingScreen />}
