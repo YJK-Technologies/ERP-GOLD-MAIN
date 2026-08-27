@@ -8681,7 +8681,7 @@ const getStockKey = async (req, res) => {
     const result = await pool
       .request()
       .input("mode", sql.NVarChar, "ST")
-      .input("transaction_no", sql.Int, transaction_no)
+      .input("transaction_no", sql.NVarChar, transaction_no)
       .query(`EXEC [sp_stock_transfer_hdr] @mode,'','',@transaction_no,'','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
 `);
 
@@ -8712,7 +8712,7 @@ const StockTransferDetail = async (req, res) => {
     const result = await pool
       .request()
       .input("mode", sql.NVarChar, "STP")
-      .input("transaction_no", sql.Int, transaction_no)
+      .input("transaction_no", sql.NVarChar, transaction_no)
 
       // .input("status", sql.NVarChar, status)
       .query(`EXEC [sp_stock_transfer_detail] @mode,'','',@transaction_no,0,'','',0,0,0,'','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL

@@ -13,7 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import Select from 'react-select'
 import PurchaseVendorPopup from './PurchaseVendorPopup'
-import { ToastContainer,toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import "./mobile.css";
 import { faMagnifyingGlassPlus, faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from "react-router-dom";
@@ -32,13 +32,14 @@ const config = require('./Apiconfig');
 
 
 function StockTransfer() {
- 
-  const CompanyName = sessionStorage.getItem('selectedCompanyName'); 
-  const LocationCode = sessionStorage.getItem('selectedLocationCode'); 
-  const LocationName = sessionStorage.getItem('selectedLocationName'); 
-  const UserName = sessionStorage.getItem('selectedUserName'); 
+
+  const CompanyName = sessionStorage.getItem('selectedCompanyName');
+  const LocationCode = sessionStorage.getItem('selectedLocationCode');
+  const LocationName = sessionStorage.getItem('selectedLocationName');
+  const UserName = sessionStorage.getItem('selectedUserName');
 
 
+  const [transaction_no, settransaction_no] = useState("");
   const [gridApi, setGridApi] = useState(null);
   const [vendorcodedrop, setVendorcodedrop] = useState([]);
   const [paydrop, setPaydrop] = useState([]);
@@ -74,7 +75,7 @@ function StockTransfer() {
   const [gridData, setGridData] = useState([]);
   const [globalItem, setGlobalItem] = useState(null)
   const [date, setDate] = useState(null)
-    const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [additionalData, setAdditionalData] = useState({
     modified_by: '',
     created_by: '',
@@ -173,29 +174,173 @@ function StockTransfer() {
   };
 
 
+    
 
 
   //ITEM CODE TO SEARCH IN AG GRID
-  const handleItemCode = async (params) => {
-    const company_code = sessionStorage.getItem("selectedCompanyCode");
-        setLoading(true);
-    try {
-      const response = await fetch(`${config.apiBaseUrl}/getitemcodepurdata`, {
+  // const handleItemCode = async (params) => {
+  //   const company_code = sessionStorage.getItem("selectedCompanyCode");
+  //   setLoading(true);
+  //   try {
+  //     const response = await fetch(`${config.apiBaseUrl}/getitemcodepurdata`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json"
+  //       },
+  //       body: JSON.stringify({ company_code, Item_code: params.data.itemCode })
+  //     });
+
+
+  //     if (response.ok) {
+  //       const searchData = await response.json();
+  //       const updatedRow = rowData.map(row => {
+  //         if (row.itemCode === params.data.itemCode) {
+  //           const matchedItem = searchData.find(item => item.id === row.id);
+  //           if (matchedItem) {
+  //             return {
+  //               ...row,
+  //               itemCode: matchedItem.Item_code,
+  //               itemName: matchedItem.Item_name,
+  //               unitWeight: matchedItem.Item_wigh,
+  //               purchaseAmt: matchedItem.Item_std_purch_price,
+  //               taxType: matchedItem.Item_purch_tax_type,
+  //               taxDetails: matchedItem.combined_tax_details,
+  //               taxPer: matchedItem.combined_tax_percent,
+  //               warehouse: matchedItem.warehouse // Update warehouse if needed
+  //             };
+  //           }
+  //         }
+  //         return row;
+  //       });
+  //       setRowData(updatedRow);
+  //       console.log(updatedRow);
+  //     } else if (response.status === 404) {
+  //       toast.warning("Data Not Found").then(() => {
+  //         // Remove text from the field
+  //         setRowData(prevRowData =>
+  //             prevRowData.map(row => {
+  //           if (row.itemCode === params.data.itemCode) {
+  //             return {
+  //               ...row,
+  //               itemCode: '', // Clear the itemCode field
+  //               itemName: '',
+  //               unitWeight: 0,
+  //               purchaseAmt: 0,
+  //               taxType: '',
+  //               taxDetails: '',
+  //               taxPer: '',
+  //               warehouse: '' // Clear the warehouse field
+  //             };
+  //           }
+  //           return row;
+  //         })
+  //       );
+  //       }
+  //       );
+  //     } else {
+  //       console.log("Bad request");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching search data:", error);
+  //   }
+  //   finally {
+  //     setLoading(false);
+  //   }
+
+  // };
+
+const handleItemCode = async (params) => {
+  const company_code = sessionStorage.getItem("selectedCompanyCode");
+
+  const enteredItemCode = params.data.itemCode?.trim();
+  const serialNumber = params.data.serialNumber;
+
+  if (!enteredItemCode) {
+    return false;
+  }
+
+  setLoading(true);
+
+  try {
+    const response = await fetch(
+      `${config.apiBaseUrl}/getitemcodepurdata`,
+      {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code,Item_code: params.data.itemCode })
-      });
+        body: JSON.stringify({
+          company_code,
+          Item_code: enteredItemCode
+        })
+      }
+    );
 
+    if (response.ok) {
+      const searchData = await response.json();
 
-      if (response.ok) {
-        const searchData = await response.json();
-        const updatedRow = rowData.map(row => {
-          if (row.itemCode === params.data.itemCode) {
-            const matchedItem = searchData.find(item => item.id === row.id);
-            if (matchedItem) {
-              return {
+      console.log("Item API Response:", searchData);
+
+      if (!searchData || searchData.length === 0) {
+        toast.warning("Data Not Found");
+
+        setRowData(prevRowData =>
+          prevRowData.map(row =>
+            row.serialNumber === serialNumber
+              ? {
+                  ...row,
+                  itemCode: "",
+                  itemName: "",
+                  unitWeight: 0,
+                  purchaseAmt: 0,
+                  taxType: "",
+                  taxDetails: "",
+                  taxPer: "",
+                  warehouse: ""
+                }
+              : row
+          )
+        );
+
+        return false;
+      }
+
+      const matchedItem = searchData.find(
+        item =>
+          item.Item_code?.trim().toLowerCase() ===
+          enteredItemCode.toLowerCase()
+      );
+
+      if (!matchedItem) {
+        toast.warning("Item Code Not Found");
+
+        setRowData(prevRowData =>
+          prevRowData.map(row =>
+            row.serialNumber === serialNumber
+              ? {
+                  ...row,
+                  itemCode: "",
+                  itemName: "",
+                  unitWeight: 0,
+                  purchaseAmt: 0,
+                  taxType: "",
+                  taxDetails: "",
+                  taxPer: "",
+                  warehouse: ""
+                }
+              : row
+          )
+        );
+
+        return false;
+      }
+
+      // IMPORTANT:
+      // Always use the latest rowData state
+      setRowData(prevRowData =>
+        prevRowData.map(row =>
+          row.serialNumber === serialNumber
+            ? {
                 ...row,
                 itemCode: matchedItem.Item_code,
                 itemName: matchedItem.Item_name,
@@ -204,46 +349,61 @@ function StockTransfer() {
                 taxType: matchedItem.Item_purch_tax_type,
                 taxDetails: matchedItem.combined_tax_details,
                 taxPer: matchedItem.combined_tax_percent,
-                warehouse: matchedItem.warehouse // Update warehouse if needed
-              };
-            }
-          }
-          return row;
-        });
-        setRowData(updatedRow);
-        console.log(updatedRow);
-      } else if (response.status === 404) {
-        toast.warning("Data Not Found").then(() => {
-          // Remove text from the field
-          const updatedRowData = rowData.map(row => {
-            if (row.itemCode === params.data.itemCode) {
-              return {
-                ...row,
-                itemCode: '', // Clear the itemCode field
-                itemName: '',
-                unitWeight: 0,
-                purchaseAmt: 0,
-                taxType: '',
-                taxDetails: '',
-                taxPer: '',
-                warehouse: '' // Clear the warehouse field
-              };
-            }
-            return row;
-          });
-          setRowData(updatedRowData);
-        });
-      } else {
-        console.log("Bad request");
-      }
-    } catch (error) {
-      console.error("Error fetching search data:", error);
-    }
-finally {
-      setLoading(false);
+                warehouse: matchedItem.warehouse || ""
+              }
+            : row
+        )
+      );
+
+      console.log(
+        "Item fetched successfully:",
+        matchedItem
+      );
+
+      return true;
     }
 
-  };
+    if (response.status === 404) {
+      toast.warning("Data Not Found");
+
+      setRowData(prevRowData =>
+        prevRowData.map(row =>
+          row.serialNumber === serialNumber
+            ? {
+                ...row,
+                itemCode: "",
+                itemName: "",
+                unitWeight: 0,
+                purchaseAmt: 0,
+                taxType: "",
+                taxDetails: "",
+                taxPer: "",
+                warehouse: ""
+              }
+            : row
+        )
+      );
+
+      return false;
+    }
+
+    toast.error("There was an issue fetching the item.");
+
+    return false;
+
+  } catch (error) {
+    console.error("Error fetching item data:", error);
+
+    toast.error(
+      "An error occurred while fetching the item data."
+    );
+
+    return false;
+
+  } finally {
+    setLoading(false);
+  }
+};
 
 
   const handleWarehouseCodeFrom = async (params) => {
@@ -254,7 +414,7 @@ finally {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ warehouse_code: params.data.warehouse })
+        body: JSON.stringify({ warehouse_code: params.data.warehouse, company_code: sessionStorage.getItem('selectedCompanyCode')})
       });
 
       if (response.ok) {
@@ -290,7 +450,8 @@ finally {
         setRowData(updatedRowData);
         console.log(updatedRowData);
       } else if (response.status === 404) {
-       toast.warning("Data Not Found").then(() => {
+        toast.warning('Data not found!', {
+                  onClose: () => {
           // Remove text from the field
           const updatedRowData = rowData.map(row => {
             if (row.itemCode === params.data.itemCode) {
@@ -302,6 +463,7 @@ finally {
             return row;
           });
           setRowData(updatedRowData);
+        }
         });
       } else {
         console.log("Bad request");
@@ -309,7 +471,7 @@ finally {
     } catch (error) {
       console.error("Error fetching search data:", error);
     }
-finally {
+    finally {
       setLoading(false);
     }
 
@@ -323,7 +485,7 @@ finally {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ warehouse_code: params.data.warehouseTo })
+        body: JSON.stringify({ warehouse_code: params.data.warehouseTo, company_code: sessionStorage.getItem('selectedCompanyCode') })
       });
 
       if (response.ok) {
@@ -361,7 +523,8 @@ finally {
         setRowData(updatedRowData);
         console.log(updatedRowData);
       } else if (response.status === 404) {
-        toast.warning("Data not found!").then(() => {
+        toast.warning('Data not found!', {
+                  onClose: () => {
           // Remove text from the field
           const updatedRowData = rowData.map(row => {
             if (row.itemCode === params.data.itemCode) {
@@ -373,6 +536,7 @@ finally {
             return row;
           });
           setRowData(updatedRowData);
+        }
         });
       } else {
         console.log("Bad request");
@@ -380,7 +544,7 @@ finally {
     } catch (error) {
       console.error("Error fetching search data:", error);
     }
-finally {
+    finally {
       setLoading(false);
     }
 
@@ -412,7 +576,7 @@ finally {
 
           console.log("Data fetched successfully");
         } else {
-      
+
           toast.warning("No data found for the given vendor code.")
           setvendor_code('');
           setVendorName('');
@@ -424,7 +588,7 @@ finally {
         setvendor_code('');
         setVendorName('');
       } else {
-       
+
         toast.error("There was an error with your request.")
 
         setvendor_code('');
@@ -432,13 +596,13 @@ finally {
       }
     } catch (error) {
       console.error("Error fetching search data:", error);
-      
+
       toast.error("An error occurred while fetching the data.")
 
       setvendor_code('');
       setVendorName('');
     }
-finally {
+    finally {
       setLoading(false);
     }
 
@@ -469,7 +633,7 @@ finally {
     if (colDef.field === 'purchaseQty' && rowIndex === lastRowIndex) {
       const serialNumber = rowData.length + 1;
       const newRowData = {
-        serialNumber, delete: '', itemName: null, unitWeight: null, warehouse: null, warehouseTo:null, purchaseQty: 0, unitWeight:null, totalWeight: null
+        serialNumber, delete: '', itemName: null, unitWeight: null, warehouse: null, warehouseTo: null, purchaseQty: 0, unitWeight: null, totalWeight: null
       };
       setRowData(prevRowData => [...prevRowData, newRowData]);
     }
@@ -530,7 +694,7 @@ finally {
   function qtyValueSetter(params) {
     const newValue = parseFloat(params.newValue);
     if (isNaN(newValue) || newValue < 0) {
-     
+
       toast.error("Quantity cannot be negative!")
       return false; // Prevent the value from being set
     }
@@ -572,207 +736,207 @@ finally {
       cellEditorParams: {
         maxLength: 18,
       },
-      onCellValueChanged: function (params) {
-        handleItemCode(params);
-      },
+      // onCellValueChanged: function (params) {
+      //   handleItemCode(params);
+      // },
       sortable: false,
       autoComplete: false
     },
     {
-  headerName: 'Item Name',
-  field: 'itemName',
-  editable: false,
-  filter: true,
-  cellEditorParams: {
-    maxLength: 40,
-  },
-  sortable: false,
+      headerName: 'Item Name',
+      field: 'itemName',
+      editable: false,
+      filter: true,
+      cellEditorParams: {
+        maxLength: 40,
+      },
+      sortable: false,
 
-  cellRenderer: (params) => {
-    const cellWidth = params.column.getActualWidth();
+      cellRenderer: (params) => {
+        const cellWidth = params.column.getActualWidth();
 
-    // Show search icon only when column has enough width
-    const showSearchIcon = cellWidth > 30;
+        // Show search icon only when column has enough width
+        const showSearchIcon = cellWidth > 30;
 
-    return (
-      <div
-        className="position-relative d-flex align-items-center"
-        style={{
-          minHeight: '100%',
-          width: '100%'
-        }}
-      >
-        {/* Item Name */}
-        <div
-          className="flex-grow-1"
-          style={{
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            paddingRight: '20px'
-          }}
-        >
-          {params.value || ''}
-        </div>
-
-        {/* Search Icon */}
-        {showSearchIcon && (
-          <span
-            className="icon searchIcon"
-            title="Item Help"
-            style={{
-              position: 'absolute',
-              right: '-5px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              cursor: 'pointer',
-              zIndex: 10
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleClickOpen(params);
-            }}
-          >
-            <i className="fa fa-search"></i>
-          </span>
-        )}
-      </div>
-    );
-  }
-    },
-
-    {
-  headerName: 'From Warehouse',
-  field: 'warehouse',
-  editable: true,
-  filter: true,
-
-  cellEditorParams: {
-    maxLength: 18,
-  },
-
-  onCellValueChanged: function (params) {
-    handleWarehouseCodeFrom(params);
-  },
-
-  sortable: false,
-  autoComplete: false,
-
-  cellRenderer: (params) => {
-    const cellWidth = params.column.getActualWidth();
-
-    return (
-      <div
-        className="position-relative d-flex align-items-center"
-        style={{
-          minHeight: '100%',
-          width: '100%'
-        }}
-      >
-        {/* Warehouse Code */}
-        <div
-          className="flex-grow-1"
-          style={{
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            paddingRight: '20px'
-          }}
-        >
-          {params.value || ''}
-        </div>
-
-        {/* Warehouse Search Icon */}
-        {cellWidth > 30 && (
-          <span
-            className="icon searchIcon"
-            title="Warehouse Help"
-            style={{
-              position: 'absolute',
-              right: '-5px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              cursor: 'pointer',
-              zIndex: 10
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleOpen(params);
-            }}
-          >
-            <i className="fa fa-search"></i>
-          </span>
-        )}
-      </div>
-    );
-  }
-    },
-
-    {
-    headerName: 'To Warehouse',
-  field: 'warehouseTo',
-  editable: true,
-  filter: true,
-
-  cellEditorParams: {
-    maxLength: 18,
-  },
-
-  onCellValueChanged: function (params) {
-    handleWarehouseCodeTo(params);
-  },
-
-  sortable: false,
-  autoComplete: false,
-
-  cellRenderer: (params) => {
-    const cellWidth = params.column.getActualWidth();
-
-      return (
-        <div
-          className="position-relative d-flex align-items-center"
-          style={{
-            minHeight: '100%',
-            width: '100%'
-          }}
-        >
-          {/* To Warehouse Code */}
+        return (
           <div
-            className="flex-grow-1"
+            className="position-relative d-flex align-items-center"
             style={{
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              paddingRight: '20px'
+              minHeight: '100%',
+              width: '100%'
             }}
           >
-            {params.value || ''}
-          </div>
-
-          {/* Warehouse Search Icon */}
-          {cellWidth > 30 && (
-            <span
-              className="icon searchIcon"
-              title="Warehouse Help"
+            {/* Item Name */}
+            <div
+              className="flex-grow-1"
               style={{
-                position: 'absolute',
-                right: '-5px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                cursor: 'pointer',
-                zIndex: 10
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleOpenpopup(params);
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                paddingRight: '20px'
               }}
             >
-              <i className="fa fa-search"></i>
-            </span>
-          )}
-        </div>
-      );
-    }
+              {params.value || ''}
+            </div>
+
+            {/* Search Icon */}
+            {showSearchIcon && (
+              <span
+                className="icon searchIcon"
+                title="Item Help"
+                style={{
+                  position: 'absolute',
+                  right: '-5px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  cursor: 'pointer',
+                  zIndex: 10
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleClickOpen(params);
+                }}
+              >
+                <i className="fa fa-search"></i>
+              </span>
+            )}
+          </div>
+        );
+      }
+    },
+
+    {
+      headerName: 'From Warehouse',
+      field: 'warehouse',
+      editable: true,
+      filter: true,
+
+      cellEditorParams: {
+        maxLength: 18,
+      },
+
+      onCellValueChanged: function (params) {
+        handleWarehouseCodeFrom(params);
+      },
+
+      sortable: false,
+      autoComplete: false,
+
+      cellRenderer: (params) => {
+        const cellWidth = params.column.getActualWidth();
+
+        return (
+          <div
+            className="position-relative d-flex align-items-center"
+            style={{
+              minHeight: '100%',
+              width: '100%'
+            }}
+          >
+            {/* Warehouse Code */}
+            <div
+              className="flex-grow-1"
+              style={{
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                paddingRight: '20px'
+              }}
+            >
+              {params.value || ''}
+            </div>
+
+            {/* Warehouse Search Icon */}
+            {cellWidth > 30 && (
+              <span
+                className="icon searchIcon"
+                title="Warehouse Help"
+                style={{
+                  position: 'absolute',
+                  right: '-5px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  cursor: 'pointer',
+                  zIndex: 10
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleOpen(params);
+                }}
+              >
+                <i className="fa fa-search"></i>
+              </span>
+            )}
+          </div>
+        );
+      }
+    },
+
+    {
+      headerName: 'To Warehouse',
+      field: 'warehouseTo',
+      editable: true,
+      filter: true,
+
+      cellEditorParams: {
+        maxLength: 18,
+      },
+
+      onCellValueChanged: function (params) {
+        handleWarehouseCodeTo(params);
+      },
+
+      sortable: false,
+      autoComplete: false,
+
+      cellRenderer: (params) => {
+        const cellWidth = params.column.getActualWidth();
+
+        return (
+          <div
+            className="position-relative d-flex align-items-center"
+            style={{
+              minHeight: '100%',
+              width: '100%'
+            }}
+          >
+            {/* To Warehouse Code */}
+            <div
+              className="flex-grow-1"
+              style={{
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                paddingRight: '20px'
+              }}
+            >
+              {params.value || ''}
+            </div>
+
+            {/* Warehouse Search Icon */}
+            {cellWidth > 30 && (
+              <span
+                className="icon searchIcon"
+                title="Warehouse Help"
+                style={{
+                  position: 'absolute',
+                  right: '-5px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  cursor: 'pointer',
+                  zIndex: 10
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleOpenpopup(params);
+                }}
+              >
+                <i className="fa fa-search"></i>
+              </span>
+            )}
+          </div>
+        );
+      }
     },
     {
       headerName: 'Qty',
@@ -876,12 +1040,12 @@ finally {
   const handleSaveButtonClick = async () => {
     if (!transactionDate) {
       setError(" ");
-      setStatus('Error: Missing required fields');
+      toast.warning('Error: Missing required fields');
       return;
     }
 
     if (rowData.length === 0) {
-      
+
       toast.warning("There are no items to save. Please add at least one item.")
       return;
     }
@@ -889,7 +1053,7 @@ finally {
     const hasValidData = rowData.some(row => row.purchaseQty > 0 && row.ItemTotalWight > 0);
 
     if (!hasValidData) {
-   
+
       toast.warning("Ensure at least one row has Qty and Item Total Weight greater than 0.")
       return;
     }
@@ -917,35 +1081,35 @@ finally {
         const [{ transaction_no }] = searchData;
         setNew_running_no(transaction_no);
 
-      
+
         toast.success("Stock Data inserted Successfully")
 
         const detailsSaved = await saveStockTransferDetails(transaction_no);
 
-if (detailsSaved) {
-  setDelButtonVisible(true);
-  setprintButtonVisible(true);
-  setStatus('Saved...');
+        if (detailsSaved) {
+          setDelButtonVisible(true);
+          setprintButtonVisible(true);
+          setStatus('Saved...');
 
-  console.log("Stock Header and Detail Data inserted successfully");
-}
+          console.log("Stock Header and Detail Data inserted successfully");
+        }
         console.log("Stock Header Data inserted successfully");
       } else {
-  const errorResponse = await response.json();
+        const errorResponse = await response.json();
 
-  console.error("Stock Transfer Header Error:", errorResponse.message);
+        console.error("Stock Transfer Header Error:", errorResponse.message);
 
-  toast.error(errorResponse.message || "Unable to save stock transfer.");
+        toast.error(errorResponse.message || "Unable to save stock transfer.");
 
-  setStatus('Error: ' + (errorResponse.message || "Unable to save stock transfer."));
-}
+        setStatus('Error: ' + (errorResponse.message || "Unable to save stock transfer."));
+      }
     } catch (error) {
       console.error("Error inserting data:", error);
-     
+
       toast.error('Error inserting data: ' + error.message)
       setStatus('Error: ' + error.message);
     }
-finally {
+    finally {
       setLoading(false);
     }
 
@@ -953,74 +1117,74 @@ finally {
 
   //CODE TO SAVE PURCHASE DETAILS
   const saveStockTransferDetails = async (transaction_no) => {
-  try {
+    try {
 
-    const validRows = rowData.filter(row =>
-      row.serialNumber != null &&
-      row.itemCode != null &&
-      row.itemCode !== "" &&
-      row.itemName != null &&
-      row.itemName !== "" &&
-      row.purchaseQty != null &&
-      row.purchaseQty !== "" &&
-      row.unitWeight != null &&
-      row.unitWeight !== "" &&
-      row.ItemTotalWight != null &&
-      row.ItemTotalWight !== "" &&
-      row.warehouse != null &&
-      row.warehouse !== "" &&
-      row.warehouseTo != null &&
-      row.warehouseTo !== ""
-    );
-
-    for (const row of validRows) {
-      const Details = {
-        created_by: sessionStorage.getItem('selectedUserCode'),
-        company_code: sessionStorage.getItem('selectedCompanyCode'),
-        ItemSNo: row.serialNumber,
-        transaction_no: transaction_no.toString(),
-        item_code: row.itemCode,
-        Item_name: row.itemName,
-        transfer_Qty: row.purchaseQty,
-        weight: row.unitWeight,
-        total_weight: row.ItemTotalWight,
-        from_Warehouse: row.warehouse,
-        to_Warehouse: row.warehouseTo,
-        transaction_date: transactionDate
-      };
-
-      const response = await fetch(
-        `${config.apiBaseUrl}/addstocktransferdetail`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(Details),
-        }
+      const validRows = rowData.filter(row =>
+        row.serialNumber != null &&
+        row.itemCode != null &&
+        row.itemCode !== "" &&
+        row.itemName != null &&
+        row.itemName !== "" &&
+        row.purchaseQty != null &&
+        row.purchaseQty !== "" &&
+        row.unitWeight != null &&
+        row.unitWeight !== "" &&
+        row.ItemTotalWight != null &&
+        row.ItemTotalWight !== "" &&
+        row.warehouse != null &&
+        row.warehouse !== "" &&
+        row.warehouseTo != null &&
+        row.warehouseTo !== ""
       );
 
-      const responseData = await response.json();
+      for (const row of validRows) {
+        const Details = {
+          created_by: sessionStorage.getItem('selectedUserCode'),
+          company_code: sessionStorage.getItem('selectedCompanyCode'),
+          ItemSNo: row.serialNumber,
+          transaction_no: transaction_no.toString(),
+          item_code: row.itemCode,
+          Item_name: row.itemName,
+          transfer_Qty: row.purchaseQty,
+          weight: row.unitWeight,
+          total_weight: row.ItemTotalWight,
+          from_Warehouse: row.warehouse,
+          to_Warehouse: row.warehouseTo,
+          transaction_date: transactionDate
+        };
 
-      if (response.ok) {
-        console.log("Stock Detail Data inserted successfully");
-      } else {
-        console.error("Stock Detail Error:", responseData.message);
-
-        throw new Error(
-          responseData.message ||
-          "Failed to insert stock transfer detail."
+        const response = await fetch(
+          `${config.apiBaseUrl}/addstocktransferdetail`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(Details),
+          }
         );
+
+        const responseData = await response.json();
+
+        if (response.ok) {
+          console.log("Stock Detail Data inserted successfully");
+        } else {
+          console.error("Stock Detail Error:", responseData.message);
+
+          throw new Error(
+            responseData.message ||
+            "Failed to insert stock transfer detail."
+          );
+        }
       }
+
+      return true;
+
+    } catch (error) {
+      console.error("Error inserting stock transfer details:", error);
+      throw error;
     }
-
-    return true;
-
-  } catch (error) {
-    console.error("Error inserting stock transfer details:", error);
-    throw error;
-  }
-};
+  };
 
 
 
@@ -1072,14 +1236,14 @@ finally {
         setStatus('Report Generated...');
       } else {
         console.log("Failed to fetch some data");
-      
+
         toast.error("Reference Number Does Not Exist")
         setStatus('Reference Number Does Not Exist');
       }
     } catch (error) {
       console.error("Error executing API calls:", error);
     }
-finally {
+    finally {
       setLoading(false);
     }
 
@@ -1163,7 +1327,7 @@ finally {
 
           // Check if From Warehouse and To Warehouse are the same
           if (row.warehouseTo === matchedItem.warehouse) {
-          
+
             toast.warning("From Warehouse and To Warehouse cannot be the same!").then(() => {
               // Clear To Warehouse field
               setRowData(prevRowData =>
@@ -1198,43 +1362,43 @@ finally {
   };
 
 
-const handleToWarehouse = async (data) => {
-  console.log("Data received by handleToWarehouse:", data);
+  const handleToWarehouse = async (data) => {
+    console.log("Data received by handleToWarehouse:", data);
 
-  const updatedRowData = rowData.map(row => {
-    if (row.serialNumber === global) {
-      const matchedItem = data.find(item => item.id === row.id);
+    const updatedRowData = rowData.map(row => {
+      if (row.serialNumber === global) {
+        const matchedItem = data.find(item => item.id === row.id);
 
-      if (matchedItem) {
+        if (matchedItem) {
 
-        if (row.warehouse === matchedItem.warehouse) {
-          toast.warning(
-            "From Warehouse and To Warehouse cannot be the same!"
-          );
+          if (row.warehouse === matchedItem.warehouse) {
+            toast.warning(
+              "From Warehouse and To Warehouse cannot be the same!"
+            );
+
+            return {
+              ...row,
+              warehouseTo: ""
+            };
+          }
 
           return {
             ...row,
-            warehouseTo: ""
+            warehouseTo: matchedItem.warehouse
           };
         }
-
-        return {
-          ...row,
-          warehouseTo: matchedItem.warehouse
-        };
       }
+
+      return row;
+    });
+
+    setRowData(updatedRowData);
+
+    // Fetch transaction date also
+    if (new_running_no) {
+      await StockDetail(new_running_no);
     }
-
-    return row;
-  });
-
-  setRowData(updatedRowData);
-
-  // Fetch transaction date also
-  if (new_running_no) {
-    await StockDetail(new_running_no);
-  }
-};
+  };
 
   const currentDate = new Date().toISOString().split('T')[0];
 
@@ -1285,17 +1449,17 @@ const handleToWarehouse = async (data) => {
     setNew_running_no(refNo); setStatus('Typing...');
   }
 
-const formatDate = (isoDateString) => {
-  if (!isoDateString) return "";
+  const formatDate = (isoDateString) => {
+    if (!isoDateString) return "";
 
-  const date = new Date(isoDateString);
+    const date = new Date(isoDateString);
 
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
 
-  return `${year}-${month}-${day}`;
-};
+    return `${year}-${month}-${day}`;
+  };
 
   const formatToTwoDecimalPoints = (number) => {
     return parseFloat(number).toFixed(2);
@@ -1313,7 +1477,7 @@ const formatDate = (isoDateString) => {
       });
       if (response.ok) {
         setSaveButtonVisible(false)
-       setDelButtonVisible(true)
+        setDelButtonVisible(true)
         setprintButtonVisible(true)
 
         const searchData = await response.json();
@@ -1392,7 +1556,7 @@ const formatDate = (isoDateString) => {
 
         console.log("data fetched successfully")
       } else if (response.status === 404) {
-        
+
         toast.warning("Data Not Found")
 
         // Clear the data fields
@@ -1418,7 +1582,7 @@ const formatDate = (isoDateString) => {
     } catch (error) {
       console.error("Error fetching search data:", error);
     }
-finally {
+    finally {
       setLoading(false);
     }
 
@@ -1456,121 +1620,121 @@ finally {
   // };
 
   const handlePurchaseData = async (data) => {
-  if (data && data.length > 0) {
-    const [{ TransactionNo, transaction_date }] = data;
+    if (data && data.length > 0) {
+      const [{ TransactionNo, transaction_date }] = data;
 
-    // Format transaction date for input type="date"
-    const formattedTransactionDate = formatDate(transaction_date);
+      // Format transaction date for input type="date"
+      const formattedTransactionDate = formatDate(transaction_date);
 
-    console.log("API Transaction Date:", transaction_date);
-    console.log("Formatted Transaction Date:", formattedTransactionDate);
+      console.log("API Transaction Date:", transaction_date);
+      console.log("Formatted Transaction Date:", formattedTransactionDate);
 
-    // Set transaction date
-    setTransactionDate(formattedTransactionDate);
+      // Set transaction date
+      setTransactionDate(formattedTransactionDate);
 
-    // Set transaction number
-    const transactionNoInput = document.getElementById("RefNo");
+      // Set transaction number
+      const transactionNoInput = document.getElementById("RefNo");
 
-    if (transactionNoInput) {
-      transactionNoInput.value = TransactionNo;
-    } else {
-      console.error("transactionNumber element not found");
-    }
-
-    setNew_running_no(TransactionNo);
-
-    // Fetch stock details
-    await StockDetail(TransactionNo);
-
-    setprintButtonVisible(true);
-    setDelButtonVisible(true);
-    setSaveButtonVisible(false);
-
-  } else {
-    console.log("Data not fetched...!");
-  }
-
-  console.log("Purchase data:", data);
-  };  
-
-  const StockDetail = async (TransactionNo) => {
-  setLoading(true);
-
-  try {
-    const response = await fetch(`${config.apiBaseUrl}/StockTransferDetail`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        transaction_no: TransactionNo
-      })
-    });
-
-    if (response.ok) {
-      const searchData = await response.json();
-
-      console.log("StockTransferDetail API Data:", searchData);
-
-      // =========================
-      // FETCH TRANSACTION DATE
-      // =========================
-      if (searchData && searchData.length > 0) {
-        const transaction_date = searchData[0].transaction_date;
-
-        if (transaction_date) {
-          const formattedDate = formatDate(transaction_date);
-
-          console.log("Transaction Date from StockDetail:", transaction_date);
-          console.log("Formatted Transaction Date:", formattedDate);
-
-          setTransactionDate(formattedDate);
-        }
+      if (transactionNoInput) {
+        transactionNoInput.value = TransactionNo;
+      } else {
+        console.error("transactionNumber element not found");
       }
 
-      // =========================
-      // FETCH STOCK DETAILS
-      // =========================
-      const newRowData = [];
+      setNew_running_no(TransactionNo);
 
-      searchData.forEach(item => {
-        const {
-          ItemSNo,
-          item_code,
-          Item_name,
-          weight,
-          from_Warehouse,
-          to_Warehouse,
-          transfer_Qty,
-          total_weight
-        } = item;
+      // Fetch stock details
+      await StockDetail(TransactionNo);
 
-        newRowData.push({
-          serialNumber: ItemSNo,
-          itemCode: item_code,
-          itemName: Item_name,
-          unitWeight: weight,
-          purchaseQty: transfer_Qty,
-          warehouse: from_Warehouse,
-          warehouseTo: to_Warehouse,
-          ItemTotalWight: parseFloat(total_weight || 0).toFixed(2)
-        });
-      });
+      setprintButtonVisible(true);
+      setDelButtonVisible(true);
+      setSaveButtonVisible(false);
 
-      setRowData(newRowData);
-
-    } else if (response.status === 404) {
-      console.log("Data not found");
     } else {
-      console.log("Bad request");
+      console.log("Data not fetched...!");
     }
 
-  } catch (error) {
-    console.error("Error fetching search data:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+    console.log("Purchase data:", data);
+  };
+
+  const StockDetail = async (TransactionNo) => {
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/StockTransferDetail`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          transaction_no: TransactionNo
+        })
+      });
+
+      if (response.ok) {
+        const searchData = await response.json();
+
+        console.log("StockTransferDetail API Data:", searchData);
+
+        // =========================
+        // FETCH TRANSACTION DATE
+        // =========================
+        if (searchData && searchData.length > 0) {
+          const transaction_date = searchData[0].transaction_date;
+
+          if (transaction_date) {
+            const formattedDate = formatDate(transaction_date);
+
+            console.log("Transaction Date from StockDetail:", transaction_date);
+            console.log("Formatted Transaction Date:", formattedDate);
+
+            setTransactionDate(formattedDate);
+          }
+        }
+
+        // =========================
+        // FETCH STOCK DETAILS
+        // =========================
+        const newRowData = [];
+
+        searchData.forEach(item => {
+          const {
+            ItemSNo,
+            item_code,
+            Item_name,
+            weight,
+            from_Warehouse,
+            to_Warehouse,
+            transfer_Qty,
+            total_weight
+          } = item;
+
+          newRowData.push({
+            serialNumber: ItemSNo,
+            itemCode: item_code,
+            itemName: Item_name,
+            unitWeight: weight,
+            purchaseQty: transfer_Qty,
+            warehouse: from_Warehouse,
+            warehouseTo: to_Warehouse,
+            ItemTotalWight: parseFloat(total_weight || 0).toFixed(2)
+          });
+        });
+
+        setRowData(newRowData);
+
+      } else if (response.status === 404) {
+        console.log("Data not found");
+      } else {
+        console.log("Bad request");
+      }
+
+    } catch (error) {
+      console.error("Error fetching search data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // const StockDetail = async (TransactionNo) => {
   //   setLoading(true)
@@ -1736,7 +1900,7 @@ finally {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ Tax_amount: formattedTotalTaxAmounts, company_code:sessionStorage.getItem("selectedCompanyCode"), Putchase_amount: formattedTotalItemAmounts }),
+          body: JSON.stringify({ Tax_amount: formattedTotalTaxAmounts, company_code: sessionStorage.getItem("selectedCompanyCode"), Putchase_amount: formattedTotalItemAmounts }),
         });
         if (response.ok) {
           const data = await response.json();
@@ -1795,83 +1959,83 @@ finally {
     }
   };
 
-const handleDeleteButtonClick = async () => {
-  // Check for required fields
-  if (!new_running_no || !transactionDate) {
-    setError(" ");
-    setStatus("Error: Missing required fields");
-    toast.warning("Error: Missing required fields");
-    return;
-  }
+  const handleDeleteButtonClick = async () => {
+    // Check for required fields
+    if (!new_running_no || !transactionDate) {
+      setError(" ");
+      setStatus("Error: Missing required fields");
+      toast.warning("Error: Missing required fields");
+      return;
+    }
 
-  showConfirmationToast(
-    "Are you sure you want to delete the data ?",
+    showConfirmationToast(
+      "Are you sure you want to delete the data ?",
 
-    async () => {
-      setLoading(true);
-      setStatus("Deleting...");
+      async () => {
+        setLoading(true);
+        setStatus("Deleting...");
 
-      try {
-        // Delete Detail
-        const detailResult = await handleDeleteDetail();
-        console.log("Detail deletion result:", detailResult);
+        try {
+          // Delete Detail
+          const detailResult = await handleDeleteDetail();
+          console.log("Detail deletion result:", detailResult);
 
-        // Delete Header
-        const headerResult =
-          detailResult === true
-            ? await handleDeleteHeader()
-            : "Failed to delete details.";
+          // Delete Header
+          const headerResult =
+            detailResult === true
+              ? await handleDeleteHeader()
+              : "Failed to delete details.";
 
-        console.log("Header deletion result:", headerResult);
+          console.log("Header deletion result:", headerResult);
 
-        // Check both results
-        if (detailResult === true && headerResult === true) {
-          console.log("Both details and header deleted successfully");
+          // Check both results
+          if (detailResult === true && headerResult === true) {
+            console.log("Both details and header deleted successfully");
 
-          toast.success("Data Deleted Successfully", {
-            autoClose: true,
-            onClose: () => {
-              window.location.reload();
-            }
-          });
+            toast.success("Data Deleted Successfully", {
+              autoClose: true,
+              onClose: () => {
+                window.location.reload();
+              }
+            });
 
-          setStatus("Deleted Successfully...");
-          setprintButtonVisible(false);
+            setStatus("Deleted Successfully...");
+            setprintButtonVisible(false);
 
-        } else {
-          // Get actual error message
+          } else {
+            // Get actual error message
+            const errorMessage =
+              detailResult !== true
+                ? detailResult
+                : headerResult !== true
+                  ? headerResult
+                  : "An unknown error occurred.";
+
+            console.error("Delete failed:", errorMessage);
+
+            toast.error(errorMessage);
+            setStatus(errorMessage);
+          }
+
+        } catch (error) {
+          console.error("Error executing delete APIs:", error);
+
           const errorMessage =
-            detailResult !== true
-              ? detailResult
-              : headerResult !== true
-                ? headerResult
-                : "An unknown error occurred.";
-
-          console.error("Delete failed:", errorMessage);
+            error?.message || "An error occurred while deleting data.";
 
           toast.error(errorMessage);
           setStatus(errorMessage);
+
+        } finally {
+          setLoading(false);
         }
+      },
 
-      } catch (error) {
-        console.error("Error executing delete APIs:", error);
-
-        const errorMessage =
-          error?.message || "An error occurred while deleting data.";
-
-        toast.error(errorMessage);
-        setStatus(errorMessage);
-
-      } finally {
-        setLoading(false);
+      () => {
+        toast.info("Data deletion cancelled.");
       }
-    },
-
-    () => {
-      toast.info("Data deletion cancelled.");
-    }
-  );
-};
+    );
+  };
 
   const handleReload = () => {
     setLoading(true)
@@ -1899,8 +2063,8 @@ const handleDeleteButtonClick = async () => {
     setFinancialYearEnd(financialYearEndDate);
 
     // Current date as default Transaction Date
-  const currentDate = today.toISOString().split("T")[0];
-  setTransactionDate(currentDate);
+    const currentDate = today.toISOString().split("T")[0];
+    setTransactionDate(currentDate);
   }, []);
 
   const handleAddRow = () => {
@@ -1920,218 +2084,308 @@ const handleDeleteButtonClick = async () => {
     }
   };
 
+useEffect(() => {
+        const handleKeyDown = (e) => {
+          // 1. Ensure keys only trigger on F-keys
+          if (!['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F8'].includes(e.key)) {
+            return;
+          }
+    
+          // 2. Prevent default browser shortcut actions (e.g., F1 Help, F5 Refresh)
+          e.preventDefault();
+          e.stopPropagation();
+    
+          // 3. Prevent execution if screen is currently loading
+          if (loading) return;
+    
+          switch (e.key) {
+            case 'F1':
+              // Open Item Search Popup
+              setOpen(true); 
+              break;
+    
+            case 'F3':
+              // New / Reset Sales Invoice Form
+              if (window.confirm("Start a new adjustment? Unsaved changes will be lost.")) {
+                handleReload(); 
+              }
+              break;  
+    
+            case 'F4':
+              // Save / Complete Invoice (Same logic as Save Button)
+              handleSaveButtonClick(); 
+              break;
+    
+            case 'F5':
+              // Search Existing Invoices to Edit
+              setOpen1(true); 
+              break;
+    
+            case 'F6':
+              // Delete selected line item in AG Grid
+              if ( transaction_no) {
+                handleDeleteButtonClick();
+              } else {
+                alert("Please save the invoice before deleting.");
+              }
+              break;
 
+            default:
+              break;
+          }
+        };
+    
+        // Attach listener
+        window.addEventListener('keydown', handleKeyDown);
+    
+        // Clean up listener on unmount
+        return () => {
+          window.removeEventListener('keydown', handleKeyDown);
+        };
+      }, [loading,transaction_no, rowData]);
   return (
     <div className="container-fluid Topnav-screen">
       <div>
-      {loading && <LoadingScreen />}
-                  <ToastContainer position="top-right" className="toast-design" theme="colored" />
+        {loading && <LoadingScreen />}
+        <ToastContainer position="top-right" className="toast-design" theme="colored" />
         <div className="shadow-lg p-1 bg-body-tertiary rounded mt-2 mb-2">
           <div className="d-flex justify-content-between" >
-      
+
             <div className="d-flex justify-content-start">
               <h1 align="left" className="purbut me-5" >Stock Transfer</h1>
             </div>
 
 
             <div className="d-flex justify-content-end purbut me-3">
-              {saveButtonVisible &&['add', 'all permission'].some(permission => purchasePermission.includes(permission)) && (
-                <savebutton className="purbut" onClick={handleSaveButtonClick} title='save'>
+              {saveButtonVisible && ['add', 'all permission'].some(permission => purchasePermission.includes(permission)) && (
+                <savebutton className="purbut" onClick={handleSaveButtonClick} title='Save'>
                   <i class="fa-regular fa-floppy-disk"></i>
                 </savebutton>
               )}
 
-              {delButtonVisible &&['delete', 'all permission'].some(permission => purchasePermission.includes(permission)) && (
-                <delbutton className="purbut" onClick={handleDeleteButtonClick} title='delete'>
+              {delButtonVisible && ['delete', 'all permission'].some(permission => purchasePermission.includes(permission)) && (
+                <delbutton className="purbut" onClick={handleDeleteButtonClick} title='Delete'>
                   <i class="fa-solid fa-trash"></i>
                 </delbutton>
               )}
-              {printButtonVisible &&['all permission', 'view'].some(permission => purchasePermission.includes(permission)) && (
-                <printbutton className="purbut" title="print" onClick={generateReport}>
+              {printButtonVisible && ['all permission', 'view'].some(permission => purchasePermission.includes(permission)) && (
+                <printbutton className="purbut" title="Print" onClick={generateReport}>
 
                   <i class="fa-solid fa-file-pdf"></i></printbutton>
               )}
-              <printbutton className="purbut" onClick={handleReload} ><i class="fa-solid fa-arrow-rotate-right"></i></printbutton>
+              <printbutton className="purbut" title="Reload" onClick={handleReload} ><i class="fa-solid fa-arrow-rotate-right"></i></printbutton>
             </div>  </div>
 
 
           <div class="mobileview">
-          <div className="d-flex justify-content-between">
-          <div className="d-flex justify-content-start">
-      <h1 align="left" className="h1">Stock Transfer</h1> 
-      </div>
-      <div className="d-flex justify-content-end">
-            <div class="dropdown">
-              <button class="btn btn-primary dropdown-toggle p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fa-solid fa-list"></i>
-              </button>
+            <div className="d-flex justify-content-between">
+              <div className="d-flex justify-content-start">
+                <h1 align="left" className="h1">Stock Transfer</h1>
+              </div>
+              <div className="d-flex justify-content-end">
+                <div class="dropdown">
+                  <button class="btn btn-primary dropdown-toggle p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fa-solid fa-list"></i>
+                  </button>
 
-              <ul class="dropdown-menu menu">
-               
-              <li class="iconbutton  d-flex justify-content-center text-success ">                 
-                 {['update', 'all permission'].some(permission => purchasePermission.includes(permission)) && (
-                     <icon
-                     class="icon"
-                     onClick={handleSaveButtonClick}
-                   >
-                   <i class="fa-solid fa-floppy-disk"></i>
-                   </icon>
-                  )}
-                </li>
-            
+                  <ul class="dropdown-menu menu">
 
-
-                <li class="iconbutton  d-flex justify-content-center text-danger">
-                {['delete', 'all permission'].some(permission => purchasePermission.includes(permission)) && (
-                      <icon
-                      class="icon"
-                      onClick={handleDeleteButtonClick}
-                    >
-                    
-            <i class="fa-solid fa-trash"></i>
-                    </icon>
-                  )}
-                </li>
+                    <li class="iconbutton  d-flex justify-content-center text-success ">
+                      {['update', 'all permission'].some(permission => purchasePermission.includes(permission)) && (
+                        <icon
+                          class="icon"
+                          onClick={handleSaveButtonClick}
+                        >
+                          <i class="fa-solid fa-floppy-disk"></i>
+                        </icon>
+                      )}
+                    </li>
 
 
-                <li class="iconbutton  d-flex justify-content-center text-warning ">
-                {['all permission', 'view'].some(permission => purchasePermission.includes(permission)) && (
-                     <icon
-                     class="icon"
-                     onClick={generateReport}
-                   >
-                    
-           <i class="fa-solid fa-file-pdf"></i>
-                   </icon>
-                  )}
-              </li>
-              <li class="iconbutton  d-flex justify-content-center ">
-                {['all permission', 'view'].some(permission => purchasePermission.includes(permission)) && (
-                     <icon
-                     class="icon"
-                     onClick={handleReload}
-                   >
-                    
-                    <i class="fa-solid fa-arrow-rotate-right"></i>
-                   </icon>
-                  )}
-              </li>
-              </ul></div>
-          </div></div></div></div>
 
-      
+                    <li class="iconbutton  d-flex justify-content-center text-danger">
+                      {['delete', 'all permission'].some(permission => purchasePermission.includes(permission)) && (
+                        <icon
+                          class="icon"
+                          onClick={handleDeleteButtonClick}
+                        >
 
-      
-<div className="shadow-lg p-1 bg-body-tertiary rounded  pt-4 "
+                          <i class="fa-solid fa-trash"></i>
+                        </icon>
+                      )}
+                    </li>
+
+
+                    <li class="iconbutton  d-flex justify-content-center text-warning ">
+                      {['all permission', 'view'].some(permission => purchasePermission.includes(permission)) && (
+                        <icon
+                          class="icon"
+                          onClick={generateReport}
+                        >
+
+                          <i class="fa-solid fa-file-pdf"></i>
+                        </icon>
+                      )}
+                    </li>
+                    <li class="iconbutton  d-flex justify-content-center ">
+                      {['all permission', 'view'].some(permission => purchasePermission.includes(permission)) && (
+                        <icon
+                          class="icon"
+                          onClick={handleReload}
+                        >
+
+                          <i class="fa-solid fa-arrow-rotate-right"></i>
+                        </icon>
+                      )}
+                    </li>
+                  </ul></div>
+              </div></div></div></div>
+
+
+
+
+        <div className="shadow-lg p-1 bg-body-tertiary rounded  pt-4 "
           align="left">
-              {/* <div className="status">{status}</div> */}
-        <div  
-         >
+          {/* <div className="status">{status}</div> */}
+          <div
+          >
 
-          <div className="row ms-4">
-            <div className="col-md-3 form-group">
-              <label htmlFor="party_code">Transaction No</label>
-              <div className="exp-form-floating">
-                <div class="d-flex justify-content-end">
-                  <input
-                    id="RefNo"
-                    className="exp-input-field form-control justify-content-start"
-                    type="text"
-                    placeholder=""
-                    required
-                    value={new_running_no}
-                    onChange={handleChangeNo}
-                    onKeyDown={(e) => {
-                      // Allow only numbers and certain special keys like Backspace and Arrow keys
-                      if (!/^\d$/.test(e.key) && e.key.length === 1 && !['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete'].includes(e.key)) {
-                        e.preventDefault();
-                      }
-                    }}
-                    onKeyPress={handleKeyPressRef}
-                    autoComplete='off'
-                  />
-                  <div className='position-absolute mt-2 me-2'>
-                  <span
-                          style={hovered ? { cursor: "pointer", borderRadius: "50%", backgroundColor: "#f0f0f0", padding: "10px" } : { cursor: "pointer", borderRadius: "50%", padding: "10px" }}
-                          onMouseEnter={() => setHovered(true)}
-                          onMouseLeave={() => setHovered(false)}
-                          onClick={handlePurchase}>
-                              <i class="fa fa-search"></i>
-                              </span>
+            <div className="row ms-4">
+              <div className="col-md-3 form-group">
+                <label htmlFor="party_code">Transaction No</label>
+                <div className="exp-form-floating">
+                  <div class="d-flex justify-content-end">
+                    <input
+                      id="RefNo"
+                      className="exp-input-field form-control justify-content-start"
+                      type="text"
+                      placeholder=""
+                      title='Enter the Transaction No'
+                      value={new_running_no}
+                      onChange={handleChangeNo}
+                      // onKeyDown={(e) => {
+                      //   // Allow only numbers and certain special keys like Backspace and Arrow keys
+                      //   if (!/^\d$/.test(e.key) && e.key.length === 1 && !['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete'].includes(e.key)) {
+                      //     e.preventDefault();
+                      //   }
+                      // }}
+                      onKeyPress={handleKeyPressRef}
+                      autoComplete='off'
+                    />
+                    <div className='position-absolute mt-2 me-2'>
+                      <span
+                        style={hovered ? { cursor: "pointer", borderRadius: "50%", backgroundColor: "#f0f0f0", padding: "10px" } : { cursor: "pointer", borderRadius: "50%", padding: "10px" }}
+                        onMouseEnter={() => setHovered(true)}
+                        onMouseLeave={() => setHovered(false)}
+                        title="Help"
+                        onClick={handlePurchase}>
+                        <i class="fa fa-search"></i>
+                      </span>
                     </div>
+                  </div>
+                </div>
+              </div>
+
+
+              <div className="col-md-3 form-group" >
+                <div class="exp-form-floating" >
+                  <label for="" className={`${error && !transactionDate ? 'red' : ''}`}>Transaction Date</label>
+                  <span className="text-danger">*</span>
+                  <input
+                    name="transactionDate"
+                    id="transactionDate"
+                    className="exp-input-field form-control"
+                    type="date"
+                    placeholder=""
+                    title='Enter the Transaction Date'
+                    min={financialYearStart}
+                    max={financialYearEnd}
+                    value={transactionDate}
+                    // onChange={handleTransactionDateChange}
+                    onChange={(e) => setTransactionDate(e.target.value)}
+                    autoComplete="off"
+                  />
                 </div>
               </div>
             </div>
+          </div>
 
-
-            <div className="col-md-3 form-group" >
-              <div class="exp-form-floating" >
-                <label for="" className={`${error && !transactionDate ? 'red' : ''}`}>Transaction Date</label>
-                <span className="text-danger">*</span>
-                <input
-                  name="transactionDate"
-                  id="transactionDate"
-                  className="exp-input-field form-control"
-                  type="date"
-                  placeholder=""
-                  required
-                  min={financialYearStart}
-                  max={financialYearEnd}                  
-                  value={transactionDate}
-                  // onChange={handleTransactionDateChange}
-                  onChange={(e) => setTransactionDate(e.target.value)}
-                  autoComplete="off"
-                />
-              </div>
+          <div class="d-flex justify-content-between ms-3" style={{ marginBlock: "", marginTop: "10px" }} >
+            <div align="left" class="d-flex justify-content-start" style={{ marginLeft: "25px" }}>
+              <purButton
+                type="button"
+                className={`"toggle-btn"  ${activeTable === 'myTable' ? 'active' : ''}`}
+                onClick={() => handleToggleTable('myTable')}>
+                Item Details
+              </purButton>
+            </div>
+            <div align="" class="d-flex justify-content-end" style={{ marginRight: "50px" }}>
+              <icon
+                type="button"
+                className="popups-btn"
+                title='Add Row'
+                onClick={handleAddRow}>
+                <FontAwesomeIcon icon={faPlus} />
+              </icon>
+              <icon
+                type="button"
+                className="popups-btn"
+                title='Remove Row'
+                onClick={handleRemoveRow}>
+                <FontAwesomeIcon icon={faMinus} />
+              </icon>
             </div>
           </div>
-        </div>
 
-        <div class="d-flex justify-content-between ms-3" style={{ marginBlock: "", marginTop: "10px" }} >
-          <div align="left" class="d-flex justify-content-start" style={{ marginLeft: "25px" }}>
-            <purButton
-              type="button"
-              className={`"toggle-btn"  ${activeTable === 'myTable' ? 'active' : ''}`}
-              onClick={() => handleToggleTable('myTable')}>
-              Item Details
-            </purButton>
+          <div className="ag-theme-alpine" style={{ height: 437, width: "100%" }}>
+            {/* <AgGridReact
+              columnDefs={activeTable === 'myTable' ? columnDefs : columnDefsTax}
+              rowData={activeTable === 'myTable' ? rowData : rowDataTax}
+              defaultColDef={{ editable: true, resizable: true }}
+
+              onCellValueChanged={async (event) => {
+                await ItemAmountCalculation(event);
+                handleCellValueChanged(event);
+              }}
+              onGridReady={onGridReady}
+              onRowClicked={handleRowClicked}
+              onColumnMoved={onColumnMoved}
+              RowData={gridData}
+              onRowSelected={onRowSelected}
+            /> */}
+            <AgGridReact
+  columnDefs={activeTable === 'myTable' ? columnDefs : columnDefsTax}
+  rowData={activeTable === 'myTable' ? rowData : rowDataTax}
+  defaultColDef={{
+    editable: true,
+    resizable: true
+  }}
+
+  onCellValueChanged={async (event) => {
+
+    // When Item Code changes
+    if (event.colDef.field === "itemCode") {
+      await handleItemCode(event);
+      return;
+    }
+
+    // For Qty and other fields
+    await ItemAmountCalculation(event);
+
+    handleCellValueChanged(event);
+  }}
+
+  onGridReady={onGridReady}
+  onRowClicked={handleRowClicked}
+  onColumnMoved={onColumnMoved}
+  RowData={gridData}
+  onRowSelected={onRowSelected}
+  
+/>
           </div>
-          <div align="" class="d-flex justify-content-end" style={{ marginRight: "50px" }}>
-          <icon
-              type="button"
-              className="popups-btn"
-              onClick={handleAddRow}>
-              <FontAwesomeIcon icon={faPlus} />
-            </icon>
-            <icon
-              type="button"
-              className="popups-btn"
-              onClick={handleRemoveRow}>
-              <FontAwesomeIcon icon={faMinus} />
-            </icon>
-          </div>
-        </div>
-
-        <div className="ag-theme-alpine" style={{ height: 437, width: "100%" }}>
-          <AgGridReact
-            columnDefs={activeTable === 'myTable' ? columnDefs : columnDefsTax}
-            rowData={activeTable === 'myTable' ? rowData : rowDataTax}
-            defaultColDef={{ editable: true, resizable: true }}
-
-            onCellValueChanged={async (event) => {
-              await ItemAmountCalculation(event);
-              handleCellValueChanged(event);
-            }}
-            onGridReady={onGridReady}
-            onRowClicked={handleRowClicked}
-            onColumnMoved={onColumnMoved}
-            RowData={gridData}
-            onRowSelected={onRowSelected}
-          />
-        </div>
         </div>
         <div>
-          
+
           <StockTransferItemPopup open={open} handleClose={handleClose} handleItem={handleItem} />
           <StockTransferWarehousePopup open={open1} handleClose={handleClose} handleWarehouse={handleWarehouse} />
           <PurchaseVendorPopup open={open2} handleClose={handleClose} handleVendor={handleVendor} />
@@ -2142,7 +2396,7 @@ const handleDeleteButtonClick = async () => {
       <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2 ">
         <div className="row ms-2">
           <div className="d-flex justify-content-start">
-          <p className="col-md-6">{labels.createdBy}: {additionalData.created_by}</p>
+            <p className="col-md-6">{labels.createdBy}: {additionalData.created_by}</p>
             <p className="col-md-6">{labels.createdDate}: {additionalData.created_date}</p>
           </div>
           <div className="d-flex justify-content-start">

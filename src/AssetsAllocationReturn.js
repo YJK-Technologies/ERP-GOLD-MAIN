@@ -35,6 +35,8 @@ function AssetsReturn({ }) {
   const [financialYearStart, setFinancialYearStart] = useState('');
   const [financialYearEnd, setFinancialYearEnd] = useState('');
   const [loading, setLoading] = useState('');
+  const [transaction_no, settransaction_no] = useState("");
+  const [deleteError, setDeleteError] = useState("");
 
   const handleAllocation = () => {
     setOpen(true);
@@ -55,7 +57,23 @@ function AssetsReturn({ }) {
     modified_date: "",
     created_date: "",
   });
+  const handleSaveButtonClick = async () => {
+    if (!Allocationno ||!allocationadate  || !return_date || !return_person || !return_reason) 
+{
+      setError(" ");
+      toast.warning("Error: Missing required fields");
+      return;
+    }
 
+     if (rowData.length === 0) {
+                toast.warning('No DC details found to save.');
+                return;
+            }
+  } 
+
+
+  
+  
   useEffect(() => {
     const today = new Date();
     const currentYear = today.getFullYear();
@@ -532,6 +550,49 @@ function AssetsReturn({ }) {
       console.error("Error fetching search data:", error);
     }
   };
+
+//code added by Ramya  purpose of keyboard shortcut functionality
+      useEffect(() => {
+          const handleKeyDown = (e) => {
+            // 1. Ensure keys only trigger on F-keys
+            if (![ 'F4', 'F5'].includes(e.key)) {
+              return;
+            }
+      
+            // 2. Prevent default browser shortcut actions (e.g., F1 Help, F5 Refresh)
+            e.preventDefault();
+            e.stopPropagation();
+      
+            // 3. Prevent execution if screen is currently loading
+            if (loading) return;
+      
+            switch (e.key) {
+      
+              case 'F4':
+                // Save / Complete Invoice (Same logic as Save Button)
+                handleSaveButtonClick(); 
+                break;
+      
+              case 'F5':
+                // Search Existing Invoices to Edit
+                setOpen1(true); 
+                break;
+      
+     
+              default:
+                break;
+            }
+          };
+      
+          // Attach listener
+          window.addEventListener('keydown', handleKeyDown);
+      
+          // Clean up listener on unmount
+          return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+          };
+        }, [loading, showExcelButton, transaction_no, rowData]);
+//code ended by Ramya  purpose of keyboard shortcut functionality
 
   const currentDate = new Date().toISOString().split('T')[0];
 
