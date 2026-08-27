@@ -1,490 +1,578 @@
 import React, { useState, useRef, useEffect } from "react";
 import "../input.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { AgGridReact } from 'ag-grid-react';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import ReceivedGoodsPopup from './ReceivedGoodsHelp';
-import * as XLSX from 'xlsx';
-const config = require('../Apiconfig');
+import { AgGridReact } from "ag-grid-react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import ReceivedGoodsPopup from "./ReceivedGoodsHelp";
+import * as XLSX from "xlsx";
+const config = require("../Apiconfig");
 
-function AssetsReturn({ }) {
-    const [rowData, setRowData] = useState([]);
-    const [transactionDate, setTransactionDate] = useState('');
-    const [transactionNo, setTransactionNo] = useState('');
-    const [gridApi, setGridApi] = useState(null);
+function AssetsReturn({}) {
+  const [rowData, setRowData] = useState([]);
+  const [transactionDate, setTransactionDate] = useState("");
+  const [transactionNo, setTransactionNo] = useState("");
+  const [gridApi, setGridApi] = useState(null);
 
-    const permissions = JSON.parse(sessionStorage.getItem('permissions')) || {};
-    const purchasePermission = permissions
-        .filter(permission => permission.screen_type === 'ReceivedGoods')
-        .map(permission => permission.permission_type.toLowerCase());
+  const permissions = JSON.parse(sessionStorage.getItem("permissions")) || {};
+  const purchasePermission = permissions
+    .filter((permission) => permission.screen_type === "ReceivedGoods")
+    .map((permission) => permission.permission_type.toLowerCase());
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // 1. Ensure keys only trigger on F-keys
+      if (!["F1", "F2", "F3", "F4", "F5", "F6", "F8"].includes(e.key)) {
+        return;
+      }
 
-    const formatDate = (isoDateString) => {
-        const date = new Date(isoDateString);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
+      // 2. Prevent default browser shortcut actions (e.g., F1 Help, F5 Refresh)
+      e.preventDefault();
+      e.stopPropagation();
+
+      switch (e.key) {
+        case "F3":
+          // New / Reset Sales Invoice Form
+          if (
+            window.confirm(
+              "Start a new adjustment? Unsaved changes will be lost.",
+            )
+          ) {
+            handleReload();
+          }
+          break;
+
+        case "F4":
+          // Save / Complete Invoice (Same logic as Save Button)
+          updateSelectedRows();
+          break;
+
+        case "F5":
+          // Search Existing Invoices to Edit
+          setOpen(true);
+          break;
+
+        default:
+          break;
+      }
     };
 
+    // Attach listener
+    window.addEventListener("keydown", handleKeyDown);
 
-    const columnDefs = [
-        {
-            headerName: 'Item S.No',
-            field: 'itemSNo',
-            editable: false,
-            minWidth: 130,
-            maxWidth: 130,
-            filter: true,
-            sortable: false,
-        },
-        {
-            headerName: 'Item Code',
-            field: 'itemCode',
-            editable: false,
-            filter: true,
-            sortable: false,
-        },
-        {
-            headerName: 'Item Name',
-            field: 'itemName',
-            editable: false,
-            filter: true,
-            sortable: false,
-            editable: false
-        },
-        {
-            headerName: 'Bill Qty',
-            field: 'billQty',
-            editable: false,
-            filter: true,
-            sortable: false,
-        },
-        {
-            headerName: 'Received Qty',
-            field: 'receivedQty',
-            editable: false,
-            filter: true,
-            sortable: false
-        },
-        {
-            headerName: 'Balance Qty',
-            field: 'balanceQty',
-            editable: false,
-            filter: true,
-            sortable: false,
-        },
-        {
-            headerName: 'Received Now',
-            field: 'receiveQty',
-            editable: true,
-            filter: true,
-            sortable: false,
-            valueSetter: (params) => {
-                const newValue = Number(params.newValue);
-                const balanceQty = Number(params.data.balanceQty);
-                const itemCode = params.data.itemCode;
+    // Clean up listener on unmount
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [transactionNo, rowData]);
 
-                if (isNaN(newValue)) {
-                    toast.warning(`Item Code: ${itemCode} - Please enter a valid number for Receive Qty.`);
-                    return false;
-                }
+  const formatDate = (isoDateString) => {
+    const date = new Date(isoDateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
 
-                if (newValue > balanceQty) {
-                    toast.warning(`Item Code: ${itemCode} - Receive Qty (${newValue}) cannot be greater than Balance Qty (${balanceQty}).`);
-                    return false;
-                }
+  const columnDefs = [
+    {
+      headerName: "Item S.No",
+      field: "itemSNo",
+      editable: false,
+      minWidth: 130,
+      maxWidth: 130,
+      filter: true,
+      sortable: false,
+    },
+    {
+      headerName: "Item Code",
+      field: "itemCode",
+      editable: false,
+      filter: true,
+      sortable: false,
+    },
+    {
+      headerName: "Item Name",
+      field: "itemName",
+      editable: false,
+      filter: true,
+      sortable: false,
+      editable: false,
+    },
+    {
+      headerName: "Bill Qty",
+      field: "billQty",
+      editable: false,
+      filter: true,
+      sortable: false,
+    },
+    {
+      headerName: "Received Qty",
+      field: "receivedQty",
+      editable: false,
+      filter: true,
+      sortable: false,
+    },
+    {
+      headerName: "Balance Qty",
+      field: "balanceQty",
+      editable: false,
+      filter: true,
+      sortable: false,
+    },
+    {
+      headerName: "Received Now",
+      field: "receiveQty",
+      editable: true,
+      filter: true,
+      sortable: false,
+      valueSetter: (params) => {
+        const newValue = Number(params.newValue);
+        const balanceQty = Number(params.data.balanceQty);
+        const itemCode = params.data.itemCode;
 
-                // Valid case
-                params.data.receiveQty = newValue;
-                return true;
-            }
-        },
-        {
-            headerName: 'Keyfield',
-            field: 'keyfield',
-            editable: false,
-            hide: true,
-            filter: true,
-        },
-    ];
+        if (isNaN(newValue)) {
+          toast.warning(
+            `Item Code: ${itemCode} - Please enter a valid number for Receive Qty.`,
+          );
+          return false;
+        }
 
-    //Default Date functionality
+        if (newValue > balanceQty) {
+          toast.warning(
+            `Item Code: ${itemCode} - Receive Qty (${newValue}) cannot be greater than Balance Qty (${balanceQty}).`,
+          );
+          return false;
+        }
+
+        // Valid case
+        params.data.receiveQty = newValue;
+        return true;
+      },
+    },
+    {
+      headerName: "Keyfield",
+      field: "keyfield",
+      editable: false,
+      hide: true,
+      filter: true,
+    },
+  ];
+
+  //Default Date functionality
   // Default Transaction Date
-useEffect(() => {
+  useEffect(() => {
     const today = new Date();
-    const formattedToday = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    const formattedToday = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 
     setTransactionDate(formattedToday);
-}, []);
+  }, []);
 
-    const fetchReceivedGoodsData = async (TransactionNo) => {
-        try {
-            const body = {
-                company_code: sessionStorage.getItem('selectedCompanyCode'),
-                bill_no: transactionNo || TransactionNo
-            };
+  const fetchReceivedGoodsData = async (TransactionNo) => {
+    try {
+      const body = {
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
+        bill_no: transactionNo || TransactionNo,
+      };
 
-            const response = await fetch(`${config.apiBaseUrl}/getReceivedGoods`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(body),
-            });
+      const response = await fetch(`${config.apiBaseUrl}/getReceivedGoods`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
 
-            if (response.ok) {
-                const searchData = await response.json();
+      if (response.ok) {
+        const searchData = await response.json();
 
-                if (searchData.length > 0) {
-                    const { bill_no, bill_date } = searchData[0];
-                    setTransactionNo(bill_no);
-                    // setTransactionDate(formatDate(bill_date));
+        if (searchData.length > 0) {
+          const { bill_no, bill_date } = searchData[0];
+          setTransactionNo(bill_no);
+          // setTransactionDate(formatDate(bill_date));
 
-                    const newRows = searchData.map((matchedItem) => ({
-                        transactionNo: matchedItem.bill_no,
-                        transactionDate: formatDate(matchedItem.bill_date),
-                        itemSNo: matchedItem.item_sno,
-                        itemCode: matchedItem.item_code,
-                        itemName: matchedItem.item_name,
-                        billQty: matchedItem.bill_qty,
-                        balanceQty: matchedItem.bal_qty,
-                        receivedQty: matchedItem.rec_qty,
-                        keyfield: matchedItem.keyfield,
-                        receiveQty: 0
-                    }));
-                    setRowData(newRows);
-                    console.log(searchData);
-                } else {
-                    toast.warning("Data Not found");
-                    setRowData([]);
-                }
-            } else if (response.status === 404) {
-                toast.warning("Data Not found");
-                setRowData([]);
-            } else {
-                const errorResponse = await response.json();
-                toast.warning(errorResponse.message || "Failed to insert sales data");
-                console.error(errorResponse.details || errorResponse.message);
-            }
-        } catch (error) {
-            console.error("Error fetching search data:", error);
-        }
-    };
-
-    const updateSelectedRows = async () => {
-        const allRowsData = [];
-        gridApi.forEachNode(node => allRowsData.push(node.data));
-
-        const filteredRows = allRowsData.filter(row => row.receiveQty > 0);
-
-        if (filteredRows.length === 0) {
-            toast.warning("No valid rows found with Received Amount greater than zero to update");
-            return;
-        }
-
-        try {
-            const company_code = sessionStorage.getItem('selectedCompanyCode');
-            const response = await fetch(`${config.apiBaseUrl}/updateReceivedGoods`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "company_code": company_code
-                },
-                body: JSON.stringify({ editedData: filteredRows })
-            });
-
-            if (response.ok) {
-                toast.success("Data updated successfully", {
-                    onClose: () => fetchReceivedGoodsData(),
-                });
-            } else {
-                const errorResponse = await response.json();
-                toast.warning(errorResponse.message || "Failed to update received goods data");
-            }
-        } catch (error) {
-            console.error("Error updating rows:", error);
-            toast.error('Error Updating Data: ' + error.message);
-        }
-    };
-
-    const onGridReady = (params) => {
-        setGridApi(params.api);
-    };
-
-    const [open, setOpen] = React.useState(false);
-
-    const handlePurchase = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
-
-    const handleRGData = async (data) => {
-        if (data && data.length > 0) {
-            const [{ TransactionNo, EntryDate }] = data;
-
-            await fetchReceivedGoodsData(TransactionNo);
-
-            const transactionNumber = document.getElementById('transactionNo');
-            if (transactionNumber) {
-                transactionNumber.value = TransactionNo;
-                setTransactionNo(TransactionNo);
-            } else {
-                console.error('transactionNumber element not found');
-            }
-
-            const transactionDate = document.getElementById('transactionDate');
-            if (transactionDate) {
-                transactionDate.value = EntryDate;
-                setTransactionDate(formatDate(EntryDate));
-            } else {
-                console.error('transactionDate element not found');
-            }
-
+          const newRows = searchData.map((matchedItem) => ({
+            transactionNo: matchedItem.bill_no,
+            transactionDate: formatDate(matchedItem.bill_date),
+            itemSNo: matchedItem.item_sno,
+            itemCode: matchedItem.item_code,
+            itemName: matchedItem.item_name,
+            billQty: matchedItem.bill_qty,
+            balanceQty: matchedItem.bal_qty,
+            receivedQty: matchedItem.rec_qty,
+            keyfield: matchedItem.keyfield,
+            receiveQty: 0,
+          }));
+          setRowData(newRows);
+          console.log(searchData);
         } else {
-            console.log("Data not fetched...!");
+          toast.warning("Data Not found");
+          setRowData([]);
         }
-    };
+      } else if (response.status === 404) {
+        toast.warning("Data Not found");
+        setRowData([]);
+      } else {
+        const errorResponse = await response.json();
+        toast.warning(errorResponse.message || "Failed to insert sales data");
+        console.error(errorResponse.details || errorResponse.message);
+      }
+    } catch (error) {
+      console.error("Error fetching search data:", error);
+    }
+  };
 
-    const handleReload = () => {
-        window.location.reload();
-    };
+  const updateSelectedRows = async () => {
+    const allRowsData = [];
+    gridApi.forEachNode((node) => allRowsData.push(node.data));
 
-    const transformRowData = (data) => {
-        return data.map(row => ({
-            "Item S.No": row.itemSNo,
-            "Item Code": row.itemCode.toString(),
-            "Item Name": row.itemName.toString(),
-            "Bill Qty": row.billQty.toString(),
-            "Balance Qty": row.balanceQty.toString(),
-            "Receive Qty": row.receiveQty.toString(),
-        }));
-    };
+    const filteredRows = allRowsData.filter((row) => row.receiveQty > 0);
 
-    //   const handleExcelDownload = () => {
-    //     const filteredRowData = rowData.filter(row => row.receiveQty > 0);
+    if (filteredRows.length === 0) {
+      toast.warning(
+        "No valid rows found with Received Amount greater than zero to update",
+      );
+      return;
+    }
 
-    //     if (rowData.length === 0 || !transactionNo || !transactionDate) {
-    //       toast.warning('No Data Available');
-    //       return;
-    //     }
+    try {
+      const company_code = sessionStorage.getItem("selectedCompanyCode");
+      const response = await fetch(`${config.apiBaseUrl}/updateReceivedGoods`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          company_code: company_code,
+        },
+        body: JSON.stringify({ editedData: filteredRows }),
+      });
 
-    //     const headerData = [{
-    //       "company Code": sessionStorage.getItem('selectedCompanyCode'),
-    //       "Transaction No": transactionNo,
-    //       "Transaction Date": transactionDate,
-    //     }];
-
-    //     const transformedData = transformRowData(filteredRowData);
-    //     const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
-    //     const headerSheet = XLSX.utils.json_to_sheet(headerData);
-
-    //     const workbook = XLSX.utils.book_new();
-    //     XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
-    //     XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
-
-    //     XLSX.writeFile(workbook, "Received_Goods.xlsx");
-    //   };
-
-    const handleExcelDownload = () => {
-        // const filteredRowData = rowData.filter(row => row.receiveQty > 0);
-        const filteredRowData = rowData;
-        if (rowData.length === 0 || !transactionNo || !transactionDate) {
-            toast.warning("No Data Available");
-            return;
-        }
-
-        const headerData = [{
-            "Transaction No": transactionNo,
-            "Transaction Date": transactionDate,
-        }];
-
-        const transformedData = transformRowData(filteredRowData);
-
-        // Header Sheet
-        const headerSheet = XLSX.utils.aoa_to_sheet([
-            ["Received Goods"],
-            [`Company Name: ${sessionStorage.getItem("selectedCompanyName")}`],
-            [],
-        ]);
-
-        XLSX.utils.sheet_add_json(headerSheet, headerData, {
-            origin: "A4",
+      if (response.ok) {
+        toast.success("Data updated successfully", {
+          onClose: () => fetchReceivedGoodsData(),
         });
+      } else {
+        const errorResponse = await response.json();
+        toast.warning(
+          errorResponse.message || "Failed to update received goods data",
+        );
+      }
+    } catch (error) {
+      console.error("Error updating rows:", error);
+      toast.error("Error Updating Data: " + error.message);
+    }
+  };
 
-        // Merge Heading
-        headerSheet["!merges"] = [
-            {
-                s: { r: 0, c: 0 }, // A1
-                e: { r: 0, c: 7 }, // H1
-            },
-            {
-                s: { r: 1, c: 0 }, // A2
-                e: { r: 1, c: 7 }, // H2
-            },
-        ];
+  const onGridReady = (params) => {
+    setGridApi(params.api);
+  };
 
-        // Details Sheet
-        const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
+  const [open, setOpen] = React.useState(false);
 
-        // Auto Fit Function
-        const autoFitColumns = (worksheet, data) => {
-            if (!data || data.length === 0) return;
+  const handlePurchase = () => {
+    setOpen(true);
+  };
 
-            const cols = [];
+  const handleClose = () => {
+    setOpen(false);
+  };
 
-            data.forEach((row) => {
-                Object.keys(row).forEach((key, i) => {
-                    const value = row[key] == null ? "" : row[key].toString();
+  const handleRGData = async (data) => {
+    if (data && data.length > 0) {
+      const [{ TransactionNo, EntryDate }] = data;
 
-                    cols[i] = Math.max(
-                        cols[i] || key.length,
-                        key.length,
-                        value.length
-                    );
-                });
-            });
+      await fetchReceivedGoodsData(TransactionNo);
 
-            worksheet["!cols"] = cols.map(width => ({
-                wch: width + 5,
-            }));
-        };
+      const transactionNumber = document.getElementById("transactionNo");
+      if (transactionNumber) {
+        transactionNumber.value = TransactionNo;
+        setTransactionNo(TransactionNo);
+      } else {
+        console.error("transactionNumber element not found");
+      }
 
-        // Apply Auto Width
-        autoFitColumns(headerSheet, headerData);
-        autoFitColumns(rowDataSheet, transformedData);
+      const transactionDate = document.getElementById("transactionDate");
+      if (transactionDate) {
+        transactionDate.value = EntryDate;
+        setTransactionDate(formatDate(EntryDate));
+      } else {
+        console.error("transactionDate element not found");
+      }
+    } else {
+      console.log("Data not fetched...!");
+    }
+  };
 
-        // Workbook
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
-        XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
+  const handleReload = () => {
+    window.location.reload();
+  };
 
-        XLSX.writeFile(workbook, "Received_Goods.xlsx");
+  const transformRowData = (data) => {
+    return data.map((row) => ({
+      "Item S.No": row.itemSNo,
+      "Item Code": row.itemCode.toString(),
+      "Item Name": row.itemName.toString(),
+      "Bill Qty": row.billQty.toString(),
+      "Balance Qty": row.balanceQty.toString(),
+      "Receive Qty": row.receiveQty.toString(),
+    }));
+  };
+
+  //   const handleExcelDownload = () => {
+  //     const filteredRowData = rowData.filter(row => row.receiveQty > 0);
+
+  //     if (rowData.length === 0 || !transactionNo || !transactionDate) {
+  //       toast.warning('No Data Available');
+  //       return;
+  //     }
+
+  //     const headerData = [{
+  //       "company Code": sessionStorage.getItem('selectedCompanyCode'),
+  //       "Transaction No": transactionNo,
+  //       "Transaction Date": transactionDate,
+  //     }];
+
+  //     const transformedData = transformRowData(filteredRowData);
+  //     const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
+  //     const headerSheet = XLSX.utils.json_to_sheet(headerData);
+
+  //     const workbook = XLSX.utils.book_new();
+  //     XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+  //     XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
+
+  //     XLSX.writeFile(workbook, "Received_Goods.xlsx");
+  //   };
+
+  const handleExcelDownload = () => {
+    // const filteredRowData = rowData.filter(row => row.receiveQty > 0);
+    const filteredRowData = rowData;
+    if (rowData.length === 0 || !transactionNo || !transactionDate) {
+      toast.warning("No Data Available");
+      return;
+    }
+
+    const headerData = [
+      {
+        "Transaction No": transactionNo,
+        "Transaction Date": transactionDate,
+      },
+    ];
+
+    const transformedData = transformRowData(filteredRowData);
+
+    // Header Sheet
+    const headerSheet = XLSX.utils.aoa_to_sheet([
+      ["Received Goods"],
+      [`Company Name: ${sessionStorage.getItem("selectedCompanyName")}`],
+      [],
+    ]);
+
+    XLSX.utils.sheet_add_json(headerSheet, headerData, {
+      origin: "A4",
+    });
+
+    // Merge Heading
+    headerSheet["!merges"] = [
+      {
+        s: { r: 0, c: 0 }, // A1
+        e: { r: 0, c: 7 }, // H1
+      },
+      {
+        s: { r: 1, c: 0 }, // A2
+        e: { r: 1, c: 7 }, // H2
+      },
+    ];
+
+    // Details Sheet
+    const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
+
+    // Auto Fit Function
+    const autoFitColumns = (worksheet, data) => {
+      if (!data || data.length === 0) return;
+
+      const cols = [];
+
+      data.forEach((row) => {
+        Object.keys(row).forEach((key, i) => {
+          const value = row[key] == null ? "" : row[key].toString();
+
+          cols[i] = Math.max(cols[i] || key.length, key.length, value.length);
+        });
+      });
+
+      worksheet["!cols"] = cols.map((width) => ({
+        wch: width + 5,
+      }));
     };
-    return (
-        <div class="container-fluid Topnav-screen">
-            <ToastContainer position="top-right" className="toast-design" theme="colored" />
-            <div className="shadow-lg p-1 bg-body-tertiary rounded mb-2 mt-2">
-                <div className="d-flex justify-content-between">
-                    <div className=" justify-content-start">
-                        <h1 align="left" className="purbut me-5">Received Goods</h1>
-                    </div>
-                    <div class="d-flex justify-content-end mb-2 me-3 ">
-                        {["add", "all permission"].some((permission) => purchasePermission.includes(permission)) && (
-                            <savebutton className="purbut" title="save" onClick={updateSelectedRows}>
-                                <i class="fa-regular fa-floppy-disk"></i>
-                            </savebutton>
-                        )}
-                        <printbutton className="purbut" title='excel' onClick={handleExcelDownload}>
-                            <i class="fa-solid fa-file-excel"></i>
-                        </printbutton>
-                        <printbutton className="purbut" onClick={handleReload} title='reload'>
-                            <i class="fa-solid fa-arrow-rotate-right"></i>
-                        </printbutton>
-                    </div>
-                    <div className="mobileview">
-                        <div class=" d-flex justify-content-between ">
-                            <div className="" style={{ textAlign: "left" }}>
-                                <h1 className="h1">Received Goods</h1>
-                            </div>
-                            <div className=" ">
-                                <div class="dropdown mt-2 me-3" >
-                                    <button class="btn btn-primary dropdown-toggle p-1 ms-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fa-solid fa-list"></i>
-                                    </button>
-                                    <ul class="dropdown-menu menu">
-                                        <li class="iconbutton  d-flex justify-content-center text-success ">
-                                            {['update', 'all permission'].some(permission => purchasePermission.includes(permission)) && (
-                                                <icon class="icon" onClick={updateSelectedRows}>
-                                                    <i class="fa-regular fa-floppy-disk"></i>
-                                                </icon>
-                                            )}
-                                        </li>
-                                        <li class="iconbutton  d-flex justify-content-center text-info">
-                                            <icon class="icon" onClick={handleExcelDownload}>
-                                                <i class="fa-solid fa-file-excel"></i>
-                                            </icon>
-                                        </li>
-                                        <li class="iconbutton  d-flex justify-content-center">
-                                            <icon class="icon" onClick={handleReload} title='reload'>
-                                                <i class="fa-solid fa-arrow-rotate-right"></i>
-                                            </icon>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+
+    // Apply Auto Width
+    autoFitColumns(headerSheet, headerData);
+    autoFitColumns(rowDataSheet, transformedData);
+
+    // Workbook
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
+
+    XLSX.writeFile(workbook, "Received_Goods.xlsx");
+  };
+  return (
+    <div class="container-fluid Topnav-screen">
+      <ToastContainer
+        position="top-right"
+        className="toast-design"
+        theme="colored"
+      />
+      <div className="shadow-lg p-1 bg-body-tertiary rounded mb-2 mt-2">
+        <div className="d-flex justify-content-between">
+          <div className=" justify-content-start">
+            <h1 align="left" className="purbut me-5">
+              Received Goods
+            </h1>
+          </div>
+          <div class="d-flex justify-content-end mb-2 me-3 ">
+            {["add", "all permission"].some((permission) =>
+              purchasePermission.includes(permission),
+            ) && (
+              <savebutton
+                className="purbut"
+                title="save"
+                onClick={updateSelectedRows}
+              >
+                <i class="fa-regular fa-floppy-disk"></i>
+              </savebutton>
+            )}
+            <printbutton
+              className="purbut"
+              title="excel"
+              onClick={handleExcelDownload}
+            >
+              <i class="fa-solid fa-file-excel"></i>
+            </printbutton>
+            <printbutton
+              className="purbut"
+              onClick={handleReload}
+              title="reload"
+            >
+              <i class="fa-solid fa-arrow-rotate-right"></i>
+            </printbutton>
+          </div>
+          <div className="mobileview">
+            <div class=" d-flex justify-content-between ">
+              <div className="" style={{ textAlign: "left" }}>
+                <h1 className="h1">Received Goods</h1>
+              </div>
+              <div className=" ">
+                <div class="dropdown mt-2 me-3">
+                  <button
+                    class="btn btn-primary dropdown-toggle p-1 ms-3"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <i class="fa-solid fa-list"></i>
+                  </button>
+                  <ul class="dropdown-menu menu">
+                    <li class="iconbutton  d-flex justify-content-center text-success ">
+                      {["update", "all permission"].some((permission) =>
+                        purchasePermission.includes(permission),
+                      ) && (
+                        <icon class="icon" onClick={updateSelectedRows}>
+                          <i class="fa-regular fa-floppy-disk"></i>
+                        </icon>
+                      )}
+                    </li>
+                    <li class="iconbutton  d-flex justify-content-center text-info">
+                      <icon class="icon" onClick={handleExcelDownload}>
+                        <i class="fa-solid fa-file-excel"></i>
+                      </icon>
+                    </li>
+                    <li class="iconbutton  d-flex justify-content-center">
+                      <icon class="icon" onClick={handleReload} title="reload">
+                        <i class="fa-solid fa-arrow-rotate-right"></i>
+                      </icon>
+                    </li>
+                  </ul>
                 </div>
+              </div>
             </div>
-            <div className="shadow-lg p-1 bg-body-tertiary rounded  pb-4">
-                <div class=" mt-4">
-                    <div className="row ms-3 ">
-                        <div className="col-md-2 form-group mb-2 ">
-                            <label class="exp-form-labels">Transaction No</label>
-                            <div className="exp-form-floating">
-                                <div class="d-flex justify-content-end">
-                                    <input
-                                        name="transactionDate"
-                                        id="transactionNo"
-                                        className="exp-input-field form-control"
-                                        type="text"
-                                        placeholder=""
-                                        title="Enter the Transaction No"
-                                        required
-                                        autoComplete="off"
-                                        value={transactionNo}
-                                        onKeyDown={(e) => e.key === "Enter" && fetchReceivedGoodsData()}
-                                        onChange={(e) => setTransactionNo(e.target.value)}
-                                    />
-                                    <div className='position-absolute mt-1 me-2'>
-                                        <span className="icon searchIcon"
-                                            onClick={handlePurchase}>
-                                            <i class="fa fa-search"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-md-2 form-group mb-2 " >
-                            <div class="exp-form-floating" >
-                                <label class="exp-form-labels">Transaction Date</label>
-                                <input
-                                    name="transactionDate"
-                                    id="transactionDate"
-                                    className="exp-input-field form-control"
-                                    title="Enter the Transaction Date"
-                                    type="date"
-                                    placeholder=""
-                                    required
-                                    value={transactionDate}
-                                    onChange={(e) => setTransactionDate(e.target.value)}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    <div align="right" class="d-flex justify-content-end mb-2 me-6" style={{ marginRight: "90px" }}>
-                    </div>
-                    <div className="ag-theme-alpine" style={{ height: 437, width: "100%" }}>
-                        <AgGridReact
-                            columnDefs={columnDefs}
-                            rowData={rowData}
-                            defaultColDef={{ flex: true }}
-                            onGridReady={onGridReady}
-                            pagination={true}
-                            paginationAutoPageSize={true}
-                        />
-                    </div>
-                    <div>
-                        <ReceivedGoodsPopup open={open} handleClose={handleClose} handleRGData={handleRGData} />
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
-    );
+      </div>
+      <div className="shadow-lg p-1 bg-body-tertiary rounded  pb-4">
+        <div class=" mt-4">
+          <div className="row ms-3 ">
+            <div className="col-md-2 form-group mb-2 ">
+              <label class="exp-form-labels">Transaction No</label>
+              <div className="exp-form-floating">
+                <div class="d-flex justify-content-end">
+                  <input
+                    name="transactionDate"
+                    id="transactionNo"
+                    className="exp-input-field form-control"
+                    type="text"
+                    placeholder=""
+                    title="Enter the Transaction No"
+                    required
+                    autoComplete="off"
+                    value={transactionNo}
+                    onKeyDown={(e) =>
+                      e.key === "Enter" && fetchReceivedGoodsData()
+                    }
+                    onChange={(e) => setTransactionNo(e.target.value)}
+                  />
+                  <div className="position-absolute mt-1 me-2">
+                    <span className="icon searchIcon" onClick={handlePurchase}>
+                      <i class="fa fa-search"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="col-md-2 form-group mb-2 ">
+              <div class="exp-form-floating">
+                <label class="exp-form-labels">Transaction Date</label>
+                <input
+                  name="transactionDate"
+                  id="transactionDate"
+                  className="exp-input-field form-control"
+                  title="Enter the Transaction Date"
+                  type="date"
+                  placeholder=""
+                  required
+                  value={transactionDate}
+                  onChange={(e) => setTransactionDate(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            align="right"
+            class="d-flex justify-content-end mb-2 me-6"
+            style={{ marginRight: "90px" }}
+          ></div>
+          <div
+            className="ag-theme-alpine"
+            style={{ height: 437, width: "100%" }}
+          >
+            <AgGridReact
+              columnDefs={columnDefs}
+              rowData={rowData}
+              defaultColDef={{ flex: true }}
+              onGridReady={onGridReady}
+              pagination={true}
+              paginationAutoPageSize={true}
+            />
+          </div>
+          <div>
+            <ReceivedGoodsPopup
+              open={open}
+              handleClose={handleClose}
+              handleRGData={handleRGData}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 export default AssetsReturn;
