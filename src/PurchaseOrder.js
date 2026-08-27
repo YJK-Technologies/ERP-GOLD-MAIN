@@ -38,6 +38,7 @@ function PurchaseOrder() {
   const [rowDataTax, setRowDataTax] = useState([]);
   const [activeTable, setActiveTable] = useState('myTable');
   const [entryDate, setEntryDate] = useState("");
+  const [transaction_no, settransaction_no] = useState("");
   const [TotalBill, setTotalBill] = useState('');
   const [TotalTax, setTotalTax] = useState(0)
   const [TotalPurchase, setTotalPurchase] = useState(0)
@@ -77,6 +78,53 @@ function PurchaseOrder() {
 
   const location = useLocation();
   const savedPath = sessionStorage.getItem('currentPath');
+useEffect(() => {
+  const handleKeyDown = (e) => {
+    if (!["F1", "F3", "F4", "F5", "F6", "F8"].includes(e.key)) {
+      return;
+    }
+
+    e.preventDefault();
+
+    if (loading) return;
+
+    switch (e.key) {
+      case "F1":
+        setOpen(true);
+        break;
+
+      case "F3":
+        handleReload();
+        break;
+
+      case "F4":
+        handleSaveButtonClick();
+        break;
+
+      case "F5":
+        setOpen1(true);
+        break;
+
+      case "F6":
+        if (transaction_no) {
+          handleDeleteButtonClick();
+        } else {
+          alert("Please save the opening item before deleting.");
+        }
+        break;
+
+
+      default:
+        break;
+    }
+  };
+
+  window.addEventListener("keydown", handleKeyDown);
+
+  return () => {
+    window.removeEventListener("keydown", handleKeyDown);
+  };
+}, [loading, transaction_no]);
 
   //code added by Pavun purpose of set user permisssion
   const permissions = JSON.parse(sessionStorage.getItem('permissions')) || {};
