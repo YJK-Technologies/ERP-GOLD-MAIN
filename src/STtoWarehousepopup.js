@@ -248,6 +248,7 @@ export default function StockTransferToWarehousePopup({ open, handleClose, handl
                               type='text'
                               id='WarehouseCode'
                               className='form-control'
+                              title='Enter the Warehouse Code'
                               placeholder=' Warehouse Code'
                               maxLength={18}
                               value={warehouse_code}
@@ -261,6 +262,7 @@ export default function StockTransferToWarehousePopup({ open, handleClose, handl
                               type='text'
                               id='WarehouseName'
                               className='form-control'
+                              title='Enter the Warehouse Name'
                               placeholder='Warehouse Name'
                               maxLength={250}
                               value={warehouse_name}
@@ -297,13 +299,13 @@ export default function StockTransferToWarehousePopup({ open, handleClose, handl
                           </div>  
 
                           <div className="mb-2 mt-2 d-flex justify-content-end">
-                            <icon className="icon popups-btn" onClick={handlewarehouseSearch}>
+                            <icon className="icon popups-btn" title="Search" onClick={handlewarehouseSearch}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
                             </icon>
-                            <icon className="icon popups-btn" onClick={handleReload}>
+                            <icon className="icon popups-btn" title="Reload" onClick={handleReload}>
                               <i class="fa-solid fa-arrow-rotate-right"></i>
                             </icon>
-                            <icon className="icon popups-btn" onClick={handleConfirm1}>
+                            <icon className="icon popups-btn" title="Confirm" onClick={handleConfirm1}>
                               <FontAwesomeIcon icon="fa-solid fa-check" />
                             </icon>
                           </div>

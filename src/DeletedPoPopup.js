@@ -304,8 +304,8 @@ export default function DeletedPurchaseOrderPopup({ open, handleClose, handleDel
       GSTNo: row.vendor_gst_no,
       ShipToGSTNo: row.ShipTo_vendor_gst_no,
       deliveryDate: row.delivery_date,
-      credit: row.remarks,
-      remarks: row.credit,
+      credit: row.credit,
+      remarks: row.remarks,
     }));
     handleDeletedPoData(selectedData);
     handleClose();

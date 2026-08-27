@@ -110,6 +110,15 @@ function AssetsReturn({ }) {
         },
     ];
 
+    //Default Date functionality
+  // Default Transaction Date
+useEffect(() => {
+    const today = new Date();
+    const formattedToday = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+    setTransactionDate(formattedToday);
+}, []);
+
     const fetchReceivedGoodsData = async (TransactionNo) => {
         try {
             const body = {
@@ -131,7 +140,7 @@ function AssetsReturn({ }) {
                 if (searchData.length > 0) {
                     const { bill_no, bill_date } = searchData[0];
                     setTransactionNo(bill_no);
-                    setTransactionDate(formatDate(bill_date));
+                    // setTransactionDate(formatDate(bill_date));
 
                     const newRows = searchData.map((matchedItem) => ({
                         transactionNo: matchedItem.bill_no,
@@ -282,8 +291,8 @@ function AssetsReturn({ }) {
     //   };
 
     const handleExcelDownload = () => {
-        const filteredRowData = rowData.filter(row => row.receiveQty > 0);
-
+        // const filteredRowData = rowData.filter(row => row.receiveQty > 0);
+        const filteredRowData = rowData;
         if (rowData.length === 0 || !transactionNo || !transactionDate) {
             toast.warning("No Data Available");
             return;
@@ -299,7 +308,7 @@ function AssetsReturn({ }) {
         // Header Sheet
         const headerSheet = XLSX.utils.aoa_to_sheet([
             ["Received Goods"],
-            [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+            [`Company Name: ${sessionStorage.getItem("selectedCompanyName")}`],
             [],
         ]);
 
@@ -453,6 +462,7 @@ function AssetsReturn({ }) {
                                     placeholder=""
                                     required
                                     value={transactionDate}
+                                    onChange={(e) => setTransactionDate(e.target.value)}
                                 />
                             </div>
                         </div>

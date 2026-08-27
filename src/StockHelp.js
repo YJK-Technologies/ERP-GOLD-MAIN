@@ -227,6 +227,7 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
                               id='transaction_no'
                               className='form-control'
                               maxLength={10}
+                              title='Enter the Transaction No'
                               placeholder='Transaction No'
                               value={transaction_no}
                               onChange={(e) => settransaction_no(e.target.value)}
@@ -238,6 +239,7 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
                               type='date'
                               id='transaction_date'
                               className='form-control'
+                              title='Enter the Transaction Date'
                               placeholder='Transaction Date'
                               value={transaction_date}
                               onChange={(e) => setTransactionDate(e.target.value)}
@@ -250,6 +252,7 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
                               id='vendor_code'
                               className='form-control'
                               maxLength={18}
+                              title='Enter the ItemCode'
                               placeholder='ItemCode'
                               value={item_code}
                               onChange={(e) => setitem_code(e.target.value)}
@@ -263,6 +266,7 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
                               type='text'
                               id='vendor_code'
                               className='form-control'
+                              title='Enter the Item Name'
                               placeholder='Item Name'
                               maxLength={40}
                               value={Item_name}
@@ -275,6 +279,7 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
                               type='text'
                               id='purchase_type'
                               className='form-control'
+                              title='Enter the From Warehouse'
                               placeholder='From Warehouse'
                               maxLength={18}
                               value={from_Warehouse}
@@ -287,6 +292,7 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
                               type='text'
                               id='Pay_type'
                               className='form-control'
+                              title='Enter the To Warehosue'
                               placeholder='To Warehosue'
                               value={to_Warehouse}
                               maxLength={18}

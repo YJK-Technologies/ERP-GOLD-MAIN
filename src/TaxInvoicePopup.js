@@ -266,6 +266,61 @@ export default function TaxInvoicePopup({ open, handleClose, handletaxinvoice, i
   const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
+  const [salesdrop, setSalesdrop] = useState([]);
+  const [salesType, setSalesType] = useState("");
+  const [selectedSales, setSelectedSales] = useState(null);
+
+  const [selectedPay, setSelectedPay] = useState(null);
+  const [payType, setPayType] = useState("");
+  const [paydrop, setPaydrop] = useState([]);
+
+    useEffect(() => {
+    fetch(`${config.apiBaseUrl}/paytype`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
+
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setPaydrop(data))
+      .catch((error) => console.error("Error fetching payment types:", error));
+
+    fetch(`${config.apiBaseUrl}/salestype`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
+
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setSalesdrop(data))
+      .catch((error) => console.error("Error fetching sales types:", error));
+
+  }, []);
+  
+  const handleChangePay = (selectedOption) => {
+    setSelectedPay(selectedOption);
+    setPayType(selectedOption ? selectedOption.value : '');
+  };
+
+  const handleChangeSales = (selectedOption) => {
+    setSelectedSales(selectedOption);
+    setSalesType(selectedOption ? selectedOption.value : '');
+  };
+
+  const filteredOptionPay = paydrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  const filteredOptionSales = salesdrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
   const handleSearch = async () => {
     if (!invoicetype) {
       toast.warning('Please select a Invoice Type before proceeding.');
@@ -279,7 +334,7 @@ export default function TaxInvoicePopup({ open, handleClose, handletaxinvoice, i
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          bill_no, bill_date, sales_type, pay_type, billTo_customer_name, shipTo_customer_name,
+          bill_no, bill_date, sales_type:salesType, pay_type:payType, billTo_customer_name, shipTo_customer_name,
           invoice_type: invoicetype,
           company_code: sessionStorage.getItem('selectedCompanyCode')
         })
@@ -314,8 +369,10 @@ export default function TaxInvoicePopup({ open, handleClose, handletaxinvoice, i
   const clearInputs = () => {
     setbill_no("");
     setbill_date("");
-    setsales_type("");
-    setpay_type("");
+    setSalesType("");
+    setPayType("");
+    setSelectedSales("");
+    setSelectedPay("");
     setbillTo_customer_name("");
     setshipTo_customer_name("");
   };
@@ -427,29 +484,32 @@ export default function TaxInvoicePopup({ open, handleClose, handletaxinvoice, i
                               autoComplete='off'
                             />
                           </div>
-                          <div className="col-md-2 mb-2">
-                            <input
-                              type='text'
-                              className='exp-input-field form-control'
-                              placeholder='Pay Type'
-                              value={sales_type}
-                              onChange={(e) => setsales_type(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                              autoComplete='off'
-                            />
-                          </div>
-                          <div className="col-md-2 mb-2">
-                            <input
-                              type='text'
-                              id='vendor_code'
-                              className='exp-input-field form-control'
-                              placeholder='Sales Type'
-                              value={pay_type}
-                              onChange={(e) => setpay_type(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                              autoComplete='off'
-                            />
-                          </div>
+                          <div className="col-sm mb-2">
+                            <div title="Select the Sales type">
+                              <Select
+                                id="SalesType"
+                                value={selectedSales}
+                                onChange={handleChangeSales}
+                                options={filteredOptionSales}
+                                className="exp-input-field"
+                                placeholder="Sales type"
+                                isClearable
+                              />
+                            </div>
+                          </div>                        
+                          <div className="col-sm mb-2">
+                            <div title="Select the Pay type">
+                              <Select
+                                id="PayType"
+                                value={selectedPay}
+                                onChange={handleChangePay}
+                                options={filteredOptionPay}
+                                className="exp-input-field"
+                                placeholder="Pay type"
+                                isClearable
+                              />
+                            </div>
+                          </div> 
                           <div className="col-md-2 mb-2">
                             <input
                               type='text'

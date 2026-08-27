@@ -282,7 +282,7 @@ export default function PurchaseVendorPopup({ open, handleClose, handleVendorShi
   const [loading, setLoading] = useState(false);
 
   const handleSearchItem = async () => {
-        setLoading(true);
+    setLoading(true);
 
     try {
       const response = await fetch(`${config.apiBaseUrl}/vendorsearchdata`, {
@@ -308,7 +308,7 @@ export default function PurchaseVendorPopup({ open, handleClose, handleVendorShi
       }
     } catch (error) {
       console.error("Error fetching search data:", error);
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -332,6 +332,27 @@ export default function PurchaseVendorPopup({ open, handleClose, handleVendorShi
   };
 
   const handleConfirm = () => {
+
+    // Check whether an Vendor is selected
+    if (selectedRows.length === 0) {
+      toast.warning("Please select an Vendor.");
+      return;
+    }
+
+    // Get the selected Vendor
+    const selectedVendor = selectedRows[0];
+
+    // Check the actual data
+    console.log("Selected Vendor:", selectedVendor);
+    console.log("Vendor Status:", selectedVendor.status);
+
+    // Validate Vendor status
+    if (String(selectedVendor.status ?? "").trim().toLowerCase() !== "active") {
+      toast.warning("The selected Vendor is not active.");
+      return;
+    }
+
+    // Only active Vendor will reach here   
     const selectedData = selectedRows.map(row => ({
       VendorCode: row.vendor_code,
       VendorName: row.vendor_name,
@@ -359,7 +380,7 @@ export default function PurchaseVendorPopup({ open, handleClose, handleVendorShi
       {open && (
         <fieldset>
           <div className="purbut">
-                    {loading && <LoadingScreen />}
+            {loading && <LoadingScreen />}
 
             <div className="modal mt-5  Topnav-screen popup popupadj" tabIndex="-1" role="dialog" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
               <div className="modal-dialog modal-xl ps-5 p-1 pe-5" role="document">

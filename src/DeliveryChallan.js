@@ -319,6 +319,7 @@ function DeliveryChallan() {
                         {showSearchIcon && (
                             <span
                                 className="icon searchIcon"
+                                title='Help'
                                 style={{
                                     position: 'absolute',
                                     right: '10px',
@@ -367,6 +368,7 @@ function DeliveryChallan() {
                         {showSearchIcon && (
                             <span
                                 className="icon searchIcon"
+                                title='Help'
                                 style={{
                                     position: 'absolute',
                                     right: '10px',
@@ -2982,7 +2984,7 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                                 <div className='position-absolute mt-1 me-2'>
                                                     <span className="icon searchIcon"
                                                         onClick={handleDc}>
-                                                        <i class="fa fa-search"></i>
+                                                        <i class="fa fa-search" title='Help'></i>
                                                     </span>
                                                 </div>
                                             </div>

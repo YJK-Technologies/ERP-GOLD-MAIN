@@ -580,7 +580,7 @@ function SalesReturn() {
 
   //CODE TO SAVE PURCHASE HEADER 
   const handleSaveButtonClick = async () => {
-    if (!return_date || !billNo || !billDate || !customerCode || !payType) {
+    if (!return_date || !billNo || !billDate || !customerCode || !payType || !return_person || !return_reason) {
       setError(" ");
       toast.warning('Error: Missing required fields');
       return;
@@ -1288,7 +1288,7 @@ function SalesReturn() {
               taxAmt: item.tax_amt,
               totalReturnAmt: item.bill_rate,
               ReturnWeight: item.return_weight,
-              warehousecode: item.warehouse_code,
+              warehouse: item.warehouse_code,
               totalReturnAmt: item.return_amt,
               taxType: taxType || null,
               taxPer: taxPer || null,
@@ -1592,39 +1592,98 @@ function SalesReturn() {
     }
   };
 
-  // const handleExcelDownload = () => {
-  //   const filteredRowData = rowData.filter(row => row.returnQty > 0 && row.totalReturnAmt > 0 && row.itemAmt > 0);
-  //   const filteredRowDataTax = rowDataTax.filter(taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0);
+// const handleExcelDownload = () => {
+//   const filteredRowData = rowData.filter(
+//     row =>
+//       row.returnQty > 0 &&
+//       row.totalReturnAmt > 0 &&
+//       row.itemAmt > 0
+//   );
 
-  //   const headerData = [{
-  //     company_code: sessionStorage.getItem('selectedCompanyCode'),
-  //     customer_name: customerName,
-  //     customer_code: customerCode,
-  //     return_date: return_date,
-  //     return_reason: return_reason,
-  //     return_person: return_person,
-  //     bill_date: billDate,
-  //     bill_no: billNo,
-  //     pay_type: payType,
-  //     sales_type: salesType,
-  //     roff_amt: roundOff,
-  //     sale_amt: saleAmount,
-  //     bill_amt: totalAmount,
-  //     tax_amount: TotalTax,
-  //   }];
+//   const filteredRowDataTax = rowDataTax.filter(
+//     taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0
+//   );
 
-  //   const headerSheet = XLSX.utils.json_to_sheet(headerData);
-  //   const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
-  //   const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
+//   const headerData = [{
+//     "Customer Name": customerName,
+//     "Customer Code": customerCode,
+//     "Return Date": return_date,
+//     "Return Reason": return_reason,
+//     "Return Person": return_person,
+//     "Bill Date": billDate,
+//     "Bill No": billNo,
+//     "Pay Type": payType,
+//     "Sales Type": salesType,
+//     "Sales Amount": saleAmount,
+//     "Tax Amount": TotalTax,
+//     "Total Amount": totalAmount,
+//     "Rounded Off": roundOff,
+//   }];
 
-  //   const workbook = XLSX.utils.book_new();
-  //   XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
-  //   XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Sales Return Details");
-  //   XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Tax Details");
+//   // Header Sheet
+//   const headerSheet = XLSX.utils.aoa_to_sheet([
+//     ["Sales Return"],
+//     [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
+//     [],
+//   ]);
 
-  //   XLSX.writeFile(workbook, "Sales Return data.xlsx");
-  // };
+//   XLSX.utils.sheet_add_json(headerSheet, headerData, {
+//     origin: "A4",
+//   });
 
+//   // Merge Heading
+//   headerSheet["!merges"] = [
+//     {
+//       s: { r: 0, c: 0 }, // A1
+//       e: { r: 0, c: 9 }, // J1
+//     },
+//     {
+//       s: { r: 1, c: 0 }, // A2
+//       e: { r: 1, c: 9 }, // J2
+//     },
+//   ];
+
+//   // Detail Sheets
+//   const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
+//   const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
+
+//   // Auto Fit Function
+//   const autoFitColumns = (worksheet, data) => {
+//     if (!data || data.length === 0) return;
+
+//     const cols = [];
+
+//     data.forEach((row) => {
+//       Object.keys(row).forEach((key, i) => {
+//         const value = row[key] == null ? "" : row[key].toString();
+
+//         cols[i] = Math.max(
+//           cols[i] || key.length,
+//           key.length,
+//           value.length
+//         );
+//       });
+//     });
+
+//     worksheet["!cols"] = cols.map(width => ({
+//       wch: width + 5,
+//     }));
+//   };
+
+//   // Apply Auto Width
+//   autoFitColumns(headerSheet, headerData);
+//   autoFitColumns(rowDataSheet, filteredRowData);
+//   autoFitColumns(rowDataTaxSheet, filteredRowDataTax);
+
+//   // Workbook
+//   const workbook = XLSX.utils.book_new();
+//   XLSX.utils.book_append_sheet(workbook, headerSheet, "Sales Return Header");
+//   XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Sales Return Details");
+//   XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Sales Return Tax Details");
+
+//   XLSX.writeFile(workbook, "Sales_Return_Data.xlsx");
+//   };
+  
 const handleExcelDownload = () => {
   const filteredRowData = rowData.filter(
     row =>
@@ -1634,7 +1693,9 @@ const handleExcelDownload = () => {
   );
 
   const filteredRowDataTax = rowDataTax.filter(
-    taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0
+    taxRow =>
+      taxRow.TaxAmount > 0 &&
+      taxRow.TaxPercentage > 0
   );
 
   const headerData = [{
@@ -1652,72 +1713,102 @@ const handleExcelDownload = () => {
     "Total Amount": totalAmount,
     "Rounded Off": roundOff,
   }];
+  // =========================================================
+  // FUNCTION TO CONVERT GRID DATA USING headerName
+  // =========================================================
+  const convertGridDataToExcel = (data, columnDefs) => {
+    if (!data || data.length === 0) {
+      return [];
+    }
+    // Only include columns which are visible in AG Grid
+    const visibleColumns = columnDefs.filter(
+      col => col.field && col.hide !== true && col.field !== "delete"
+    );
+    return data.map(row => {
+      const excelRow = {};
 
-  // Header Sheet
+      visibleColumns.forEach(col => {
+        const field = col.field;
+        const headerName = col.headerName || field;
+
+        excelRow[headerName] = row[field] ?? "";
+      });
+
+      return excelRow;
+    });
+  };
+
+  // =========================================================
+  // SALES RETURN DETAILS
+  // =========================================================
+  const excelDetailData = convertGridDataToExcel( filteredRowData, columnDefs );
+
+  // =========================================================
+  // SALES RETURN TAX DETAILS
+  // =========================================================
+  const excelTaxData = convertGridDataToExcel( filteredRowDataTax, columnDefsTax );
+
+  // =========================================================
+  // HEADER SHEET
+  // =========================================================
   const headerSheet = XLSX.utils.aoa_to_sheet([
     ["Sales Return"],
-    [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+    [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
     [],
   ]);
 
-  XLSX.utils.sheet_add_json(headerSheet, headerData, {
-    origin: "A4",
-  });
+  XLSX.utils.sheet_add_json(headerSheet, headerData, {origin: "A4",});
 
   // Merge Heading
-  headerSheet["!merges"] = [
-    {
-      s: { r: 0, c: 0 }, // A1
-      e: { r: 0, c: 9 }, // J1
-    },
-    {
-      s: { r: 1, c: 0 }, // A2
-      e: { r: 1, c: 9 }, // J2
-    },
+  headerSheet["!merges"] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 9 },},
+    { s: { r: 1, c: 0 }, e: { r: 1, c: 9 },},
   ];
 
-  // Detail Sheets
-  const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
-  const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
+  // =========================================================
+  // DETAIL SHEETS
+  // =========================================================
+  const rowDataSheet = XLSX.utils.json_to_sheet(excelDetailData);
+  const rowDataTaxSheet = XLSX.utils.json_to_sheet(excelTaxData);
 
-  // Auto Fit Function
+  // =========================================================
+  // AUTO FIT COLUMNS
+  // =========================================================
   const autoFitColumns = (worksheet, data) => {
     if (!data || data.length === 0) return;
-
     const cols = [];
-
-    data.forEach((row) => {
+    data.forEach(row => {
       Object.keys(row).forEach((key, i) => {
-        const value = row[key] == null ? "" : row[key].toString();
+        const value =
+          row[key] == null
+            ? ""
+            : row[key].toString();
 
         cols[i] = Math.max(
-          cols[i] || key.length,
+          cols[i] || 0,
           key.length,
           value.length
         );
       });
     });
-
     worksheet["!cols"] = cols.map(width => ({
       wch: width + 5,
     }));
   };
-
   // Apply Auto Width
   autoFitColumns(headerSheet, headerData);
-  autoFitColumns(rowDataSheet, filteredRowData);
-  autoFitColumns(rowDataTaxSheet, filteredRowDataTax);
-
-  // Workbook
+  autoFitColumns(rowDataSheet, excelDetailData);
+  autoFitColumns(rowDataTaxSheet, excelTaxData);
+  // =========================================================
+  // WORKBOOK
+  // =========================================================
   const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
-  XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Sales Return Details");
-  XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Tax Details");
+  XLSX.utils.book_append_sheet( workbook, headerSheet, "Sales Return Header" );
+  XLSX.utils.book_append_sheet( workbook, rowDataSheet, "Sales Return Details" );
+  XLSX.utils.book_append_sheet( workbook, rowDataTaxSheet, "Sales Return Tax Details" );
+  XLSX.writeFile( workbook, "Sales_Return_Data.xlsx" );
+};
 
-  XLSX.writeFile(workbook, "Sales_Return_Data.xlsx");
-  };
-  
-  const handleKeyDown = async (e, nextFieldRef, value, hasValueChanged, setHasValueChanged) => {
+const handleKeyDown = async (e, nextFieldRef, value, hasValueChanged, setHasValueChanged) => {
     if (e.key === 'Enter') {
       // Check if the value has changed and handle the search logic
       if (hasValueChanged) {
@@ -1746,120 +1837,316 @@ const handleExcelDownload = () => {
     console.log("Selected option:", selectedOption);
   };
 
-
   const handleAuthorizedButtonClick = async () => {
-    if (!selectedStatus || !return_no) {
-      setAuthError(" ");
-      toast.warning('Error: Missing required fields');
+  if (!selectedStatus || !return_no) {
+    setAuthError(" ");
+    toast.warning("Error: Missing required fields");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+
+    // =========================
+    // 1. AUTHORIZE HEADER
+    // =========================
+
+    const headerResult = await AuthorizedHeader();
+
+    if (headerResult !== true) {
+      toast.error(headerResult);
       return;
     }
-    setLoading(true);
-    try {
-      const headerResult = await AuthorizedHeader();
-      const detailResult = await AuthorizedDetails();
-      const taxDetailResult = await AuthorizedTaxDetails();
 
-      if (headerResult === true && detailResult === true && taxDetailResult === true) {
-        console.log("All API calls completed successfully");
-        toast.success(`Data ${selectedStatus.label} Successfully`, {
-          autoClose: true,
-          onClose: () => {
-            window.location.reload();
-          }
-        });
-      } else {
-        const errorMessage =
-          headerResult !== true
-            ? headerResult
-            : detailResult !== true
-              ? detailResult
-              : taxDetailResult !== true
-                ? taxDetailResult
-                : "An unknown error occurred.";
+    // =========================
+    // 2. AUTHORIZE DETAILS
+    // =========================
 
-        toast.error(errorMessage);
-      }
-    } catch (error) {
-      console.error("Error executing API calls:", error);
-      toast.warning(error.message || "An Error occured while Deleting Data");
-    } finally {
-      setLoading(false);
+    const detailResult = await AuthorizedDetails();
+
+    if (detailResult !== true) {
+      toast.error(detailResult);
+      return;
     }
-  };
 
-  const AuthorizedHeader = async () => {
-    console.log(selectedStatus.value)
-    try {
-      const response = await fetch(`${config.apiBaseUrl}/SalesReturnAuthHdr`, {
+    // =========================
+    // 3. AUTHORIZE TAX DETAILS
+    // =========================
+
+    const taxDetailResult = await AuthorizedTaxDetails();
+
+    if (taxDetailResult !== true) {
+      toast.error(taxDetailResult);
+      return;
+    }
+
+    // =========================
+    // ALL SUCCESS
+    // =========================
+
+    console.log("All API calls completed successfully");
+
+    toast.success(
+      `Data ${selectedStatus.label} Successfully`,
+      {
+        autoClose: true,
+        onClose: () => {
+          window.location.reload();
+        }
+      }
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Error executing authorization:",
+      error
+    );
+
+    toast.error(
+      error.message ||
+      "An error occurred while authorizing data."
+    );
+
+  } finally {
+    setLoading(false);
+  }
+};
+
+const AuthorizedHeader = async () => {
+  try {
+    const response = await fetch(
+      `${config.apiBaseUrl}/SalesReturnAuthHdr`,
+      {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
           return_no: return_no,
-          company_code: sessionStorage.getItem('selectedCompanyCode'),
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
           authroization_status: selectedStatus.value
         })
-      });
-      if (response.ok) {
-        console.log("Rows deleted successfully:", billNo);
-        return true
-      } else {
-        const errorResponse = await response.json();
-        return errorResponse.details || errorResponse.message || "Failed to header.";
       }
-    } catch (error) {
-      toast.error('Error inserting data: ' + error.message);
-    }
-  };
+    );
 
-  const AuthorizedDetails = async () => {
-    try {
-      const response = await fetch(`${config.apiBaseUrl}/SalesReturnAuthDetail`, {
+    const responseData = await response.json();
+
+    console.log("AuthorizedHeader response:", responseData);
+
+    if (response.ok) {
+      return true;
+    }
+
+    return (
+      responseData?.details ||
+      responseData?.message ||
+      (typeof responseData === "string"
+        ? responseData
+        : "Failed to authorize header.")
+    );
+
+  } catch (error) {
+    console.error("AuthorizedHeader Error:", error);
+
+    return error.message || "Error authorizing header.";
+  }
+};
+
+const AuthorizedDetails = async () => {
+  try {
+    const response = await fetch(
+      `${config.apiBaseUrl}/SalesReturnAuthDetail`,
+      {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
           return_no: return_no,
-          company_code: sessionStorage.getItem('selectedCompanyCode'),
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
           authroization_status: selectedStatus.value
         })
-      });
-      if (response.ok) {
-        return true
-      } else {
-        const errorResponse = await response.json();
-        return errorResponse.details || errorResponse.message || "Failed to detail.";
       }
-    } catch (error) {
-      toast.error('Error inserting data: ' + error.message);
-    }
-  };
+    );
 
-  const AuthorizedTaxDetails = async () => {
-    try {
-      const response = await fetch(`${config.apiBaseUrl}/SalesReturnAuthTaxDetail`, {
+    const responseData = await response.json();
+
+    console.log("AuthorizedDetails response:", responseData);
+
+    if (response.ok) {
+      return true;
+    }
+
+    return (
+      responseData?.details ||
+      responseData?.message ||
+      (typeof responseData === "string"
+        ? responseData
+        : "Failed to authorize details.")
+    );
+
+  } catch (error) {
+    console.error("AuthorizedDetails Error:", error);
+
+    return error.message || "Error authorizing details.";
+  }
+};
+
+const AuthorizedTaxDetails = async () => {
+  try {
+    const response = await fetch(
+      `${config.apiBaseUrl}/SalesReturnAuthTaxDetail`,
+      {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
           return_no: return_no,
-          company_code: sessionStorage.getItem('selectedCompanyCode'),
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
           authroization_status: selectedStatus.value
         })
-      });
-      if (response.ok) {
-        return true;
-      } else {
-        const errorResponse = await response.json();
-        return errorResponse.details || errorResponse.message || "Failed to tax detail.";
       }
-    } catch (error) {
-      toast.error('Error inserting data: ' + error.message);
+    );
+
+    const responseData = await response.json();
+
+    console.log("AuthorizedTaxDetails response:", responseData);
+
+    if (response.ok) {
+      return true;
     }
-  };
+
+    return (
+      responseData?.details ||
+      responseData?.message ||
+      (typeof responseData === "string"
+        ? responseData
+        : "Failed to authorize tax details.")
+    );
+
+  } catch (error) {
+    console.error("AuthorizedTaxDetails Error:", error);
+
+    return error.message || "Error authorizing tax details.";
+  }
+};
+
+  // const handleAuthorizedButtonClick = async () => {
+  //   if (!selectedStatus || !return_no) {
+  //     setAuthError(" ");
+  //     toast.warning('Error: Missing required fields');
+  //     return;
+  //   }
+  //   setLoading(true);
+  //   try {
+  //     const headerResult = await AuthorizedHeader();
+  //     const detailResult = await AuthorizedDetails();
+  //     const taxDetailResult = await AuthorizedTaxDetails();
+
+  //     if (headerResult === true && detailResult === true && taxDetailResult === true) {
+  //       console.log("All API calls completed successfully");
+  //       toast.success(`Data ${selectedStatus.label} Successfully`, {
+  //         autoClose: true,
+  //         onClose: () => {
+  //           window.location.reload();
+  //         }
+  //       });
+  //     } else {
+  //       const errorMessage =
+  //         headerResult !== true
+  //           ? headerResult
+  //           : detailResult !== true
+  //             ? detailResult
+  //             : taxDetailResult !== true
+  //               ? taxDetailResult
+  //               : "An unknown error occurred.";
+
+  //       toast.error(errorMessage);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error executing API calls:", error);
+  //     toast.warning(error.message || "An Error occured while Deleting Data");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // const AuthorizedHeader = async () => {
+  //   console.log(selectedStatus.value)
+  //   try {
+  //     const response = await fetch(`${config.apiBaseUrl}/SalesReturnAuthHdr`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json"
+  //       },
+  //       body: JSON.stringify({
+  //         return_no: return_no,
+  //         company_code: sessionStorage.getItem('selectedCompanyCode'),
+  //         authroization_status: selectedStatus.value
+  //       })
+  //     });
+  //     if (response.ok) {
+  //       console.log("Rows deleted successfully:", billNo);
+  //       return true
+  //     } else {
+  //       const errorResponse = await response.json();
+  //       return errorResponse.details || errorResponse.message || "Failed to header.";
+  //     }
+  //   } catch (error) {
+  //     toast.error('Error inserting data: ' + error.message);
+  //   }
+  // };
+
+  // const AuthorizedDetails = async () => {
+  //   try {
+  //     const response = await fetch(`${config.apiBaseUrl}/SalesReturnAuthDetail`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json"
+  //       },
+  //       body: JSON.stringify({
+  //         return_no: return_no,
+  //         company_code: sessionStorage.getItem('selectedCompanyCode'),
+  //         authroization_status: selectedStatus.value
+  //       })
+  //     });
+  //     if (response.ok) {
+  //       return true
+  //     } else {
+  //       const errorResponse = await response.json();
+  //       return errorResponse.details || errorResponse.message || "Failed to detail.";
+  //     }
+  //   } catch (error) {
+  //     toast.error('Error inserting data: ' + error.message);
+  //   }
+  // };
+
+  // const AuthorizedTaxDetails = async () => {
+  //   try {
+  //     const response = await fetch(`${config.apiBaseUrl}/SalesReturnAuthTaxDetail`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json"
+  //       },
+  //       body: JSON.stringify({
+  //         return_no: return_no,
+  //         company_code: sessionStorage.getItem('selectedCompanyCode'),
+  //         authroization_status: selectedStatus.value
+  //       })
+  //     });
+  //     if (response.ok) {
+  //       return true;
+  //     } else {
+  //       const errorResponse = await response.json();
+  //       return errorResponse.details || errorResponse.message || "Failed to tax detail.";
+  //     }
+  //   } catch (error) {
+  //     toast.error('Error inserting data: ' + error.message);
+  //   }
+  // };
 
   return (
     <div className="container-fluid Topnav-screen">
@@ -2037,7 +2324,7 @@ const handleExcelDownload = () => {
             </div>
             <div className="col-md-3 form-group mb-2">
               <div className="exp-form-floating">
-                <label htmlFor="retper">Return Person{!showAsterisk && <span className="text-danger">*</span>}</label>
+                <label htmlFor="retper" className={`${error && !return_person ? 'red' : ''}`}>Return Person{!showAsterisk && <span className="text-danger">*</span>}</label>
                 <input
                   name="retper"
                   id="retper"
@@ -2057,7 +2344,7 @@ const handleExcelDownload = () => {
             </div>
             <div className="col-md-3 form-group mb-2">
               <div className="exp-form-floating">
-                <label htmlFor="retreason" >Return Reason{!showAsterisk && <span className="text-danger">*</span>}</label>
+                <label htmlFor="retreason" className={`${error && !return_reason ? 'red' : ''}`}>Return Reason{!showAsterisk && <span className="text-danger">*</span>}</label>
                 <input
                   name="retreason"
                   id="retreason"
