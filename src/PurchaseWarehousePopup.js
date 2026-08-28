@@ -296,13 +296,13 @@ export default function PurchaseWarehousePopup({ open, handleClose, handleWareho
                           </div>
 
                           <div className="mb-2 mt-2 d-flex justify-content-end">
-                            <icon className="icon popups-btn" onClick={handlewarehouseSearch}>
+                            <icon className="icon popups-btn" onClick={handlewarehouseSearch} title="Search">
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
                             </icon>
-                            <icon className="icon popups-btn" onClick={handleReload}>
+                            <icon className="icon popups-btn" onClick={handleReload} title="Reload">
                               <i class="fa-solid fa-arrow-rotate-right"></i>
                             </icon>
-                            <icon className="icon popups-btn" onClick={handleConfirm1}>
+                            <icon className="icon popups-btn" onClick={handleConfirm1} title="Confirm">
                               <FontAwesomeIcon icon="fa-solid fa-check" />
                             </icon>
                           </div>

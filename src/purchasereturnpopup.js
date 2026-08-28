@@ -133,18 +133,14 @@ export default function ItemPopup({ open, handleClose, handleItem }) {
 
   // For Dropdown field
     const [selected, setSelected] = useState(null);
-    const [purchaseType, setPurchaseType] = useState("");
-    const [status, setStatus] = useState([]);
-    const [purchasedrop, setPurchasedrop] = useState([]);
-  
-    const [selectedPay, setselectedPay] = useState('');
-    const [payType, setPayType] = useState("");
-    const [paydrop, setPaydrop] = useState([]);
+      const [purchasedrop, setPurchasedrop] = useState([]);
+    
+      const [selectedPay, setselectedPay] = useState('');
+      const [paydrop, setPaydrop] = useState([]);
   
     const handleChangePurchase = (selected) => {
       setSelected(selected);
-      setPurchaseType(selected ? selected.value : '');
-      setStatus('Typing...');
+      setpurchase_type(selected ? selected.value : '');
     };
   
     const filteredOptionPurchase = purchasedrop.map((option) => ({
@@ -154,7 +150,7 @@ export default function ItemPopup({ open, handleClose, handleItem }) {
   
     const handleChangePay = (selectedPay) => {
       setselectedPay(selectedPay);
-      setPayType(selectedPay ? selectedPay.value : '');
+      setpay_type(selectedPay ? selectedPay.value : '');
     };
   
     const filteredOptionPay = paydrop.map((option) => ({
@@ -204,7 +200,7 @@ export default function ItemPopup({ open, handleClose, handleItem }) {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({ company_code:sessionStorage.getItem("selectedCompanyCode"), 
-          transaction_no, transaction_date, vendor_code, vendor_name, purchase_type: purchaseType, pay_type: payType }) // Send company_no and company_name as search criteria
+          transaction_no, transaction_date, vendor_code, vendor_name, purchase_type: purchase_type, pay_type: pay_type }) // Send company_no and company_name as search criteria
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -239,6 +235,8 @@ export default function ItemPopup({ open, handleClose, handleItem }) {
     setvendor_name("");
     setpurchase_type("");
     setpay_type("");
+    setSelected("");
+    setselectedPay("");
   };
 
   const [selectedRows, setSelectedRows] = useState([]);

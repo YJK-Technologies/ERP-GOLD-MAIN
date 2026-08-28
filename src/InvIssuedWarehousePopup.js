@@ -195,6 +195,8 @@ export default function InventoryIssuedWarehousePopup({ open, handleClose, handl
     setwarehouse_name("");
     setstatus("");
     setlocation_no("");
+    setSelectedStatus("");
+    setSelectedLocation("");
   };
 
   return (

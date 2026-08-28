@@ -3866,6 +3866,7 @@ setLoading(true)
                       className="exp-input-field form-control"
                       id="customername"
                       required
+                      title="Auto generated - Appear once the Customer Code is selected"
                       value={customerName}
                       readOnly
                     />
@@ -3940,6 +3941,7 @@ setLoading(true)
                       className="exp-input-field form-control"
                       type="date"
                       placeholder=""
+                      title="Select the Bill Date"
                       required
                       value={billDate}
                       onChange={(e) => setBillDate(e.target.value)}
@@ -4044,7 +4046,7 @@ setLoading(true)
                         <label htmlFor="totalSaleAmount" className="">Total Sales Amount</label>
                         <input
                           id="totalSaleAmount"
-                          title='Enter the Total Sales Amount'
+                          title='Auto generated'
                           type="text"
                           className="form-control exp-input-field"
                           value={Totalsales}
@@ -4057,7 +4059,7 @@ setLoading(true)
                         <label htmlFor="totalTaxAmount" className="">Total Tax</label>
                         <input
                           id="totalTaxAmount"
-                          title='Enter the Total Tax'
+                          title='Auto generated'
                           type="text"
                           className="form-control exp-input-field"
                           value={TotalTax}
@@ -4072,7 +4074,7 @@ setLoading(true)
                         <label htmlFor="roundOff" className="">Round Off</label>
                         <input
                           id="roundOff"
-                          title='Enter the Round Off'
+                          title='Auto generated'
                           type="text"
                           className="form-control exp-input-field"
                           value={round_difference}
@@ -4085,7 +4087,7 @@ setLoading(true)
                         <label htmlFor="totalBillAmount" className="">Total Bill Amount</label>
                         <input
                           id="totalBillAmount"
-                          title='Enter the Total Bill Amount'
+                          title='Auto generated'
                           type="text"
                           className="form-control exp-input-field"
                           value={TotalBill}
@@ -4104,7 +4106,7 @@ setLoading(true)
                         className="exp-input-field"
                         placeholder=""
                         required
-                        title="Please select the item code"
+                        title="Select the Item Code"
                         value={selectedItem}
                         onChange={handleChangeItem}
                         options={filteredOptionItem}
@@ -4216,8 +4218,9 @@ setLoading(true)
               <div className="d-flex justify-content-start">
                 <h1 align="left" className="purbut me-5" >Deleted Sales</h1>
               </div>
-              <div className="col-md-1 form-group mb-2">
+              <div className="col-md-1 form-group mb-2" >
                 <div class="exp-form-floating">
+                  <div title="Select the Screen">
                   <Select
                     id="returnType"
                     className="exp-input-field"
@@ -4228,6 +4231,7 @@ setLoading(true)
                     options={filteredOptionScreens}
                     data-tip="Please select a default warehouse"
                   />
+                </div>
                 </div>
               </div>
             </div>
@@ -4250,6 +4254,7 @@ setLoading(true)
                         className="exp-input-field form-control justify-content-start"
                         id='saleReferNo'
                         required
+                        title="Enter the Bill No"
                         value={refNo}
                         onChange={handleDeletedRerNo}
                         onKeyPress={handleKeyDelete}
@@ -4273,6 +4278,7 @@ setLoading(true)
                       <input
                         className="exp-input-field form-control"
                         id='customercode'
+                        title='Auto generated'
                         required
                         value={deleteCustomerCode}
                         autoComplete="off"
@@ -4288,6 +4294,7 @@ setLoading(true)
                       className="exp-input-field form-control"
                       id="customername"
                       required
+                      title='Auto generated'
                       value={deleteCustomerName}
                       readOnly
                     />
@@ -4302,6 +4309,7 @@ setLoading(true)
                       className="exp-input-field form-control"
                       placeholder=""
                       required
+                      title='Auto generated'
                       isDisabled={true}
                       autoComplete="off"
                     />
@@ -4315,6 +4323,7 @@ setLoading(true)
                       value={deleteSalesType}
                       className="exp-input-field form-control"
                       placeholder=""
+                      title='Auto generated'
                       required
                       isDisabled={true}
                       autoComplete="off"
@@ -4327,6 +4336,7 @@ setLoading(true)
                     <input
                       id="ordertype"
                       value={deleteOrderType}
+                      title='Auto generated'
                       className="exp-input-field form-control"
                       placeholder=""
                       required
@@ -4344,6 +4354,7 @@ setLoading(true)
                       className="exp-input-field form-control"
                       type="date"
                       placeholder=""
+                      title='Auto generated'
                       required
                       readOnly
                       value={deleteBillDate}
@@ -4361,6 +4372,7 @@ setLoading(true)
                       className="exp-input-field form-control"
                       placeholder=""
                       required
+                      title='Auto generated'
                       readOnly
                       value={deleteDelvychellanno}
                       autoComplete="off"
@@ -4375,6 +4387,7 @@ setLoading(true)
                       className="exp-input-field form-control"
                       placeholder=""
                       required
+                      title='Auto generated'
                       readOnly
                       value={deletedSalesMode}
                     />
@@ -4397,6 +4410,7 @@ setLoading(true)
                         className="exp-input-field form-control input"
                         placeholder=""
                         required
+                        title='Auto generated'
                         readOnly
                         value={deletedPaidAmount}
                         autoComplete="off"
@@ -4413,6 +4427,7 @@ setLoading(true)
                         className="exp-input-field form-control input"
                         placeholder=""
                         required
+                        title='Auto generated'
                         readOnly
                         value={deletedReturnAmount}
                         autoComplete="off"
@@ -4430,6 +4445,7 @@ setLoading(true)
                         type="text"
                         placeholder=""
                         required
+                        title='Auto generated'
                         value={deleteTotalsales}
                         readOnly
                         autoComplete="off"
@@ -4445,6 +4461,7 @@ setLoading(true)
                         text="text"
                         className="exp-input-field form-control"
                         placeholder=""
+                        title='Auto generated'
                         required
                         value={deleteTotalTax}
                         readOnly
@@ -4464,6 +4481,7 @@ setLoading(true)
                         className="exp-input-field form-control"
                         placeholder=""
                         required
+                        title='Auto generated'
                         value={deleteRoundedDifference}
                         readOnly
                         autoComplete="off"
@@ -4479,6 +4497,7 @@ setLoading(true)
                         type="text"
                         className="exp-input-field form-control"
                         placeholder=""
+                        title='Auto generated'
                         required
                         value={deleteTotalBill}
                         readOnly

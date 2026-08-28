@@ -1002,7 +1002,7 @@ function PurchaseReturn() {
        const searchData = await response.json();
         setSaveButtonVisible(true)
         setPrintButtonVisible(false)
-        setShowExcelButton(false)
+        setShowExcelButton(true)
         if (searchData.table1 && searchData.table1.length > 0) {
           const item = searchData.table1[0];
           setEntryDate(formatDate(item.Entry_date));
