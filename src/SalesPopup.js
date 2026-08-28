@@ -371,6 +371,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                               id="billdate"
                               className="form-control"
                               placeholder="Bill Date"
+                              title='Select the Bill Date'
                               value={bill_date}
                               onChange={(e) => setbill_date(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
@@ -383,6 +384,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                               id="billno"
                               className="form-control"
                               placeholder="Bill No"
+                              title='Enter the Bill No'
                               value={bill_no}
                               onChange={(e) => setbill_no(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
@@ -395,6 +397,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                               id="cuscode"
                               className="form-control"
                               placeholder="Customer Code"
+                              title='Enter the Customer Code'
                               value={customer_code}
                               onChange={(e) => setcustomer_code(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
@@ -407,6 +410,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                               id="cusname"
                               className="form-control"
                               placeholder="Customer Name"
+                              title='Enter the Customer Name'
                               value={customer_name}
                               onChange={(e) => setcustomer_name(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
@@ -478,6 +482,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                               id="delychlno"
                               className="form-control"
                               placeholder="DC No"
+                              title='Enter the DC No'
                               value={dely_chlno}
                               onChange={(e) => setdely_chlno(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
@@ -485,13 +490,13 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                             />
                           </div>
                           <div className="mb-2 mt-2 d-flex justify-content-end">
-                            <icon className="icon popups-btn" onClick={handleSearchItem}>
+                            <icon className="icon popups-btn" onClick={handleSearchItem} title='Search'>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
                             </icon>
-                            <icon className="icon popups-btn" onClick={handleReload}>
+                            <icon className="icon popups-btn" onClick={handleReload} title='Reload'>
                               <i class="fa-solid fa-arrow-rotate-right"></i>
                             </icon>
-                            <icon className="icon popups-btn" onClick={handleConfirm}>
+                            <icon className="icon popups-btn" onClick={handleConfirm} title='Confirm'>
                               <FontAwesomeIcon icon="fa-solid fa-check" />
                             </icon>
                           </div>

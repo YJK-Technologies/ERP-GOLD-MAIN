@@ -3180,7 +3180,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                   <h1 align="left" className="purbut me-5">Purchase</h1>
                 </div>
                 <div className="d-flex justify-content-end purbut me-3">
-                  <div class="exp-form-floating">
+                  <div class="exp-form-floating" title="Please select a screen" >
                     <Select
                       id="returnType"
                       className="exp-input-field col-md-6 mt-2"
@@ -3189,7 +3189,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                       value={selectedscreens}
                       onChange={handleChangeScreens}
                       options={filteredOptionScreens}
-                      data-tip="Please select a default warehouse"
+                      data-tip="Please select a screen"
                     />
                   </div>
                   {saveButtonVisible && ['add', 'all permission'].some(permission => purchasePermission.includes(permission)) && (

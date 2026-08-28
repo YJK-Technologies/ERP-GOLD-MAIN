@@ -444,13 +444,13 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                             />
                           </div> */}
                           <div className="mb-2 mt-2 d-flex justify-content-end">
-                            <icon className="icon popups-btn" onClick={handleSearchItem}>
+                            <icon className="icon popups-btn" onClick={handleSearchItem} title="Search">
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
                             </icon>
-                            <icon className="icon popups-btn" onClick={handleReload}>
+                            <icon className="icon popups-btn" onClick={handleReload} title="Reload">
                               <i class="fa-solid fa-arrow-rotate-right"></i>
                             </icon>
-                            <icon className="icon popups-btn" onClick={handleConfirm}>
+                            <icon className="icon popups-btn" onClick={handleConfirm} title="Confirm">
                               <FontAwesomeIcon icon="fa-solid fa-check" />
                             </icon>
                           </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as React from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -11,10 +11,9 @@ import { format } from 'date-fns';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import LoadingScreen from './Loading';
+import Select from 'react-select'
 
 const config = require('./Apiconfig');
-
-
 
 const columnDefs = [
   {
@@ -129,9 +128,67 @@ export default function ItemPopup({ open, handleClose, handlePurchaseDeleteData 
   const [pay_type, setpay_type] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // For Dropdown field
+  const [selected, setSelected] = useState(null);
+  const [purchasedrop, setPurchasedrop] = useState([]);
+
+  const [selectedPay, setselectedPay] = useState('');
+  const [paydrop, setPaydrop] = useState([]);
+
+  const handleChangePurchase = (selected) => {
+    setSelected(selected);
+    setpurchase_type(selected ? selected.value : '');
+  };
+
+  const filteredOptionPurchase = purchasedrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  const handleChangePay = (selectedPay) => {
+    setselectedPay(selectedPay);
+    setpay_type(selectedPay ? selectedPay.value : '');
+  };
+
+  const filteredOptionPay = paydrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  useEffect(() => {
+    const companyCode = sessionStorage.getItem('selectedCompanyCode');
+
+    fetch(`${config.apiBaseUrl}/paytype`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        company_code: companyCode,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setPaydrop(data))
+      .catch((error) => console.error("Error fetching payment types:", error));
+
+    fetch(`${config.apiBaseUrl}/purchasetype`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        company_code: companyCode,
+      }),
+    })
+
+      .then((response) => response.json())
+      .then((data) => setPurchasedrop(data))
+      .catch((error) => console.error("Error fetching purchase types:", error));
+
+  }, []);
 
   const handleSearch = async () => {
-        setLoading(true);
+    setLoading(true);
 
     try {
       const response = await fetch(`${config.apiBaseUrl}/getpurDeleteDetails`, {
@@ -139,7 +196,7 @@ export default function ItemPopup({ open, handleClose, handlePurchaseDeleteData 
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), transaction_no, transaction_date, vendor_code, vendor_name, purchase_type, pay_type }) // Send company_no and company_name as search criteria
+        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), transaction_no, transaction_date, vendor_code, vendor_name, purchase_type: purchase_type, pay_type: pay_type }) // Send company_no and company_name as search criteria
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -147,9 +204,9 @@ export default function ItemPopup({ open, handleClose, handlePurchaseDeleteData 
         console.log(searchData)
         console.log("data fetched successfully")
       } else if (response.status === 404) {
-          toast.warning('Data not found')
-          setRowData([]);
-          clearInputs([])
+        toast.warning('Data not found')
+        setRowData([]);
+        clearInputs([])
         console.log("Data not found"); // Log the message for 404 Not Found
       } else {
         console.log("Bad request"); // Log the message for other errors
@@ -174,6 +231,8 @@ export default function ItemPopup({ open, handleClose, handlePurchaseDeleteData 
     setvendor_name("");
     setpurchase_type("");
     setpay_type("");
+    setSelected("");
+    setselectedPay("");
   };
 
   const [selectedRows, setSelectedRows] = useState([]);
@@ -207,7 +266,7 @@ export default function ItemPopup({ open, handleClose, handlePurchaseDeleteData 
       {open && (
         <fieldset>
           <div>
-          {loading && <LoadingScreen />}
+            {loading && <LoadingScreen />}
             <div className="purbut">
               <div className="modal mt-5 Topnav-screen popup popupadj" tabIndex="-1" role="dialog" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
                 <div className="modal-dialog modal-xl ps-5 p-1 pe-5" role="document">
@@ -218,7 +277,7 @@ export default function ItemPopup({ open, handleClose, handlePurchaseDeleteData 
                           <div className="purbut mb-0 d-flex justify-content-between" >
                             <h1 align="left" className="purbut">Deleted Purchase Help</h1>
                             <button onClick={handleClose} className="purbut btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
-                            <i class="fa-solid fa-xmark"></i>
+                              <i class="fa-solid fa-xmark"></i>
                             </button>
                           </div>
                           <div class="d-flex justify-content-between">
@@ -235,6 +294,7 @@ export default function ItemPopup({ open, handleClose, handlePurchaseDeleteData 
                               id='transaction_no'
                               className='form-control'
                               placeholder='Transaction No'
+                              title="Enter a Transaction No"
                               maxLength={10}
                               value={transaction_no}
                               onChange={(e) => settransaction_no(e.target.value)}
@@ -248,6 +308,7 @@ export default function ItemPopup({ open, handleClose, handlePurchaseDeleteData 
                               id='transaction_date'
                               className='form-control'
                               placeholder='Transaction Date'
+                              title="Select the Transaction Date"
                               value={transaction_date}
                               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                               onChange={(e) => settransaction_date(e.target.value)}
@@ -260,6 +321,7 @@ export default function ItemPopup({ open, handleClose, handlePurchaseDeleteData 
                               id='vendor_code'
                               className='form-control'
                               placeholder='Vendor Code'
+                              title="Enter a Vendor Code"
                               maxLength={18}
                               value={vendor_code}
                               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -274,38 +336,48 @@ export default function ItemPopup({ open, handleClose, handlePurchaseDeleteData 
                               className='form-control'
                               maxLength={10}
                               placeholder='Vendor Name'
+                              title="Enter a Vendor Name"
                               value={vendor_name}
                               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                               onChange={(e) => setvendor_name(e.target.value)}
                               autoComplete='off'
                             />
                           </div>
-                          <div className="col-sm mb-2">
-                            <input
-                              type='text'
-                              id='purchase_type'
-                              className='form-control'
-                              placeholder='Purchase Type'
-                              value={purchase_type}
-                              maxLength={18}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                              onChange={(e) => setpurchase_type(e.target.value)}
-                              autoComplete='off'
-                            />
+
+                          <div className="col-md-2 mb-2">
+                            <div class="exp-form-floating">
+                              <div title="select a payment type">
+                                <Select
+                                  id="purchaseType"
+                                  value={selected}
+                                  onChange={handleChangePurchase}
+                                  options={filteredOptionPurchase}
+                                  className="exp-input-field"
+                                  placeholder="Purchase"
+                                  isClearable
+                                />
+                              </div>
+                            </div>
                           </div>
-                          <div className="col-sm mb-2">
-                            <input
-                              type='text'
-                              id='Pay_type'
-                              className='form-control'
-                              placeholder='Paytype'
-                              maxLength={10}
-                              value={pay_type}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                              onChange={(e) => setpay_type(e.target.value)}
-                              autoComplete='off'
-                            />
+
+                          <div className="col-md-2 mb-2">
+                            <div class="exp-form-floating">
+                              <div title="select a payment type">
+                                <Select
+                                  id="paytype"
+                                  value={selectedPay}
+                                  onChange={handleChangePay}
+                                  options={filteredOptionPay}
+                                  className="exp-input-field"
+                                  placeholder="Pay Type"
+                                  required
+                                  data-tip="Please select a payment type"
+                                  isClearable
+                                />
+                              </div>
+                            </div>
                           </div>
+
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <icon className="icon popups-btn" onClick={handleSearch} title="Search">
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
@@ -346,7 +418,7 @@ export default function ItemPopup({ open, handleClose, handlePurchaseDeleteData 
                           </div>
                           <div className="mb-0 d-flex justify-content-end" >
                             <button onClick={handleClose} className="closebtn2" required title="Close">
-                            <i class="fa-solid fa-xmark"></i>
+                              <i class="fa-solid fa-xmark"></i>
                             </button>
                           </div>
                         </div>
@@ -408,32 +480,41 @@ export default function ItemPopup({ open, handleClose, handlePurchaseDeleteData 
                               autoComplete='off'
                             />
                           </div>
-                          <div className="col-sm mb-2">
-                            <input
-                              type='text'
-                              id='purchase_type'
-                              className='form-control'
-                              placeholder='Purchase Type'
-                              value={purchase_type}
-                              maxLength={18}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                              onChange={(e) => setpurchase_type(e.target.value)}
-                              autoComplete='off'
-                            />
+
+                          <div className="col-md-2 mb-2">
+                            <div class="exp-form-floating">
+                              <div title="select a payment type">
+                                <Select
+                                  id="purchaseType"
+                                  value={selected}
+                                  onChange={handleChangePurchase}
+                                  options={filteredOptionPurchase}
+                                  className="exp-input-field"
+                                  placeholder="Purchase"
+                                  isClearable
+                                />
+                              </div>
+                            </div>
                           </div>
-                          <div className="col-sm mb-2">
-                            <input
-                              type='text'
-                              id='Pay_type'
-                              className='form-control'
-                              placeholder='Paytype'
-                              maxLength={10}
-                              value={pay_type}
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                              onChange={(e) => setpay_type(e.target.value)}
-                              autoComplete='off'
-                            />
+
+                          <div className="col-md-2 mb-2">
+                            <div class="exp-form-floating">
+                              <div title="select a payment type">
+                                <Select
+                                  id="paytype"
+                                  value={selectedPay}
+                                  onChange={handleChangePay}
+                                  options={filteredOptionPay}
+                                  className="exp-input-field"
+                                  placeholder="Pay Type"
+                                  required
+                                  data-tip="Please select a payment type"
+                                  isClearable
+                                />
+                              </div>
+                            </div>
                           </div>
+
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <button className="" onClick={handleSearch} title="Search">
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
