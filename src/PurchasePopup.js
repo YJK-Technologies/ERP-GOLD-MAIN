@@ -130,18 +130,14 @@ export default function ItemPopup({ open, handleClose, handlePurchaseData }) {
 
   // For Dropdown field
   const [selected, setSelected] = useState(null);
-  const [purchaseType, setPurchaseType] = useState("");
-  const [status, setStatus] = useState([]);
   const [purchasedrop, setPurchasedrop] = useState([]);
 
   const [selectedPay, setselectedPay] = useState('');
-  const [payType, setPayType] = useState("");
   const [paydrop, setPaydrop] = useState([]);
 
   const handleChangePurchase = (selected) => {
     setSelected(selected);
-    setPurchaseType(selected ? selected.value : '');
-    setStatus('Typing...');
+    setpurchase_type(selected ? selected.value : '');
   };
 
   const filteredOptionPurchase = purchasedrop.map((option) => ({
@@ -151,7 +147,7 @@ export default function ItemPopup({ open, handleClose, handlePurchaseData }) {
 
   const handleChangePay = (selectedPay) => {
     setselectedPay(selectedPay);
-    setPayType(selectedPay ? selectedPay.value : '');
+    setpay_type(selectedPay ? selectedPay.value : '');
   };
 
   const filteredOptionPay = paydrop.map((option) => ({
@@ -202,7 +198,7 @@ export default function ItemPopup({ open, handleClose, handlePurchaseData }) {
         },
         body: JSON.stringify({
           transaction_no, company_code: sessionStorage.getItem("selectedCompanyCode"),
-          transaction_date, vendor_code, vendor_name, purchase_type: purchaseType, pay_type: payType
+          transaction_date, vendor_code, vendor_name, purchase_type: purchase_type, pay_type: pay_type
         }) // Send company_no and company_name as search criteria
       });
       if (response.ok) {
@@ -236,7 +232,9 @@ export default function ItemPopup({ open, handleClose, handlePurchaseData }) {
     setvendor_code("");
     setvendor_name("");
     setpurchase_type("");
-    setPayType("");
+    setpay_type("");
+    setSelected("");
+    setselectedPay("");
   };
 
   const [selectedRows, setSelectedRows] = useState([]);
@@ -299,6 +297,7 @@ export default function ItemPopup({ open, handleClose, handlePurchaseData }) {
                               id='transaction_no'
                               className='exp-input-field form-control'
                               placeholder='Transaction No'
+                              title="Enter a Transaction No"
                               value={transaction_no}
                               onChange={(e) => settransaction_no(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -311,6 +310,7 @@ export default function ItemPopup({ open, handleClose, handlePurchaseData }) {
                               id='transaction_date'
                               className='exp-input-field form-control'
                               placeholder='Transaction Date'
+                              title="Select the Transaction Date"
                               value={transaction_date}
                               onChange={(e) => settransaction_date(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -323,6 +323,7 @@ export default function ItemPopup({ open, handleClose, handlePurchaseData }) {
                               id='vendor_code'
                               className='exp-input-field form-control'
                               placeholder='Vendor Code'
+                              title="Enter a Vendor Code"
                               value={vendor_code}
                               onChange={(e) => setvendor_code(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -335,6 +336,7 @@ export default function ItemPopup({ open, handleClose, handlePurchaseData }) {
                               id='vendor_code'
                               className='exp-input-field form-control'
                               placeholder='Vendor Name'
+                              title="Enter a Vendor Name"
                               value={vendor_name}
                               onChange={(e) => setvendor_name(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}

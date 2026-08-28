@@ -369,7 +369,8 @@ export default function SalesItemPopup({ open, handleClose, handleItem, type }) 
                               id='ItemCode'
                               maxLength={18}
                               className='exp-input-field form-control'
-                              placeholder=' Item Code'
+                              placeholder='Item Code'
+                              title="Enter the Item Code"
                               value={Item_code}
                               onChange={(e) => setItem_code(e.target.value)}
                               autoComplete="off"
@@ -381,6 +382,7 @@ export default function SalesItemPopup({ open, handleClose, handleItem, type }) 
                               id='Variant'
                               className='exp-input-field form-control'
                               placeholder=' Variant'
+                              title="Enter the Variant"
                               value={Item_variant}
                               maxLength={18}
                               onChange={(e) => setItem_variant(e.target.value)}
@@ -392,7 +394,8 @@ export default function SalesItemPopup({ open, handleClose, handleItem, type }) 
                               type='text'
                               id='ItemName'
                               className='exp-input-field form-control'
-                              placeholder=' Item Name'
+                              placeholder='Item Name'
+                              title="Enter the Item Name"
                               maxLength={40}
                               value={Item_name}
                               onChange={(e) => setItem_name(e.target.value)}
@@ -404,14 +407,15 @@ export default function SalesItemPopup({ open, handleClose, handleItem, type }) 
                               type='text'
                               id='ShortName'
                               className='exp-input-field form-control'
-                              placeholder=' Short Name'
+                              placeholder='Short Name'
+                              title="Enter the Short Name"
                               maxLength={50}
                               value={Item_short_name}
                               onChange={(e) => setItem_short_name(e.target.value)}
                               autoComplete="off"
                             />
                           </div>
-                          <div className="col-sm mb-2">
+                          <div className="col-sm mb-2" title="Select the Our Brand">
                             <Select
                               id="OurBrand"
                               type="text"
@@ -421,50 +425,24 @@ export default function SalesItemPopup({ open, handleClose, handleItem, type }) 
                               options={filteredOptionItemOurBrand}
                             />
                           </div>
-                          {/* <div className="col-sm mb-2">
-                            <input
-                              type='text'
-                              id='OurBrand'
-                              className='exp-input-field form-control'
-                              placeholder=' Our Brand'
-                              value={Item_Our_Brand}
-                              maxLength={30}
-                              onChange={(e) => setItem_Our_Brand(e.target.value)}
-                              autoComplete="off"
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                            />
-                          </div> */}
-                          <div className="col-sm mb-2">
-                          {/* <label htmlFor="Status" >Status</label> */}
+                          <div className="col-sm mb-2" title="Select the Status">
                             <Select
                               id="status"
                               type="text"
-                              placeholder='status'
+                              placeholder='Status'
                               value={selectedStatus}
                               onChange={handleStatusChange}
                               options={filteredOptionStatus}
                             />
                           </div>
-                          {/* <div className="col-sm mb-2">
-                            <input
-                              type='text'
-                              id='Status'
-                              maxLength={18}
-                              className='exp-input-field form-control'
-                              placeholder=' Status'
-                              value={status}
-                              onChange={(e) => setstatus(e.target.value)}
-                              autoComplete="off"
-                            />
-                          </div> */}
                           <div className="mb-2 mt-2  d-flex justify-content-end ">
-                            <icon className="icon popups-btn" onClick={handleSearchItem}>
+                            <icon className="icon popups-btn" onClick={handleSearchItem} title="Search">
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
                             </icon>
-                            <icon className="icon popups-btn" onClick={handleReload}>
+                            <icon className="icon popups-btn" onClick={handleReload} title="Reload">
                               <i class="fa-solid fa-arrow-rotate-right"></i>
                             </icon>
-                            <icon className="icon popups-btn" onClick={handleConfirm}>
+                            <icon className="icon popups-btn" onClick={handleConfirm} title="Confirm">
                               <FontAwesomeIcon icon="fa-solid fa-check" />
                             </icon>
                           </div>
