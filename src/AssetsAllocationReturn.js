@@ -228,12 +228,12 @@ function AssetsReturn({ }) {
 
   const transformRowData = (data) => {
     return data.map(row => ({
-      "S.No": row.serialNumber,
-      "Item Code": row.itemCode.toString(),
-      "Item Name": row.itemName.toString(),
-      "Employee ID": row.employeeNO.toString(),
-      "Quantity": row.qty.toString(),
-      "Return Quantity": row.returnQty.toString()
+      "S.No": row.serialNumber ?? "",
+      "Item Code": row.itemCode?.toString() ?? "",
+      "Item Name": row.itemName?.toString() ?? "",
+      "Employee ID": row.employeeNO?.toString() ?? "",
+      "Quantity": Number(row.qty) || 0,
+      "Return Quantity": Number(row.returnQty) || 0
     }));
   };
 
@@ -251,32 +251,35 @@ function AssetsReturn({ }) {
   };
 
   const handleExcelDownload = () => {
+  const filteredRowData = rowData.filter(row => Number(row.qty) > 0);
 
-    const filteredRowData = rowData.filter(row => row.qty > 0);
-    if (rowData.length === 0 || !Allocationno || !allocationadate) {
-      toast.warning('No Data Available');
+    if ( filteredRowData.length === 0 ||
+        !Allocationno ||
+        !allocationadate
+    ) {
+      toast.warning("No Data Available");
       return;
     }
 
     const headerData = [{
-      "Company Code": sessionStorage.getItem('selectedCompanyCode'),
-      "Allocation No": Allocationno,
-      "Allocation Date": allocationadate,
-      "Return No": return_no,
-      "Return Date": return_date,
-      "Return Person": return_person,
-      "Return Reason": return_reason,
+      "Company Code": sessionStorage.getItem("selectedCompanyCode") || "",
+      "Allocation No": Allocationno || "",
+      "Allocation Date": allocationadate || "",
+      "Return No": return_no || "",
+      "Return Date": return_date || "",
+      "Return Person": return_person || "",
+      "Return Reason": return_reason || ""
     }];
 
     const transformedData = transformRowData(filteredRowData);
+
     const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
     const headerSheet = XLSX.utils.json_to_sheet(headerData);
 
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, headerSheet, "Assets Allocation Header");
-    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Assets Allocation Details");
-
-    XLSX.writeFile(workbook, "Assets_Allocation_Return.xlsx");
+    XLSX.utils.book_append_sheet( workbook, headerSheet, "Assets Allocation Header" );
+    XLSX.utils.book_append_sheet( workbook, rowDataSheet, "Assets Allocation Details" );
+    XLSX.writeFile( workbook, "Assets_Allocation_Return.xlsx" );
   };
 
   const handleInsert = async () => {
