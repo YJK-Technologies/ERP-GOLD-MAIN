@@ -519,7 +519,7 @@ function Sales() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code, Item_code: params.data.itemCode, type: salesMode })
+        body: JSON.stringify({ company_code, Item_code: params.data.itemCode, type: salesType })
       });
 
       if (response.ok) {
