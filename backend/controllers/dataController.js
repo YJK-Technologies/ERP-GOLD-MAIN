@@ -3232,6 +3232,34 @@ const getitemcodepurdata = async (req, res) => {
   }
 };
 
+// Code added by Dinesh Gokul - 31-08-2026 for purchase screen
+const getitemcodepurdataPurchase = async (req, res) => {
+  const { Item_code, company_code,purchase_type } = req.body;
+  try {
+    // Connect to the database
+    const pool = await connection.connectToDatabase();
+    // Execute the query
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "STPICP")
+      .input("Item_code", sql.NVarChar, Item_code)
+      .input("type", sql.NVarChar, purchase_type)
+      .input("company_code", sql.NVarChar, company_code)
+      .query(`EXEC sp_item_brand_info_test @mode,@company_code,@Item_code,'','',0,'','','',0,0,0,0,'','','','','','','','','','','','','',0,0,@type,'','',NULL,NULL,NULL,NULL
+               ,NULL,NULL,NULL,NULL `);
+    // Send response
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset); // 200 OK if data is found
+    } else {
+      res.status(404).json("Data not found"); // 404 Not Found if no data is found
+    }
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+// Code ended by Dinesh Gokul - 31-08-2026 for purchase screen
+
 
 const getAllUserRoleMappingData = async (req, res) => {
   try {
@@ -7488,6 +7516,33 @@ const getItemCodeSalesData = async (req, res) => {
     res.status(500).json({ message: err.message || 'Internal Server Error' });
   }
 };
+
+// Code added by Dinesh Gokul - 31-08-2026
+const getItemCodeSalesDataSales = async (req, res) => {
+  const { company_code, Item_code, type } = req.body;
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "STIICS")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("Item_code", sql.NVarChar, Item_code)
+      .input("type", sql.NVarChar, type)
+      .query(`EXEC sp_item_brand_info_test @mode,@company_code,@Item_code,'','',0,'','','',0,0,0,
+          0,'','','','','','','','','','','','','',0,0,@type,'','',NULL,NULL,NULL,NULL,NULL
+    ,NULL,NULL,NULL `);
+    // Send response
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset); // 200 OK if data is found
+    } else {
+      res.status(404).json("Data not found"); // 404 Not Found if no data is found
+    }
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+// Code ended by Dinesh Gokul - 31-08-2026
 
 const getCustomerCode = async (req, res) => {
   const { company_code, customer_code } = req.body;
@@ -16622,7 +16677,38 @@ const AddJournalDetails = async (req, res) => {
   }
 };
 
+const getJournalSC = async (req, res) => {
+  const { transaction_date, transaction_type, journal_no, original_accountcode, contra_accountCode, company_code } = req.body;
 
+  try {
+    // Connect to the database
+    const pool = await connection.connectToDatabase();
+
+    // Execute the query
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "SC")
+      .input("transaction_date", sql.NVarChar, transaction_date)
+      .input("transaction_type", sql.NVarChar, transaction_type)
+      .input("journal_no", sql.NVarChar, journal_no)
+      .input("original_accountcode", sql.NVarChar, original_accountcode)
+      .input("contra_accountCode", sql.NVarChar, contra_accountCode)
+      .input("company_code", sql.NVarChar, company_code)
+      .query(`EXEC [sp_journal_details] @mode,@journal_no,@company_code,@transaction_date,@transaction_type,@original_accountcode,
+        @contra_accountCode,0,0,'','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+    `);
+
+    // Send response
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset); // 200 OK if data is found
+    } else {
+      res.status(404).json("Data not found"); // 404 Not Found if no data is found
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
 
 const JournalDeletedet = async (req, res) => {
   const { journal_no, company_code } = req.body;
@@ -29328,6 +29414,7 @@ module.exports = {
   getpurchasereport,
   gettaxSearchdata,
   getitemcodepurdata,
+  getitemcodepurdataPurchase,
   getAllsaleshdrData,
   addsaleshdr,
   addinventorydetdetail,
@@ -29426,6 +29513,7 @@ module.exports = {
   refNumberToSalesReturnDetailPrintData,
   refNumberToSalesReturnSumTax,
   getItemCodeSalesData,
+  getItemCodeSalesDataSales,
   getCustomerCode,
   getCustomerSearchdata,
   addstocktransferdetail,
@@ -29711,6 +29799,7 @@ module.exports = {
   JournalUpdateHdr,
   GetAllJournalHdr,
   AddJournalDetails,
+  getJournalSC,
   JournalDeletedet,
   GetAllJournalDet,
   AdjustmnethdrPrint,
