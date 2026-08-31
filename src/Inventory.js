@@ -181,6 +181,28 @@ function Sales() {
     };
   }, [loading, printButtonVisible, billNo, rowData]);
 
+    // For default warehouse
+    useEffect(() => {
+    if (!selectedWarehouse) {
+      return;
+    }
+  
+    setRowData(prevRowData =>
+      prevRowData.map(row => {
+        // Only set default warehouse if the row has no warehouse
+        if (!row.warehouse || row.warehouse.trim() === '') {
+          return {
+            ...row,
+            warehouse: selectedWarehouse.value,
+           
+          };
+        }
+  
+        // Keep existing warehouse value
+        return row;
+      })
+    );
+  }, [selectedWarehouse]);
 
   useEffect(() => {
     fetch(`${config.apiBaseUrl}/getDefaultoptions`, {
@@ -514,7 +536,7 @@ function Sales() {
     const company_code = sessionStorage.getItem("selectedCompanyCode");
     setLoading(true)
     try {
-      const response = await fetch(`${config.apiBaseUrl}/getItemCodeSalesData`, {
+      const response = await fetch(`${config.apiBaseUrl}/getItemCodeSalesDataSales`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -3301,7 +3323,7 @@ setLoading(true)
 
 
   const navigateToSalesSettings = () => {
-    navigate('/SalesSettings'); // Adjust the path as per your route setup
+    navigate('/SalesSettings'); // Adjust the path as per your route setup      
   };
 
 
@@ -3328,11 +3350,11 @@ setLoading(true)
     }
   };
 
-  useEffect(() => {
-    if (!updated && paidAmount) {
-      ReturnAmountCalculation();
-    }
-  }, [TotalBill, paidAmount, updated]);
+  // useEffect(() => {
+  //   if (!updated && paidAmount) {
+  //     ReturnAmountCalculation();
+  //   }
+  // }, [TotalBill, paidAmount, updated]);
 
 
   const DeleteTerms = (params) => {
@@ -4016,11 +4038,17 @@ setLoading(true)
                         <label htmlFor="paidAmount" className="">Paid Amount</label>
                         <input
                           id="paidAmount"
-                          title='Enter the Paid Amount'
+                          title="Enter the Paid Amount"
                           type="number"
                           className="form-control exp-input-field"
                           value={paidAmount}
                           onChange={(e) => setPaidAmount(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              ReturnAmountCalculation();
+                            }
+                          }}
                           autoComplete="off"
                         />
                       </div>

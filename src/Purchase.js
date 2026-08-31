@@ -568,7 +568,7 @@ useEffect(() => {
 
     setLoading(true)
     try {
-      const response = await fetch(`${config.apiBaseUrl}/getitemcodepurdata`, {
+      const response = await fetch(`${config.apiBaseUrl}/getitemcodepurdataPurchase`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as React from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { ToastContainer,toast } from 'react-toastify';
 import { format } from 'date-fns';
+import Select from 'react-select'
 const config = require('./Apiconfig');
 
 const columnDefs = [
@@ -108,9 +109,43 @@ export default function JournalPopup({ open, handleClose, handlejournal }) {
   const [contra_accountCode, setcontra_accountCode] = useState("");
   const [status, setstatus] = useState("");
 
+  const [Transdrop, setTransdrop] = useState([]);
+  const [selectedTrans, setSelectedTrans] = useState(null);
+
+  const filteredOptionTrans = Transdrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  const handleChangeTrans = (selectedOption) => {
+    setSelectedTrans(selectedOption);
+    settransaction_type(selectedOption ? selectedOption.value : '');
+  };
+
+  useEffect(() => {
+      const companyCode = sessionStorage.getItem("selectedCompanyCode");
+  
+      fetch(`${config.apiBaseUrl}/Transaction`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          company_code: companyCode,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          // Extract city names from the fetched data
+          const Transaction = data.map((option) => option.attributedetails_name);
+          setTransdrop(Transaction);
+        })
+        .catch((error) => console.error("Error fetching data:", error));
+    }, []);
+
   const handleSearchItem = async () => {
     try {
-      const response = await fetch(`${config.apiBaseUrl}/Journalsearch`, {
+      const response = await fetch(`${config.apiBaseUrl}/getJournalSC`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -211,17 +246,19 @@ export default function JournalPopup({ open, handleClose, handlejournal }) {
                           </div>
                           <div className="col-sm mb-2">
                             <input
-                              type='text'
+                              type='date'
                               id='Variant'
                               className='exp-input-field form-control'
-                              placeholder=' Transaction date'
+                              placeholder=' Transaction Date'
+                              title="Select the Transaction Date"
                               value={transaction_date}
                               maxLength={18}
                               onChange={(e) => settransaction_date(e.target.value)}
                               autoComplete="off"
                             />
                           </div>
-                          <div className="col-sm mb-2">
+
+                          {/* <div className="col-sm mb-2">
                             <input
                               type='text'
                               id='ItemName'
@@ -232,7 +269,27 @@ export default function JournalPopup({ open, handleClose, handlejournal }) {
                               onChange={(e) => settransaction_type(e.target.value)}
                               autoComplete="off"
                             />
-                          </div>
+                          </div> */}
+
+                          <div className="col-sm mb-2">
+                                                      <div className="exp-form-floating">
+                                                        <div title="Select the Sales type">
+                                                          <Select
+                                                            id="salesType"
+                                                            value={selectedTrans}
+                                                            onChange={handleChangeTrans}
+                                                            options={filteredOptionTrans}
+                                                            className="exp-input-field"
+                                                            placeholder="Transaction"
+                                                            required
+                                                            isClearable
+                                                            data-tip="Please select a payment type"
+                                                            autoComplete="off"
+                                                          />
+                                                        </div>
+                                                      </div>
+                                                    </div>
+
                           <div className="col-sm mb-2">
                             <input
                               type='text'

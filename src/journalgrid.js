@@ -21,7 +21,7 @@ import { showConfirmationToast } from "./ToastConfirmation";
 
 const config = require("./Apiconfig");
 
-function  JournalGrid() {
+function JournalGrid() {
   const [rowData, setRowData] = useState([
     {
       transaction_type: "",
@@ -71,79 +71,79 @@ function  JournalGrid() {
   const [hovered, setHovered] = useState(false);
 
   const [loading, setLoading] = useState(false);
-    useEffect(() => {
-        const handleKeyDown = (e) => {
-          // 1. Ensure keys only trigger on F-keys
-          if (!['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F8'].includes(e.key)) {
-            return;
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // 1. Ensure keys only trigger on F-keys
+      if (!['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F8'].includes(e.key)) {
+        return;
+      }
+
+      // 2. Prevent default browser shortcut actions (e.g., F1 Help, F5 Refresh)
+      e.preventDefault();
+      e.stopPropagation();
+
+      // 3. Prevent execution if screen is currently loading
+      if (loading) return;
+
+      switch (e.key) {
+        case 'F1':
+          // Open Item Search Popup
+          setOpen(true);
+          break;
+
+        // case 'F2':
+        //   // Open Customer Search Popup
+        //   setOpen2(true); 
+        //   break;
+
+        case 'F3':
+          // New / Reset Sales Invoice Form
+          if (window.confirm("Start a new adjustment? Unsaved changes will be lost.")) {
+            handleReload();
           }
-    
-          // 2. Prevent default browser shortcut actions (e.g., F1 Help, F5 Refresh)
-          e.preventDefault();
-          e.stopPropagation();
-    
-          // 3. Prevent execution if screen is currently loading
-          if (loading) return;
-    
-          switch (e.key) {
-            case 'F1':
-              // Open Item Search Popup
-              setOpen(true); 
-              break;
-    
-            // case 'F2':
-            //   // Open Customer Search Popup
-            //   setOpen2(true); 
-            //   break;
-    
-            case 'F3':
-              // New / Reset Sales Invoice Form
-              if (window.confirm("Start a new adjustment? Unsaved changes will be lost.")) {
-                handleReload(); 
-              }
-              break;  
-    
-            case 'F4':
-              // Save / Complete Invoice (Same logic as Save Button)
-              handleSaveButtonClick(); 
-              break;
-    
-            case 'F5':
-              // Search Existing Invoices to Edit
-              // setOpen1(true); 
-              break;
-    
-            case 'F6':
-              // Delete selected line item in AG Grid
-              if ( transaction_no) {
-                handleDeleteButtonClick();
-              } else {
-                alert("Please save the invoice before deleting.");
-              }
-              break;
-    
-            case 'F8':
-              // Print Invoice
-              if (showExcelButton && transaction_no) {
-                generateReport();
-              } else {
-                alert("Please save the invoice before printing.");
-              }
-              break;
-    
-            default:
-              break;
+          break;
+
+        case 'F4':
+          // Save / Complete Invoice (Same logic as Save Button)
+          handleSaveButtonClick();
+          break;
+
+        case 'F5':
+          // Search Existing Invoices to Edit
+          // setOpen1(true); 
+          break;
+
+        case 'F6':
+          // Delete selected line item in AG Grid
+          if (transaction_no) {
+            handleDeleteButtonClick();
+          } else {
+            alert("Please save the invoice before deleting.");
           }
-        };
-    
-        // Attach listener
-        window.addEventListener('keydown', handleKeyDown);
-    
-        // Clean up listener on unmount
-        return () => {
-          window.removeEventListener('keydown', handleKeyDown);
-        };
-      }, [loading, showExcelButton, transaction_no, rowData]);
+          break;
+
+        case 'F8':
+          // Print Invoice
+          if (showExcelButton && transaction_no) {
+            generateReport();
+          } else {
+            alert("Please save the invoice before printing.");
+          }
+          break;
+
+        default:
+          break;
+      }
+    };
+
+    // Attach listener
+    window.addEventListener('keydown', handleKeyDown);
+
+    // Clean up listener on unmount
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [loading, showExcelButton, transaction_no, rowData]);
 
   //code added by Harish purpose of set user permisssion
   const permissions = JSON.parse(sessionStorage.getItem("permissions")) || {};
@@ -227,9 +227,9 @@ function  JournalGrid() {
     setFinancialYearStart(financialYearStartDate);
     setFinancialYearEnd(financialYearEndDate);
 
-     // Current date as default Transaction Date
-  const currentDate = today.toISOString().split("T")[0];
-  settransaction_date(currentDate);
+    // Current date as default Transaction Date
+    const currentDate = today.toISOString().split("T")[0];
+    settransaction_date(currentDate);
   }, []);
 
   const handleSearch = async () => {
@@ -508,9 +508,29 @@ function  JournalGrid() {
     }
 
     if (rowData.length === 0) {
-      toast.warning("No Inventory issued details found to save.");
+      toast.warning("No Journal details found to save.");
       return;
     }
+
+    // Validate each row
+    const validRows = rowData.filter((row) =>
+      row.transaction_type?.trim() &&
+      row.original_accountcode?.trim() &&
+      row.contra_accountCode?.trim() &&
+      row.narration1?.trim() &&
+      row.journal_amount !== "" &&
+      row.journal_amount !== null &&
+      row.journal_amount !== undefined &&
+      Number(row.journal_amount) > 0
+    );
+
+    if (validRows.length === 0) {
+      toast.warning(
+        "Please enter at least one valid row with Transaction Type, Original Account, Contra Account, valid Journal Amount, and Narration 1."
+      );
+      return;
+    }
+
 
     try {
       const Header = {
@@ -547,38 +567,110 @@ function  JournalGrid() {
     }
   };
 
+  // const JournalDetails = async (journal_no) => {
+
+  // try {
+  //     for (const row of rowData) {
+  //       const Details = {
+  //         company_code: sessionStorage.getItem("selectedCompanyCode"),
+  //         created_by: sessionStorage.getItem("selectedUserCode"),
+  //         journal_no: journal_no,
+  //         transaction_date: transaction_date,
+  //         transaction_type: row.transaction_type,
+  //         original_accountcode: row.original_accountcode,
+  //         contra_accountCode: row.contra_accountCode,
+  //         journal_amount: row.journal_amount,
+  //         Item_SNo: row.Item_SNo,
+  //         narration1: row.narration1,
+  //         narration2: row.narration2,
+  //         narration3: row.narration3,
+  //         narration4: row.narration4,
+  //       };
+
+  //       const response = await fetch(`${config.apiBaseUrl}/AddJournalDetails`, {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify(Details),
+  //       });
+
+  //       if (response.ok) {
+  //         console.log("Journal Data inserted successfully");
+  //       } else {
+  //         const errorResponse = await response.json();
+  //         console.error(errorResponse.message); // Log error message
+  //         Swal.fire({
+  //           title: "Error!",
+  //           text: errorResponse.message,
+  //           icon: "error",
+  //           confirmButtonText: "OK",
+  //         });
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Error inserting data:", error);
+  //   }
+  // };
+
   const JournalDetails = async (journal_no) => {
+
     try {
-      for (const row of rowData) {
+
+      // Validate/filter only properly filled rows
+      const validRows = rowData.filter((row) =>
+        row.transaction_type?.trim() &&
+        row.original_accountcode?.trim() &&
+        row.contra_accountCode?.trim() &&
+        row.narration1?.trim() &&
+        row.journal_amount !== "" &&
+        row.journal_amount !== null &&
+        row.journal_amount !== undefined &&
+        Number(row.journal_amount) > 0
+      );
+
+      for (const row of validRows) {
+
         const Details = {
           company_code: sessionStorage.getItem("selectedCompanyCode"),
           created_by: sessionStorage.getItem("selectedUserCode"),
           journal_no: journal_no,
           transaction_date: transaction_date,
+
           transaction_type: row.transaction_type,
           original_accountcode: row.original_accountcode,
           contra_accountCode: row.contra_accountCode,
           journal_amount: row.journal_amount,
+
           Item_SNo: row.Item_SNo,
+
           narration1: row.narration1,
           narration2: row.narration2,
           narration3: row.narration3,
           narration4: row.narration4,
         };
 
-        const response = await fetch(`${config.apiBaseUrl}/AddJournalDetails`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(Details),
-        });
+        const response = await fetch(
+          `${config.apiBaseUrl}/AddJournalDetails`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(Details),
+          }
+        );
 
         if (response.ok) {
+
           console.log("Journal Data inserted successfully");
+
         } else {
+
           const errorResponse = await response.json();
-          console.error(errorResponse.message); // Log error message
+
+          console.error(errorResponse.message);
+
           Swal.fire({
             title: "Error!",
             text: errorResponse.message,
@@ -587,7 +679,9 @@ function  JournalGrid() {
           });
         }
       }
+
     } catch (error) {
+
       console.error("Error inserting data:", error);
     }
   };
@@ -1476,14 +1570,14 @@ function  JournalGrid() {
               {["delete", "all permission"].some((permission) =>
                 journalPermission.includes(permission),
               ) && (
-                <delbutton
-                  onClick={handleDeleteButtonClick}
-                  required
-                  title="Delete"
-                >
-                  <i class="fa-solid fa-trash"></i>
-                </delbutton>
-              )}
+                  <delbutton
+                    onClick={handleDeleteButtonClick}
+                    required
+                    title="Delete"
+                  >
+                    <i class="fa-solid fa-trash"></i>
+                  </delbutton>
+                )}
               <printbutton
                 className="purbut"
                 title="excel"
@@ -1495,16 +1589,16 @@ function  JournalGrid() {
               {["all permission", "view"].some((permission) =>
                 journalPermission.includes(permission),
               ) && (
-                <printbutton
-                  class="print"
-                  className="purbut"
-                  onClick={generateReport}
-                  required
-                  title="Generate Report"
-                >
-                  <i class="fa-solid fa-file-pdf"></i>
-                </printbutton>
-              )}
+                  <printbutton
+                    class="print"
+                    className="purbut"
+                    onClick={generateReport}
+                    required
+                    title="Generate Report"
+                  >
+                    <i class="fa-solid fa-file-pdf"></i>
+                  </printbutton>
+                )}
 
               {/* <div class="d-flex flex-row my-2 mt-3 ">
           <button  onClick={} title="print"><i class="fa fa-print" aria-hidden="true"></i></button>
@@ -1543,10 +1637,10 @@ function  JournalGrid() {
                     {["add", "all permission"].some((permission) =>
                       journalPermission.includes(permission),
                     ) && (
-                      <icon class="icon" onClick={handleSaveButtonClick}>
-                        <i class="fa-regular fa-floppy-disk"></i>{" "}
-                      </icon>
-                    )}
+                        <icon class="icon" onClick={handleSaveButtonClick}>
+                          <i class="fa-regular fa-floppy-disk"></i>{" "}
+                        </icon>
+                      )}
                   </li>
                   {/* <li class="iconbutton  d-flex justify-content-center text-danger">
           {['delete', 'all permission'].some(permission => journalPermission.includes(permission)) && (
@@ -1566,20 +1660,20 @@ function  JournalGrid() {
                     {["all permission", "view"].some((permission) =>
                       journalPermission.includes(permission),
                     ) && (
-                      <icon class="icon" onClick={handleDeleteButtonClick}>
-                        {" "}
-                        <i class="fa-solid fa-trash"></i>
-                      </icon>
-                    )}
+                        <icon class="icon" onClick={handleDeleteButtonClick}>
+                          {" "}
+                          <i class="fa-solid fa-trash"></i>
+                        </icon>
+                      )}
                   </li>
                   <li class=" iconbutton d-flex justify-content-center">
                     {["all permission", "view"].some((permission) =>
                       journalPermission.includes(permission),
                     ) && (
-                      <icon class="icon" onClick={generateReport}>
-                        <i class="fa-solid fa-file-excel"></i>
-                      </icon>
-                    )}
+                        <icon class="icon" onClick={generateReport}>
+                          <i class="fa-solid fa-file-excel"></i>
+                        </icon>
+                      )}
                   </li>
                 </ul>
               </div>
@@ -1612,16 +1706,16 @@ function  JournalGrid() {
                     style={
                       hovered
                         ? {
-                            cursor: "pointer",
-                            borderRadius: "50%",
-                            backgroundColor: "#f0f0f0",
-                            padding: "10px",
-                          }
+                          cursor: "pointer",
+                          borderRadius: "50%",
+                          backgroundColor: "#f0f0f0",
+                          padding: "10px",
+                        }
                         : {
-                            cursor: "pointer",
-                            borderRadius: "50%",
-                            padding: "10px",
-                          }
+                          cursor: "pointer",
+                          borderRadius: "50%",
+                          padding: "10px",
+                        }
                     }
                     onMouseEnter={() => setHovered(true)}
                     onMouseLeave={() => setHovered(false)}
@@ -1636,7 +1730,7 @@ function  JournalGrid() {
 
           <div className="col-md-3 form-group ">
             <div class="exp-form-floating">
-              <label for=""className={`${error && !transaction_date ? "red" : ""}`}>
+              <label for="" className={`${error && !transaction_date ? "red" : ""}`}>
                 Transaction Date<span className="text-danger">*</span>
               </label>
               <input
