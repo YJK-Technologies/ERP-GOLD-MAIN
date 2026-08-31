@@ -564,12 +564,12 @@ function ItemInput({}) {
   };
 
   const handleChangesaltax = (selectedsaltax) => {
-    setselectedsaltax(selectedsaltax);
+    setselectedOthersaltax(selectedsaltax);
     setItem_sales_Othertax_type(selectedsaltax ? selectedsaltax.value : "");
   };
 
   const handleChangeOthersaltax = (selectedsaltax) => {
-    setselectedOthersaltax(selectedsaltax);
+    setselectedsaltax(selectedsaltax);
     setItem_sales_tax_type(selectedsaltax ? selectedsaltax.value : "");
   };
 
@@ -1266,7 +1266,7 @@ function ItemInput({}) {
                     <div title="Select the Local Sales Tax Type ">
                       <Select
                         id="SUOM"
-                        value={selectedOthersaltax}
+                        value={selectedsaltax}
                         onChange={handleChangeOthersaltax}
                         options={filteredOptiontaxitemsales}
                         className="exp-input-field"
@@ -1292,7 +1292,7 @@ function ItemInput({}) {
                     <div title="Select the Other Sales Tax Type ">
                       <Select
                         id="SUOM"
-                        value={selectedsaltax}
+                        value={selectedOthersaltax}
                         onChange={handleChangesaltax}
                         options={filteredOptionOthertaxitemsales}
                         className="exp-input-field"

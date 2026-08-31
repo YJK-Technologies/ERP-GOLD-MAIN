@@ -559,6 +559,13 @@ useEffect(() => {
   //ITEM CODE TO SEARCH IN AG GRID
   const handleItemCode = async (params) => {
     const company_code = sessionStorage.getItem("selectedCompanyCode");
+        // Selected Purchase Type
+    const purchase_type = selected?.value || "";
+
+    console.log("Company Code:", company_code);
+    console.log("Item Code:", params.data.itemCode);
+    console.log("Purchase Type:", purchase_type);
+
     setLoading(true)
     try {
       const response = await fetch(`${config.apiBaseUrl}/getitemcodepurdata`, {
@@ -566,7 +573,7 @@ useEffect(() => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code, Item_code: params.data.itemCode })
+        body: JSON.stringify({ company_code, Item_code: params.data.itemCode,purchase_type: purchaseType })
       });
 
       if (response.ok) {
@@ -1461,7 +1468,7 @@ useEffect(() => {
         company_code: sessionStorage.getItem('selectedCompanyCode'),
         vendor_code: vendor_code,
         pay_type: payType,
-        purchase_type: purchaseType,
+        type: purchaseType,
         Entry_date: entryDate,
         transaction_date: transactionDate,
         purchase_amount: TotalPurchase,
@@ -3180,7 +3187,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                   <h1 align="left" className="purbut me-5">Purchase</h1>
                 </div>
                 <div className="d-flex justify-content-end purbut me-3">
-                  <div class="exp-form-floating" title="Please select a screen" >
+                  <div class="exp-form-floating">
                     <Select
                       id="returnType"
                       className="exp-input-field col-md-6 mt-2"
@@ -3189,7 +3196,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                       value={selectedscreens}
                       onChange={handleChangeScreens}
                       options={filteredOptionScreens}
-                      data-tip="Please select a screen"
+                      data-tip="Please select a default warehouse"
                     />
                   </div>
                   {saveButtonVisible && ['add', 'all permission'].some(permission => purchasePermission.includes(permission)) && (

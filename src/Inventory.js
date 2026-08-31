@@ -519,7 +519,7 @@ function Sales() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code, Item_code: params.data.itemCode, type: salesMode })
+        body: JSON.stringify({ company_code, Item_code: params.data.itemCode, type: salesType })
       });
 
       if (response.ok) {
@@ -3097,7 +3097,7 @@ setLoading(true)
   // Header Sheet
   const headerSheet = XLSX.utils.aoa_to_sheet([
     ["Sales"],
-    [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+    [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
     [],
   ]);
 
