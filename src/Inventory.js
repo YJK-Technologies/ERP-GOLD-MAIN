@@ -3122,7 +3122,7 @@ setLoading(true)
   // Header Sheet
   const headerSheet = XLSX.utils.aoa_to_sheet([
     ["Sales"],
-    [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+    [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
     [],
   ]);
 

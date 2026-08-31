@@ -25523,7 +25523,7 @@ const getReceivedGoodsReport = async (req, res) => {
 
 const AddTransactionSettinngs = async (req, res) => {
   const { company_code, Party_code, Party_name, pay_type, Transaction_type, order_type, warehouse_code, Screen_Type, Negative_stock	, Sales_mode,
-    No_of_Reports, Print_options, Print_copies, Print_templates, created_by, modified_by, tempstr1, tempstr2,
+    No_of_Reports, Print_options, Print_copies, Print_templates, created_by, modified_by, Shiping_to, tempstr2,
     tempstr3, tempstr4, datetime1, datetime2, datetime3, datetime4} = req.body;
   let pool;
   try {
@@ -25547,7 +25547,7 @@ const AddTransactionSettinngs = async (req, res) => {
       .input("Print_templates", sql.VarChar, Print_templates)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
-      .input("tempstr1", sql.NVarChar, tempstr1)
+      .input("Shiping_to", sql.NVarChar, Shiping_to)
       .input("tempstr2", sql.NVarChar, tempstr2)
       .input("tempstr3", sql.NVarChar, tempstr3)
       .input("tempstr4", sql.NVarChar, tempstr4)
@@ -25555,7 +25555,7 @@ const AddTransactionSettinngs = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(`EXEC sp_transaction_settings @mode,@company_code,@Party_code,@Party_name,@pay_type,@Transaction_type,@order_type,@warehouse_code,@Screen_Type,@Sales_mode,@No_of_Reports,@Negative_stock,@Print_options,@Print_copies,@Print_templates,@created_by,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_transaction_settings @mode,@company_code,@Party_code,@Party_name,@pay_type,@Transaction_type,@order_type,@warehouse_code,@Screen_Type,@Sales_mode,@No_of_Reports,@Negative_stock,@Print_options,@Print_copies,@Print_templates,@created_by,'',@Shiping_to,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     res.json({ message: "Data inserted successfully" });
   }
   catch (err) {
