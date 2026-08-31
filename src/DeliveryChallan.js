@@ -1191,7 +1191,8 @@ function DeliveryChallan() {
 
     //CODE TO SAVE PURCHASE HEADER 
     const handleSaveButtonClick = async () => {
-        if (!transaction_no || !Transactiondate ||!payType ||!salesType ) {
+        
+        if ( !transactionDate  ||!payType ||!salesType ) {
             setError(" ");
             toast.warning('Error: Missing required fields');
             return;
@@ -1853,7 +1854,7 @@ const handleExcelDownload = () => {
     );
 
     const headerData = [{
-        company_code: sessionStorage.getItem("selectedCompanyCode"),
+        // company_code: sessionStorage.getItem("selectedCompanyCode"),
 
         "Bill to customer code": headerRowData[0].billTo,
         "Bill to customer name": headerRowData[1].billTo,

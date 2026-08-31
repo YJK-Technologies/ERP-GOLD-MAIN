@@ -514,7 +514,7 @@ function Sales() {
     const company_code = sessionStorage.getItem("selectedCompanyCode");
     setLoading(true)
     try {
-      const response = await fetch(`${config.apiBaseUrl}/getItemCodeSalesData`, {
+      const response = await fetch(`${config.apiBaseUrl}/getItemCodeSalesDataSales`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

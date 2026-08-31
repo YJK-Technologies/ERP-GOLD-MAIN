@@ -273,13 +273,94 @@ function AssetsReturn({ }) {
 
     const transformedData = transformRowData(filteredRowData);
 
-    const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
-    const headerSheet = XLSX.utils.json_to_sheet(headerData);
+// =========================================================
+// HEADER SHEET
+// =========================================================
 
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet( workbook, headerSheet, "Assets Allocation Header" );
-    XLSX.utils.book_append_sheet( workbook, rowDataSheet, "Assets Allocation Details" );
-    XLSX.writeFile( workbook, "Assets_Allocation_Return.xlsx" );
+const headerSheet = XLSX.utils.aoa_to_sheet([
+  ["Asset Allocation Return"], // A1
+  [`Company Name: ${sessionStorage.getItem("selectedCompanyName") || ""}`], // A2
+  [], // A3 - Empty row
+]);
+
+// Add Header Data starting from A4
+XLSX.utils.sheet_add_json(headerSheet, headerData, {
+  origin: "A4",
+});
+
+// Merge A1:H1 and A2:H2
+headerSheet["!merges"] = [
+  {
+    s: { r: 0, c: 0 }, // A1
+    e: { r: 0, c: 7 }, // H1
+  },
+  {
+    s: { r: 1, c: 0 }, // A2
+    e: { r: 1, c: 7 }, // H2
+  },
+];
+
+// =========================================================
+// DETAILS SHEET
+// =========================================================
+
+const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
+
+// =========================================================
+  // AUTO FIT COLUMNS
+  // =========================================================
+
+  const autoFitColumns = (worksheet, data) => {
+    const cols = [];
+
+    data.forEach((row) => {
+      Object.keys(row).forEach((key, i) => {
+        const value = row[key] == null ? "" : row[key].toString();
+
+        cols[i] = Math.max(
+          cols[i] || key.length,
+          key.length,
+          value.length
+        );
+      });
+    });
+
+    worksheet["!cols"] = cols.map((width) => ({
+      wch: width + 5,
+    }));
+  };
+
+  // Auto fit Header Sheet
+  autoFitColumns(headerSheet, headerData);
+
+  // Auto fit Details Sheet
+  autoFitColumns(rowDataSheet, transformedData);
+
+// =========================================================
+// WORKBOOK
+// =========================================================
+
+const workbook = XLSX.utils.book_new();
+
+XLSX.utils.book_append_sheet(
+  workbook,
+  headerSheet,
+  "Assets Allocation Header"
+);
+
+XLSX.utils.book_append_sheet(
+  workbook,
+  rowDataSheet,
+  "Assets Allocation Details"
+);
+
+XLSX.writeFile(
+  workbook,
+  "Assets_Allocation_Return.xlsx"
+);
+    // XLSX.utils.book_append_sheet( workbook, headerSheet, "Assets Allocation Header" );
+    // XLSX.utils.book_append_sheet( workbook, rowDataSheet, "Assets Allocation Details" );
+    // XLSX.writeFile( workbook, "Assets_Allocation_Return.xlsx" );
   };
 
   const handleInsert = async () => {
@@ -414,7 +495,7 @@ function AssetsReturn({ }) {
         body: JSON.stringify({ transaction_no: code, company_code: sessionStorage.getItem('selectedCompanyCode') })
       });
       if (response.ok) {
-        setSaveButtonVisible(false)
+        setSaveButtonVisible(true)
         setShowExcelButton(true)
         const searchData = await response.json();
         if (searchData.Header && searchData.Header.length > 0) {
