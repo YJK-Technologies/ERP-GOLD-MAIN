@@ -3822,6 +3822,7 @@ function TaxInvoice() {
                                             onChange={handleChangeStatus}
                                             options={filteredOptionStatus}
                                             data-tip="Please select a default warehouse"
+                                            styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                                         />
                                     </div>
                                     <div class="exp-form-floating">
@@ -3834,6 +3835,7 @@ function TaxInvoice() {
                                             onChange={handleChangeScreens}
                                             options={filteredOptionScreens}
                                             data-tip="Please select a default warehouse"
+                                            styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                                         />
                                     </div>
                                     <div class="exp-form-floating mt-2 me-4">
@@ -3844,6 +3846,7 @@ function TaxInvoice() {
                                             options={filteredOptionInvoice}
                                             value={selectedInvoice}
                                             onChange={handleChangeInvoice}
+                                            styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                                         />
                                     </div>
                                     {buttonsVisible && ['add', 'all permission'].some(permission => purchasePermission.includes(permission)) && (
@@ -3998,6 +4001,7 @@ function TaxInvoice() {
                                             required
                                             data-tip="Please select a payment type"
                                             autoComplete="off"
+                                            styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                                         />
                                     </div>
                                 </div>
@@ -4015,6 +4019,7 @@ function TaxInvoice() {
                                             required
                                             data-tip="Please select a sales type"
                                             autoComplete="off"
+                                            styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                                         />
                                     </div>
                                 </div>
@@ -4162,7 +4167,7 @@ function TaxInvoice() {
                                                 className="exp-input-field"
                                                 placeholder=""
                                                 required
-
+                                                styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                                             />
                                         </div>
                                     </div>
@@ -4180,6 +4185,7 @@ function TaxInvoice() {
                                                 autoComplete='off'
                                                 options={dynamicOptions}
                                                 onChange={handleItemCode}
+                                                styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                                             />
                                         </div>
                                     </div>
@@ -4332,6 +4338,7 @@ function TaxInvoice() {
                                             onChange={handleChangeScreens}
                                             options={filteredOptionScreens}
                                             data-tip="Please select a default warehouse"
+                                            styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                                         />
                                     </div>
                                     <div class="exp-form-floating mt-2 me-4">
@@ -4342,6 +4349,7 @@ function TaxInvoice() {
                                             options={filteredOptionInvoice}
                                             value={selectedInvoice}
                                             onChange={handleChangeInvoice}
+                                            styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                                         />
                                     </div>
                                 </div>
