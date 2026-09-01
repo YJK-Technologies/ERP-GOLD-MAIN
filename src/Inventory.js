@@ -2086,19 +2086,44 @@ setLoading(true)
     }
   };
 
+  const PrintTCPrintData = async () => {
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/refNumberTosalesTCPrintData`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ transaction_no: billNo, company_code: sessionStorage.getItem('selectedCompanyCode') })
+      });
+
+      if (response.ok) {
+        const searchData = await response.json();
+        return searchData;
+      } else if (response.status === 404) {
+        console.log("Data not found");
+      } else {
+        console.log("Bad request"); // Log the message for other errors
+      }
+    } catch (error) {
+      console.error("Error fetching search data:", error);
+    }
+  };
+
   const generateReport = async () => {
     setLoading(true)
     try {
       const headerData = await PrintHeaderData();
       const detailData = await PrintDetailData();
       const taxData = await PrintSumTax();
+      const TCPrintData = await PrintTCPrintData();
 
-      if (headerData && detailData && taxData) {
+      if (headerData && detailData && taxData && TCPrintData) {
         console.log("All API calls completed successfully");
 
         sessionStorage.setItem('SheaderData', JSON.stringify(headerData));
         sessionStorage.setItem('SdetailData', JSON.stringify(detailData));
         sessionStorage.setItem('StaxData', JSON.stringify(taxData));
+        sessionStorage.setItem('STCPrintData', JSON.stringify(TCPrintData));
 
         window.open('/SalesPrint', '_blank');
       } else {
