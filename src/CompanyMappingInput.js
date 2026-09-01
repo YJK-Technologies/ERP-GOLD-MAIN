@@ -2,15 +2,15 @@ import React, { useState, useEffect, useRef } from "react";
 import "./input.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useLocation } from "react-router-dom";
-import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer, toast } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer, toast } from "react-toastify";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
-import LoadingScreen from './Loading';
+import LoadingScreen from "./Loading";
 
 const config = require("./Apiconfig");
 
-function UserComMap_input({ }) {
+function UserComMap_input({}) {
   const [user_code, setuser_code] = useState("");
   const [company_no, setcompany_no] = useState("");
   const [location_no, setlocation_no] = useState("");
@@ -39,7 +39,7 @@ function UserComMap_input({ }) {
   const modified_by = sessionStorage.getItem("selectedUserCode");
 
   const [isUpdated, setIsUpdated] = useState(false);
-  const [keyfiels, setKeyfiels] = useState('');
+  const [keyfiels, setKeyfiels] = useState("");
 
   const location = useLocation();
   const { mode, selectedRow } = location.state || {};
@@ -58,12 +58,11 @@ function UserComMap_input({ }) {
     setorder_no("");
   };
 
-
   useEffect(() => {
     if (mode === "update" && selectedRow && !isUpdated) {
       setorder_no(selectedRow.order_no || "");
       setKeyfiels(selectedRow.keyfiels || "");
-      setuser_code(selectedRow.user_code || "")
+      setuser_code(selectedRow.user_code || "");
       setlocation_no(selectedRow.location_no || "");
       setcompany_no(selectedRow.company_no || "");
       setstatus(selectedRow.status || "");
@@ -83,12 +82,10 @@ function UserComMap_input({ }) {
         label: selectedRow.status,
         value: selectedRow.status,
       });
-
     } else if (mode === "create") {
       clearInputFields();
     }
   }, [mode, selectedRow, isUpdated]);
-
 
   // useEffect(() => {
   //   fetch(`${config.apiBaseUrl}/usercode`)
@@ -97,18 +94,18 @@ function UserComMap_input({ }) {
   // }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/usercode`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setusercodedrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
@@ -123,46 +120,45 @@ function UserComMap_input({ }) {
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setStatusdrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-  
   const filteredOptionStatus = Array.isArray(statusdrop)
     ? statusdrop.map((option) => ({
-      value: option.attributedetails_name,
-      label: option.attributedetails_name,
-    }))
+        value: option.attributedetails_name,
+        label: option.attributedetails_name,
+      }))
     : [];
-    
+
   const filteredOptionUser = Array.isArray(usercodedrop)
     ? usercodedrop.map((option) => ({
-      value: option.user_code,
-      label: `${option.user_code} - ${option.user_name}`,
-    }))
+        value: option.user_code,
+        label: `${option.user_code} - ${option.user_name}`,
+      }))
     : [];
 
   const filteredOptionCompany = Array.isArray(companynodrop)
     ? companynodrop.map((option) => ({
-      value: option.company_no,
-      label: `${option.company_no} - ${option.company_name}`,
-    }))
+        value: option.company_no,
+        label: `${option.company_no} - ${option.company_name}`,
+      }))
     : [];
 
   const filteredOptionLocation = Array.isArray(locationnodrop)
     ? locationnodrop.map((option) => ({
-      value: option.location_no,
-      label: `${option.location_no} - ${option.location_name}`,
-    }))
+        value: option.location_no,
+        label: `${option.location_no} - ${option.location_name}`,
+      }))
     : [];
 
   const handleChangeStatus = (selectedStatus) => {
@@ -194,7 +190,8 @@ function UserComMap_input({ }) {
     setLoading(true);
 
     try {
-      const response = await fetch(`${config.apiBaseUrl}/addCompanyMappingData`,
+      const response = await fetch(
+        `${config.apiBaseUrl}/addCompanyMappingData`,
         {
           method: "POST",
           headers: {
@@ -209,7 +206,7 @@ function UserComMap_input({ }) {
             order_no,
             created_by: sessionStorage.getItem("selectedUserCode"),
           }),
-        }
+        },
       );
       if (response.ok) {
         toast.success("Data inserted Successfully", {
@@ -222,27 +219,27 @@ function UserComMap_input({ }) {
       }
     } catch (error) {
       console.error("Error inserting data:", error);
-      toast.error('Error inserting data: ' + error.message);
+      toast.error("Error inserting data: " + error.message);
     } finally {
       setLoading(false);
     }
   };
 
   const handleNavigate = () => {
-  navigate("/CompanyMapping", {
-    state: {
-      preservedRowData: location.state?.preservedRowData,
-      preservedInputs: location.state?.preservedInputs
-    }
-  });
-};
+    navigate("/CompanyMapping", {
+      state: {
+        preservedRowData: location.state?.preservedRowData,
+        preservedInputs: location.state?.preservedInputs,
+      },
+    });
+  };
 
   const handleKeyDown = async (
     e,
     nextFieldRef,
     value,
     hasValueChanged,
-    setHasValueChanged
+    setHasValueChanged,
   ) => {
     if (e.key === "Enter") {
       // Check if the value has changed and handle the search logic
@@ -268,7 +265,6 @@ function UserComMap_input({ }) {
     }
   };
 
-
   const handleUpdate = async () => {
     if (!user_code || !company_no || !location_no || !status) {
       setError(" ");
@@ -278,22 +274,25 @@ function UserComMap_input({ }) {
     setLoading(true);
 
     try {
-      const response = await fetch(`${config.apiBaseUrl}/CompanyMappingUpdate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${config.apiBaseUrl}/CompanyMappingUpdate`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
+            user_code,
+            company_no,
+            location_no,
+            status,
+            order_no,
+            modified_by,
+            keyfiels,
+          }),
         },
-        body: JSON.stringify({
-          company_code: sessionStorage.getItem("selectedCompanyCode"),
-          user_code,
-          company_no,
-          location_no,
-          status,
-          order_no,
-          modified_by,
-          keyfiels
-        }),
-      });
+      );
       if (response.ok) {
         toast.success("Data Updated Successfully", {
           // onClose: () => clearInputFields(),
@@ -305,7 +304,7 @@ function UserComMap_input({ }) {
       }
     } catch (error) {
       console.error("Error Update data:", error);
-      toast.error('Error Update data: ' + error.message);
+      toast.error("Error Update data: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -316,14 +315,31 @@ function UserComMap_input({ }) {
       <div className="">
         <div className="">
           {loading && <LoadingScreen />}
-          <ToastContainer position="top-right" className="toast-design" theme="colored" />
+          <ToastContainer
+            position="top-right"
+            className="toast-design"
+            theme="colored"
+          />
           <div class="col-md-12 text-center">
             <div>
               <div className="shadow-lg p-0 bg-body-tertiary rounded ">
-                <div className=" mb-0 d-flex justify-content-between" >
-                  <h1 align="left" class="purbut">{mode === "update" ? 'Update Company Mapping' : 'Add Company Mapping'} </h1>
-                  <h1 align="left" class="fs-4 mobileview">{mode === "update" ? 'Update Company Mapping' : 'Add Company Mapping'} </h1>
-                  <button onClick={handleNavigate} className=" btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
+                <div className=" mb-0 d-flex justify-content-between">
+                  <h1 align="left" class="purbut">
+                    {mode === "update"
+                      ? "Update Company Mapping"
+                      : "Add Company Mapping"}{" "}
+                  </h1>
+                  <h1 align="left" class="fs-4 mobileview">
+                    {mode === "update"
+                      ? "Update Company Mapping"
+                      : "Add Company Mapping"}{" "}
+                  </h1>
+                  <button
+                    onClick={handleNavigate}
+                    className=" btn btn-danger shadow-none rounded-0 h-70 fs-5"
+                    required
+                    title="Close"
+                  >
                     <i class="fa-solid fa-xmark"></i>
                   </button>
                 </div>
@@ -336,7 +352,11 @@ function UserComMap_input({ }) {
                       <div class="exp-form-floating">
                         <div class="d-flex justify-content-start">
                           <div>
-                            <label for="rid" class="exp-form-labels" className={`${error && !user_code ? 'text-danger' : ''}`}>
+                            <label
+                              for="rid"
+                              class="exp-form-labels"
+                              className={`${error && !user_code ? "text-danger" : ""}`}
+                            >
                               User Code<span className="text-danger">*</span>
                             </label>
                           </div>
@@ -353,6 +373,13 @@ function UserComMap_input({ }) {
                             onKeyDown={(e) =>
                               handleKeyDown(e, companycode, usercode)
                             }
+                            classNamePrefix="react-select"
+                            styles={{
+                              menu: (provided) => ({
+                                ...provided,
+                                zIndex: 9999,
+                              }),
+                            }}
                           />
                         </div>
                       </div>
@@ -361,7 +388,11 @@ function UserComMap_input({ }) {
                       <div class="exp-form-floating">
                         <div class="d-flex justify-content-start">
                           <div>
-                            <label for="rid" class="exp-form-labels" className={`${error && !company_no ? 'text-danger' : ''}`}>
+                            <label
+                              for="rid"
+                              class="exp-form-labels"
+                              className={`${error && !company_no ? "text-danger" : ""}`}
+                            >
                               Company Code<span className="text-danger">*</span>
                             </label>
                           </div>
@@ -378,6 +409,13 @@ function UserComMap_input({ }) {
                             onKeyDown={(e) =>
                               handleKeyDown(e, locno, companycode)
                             }
+                            classNamePrefix="react-select"
+                            styles={{
+                              menu: (provided) => ({
+                                ...provided,
+                                zIndex: 9999,
+                              }),
+                            }}
                           />
                         </div>
                       </div>
@@ -386,7 +424,11 @@ function UserComMap_input({ }) {
                       <div class="exp-form-floating">
                         <div class="d-flex justify-content-start">
                           <div>
-                            <label for="rid" class="exp-form-labels" className={`${error && !location_no ? 'text-danger' : ''}`}>
+                            <label
+                              for="rid"
+                              class="exp-form-labels"
+                              className={`${error && !location_no ? "text-danger" : ""}`}
+                            >
                               Location No<span className="text-danger">*</span>
                             </label>
                           </div>
@@ -401,6 +443,13 @@ function UserComMap_input({ }) {
                             placeholder=""
                             ref={locno}
                             onKeyDown={(e) => handleKeyDown(e, Status, locno)}
+                            classNamePrefix="react-select"
+                            styles={{
+                              menu: (provided) => ({
+                                ...provided,
+                                zIndex: 9999,
+                              }),
+                            }}
                           />
                         </div>
                       </div>
@@ -409,7 +458,11 @@ function UserComMap_input({ }) {
                       <div class="exp-form-floating">
                         <div class="d-flex justify-content-start">
                           <div>
-                            <label for="rid" class="exp-form-labels" className={`${error && !status ? 'text-danger' : ''}`}>
+                            <label
+                              for="rid"
+                              class="exp-form-labels"
+                              className={`${error && !status ? "text-danger" : ""}`}
+                            >
                               Status<span className="text-danger">*</span>
                             </label>
                           </div>
@@ -424,6 +477,13 @@ function UserComMap_input({ }) {
                             placeholder=""
                             ref={Status}
                             onKeyDown={(e) => handleKeyDown(e, Orderno, Status)}
+                            classNamePrefix="react-select"
+                            styles={{
+                              menu: (provided) => ({
+                                ...provided,
+                                zIndex: 9999,
+                              }),
+                            }}
                           />
                         </div>
                       </div>
@@ -443,14 +503,14 @@ function UserComMap_input({ }) {
                           value={order_no}
                           onChange={(e) =>
                             setorder_no(
-                              e.target.value.replace(/\D/g, "").slice(0, 50)
+                              e.target.value.replace(/\D/g, "").slice(0, 50),
                             )
                           }
                           maxLength={50}
                           ref={Orderno}
                           // onKeyDown={(e) => handleKeyDown(e, Orderno)}
                           onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
+                            if (e.key === "Enter") {
                               if (mode === "create") {
                                 handleInsert();
                               } else {
@@ -504,11 +564,19 @@ function UserComMap_input({ }) {
                     </div> */}
                     <div class="col-md-3 form-group d-flex justify-content-start mb-4">
                       {mode === "create" ? (
-                        <button onClick={handleInsert} className="mt-4" title="Save">
+                        <button
+                          onClick={handleInsert}
+                          className="mt-4"
+                          title="Save"
+                        >
                           <i class="fa-solid fa-floppy-disk"></i>
                         </button>
                       ) : (
-                        <button className="mt-4" title="Update" onClick={handleUpdate} >
+                        <button
+                          className="mt-4"
+                          title="Update"
+                          onClick={handleUpdate}
+                        >
                           <i class="fa-solid fa-pen-to-square"></i>
                         </button>
                       )}

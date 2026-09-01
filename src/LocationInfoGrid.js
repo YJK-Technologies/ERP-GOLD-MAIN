@@ -4,18 +4,17 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import "ag-grid-enterprise";
 import "./apps.css";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import Select from 'react-select';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Select from "react-select";
 import { useNavigate, useLocation } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import labels from "./Labels";
-import { showConfirmationToast } from './ToastConfirmation';
-import LoadingScreen from './Loading';
+import { showConfirmationToast } from "./ToastConfirmation";
+import LoadingScreen from "./Loading";
 
-const config = require('./Apiconfig');
-
+const config = require("./Apiconfig");
 
 function LocInfoGrid() {
   const [rowData, setRowData] = useState([]);
@@ -58,126 +57,129 @@ function LocInfoGrid() {
   const location = useLocation();
 
   //code added by Harish purpose of set user permisssion
-  const permissions = JSON.parse(sessionStorage.getItem('permissions')) || {};
+  const permissions = JSON.parse(sessionStorage.getItem("permissions")) || {};
   const LocationPermissions = permissions
-    .filter(permission => permission.screen_type === 'Location')
-    .map(permission => permission.permission_type.toLowerCase());
-
-    useEffect(() => {
-        if (location.state?.preservedRowData) {
-          setRowData(location.state.preservedRowData);
-        }
-        if (location.state?.preservedInputs) {
-          const inputs = location.state.preservedInputs;
-          setlocation_no(inputs.location_no || "");
-          setlocation_name(inputs.location_name || "");
-          setcity(inputs.city || "");
-          setstate(inputs.state || "");
-          setpincode(inputs.pincode || "");
-          setcountry(inputs.country || "");
-          setstatus(inputs.status || "");
-          if (inputs.status) {
-            setSelectedStatus({
-              label: inputs.status,
-              value: inputs.status,
-            });
-          } else {
-            setSelectedStatus(null);
-          }
-        }
-      }, [location.state]);
-
+    .filter((permission) => permission.screen_type === "Location")
+    .map((permission) => permission.permission_type.toLowerCase());
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    if (location.state?.preservedRowData) {
+      setRowData(location.state.preservedRowData);
+    }
+    if (location.state?.preservedInputs) {
+      const inputs = location.state.preservedInputs;
+      setlocation_no(inputs.location_no || "");
+      setlocation_name(inputs.location_name || "");
+      setcity(inputs.city || "");
+      setstate(inputs.state || "");
+      setpincode(inputs.pincode || "");
+      setcountry(inputs.country || "");
+      setstatus(inputs.status || "");
+      if (inputs.status) {
+        setSelectedStatus({
+          label: inputs.status,
+          value: inputs.status,
+        });
+      } else {
+        setSelectedStatus(null);
+      }
+    }
+  }, [location.state]);
+
+  useEffect(() => {
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
     fetch(`${config.apiBaseUrl}/city`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((response) => response.json())
       .then((data) => {
-        const cityNames = data.map(option => option.attributedetails_name);
+        const cityNames = data.map((option) => option.attributedetails_name);
         setDrop(cityNames);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
     fetch(`${config.apiBaseUrl}/country`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((response) => response.json())
       .then((data) => {
-        const countries = data.map(option => option.attributedetails_name);
+        const countries = data.map((option) => option.attributedetails_name);
         setCondrop(countries);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
     fetch(`${config.apiBaseUrl}/state`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((response) => response.json())
       .then((data) => {
-        const States = data.map(option => option.attributedetails_name);
+        const States = data.map((option) => option.attributedetails_name);
         setStatedrop(States);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
-    })      .then((response) => response.json())
+      body: JSON.stringify({ company_code }),
+    })
+      .then((response) => response.json())
       .then((data) => {
-        const statusOption = data.map(option => option.attributedetails_name);
+        const statusOption = data.map((option) => option.attributedetails_name);
         setStatusGriddrop(statusOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
-    
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setStatusdrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-  const filteredOptionStatus = [{ value: 'All', label: 'All' }, ...statusdrop.map((option) => ({
-    value: option.attributedetails_name,
-    label: option.attributedetails_name,
-  }))];
+  const filteredOptionStatus = [
+    { value: "All", label: "All" },
+    ...statusdrop.map((option) => ({
+      value: option.attributedetails_name,
+      label: option.attributedetails_name,
+    })),
+  ];
 
   const handleChangeStatus = (selectedStatus) => {
     setSelectedStatus(selectedStatus);
-    setstatus(selectedStatus ? selectedStatus.value : '');
+    setstatus(selectedStatus ? selectedStatus.value : "");
     setHasValueChanged(true);
   };
 
@@ -186,16 +188,16 @@ function LocInfoGrid() {
   };
 
   const clearInputFields = () => {
-    setlocation_no("");
-    setlocation_name("");
-    setcity("");
-    setstate("");
-    setpincode("");
-    setcountry("");
-    setSelectedStatus("");
-    setstatus("");
-    setRowData([]);
-  };
+    setlocation_no("");
+    setlocation_name("");
+    setcity("");
+    setstate("");
+    setpincode("");
+    setcountry("");
+    setSelectedStatus("");
+    setstatus("");
+    setRowData([]);
+  };
 
   const handleSearch = async () => {
     setLoading(true);
@@ -219,7 +221,7 @@ function LocInfoGrid() {
       if (response.ok) {
         const searchData = await response.json();
         setRowData(searchData);
-        console.log("data fetched successfully")
+        console.log("data fetched successfully");
       } else if (response.status === 404) {
         console.log("Data not found");
         toast.warning("Data not found");
@@ -252,10 +254,7 @@ function LocInfoGrid() {
           handleNavigateWithRowData(params.data);
         };
         return (
-          <span
-            style={{ cursor: "pointer" }}
-            onClick={handleClick}
-          >
+          <span style={{ cursor: "pointer" }} onClick={handleClick}>
             {params.value}
           </span>
         );
@@ -268,17 +267,16 @@ function LocInfoGrid() {
       cellStyle: { textAlign: "center" },
       cellEditorParams: {
         maxLength: 150,
-      }
+      },
     },
     {
-
       headerName: "Short Name",
       field: "short_name",
       editable: true,
       cellStyle: { textAlign: "center" },
       cellEditorParams: {
         maxLength: 150,
-      }
+      },
     },
     {
       headerName: "Address 1",
@@ -287,7 +285,7 @@ function LocInfoGrid() {
       cellStyle: { textAlign: "center" },
       cellEditorParams: {
         maxLength: 150,
-      }
+      },
     },
     {
       headerName: "Address 2",
@@ -296,17 +294,16 @@ function LocInfoGrid() {
       cellStyle: { textAlign: "center" },
       cellEditorParams: {
         maxLength: 150,
-      }
+      },
     },
     {
-
       headerName: "Address 3",
       field: "address3",
       editable: true,
       cellStyle: { textAlign: "center" },
       cellEditorParams: {
         maxLength: 150,
-      }
+      },
     },
     {
       headerName: "City",
@@ -335,7 +332,7 @@ function LocInfoGrid() {
       cellStyle: { textAlign: "center" },
       cellEditorParams: {
         maxLength: 150,
-      }
+      },
     },
     {
       headerName: "Country",
@@ -354,7 +351,7 @@ function LocInfoGrid() {
       cellStyle: { textAlign: "center" },
       cellEditorParams: {
         maxLength: 150,
-      }
+      },
     },
     {
       headerName: "Status",
@@ -363,7 +360,7 @@ function LocInfoGrid() {
       cellStyle: { textAlign: "left" },
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
-        values: statusgriddrop
+        values: statusgriddrop,
       },
     },
     {
@@ -381,7 +378,7 @@ function LocInfoGrid() {
           params.data.contact_no = newValue;
           return true;
         }
-        return false; 
+        return false;
       },
     },
   ];
@@ -403,14 +400,14 @@ function LocInfoGrid() {
     }
   };
 
- const generateReport = () => {
+  const generateReport = () => {
     if (selectedRows.length === 0) {
       toast.warning("Please select at least one row to generate a report");
-      return
-    };
+      return;
+    }
 
     const reportData = selectedRows.map((row) => {
-      const safeValue = (val) => val !== undefined && val !== null ? val : '';
+      const safeValue = (val) => (val !== undefined && val !== null ? val : "");
 
       const addressParts = [
         safeValue(row.address1),
@@ -419,10 +416,10 @@ function LocInfoGrid() {
         `<br>${safeValue(row.city)}`,
         `<br>${safeValue(row.pincode)}`,
         `<br>${safeValue(row.state)}`,
-        `<br>${safeValue(row.country)}`
+        `<br>${safeValue(row.country)}`,
       ];
 
-      const formattedAddress = addressParts.join(', ');
+      const formattedAddress = addressParts.join(", ");
 
       return {
         "Location No": safeValue(row.location_no),
@@ -430,7 +427,7 @@ function LocInfoGrid() {
         "Short Name": safeValue(row.short_name),
         Address: formattedAddress,
         "Email Id": safeValue(row.email_id),
-        "Status": safeValue(row.status),
+        Status: safeValue(row.status),
         "Contact No": safeValue(row.contact_no),
       };
     });
@@ -519,7 +516,7 @@ function LocInfoGrid() {
     reportWindow.document.write("</tbody></table>");
 
     reportWindow.document.write(
-      '<button class="report-button" title="Print" onclick="window.print()">Print</button>'
+      '<button class="report-button" title="Print" onclick="window.print()">Print</button>',
     );
     reportWindow.document.write("</body></html>");
     reportWindow.document.close();
@@ -530,8 +527,22 @@ function LocInfoGrid() {
   };
 
   const handleNavigateWithRowData = (selectedRow) => {
-  navigate("/AddLocation", { state: { mode: "update", selectedRow, preservedRowData: rowData, 
-      preservedInputs: { location_no, location_name, city, state, pincode, country, status, }, }, }); 
+    navigate("/AddLocation", {
+      state: {
+        mode: "update",
+        selectedRow,
+        preservedRowData: rowData,
+        preservedInputs: {
+          location_no,
+          location_name,
+          city,
+          state,
+          pincode,
+          country,
+          status,
+        },
+      },
+    });
   };
 
   const onSelectionChanged = () => {
@@ -543,7 +554,7 @@ function LocInfoGrid() {
   // const onCellValueChanged = (params) => {
   //   const updatedRowData = [...rowData];
   //   const rowIndex = updatedRowData.findIndex(
-  //     (row) => row.location_no === params.data.location_no // Use the unique identifier 
+  //     (row) => row.location_no === params.data.location_no // Use the unique identifier
   //   );
   //   if (rowIndex !== -1) {
   //     updatedRowData[rowIndex][params.colDef.field] = params.newValue;
@@ -556,18 +567,18 @@ function LocInfoGrid() {
   const onCellValueChanged = (params) => {
     const updatedRowData = [...rowData];
     const rowIndex = updatedRowData.findIndex(
-      (row) => row.location_no === params.data.location_no
+      (row) => row.location_no === params.data.location_no,
     );
-  
+
     if (rowIndex !== -1) {
       updatedRowData[rowIndex][params.colDef.field] = params.newValue;
       setRowData(updatedRowData);
-  
+
       setEditedData((prevData) => {
         const existingIndex = prevData.findIndex(
-          (item) => item.location_no === params.data.location_no
+          (item) => item.location_no === params.data.location_no,
         );
-  
+
         if (existingIndex !== -1) {
           const updatedEdited = [...prevData];
           updatedEdited[existingIndex] = updatedRowData[rowIndex];
@@ -580,7 +591,11 @@ function LocInfoGrid() {
   };
 
   const saveEditedData = async () => {
-    const selectedRowsData = editedData.filter(row => selectedRows.some(selectedRow => selectedRow.location_no === row.location_no));
+    const selectedRowsData = editedData.filter((row) =>
+      selectedRows.some(
+        (selectedRow) => selectedRow.location_no === row.location_no,
+      ),
+    );
     if (selectedRowsData.length === 0) {
       toast.warning("Please select a row to update its data");
       return;
@@ -589,29 +604,26 @@ function LocInfoGrid() {
       "Are you sure you want to update the data in the selected rows?",
       async () => {
         try {
-          const modified_by = sessionStorage.getItem('selectedUserCode');
+          const modified_by = sessionStorage.getItem("selectedUserCode");
 
           const response = await fetch(`${config.apiBaseUrl}/location_no`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
               "Modified-By": modified_by,
-
             },
 
             body: JSON.stringify({ editedData: selectedRowsData }), // Send only the selected rows for saving
-            "modified_by": modified_by,
-
+            modified_by: modified_by,
           });
 
           if (response.status === 200) {
             console.log("Data saved successfully!");
             setTimeout(() => {
-              toast.success("Data Updated Successfully")
+              toast.success("Data Updated Successfully");
               handleSearch();
             }, 1000);
             return;
-
           } else {
             const errorResponse = await response.json();
             toast.warning(errorResponse.message || "Failed to update data");
@@ -623,7 +635,7 @@ function LocInfoGrid() {
       },
       () => {
         toast.info("Data updated cancelled.");
-      }
+      },
     );
   };
 
@@ -634,18 +646,17 @@ function LocInfoGrid() {
       toast.warning("Please select atleast One Row to Delete");
       return;
     }
-    const modified_by = sessionStorage.getItem('selectedUserCode');
+    const modified_by = sessionStorage.getItem("selectedUserCode");
     const location_nosToDelete = selectedRows.map((row) => row.location_no);
     showConfirmationToast(
       "Are you sure you want to Delete the data in the selected rows?",
       async () => {
-
         try {
           const response = await fetch(`${config.apiBaseUrl}/deletelocation`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "modified_by": modified_by
+              modified_by: modified_by,
             },
             body: JSON.stringify({ location_nos: location_nosToDelete }),
           });
@@ -653,7 +664,7 @@ function LocInfoGrid() {
           if (response.ok) {
             console.log("Rows deleted successfully:", location_nosToDelete);
             setTimeout(() => {
-              toast.success("Data Deleted Successfully")
+              toast.success("Data Deleted Successfully");
               handleSearch();
             }, 1000);
           } else {
@@ -667,12 +678,12 @@ function LocInfoGrid() {
       },
       () => {
         toast.info("Data Delete cancelled.");
-      }
+      },
     );
   };
 
   const handleKeyDown = async (e, nextFieldRef) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       const dataFound = await handleSearch(); // Await the search result
 
       if (dataFound && nextFieldRef) {
@@ -682,7 +693,8 @@ function LocInfoGrid() {
   };
 
   const handleKeyDownStatus = async (e) => {
-    if (e.key === 'Enter' && hasValueChanged) { // Only trigger search if the value has changed
+    if (e.key === "Enter" && hasValueChanged) {
+      // Only trigger search if the value has changed
       await handleSearch(); // Trigger the search function
       setHasValueChanged(false); // Reset the flag after search
     }
@@ -717,11 +729,14 @@ function LocInfoGrid() {
   };
 
   return (
-
     <div className="container-fluid Topnav-screen">
       <div>
-      {loading && <LoadingScreen />}
-        <ToastContainer position="top-right" className="toast-design" theme="colored" />
+        {loading && <LoadingScreen />}
+        <ToastContainer
+          position="top-right"
+          className="toast-design"
+          theme="colored"
+        />
         <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
           <div className=" d-flex justify-content-between  ">
             <div class="d-flex justify-content-start">
@@ -730,67 +745,106 @@ function LocInfoGrid() {
               </h1>
             </div>
             <div className="d-flex justify-content-end purbut me-3">
-              {['add', 'all permission'].some(permission => LocationPermissions.includes(permission)) && (
-                <addbutton className="purbut" onClick={handleNavigateToForm}
-                  required title="Add Location"> <i class="fa-solid fa-user-plus"></i>
+              {["add", "all permission"].some((permission) =>
+                LocationPermissions.includes(permission),
+              ) && (
+                <addbutton
+                  className="purbut"
+                  onClick={handleNavigateToForm}
+                  required
+                  title="Add Location"
+                >
+                  {" "}
+                  <i class="fa-solid fa-user-plus"></i>
                 </addbutton>
               )}
-              {['delete', 'all permission'].some(permission => LocationPermissions.includes(permission)) && (
-                <delbutton className="purbut" onClick={deleteSelectedRows} required title="Delete">
+              {["delete", "all permission"].some((permission) =>
+                LocationPermissions.includes(permission),
+              ) && (
+                <delbutton
+                  className="purbut"
+                  onClick={deleteSelectedRows}
+                  required
+                  title="Delete"
+                >
                   <i class="fa-solid fa-user-minus"></i>
                 </delbutton>
               )}
-              {['update', 'all permission'].some(permission => LocationPermissions.includes(permission)) && (
-                <savebutton className="purbut" onClick={saveEditedData} required title="Update" >
+              {["update", "all permission"].some((permission) =>
+                LocationPermissions.includes(permission),
+              ) && (
+                <savebutton
+                  className="purbut"
+                  onClick={saveEditedData}
+                  required
+                  title="Update"
+                >
                   <i class="fa-solid fa-floppy-disk"></i>
-                  </savebutton>
+                </savebutton>
               )}
-              {['all permission', 'view'].some(permission => LocationPermissions.includes(permission)) && (
-                <printbutton className="purbut" onClick={generateReport} required title="Generate Report">
+              {["all permission", "view"].some((permission) =>
+                LocationPermissions.includes(permission),
+              ) && (
+                <printbutton
+                  className="purbut"
+                  onClick={generateReport}
+                  required
+                  title="Generate Report"
+                >
                   <i class="fa-solid fa-print"></i>
-                  </printbutton>
+                </printbutton>
               )}
             </div>
             <div class="mobileview">
               <div class="d-flex justify-content-between">
                 <div className="d-flex justify-content-start ">
-                  <h1 align="left" className="h1 ms-0" >
+                  <h1 align="left" className="h1 ms-0">
                     Location
                   </h1>
                 </div>
                 <div class="dropdown  mt-1 me-5 " style={{ paddingLeft: 0 }}>
-                  <button class="btn btn-primary dropdown-toggle p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <button
+                    class="btn btn-primary dropdown-toggle p-1"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
                     <i class="fa-solid fa-list"></i>
                   </button>
                   <ul class="dropdown-menu ">
                     <li class="iconbutton d-flex justify-content-center text-success">
-                      {['add', 'all permission'].some(permission => LocationPermissions.includes(permission)) && (
-                        <icon
-                          class="icon"
-                          onClick={handleNavigateToForm}
-                        >
+                      {["add", "all permission"].some((permission) =>
+                        LocationPermissions.includes(permission),
+                      ) && (
+                        <icon class="icon" onClick={handleNavigateToForm}>
                           <i class="fa-solid fa-user-plus"></i>
                         </icon>
                       )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center text-danger">
-                      {['delete', 'all permission'].some(permission => LocationPermissions.includes(permission)) && (
-                        <icon class="icon" onClick={deleteSelectedRows} >            
-                        <i class="fa-solid fa-user-minus"></i>
+                      {["delete", "all permission"].some((permission) =>
+                        LocationPermissions.includes(permission),
+                      ) && (
+                        <icon class="icon" onClick={deleteSelectedRows}>
+                          <i class="fa-solid fa-user-minus"></i>
                         </icon>
                       )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center text-primary ">
-                      {['update', 'all permission'].some(permission => LocationPermissions.includes(permission)) && (
-                        <icon class="icon" onClick={saveEditedData} >
+                      {["update", "all permission"].some((permission) =>
+                        LocationPermissions.includes(permission),
+                      ) && (
+                        <icon class="icon" onClick={saveEditedData}>
                           <i class="fa-solid fa-floppy-disk"></i>
                         </icon>
                       )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center ">
-                      {['all permission', 'view'].some(permission => LocationPermissions.includes(permission)) && (
+                      {["all permission", "view"].some((permission) =>
+                        LocationPermissions.includes(permission),
+                      ) && (
                         <icon class="icon" onClick={generateReport}>
-                            <i class="fa-solid fa-print"></i>
+                          <i class="fa-solid fa-print"></i>
                         </icon>
                       )}
                     </li>
@@ -812,7 +866,8 @@ function LocInfoGrid() {
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the location number here"
+                  required
+                  title="Please fill the location number here"
                   value={location_no}
                   onChange={(e) => setlocation_no(e.target.value)}
                   onKeyDown={(e) => handleKeyDown(e, LocationName)}
@@ -831,7 +886,8 @@ function LocInfoGrid() {
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the location name here"
+                  required
+                  title="Please fill the location name here"
                   value={location_name}
                   onChange={(e) => setlocation_name(e.target.value)}
                   onKeyDown={(e) => handleKeyDown(e, City)} // No next field after this
@@ -850,7 +906,8 @@ function LocInfoGrid() {
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the city here"
+                  required
+                  title="Please fill the city here"
                   value={city}
                   onChange={(e) => setcity(e.target.value)}
                   onKeyDown={(e) => handleKeyDown(e, State)}
@@ -869,7 +926,8 @@ function LocInfoGrid() {
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the state here"
+                  required
+                  title="Please fill the state here"
                   value={state}
                   onChange={(e) => setstate(e.target.value)}
                   onKeyDown={(e) => handleKeyDown(e, Pincode)}
@@ -888,9 +946,12 @@ function LocInfoGrid() {
                   className="exp-input-field form-control"
                   type="number"
                   placeholder=""
-                  required title="Please fill the Pin code here"
+                  required
+                  title="Please fill the Pin code here"
                   value={pincode}
-                  onChange={(e) => setpincode(e.target.value.replace(/\D/g, '').slice(0, 13))}
+                  onChange={(e) =>
+                    setpincode(e.target.value.replace(/\D/g, "").slice(0, 13))
+                  }
                   onKeyDown={(e) => handleKeyDown(e, Country)}
                   maxLength={13}
                   ref={Pincode}
@@ -907,7 +968,8 @@ function LocInfoGrid() {
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the country here"
+                  required
+                  title="Please fill the country here"
                   value={country}
                   onChange={(e) => setcountry(e.target.value)}
                   onKeyDown={(e) => handleKeyDown(e, Status)}
@@ -918,37 +980,51 @@ function LocInfoGrid() {
             </div>
             <div className="col-md-3 form-group">
               <div class="exp-form-floating">
-                <label class="exp-form-labels">
-                  Status
-                </label>
-                  <div title="Select the Status ">
-                <Select
-                  id="status"
-                  value={selectedStatus}
-                  onChange={handleChangeStatus}
-                  options={filteredOptionStatus}
-                  className="exp-input-field"
-                  placeholder=""
-                  onKeyDown={handleKeyDownStatus}
-                  ref={Status}
-                />
-              </div></div>
+                <label class="exp-form-labels">Status</label>
+                <div title="Select the Status ">
+                  <Select
+                    id="status"
+                    value={selectedStatus}
+                    onChange={handleChangeStatus}
+                    options={filteredOptionStatus}
+                    className="exp-input-field"
+                    placeholder=""
+                    onKeyDown={handleKeyDownStatus}
+                    ref={Status}
+                    classNamePrefix="react-select"
+                    styles={{
+                      menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                    }}
+                  />
+                </div>
+              </div>
             </div>
             <div className="col-md-3 form-group mt-4">
               <div class="exp-form-floating">
                 <div class=" d-flex  justify-content-center">
-                  <div class=''>
-                    <icon className="popups-btn fs-6 p-3" onClick={handleSearch} required title="Search">
+                  <div class="">
+                    <icon
+                      className="popups-btn fs-6 p-3"
+                      onClick={handleSearch}
+                      required
+                      title="Search"
+                    >
                       <i className="fas fa-search"></i>
-                      </icon>
-                      </div>
+                    </icon>
+                  </div>
                   <div>
-                    <icon className="popups-btn fs-6 p-3" onClick={clearInputFields} required title="Reload">
-                    <FontAwesomeIcon icon="fa-solid fa-arrow-rotate-right" /></icon>
-                    </div>
+                    <icon
+                      className="popups-btn fs-6 p-3"
+                      onClick={clearInputFields}
+                      required
+                      title="Reload"
+                    >
+                      <FontAwesomeIcon icon="fa-solid fa-arrow-rotate-right" />
+                    </icon>
+                  </div>
                 </div>
-                 </div>
-                 </div>
+              </div>
+            </div>
           </div>
           <div class="ag-theme-alpine" style={{ height: 455, width: "100%" }}>
             <AgGridReact
@@ -969,9 +1045,11 @@ function LocInfoGrid() {
       <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
         <div className="row ms-2">
           <div className="d-flex justify-content-start">
-            <p className="col-md-6">{labels.createdBy}: {createdBy}</p>
+            <p className="col-md-6">
+              {labels.createdBy}: {createdBy}
+            </p>
             <p className="col-md-">
-              {labels.createdDate}:  {createdDate}
+              {labels.createdDate}: {createdDate}
             </p>
           </div>
           <div className="d-flex justify-content-start">

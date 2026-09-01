@@ -3197,6 +3197,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                       onChange={handleChangeScreens}
                       options={filteredOptionScreens}
                       data-tip="Please select a default warehouse"
+                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                     />
                   </div>
                   {saveButtonVisible && ['add', 'all permission'].some(permission => purchasePermission.includes(permission)) && (
@@ -3331,6 +3332,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                         onChange={handleChangeStatus}
                         getOptionLabel={(option) => option.label || ""}
                         getOptionValue={(option) => option.value || ""}
+                        styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                       />
                       </div>
                     </div>
@@ -3442,6 +3444,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                       data-tip="Please select a payment type"
                       onKeyDown={(e) => handleKeyDown(e, purchasetype, paytype)} // No next field after this
                       ref={paytype} // Attach ref to Purchase Type
+                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                     />
                   </div>
                   </div>
@@ -3461,6 +3464,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                       placeholder=""
                       onKeyDown={(e) => handleKeyDown(e, DatE, purchasetype)} // No next field after this
                       ref={purchasetype} // Attach ref to Purchase Type
+                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                     />
                     </div>
                   </div>
@@ -3497,6 +3501,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                       onChange={handleChangeWarehouse}
                       options={filteredOptionWarehouse}
                       data-tip="Please select a default warehouse"
+                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                     />
                     </div>
                   </div>
@@ -3716,6 +3721,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                       onChange={handleChangeScreens}
                       options={filteredOptionScreens}
                       data-tip="Please select a default warehouse"
+                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                     />
                   </div>
                 

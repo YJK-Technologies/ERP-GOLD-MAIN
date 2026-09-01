@@ -4,20 +4,19 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import "ag-grid-enterprise";
 import "./apps.css";
-import './App.css'
+import "./App.css";
 import { useNavigate, useLocation } from "react-router-dom";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Select from 'react-select';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Select from "react-select";
 import labels from "./Labels";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import CompanyImagePopup from './CompanyImageHelp'
-import { showConfirmationToast } from './ToastConfirmation';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import CompanyImagePopup from "./CompanyImageHelp";
+import { showConfirmationToast } from "./ToastConfirmation";
 import "./test.css";
-import LoadingScreen from './Loading';
+import LoadingScreen from "./Loading";
 
-const config = require('./Apiconfig');
-
+const config = require("./Apiconfig");
 
 function Grid() {
   const [rowData, setRowData] = useState([]);
@@ -39,7 +38,7 @@ function Grid() {
   const [pincode, setPincode] = useState("");
   const [country, setCountry] = useState("");
   const [status, setStatus] = useState("");
-  const [Locationdrop, setLocationdrop] = useState("")
+  const [Locationdrop, setLocationdrop] = useState("");
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [hasValueChanged, setHasValueChanged] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -52,10 +51,10 @@ function Grid() {
   const location = useLocation();
 
   //code added by Pavun purpose of set user permisssion
-  const permissions = JSON.parse(sessionStorage.getItem('permissions')) || {};
+  const permissions = JSON.parse(sessionStorage.getItem("permissions")) || {};
   const companyPermissions = permissions
-    .filter(permission => permission.screen_type === 'Company')
-    .map(permission => permission.permission_type.toLowerCase());
+    .filter((permission) => permission.screen_type === "Company")
+    .map((permission) => permission.permission_type.toLowerCase());
 
   const [selectedCompanyNo, setselectedCompanyNo] = useState(null);
   const [selectedCompanyLogo, setSelectedCompanyLogo] = useState(null);
@@ -66,136 +65,137 @@ function Grid() {
   };
 
   useEffect(() => {
-  if (location.state?.preservedRowData) {
-    setRowData(location.state.preservedRowData);
-  }
-
-  if (location.state?.preservedInputs) {
-    setCompany_no(location.state.preservedInputs.company_no || "");
-    setCompany_name(location.state.preservedInputs.company_name || "");
-    setCity(location.state.preservedInputs.city || "");
-    setPincode(location.state.preservedInputs.pincode || "");
-    setCountry(location.state.preservedInputs.country || "");
-    setcompany_gst_no(location.state.preservedInputs.company_gst_no || "");
-    setState(location.state.preservedInputs.state || "");
-    setStatus(location.state.preservedInputs.status || "");
-
-    if (location.state.preservedInputs.status) {
-      setSelectedStatus({
-        label: location.state.preservedInputs.status,
-        value: location.state.preservedInputs.status,
-      });
+    if (location.state?.preservedRowData) {
+      setRowData(location.state.preservedRowData);
     }
-  }
-}, [location.state]);
+
+    if (location.state?.preservedInputs) {
+      setCompany_no(location.state.preservedInputs.company_no || "");
+      setCompany_name(location.state.preservedInputs.company_name || "");
+      setCity(location.state.preservedInputs.city || "");
+      setPincode(location.state.preservedInputs.pincode || "");
+      setCountry(location.state.preservedInputs.country || "");
+      setcompany_gst_no(location.state.preservedInputs.company_gst_no || "");
+      setState(location.state.preservedInputs.state || "");
+      setStatus(location.state.preservedInputs.status || "");
+
+      if (location.state.preservedInputs.status) {
+        setSelectedStatus({
+          label: location.state.preservedInputs.status,
+          value: location.state.preservedInputs.status,
+        });
+      }
+    }
+  }, [location.state]);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/city`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((response) => response.json())
       .then((data) => {
-        const cityNames = data.map(option => option.attributedetails_name);
+        const cityNames = data.map((option) => option.attributedetails_name);
         setDrop(cityNames);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/country`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((response) => response.json())
       .then((data) => {
-        const countries = data.map(option => option.attributedetails_name);
+        const countries = data.map((option) => option.attributedetails_name);
         setCondrop(countries);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/state`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((response) => response.json())
       .then((data) => {
-        const States = data.map(option => option.attributedetails_name);
+        const States = data.map((option) => option.attributedetails_name);
         setStatedrop(States);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-
     fetch(`${config.apiBaseUrl}/locationno`)
       .then((response) => response.json())
       .then((data) => {
-        const LocationOption = data.map(option => option.location_no);
+        const LocationOption = data.map((option) => option.location_no);
         setLocationdrop(LocationOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((response) => response.json())
       .then((data) => {
-        const statusOption = data.map(option => option.attributedetails_name);
+        const statusOption = data.map((option) => option.attributedetails_name);
         setStatusGriddrop(statusOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setStatusdrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-  const filteredOptionStatus = [{ value: 'All', label: 'All' }, ...statusdrop.map((option) => ({
-    value: option.attributedetails_name,
-    label: option.attributedetails_name,
-  }))];
+  const filteredOptionStatus = [
+    { value: "All", label: "All" },
+    ...statusdrop.map((option) => ({
+      value: option.attributedetails_name,
+      label: option.attributedetails_name,
+    })),
+  ];
 
   const handleChangeStatus = (selectedStatus) => {
     setSelectedStatus(selectedStatus);
-    setStatus(selectedStatus ? selectedStatus.value : '');
+    setStatus(selectedStatus ? selectedStatus.value : "");
     setHasValueChanged(true);
   };
 
@@ -210,20 +210,30 @@ function Grid() {
   const handleSearch = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${config.apiBaseUrl}/companysearchcriteria`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
+      const response = await fetch(
+        `${config.apiBaseUrl}/companysearchcriteria`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            company_no,
+            company_name,
+            city,
+            state,
+            pincode,
+            country,
+            status,
+            company_gst_no,
+          }), // Send company_no and company_name as search criteria
         },
-        body: JSON.stringify({
-           company_no, 
-           company_name, city, state, pincode, country, status, company_gst_no }) // Send company_no and company_name as search criteria
-      });
+      );
       if (response.ok) {
         const searchData = await response.json();
         setRowData(searchData);
-        console.log(searchData)
-        console.log("data fetched successfully")
+        console.log(searchData);
+        console.log("data fetched successfully");
       } else if (response.status === 404) {
         console.log("Data not found");
         toast.warning("Data not found");
@@ -244,20 +254,20 @@ function Grid() {
     window.location.reload();
   };
   const clearInputFields = () => {
-    setCompany_no("");
-    setCompany_name("");
-    setCity("");
-    setState("");
-    setPincode("");
-    setCountry("");
-    setcompany_gst_no("");
-    setSelectedStatus("");
-    setStatus("");
-    setRowData([]);
-  };
+    setCompany_no("");
+    setCompany_name("");
+    setCity("");
+    setState("");
+    setPincode("");
+    setCountry("");
+    setcompany_gst_no("");
+    setSelectedStatus("");
+    setStatus("");
+    setRowData([]);
+  };
 
   const arrayBufferToBase64 = (buffer) => {
-    let binary = '';
+    let binary = "";
     const bytes = new Uint8Array(buffer);
     const len = bytes.byteLength;
     for (let i = 0; i < len; i++) {
@@ -313,10 +323,7 @@ function Grid() {
         };
 
         return (
-          <span
-            style={{ cursor: "pointer" }}
-            onClick={handleClick}
-          >
+          <span style={{ cursor: "pointer" }} onClick={handleClick}>
             {params.value}
           </span>
         );
@@ -432,9 +439,8 @@ function Grid() {
       cellStyle: { textAlign: "left" },
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
-        values: statusgriddrop
+        values: statusgriddrop,
       },
-
     },
     {
       headerName: "Founded Date",
@@ -509,7 +515,6 @@ function Grid() {
     setGridColumnApi(params.columnApi);
   };
 
-
   const generateReport = () => {
     const selectedRows = gridApi.getSelectedRows();
     if (selectedRows.length === 0) {
@@ -518,7 +523,8 @@ function Grid() {
     }
 
     const reportData = selectedRows.map((row) => {
-      const formatValue = (val) => (val !== undefined && val !== null ? val : '');
+      const formatValue = (val) =>
+        val !== undefined && val !== null ? val : "";
 
       const addressParts = [
         row.address1,
@@ -527,7 +533,7 @@ function Grid() {
         row.city,
         row.pincode,
         row.state,
-        row.country
+        row.country,
       ].map(formatValue);
 
       const formattedAddress = `
@@ -544,13 +550,13 @@ function Grid() {
         "Company No": formatValue(row.company_no),
         "Company Name": formatValue(row.company_name),
         "Short Name": formatValue(row.short_name),
-        "Address": formattedAddress,
-        "Email": formatValue(row.email_id),
-        "Status": formatValue(row.status),
+        Address: formattedAddress,
+        Email: formatValue(row.email_id),
+        Status: formatValue(row.status),
         "Founded Date": formatValue(row.foundedDate),
         "Website URL": formatValue(row.websiteURL),
         "Contact No": formatValue(row.contact_no),
-        "Annual Report URL": formatValue(row.annualReportURL)
+        "Annual Report URL": formatValue(row.annualReportURL),
       };
     });
 
@@ -631,58 +637,55 @@ function Grid() {
     reportData.forEach((row) => {
       reportWindow.document.write("<tr>");
       Object.values(row).forEach((value) => {
-        reportWindow.document.write(`<td>${value || ''}</td>`);
+        reportWindow.document.write(`<td>${value || ""}</td>`);
       });
       reportWindow.document.write("</tr>");
     });
 
     reportWindow.document.write("</tbody></table>");
     reportWindow.document.write(
-      '<button class="report-button" title="Print" onclick="window.print()">Print</button>'
+      '<button class="report-button" title="Print" onclick="window.print()">Print</button>',
     );
     reportWindow.document.write("</body></html>");
     reportWindow.document.close();
   };
-
-
 
   const handleNavigateToForm = () => {
     navigate("/AddCompany", { state: { mode: "create" } }); // Pass selectedRows as props to the Input component
   };
 
   const handleNavigateWithRowData = (selectedRow) => {
-  navigate("/AddCompany", {
-    state: {
-      mode: "update",
-      selectedRow,
+    navigate("/AddCompany", {
+      state: {
+        mode: "update",
+        selectedRow,
 
-      preservedRowData: rowData,
+        preservedRowData: rowData,
 
-      preservedInputs: {
-        company_no,
-        company_name,
-        city,
-        state,
-        pincode,
-        country,
-        company_gst_no,
-        status,
+        preservedInputs: {
+          company_no,
+          company_name,
+          city,
+          state,
+          pincode,
+          country,
+          company_gst_no,
+          status,
+        },
       },
-    },
-  });
-};
+    });
+  };
 
   const onSelectionChanged = () => {
     const selectedNodes = gridApi.getSelectedNodes();
     const selectedData = selectedNodes.map((node) => node.data);
     setSelectedRows(selectedData);
-
   };
   // Assuming you have a unique identifier for each row, such as 'id'
   const onCellValueChanged = (params) => {
     const updatedRowData = [...rowData];
     const rowIndex = updatedRowData.findIndex(
-      (row) => row.company_no === params.data.company_no // Use the unique identifier 
+      (row) => row.company_no === params.data.company_no, // Use the unique identifier
     );
     if (rowIndex !== -1) {
       updatedRowData[rowIndex][params.colDef.field] = params.newValue;
@@ -693,12 +696,17 @@ function Grid() {
   };
 
   const saveEditedData = async () => {
-    const selectedRowsData = editedData
-      .filter(row => selectedRows.some(selectedRow => selectedRow.company_no === row.company_no))
-      // .map(({ authorisedSignatur, company_logo, ...rest }) => rest); // Exclude fields
+    const selectedRowsData = editedData.filter((row) =>
+      selectedRows.some(
+        (selectedRow) => selectedRow.company_no === row.company_no,
+      ),
+    );
+    // .map(({ authorisedSignatur, company_logo, ...rest }) => rest); // Exclude fields
 
     if (selectedRowsData.length === 0) {
-      toast.warning("Please select and modify at least one row to update its data");
+      toast.warning(
+        "Please select and modify at least one row to update its data",
+      );
       return;
     }
 
@@ -706,15 +714,15 @@ function Grid() {
       "Are you sure you want to update the data in the selected rows?",
       async () => {
         try {
-          const modified_by = sessionStorage.getItem('selectedUserCode');
+          const modified_by = sessionStorage.getItem("selectedUserCode");
 
           const response = await fetch(`${config.apiBaseUrl}/saveEditedData`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "Modified-By": modified_by
+              "Modified-By": modified_by,
             },
-            body: JSON.stringify({ editedData: selectedRowsData })
+            body: JSON.stringify({ editedData: selectedRowsData }),
           });
 
           if (response.status === 200) {
@@ -734,7 +742,7 @@ function Grid() {
       },
       () => {
         toast.info("Data update cancelled.");
-      }
+      },
     );
   };
 
@@ -742,11 +750,11 @@ function Grid() {
     const selectedRows = gridApi.getSelectedRows();
 
     if (selectedRows.length === 0) {
-      toast.warning("Please select atleast One Row to Delete")
+      toast.warning("Please select atleast One Row to Delete");
       return;
     }
 
-    const modified_by = sessionStorage.getItem('selectedUserCode');
+    const modified_by = sessionStorage.getItem("selectedUserCode");
     const company_nosToDelete = selectedRows.map((row) => row.company_no);
 
     showConfirmationToast(
@@ -757,10 +765,10 @@ function Grid() {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "Modified-By": modified_by
+              "Modified-By": modified_by,
             },
             body: JSON.stringify({ company_nos: company_nosToDelete }),
-            "modified_by": modified_by
+            modified_by: modified_by,
           });
 
           if (response.ok) {
@@ -769,36 +777,36 @@ function Grid() {
               onClose: () => handleSearch(),
               autoClose: 1000,
             });
-
           } else {
             const errorResponse = await response.json();
             toast.warning(errorResponse.message || "Failed to delete data");
           }
         } catch (error) {
           console.error("Error deleting rows:", error);
-          toast.error('Error Deleting Data: ' + error.message);
+          toast.error("Error Deleting Data: " + error.message);
         }
       },
       () => {
         toast.info("Data Delete cancelled.");
-      }
+      },
     );
   };
 
   const handlesetPincode = (e) => {
     const value = e.target.value;
-    if (value.length <= 10) {  // Ensure length is 10 or less
+    if (value.length <= 10) {
+      // Ensure length is 10 or less
       setPincode(value);
     }
   };
 
   const handleKeyDownStatus = async (e) => {
-    if (e.key === 'Enter' && hasValueChanged) { // Only trigger search if the value has changed
+    if (e.key === "Enter" && hasValueChanged) {
+      // Only trigger search if the value has changed
       await handleSearch(); // Trigger the search function
       setHasValueChanged(false); // Reset the flag after search
     }
   };
-
 
   // Handler for when a row is selected
   const onRowSelected = (event) => {
@@ -807,35 +815,67 @@ function Grid() {
     }
   };
 
-
   return (
     <div className="container-fluid Topnav-screen">
       <div>
         {loading && <LoadingScreen />}
-        <ToastContainer position="top-right" className="toast-design" theme="colored" />
+        <ToastContainer
+          position="top-right"
+          className="toast-design"
+          theme="colored"
+        />
         <div className="shadow-lg p-1 bg-body-tertiary rounded mb-2 mt-2">
           <div className=" d-flex justify-content-between  ">
             <div class="d-flex justify-content-start">
-              <h1 align="left" className="purbut">Company</h1>
+              <h1 align="left" className="purbut">
+                Company
+              </h1>
             </div>
             <div className="d-flex justify-content-end purbut me-3">
-              {['add', 'all permission'].some(permission => companyPermissions.includes(permission)) && (
-                <addbutton className="purbut" onClick={handleNavigateToForm} title="Add">
+              {["add", "all permission"].some((permission) =>
+                companyPermissions.includes(permission),
+              ) && (
+                <addbutton
+                  className="purbut"
+                  onClick={handleNavigateToForm}
+                  title="Add"
+                >
                   <i class="fa-solid fa-user-plus"></i>
                 </addbutton>
               )}
-              {['delete', 'all permission'].some(permission => companyPermissions.includes(permission)) && (
-                <delbutton className="purbut" onClick={deleteSelectedRows} required title="Delete">
+              {["delete", "all permission"].some((permission) =>
+                companyPermissions.includes(permission),
+              ) && (
+                <delbutton
+                  className="purbut"
+                  onClick={deleteSelectedRows}
+                  required
+                  title="Delete"
+                >
                   <i class="fa-solid fa-user-minus"></i>
                 </delbutton>
               )}
-              {['update', 'all permission'].some(permission => companyPermissions.includes(permission)) && (
-                <savebutton className="purbut" onClick={saveEditedData} required title="Update">
+              {["update", "all permission"].some((permission) =>
+                companyPermissions.includes(permission),
+              ) && (
+                <savebutton
+                  className="purbut"
+                  onClick={saveEditedData}
+                  required
+                  title="Update"
+                >
                   <i class="fa-solid fa-floppy-disk"></i>
                 </savebutton>
               )}
-              {['all permission', 'view'].some(permission => companyPermissions.includes(permission)) && (
-                <printbutton className="purbut" onClick={generateReport} required title="Generate Report">
+              {["all permission", "view"].some((permission) =>
+                companyPermissions.includes(permission),
+              ) && (
+                <printbutton
+                  className="purbut"
+                  onClick={generateReport}
+                  required
+                  title="Generate Report"
+                >
                   <i class="fa-solid fa-print"></i>
                 </printbutton>
               )}
@@ -844,49 +884,52 @@ function Grid() {
           <div class="mobileview">
             <div class="d-flex justify-content-between">
               <div className="d-flex justify-content-start ms-3">
-                <h1 align="left" className="h1" >Company</h1>
+                <h1 align="left" className="h1">
+                  Company
+                </h1>
               </div>
-              <div class="dropdown mt-1" >
-                <button class="btn btn-primary dropdown-toggle p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <div class="dropdown mt-1">
+                <button
+                  class="btn btn-primary dropdown-toggle p-1"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
                   <i class="fa-solid fa-list"></i>
                 </button>
                 <ul class="dropdown-menu">
                   <li class="iconbutton d-flex justify-content-center text-success">
-                    {['add', 'all permission'].some(permission => companyPermissions.includes(permission)) && (
-                      <icon
-                        class="icon"
-                        onClick={handleNavigateToForm}
-                      >
+                    {["add", "all permission"].some((permission) =>
+                      companyPermissions.includes(permission),
+                    ) && (
+                      <icon class="icon" onClick={handleNavigateToForm}>
                         <i class="fa-solid fa-user-plus"></i>
                       </icon>
                     )}
                   </li>
                   <li class="iconbutton  d-flex justify-content-center text-danger">
-                    {['delete', 'all permission'].some(permission => companyPermissions.includes(permission)) && (
-                      <icon
-                        class="icon"
-                        onClick={deleteSelectedRows}
-                      >
+                    {["delete", "all permission"].some((permission) =>
+                      companyPermissions.includes(permission),
+                    ) && (
+                      <icon class="icon" onClick={deleteSelectedRows}>
                         <i class="fa-solid fa-user-minus"></i>
                       </icon>
                     )}
                   </li>
                   <li class="iconbutton  d-flex justify-content-center text-primary ">
-                    {['update', 'all permission'].some(permission => companyPermissions.includes(permission)) && (
-                      <icon
-                        class="icon"
-                        onClick={saveEditedData}
-                      >
+                    {["update", "all permission"].some((permission) =>
+                      companyPermissions.includes(permission),
+                    ) && (
+                      <icon class="icon" onClick={saveEditedData}>
                         <i class="fa-solid fa-floppy-disk"></i>
                       </icon>
                     )}
                   </li>
                   <li class="iconbutton  d-flex justify-content-center ">
-                    {['all permission', 'view'].some(permission => companyPermissions.includes(permission)) && (
-                      <icon
-                        class="icon"
-                        onClick={generateReport}
-                      >
+                    {["all permission", "view"].some((permission) =>
+                      companyPermissions.includes(permission),
+                    ) && (
+                      <icon class="icon" onClick={generateReport}>
                         <i class="fa-solid fa-print"></i>
                       </icon>
                     )}
@@ -909,10 +952,11 @@ function Grid() {
                 className="exp-input-field form-control"
                 type="text"
                 placeholder=""
-                required title="Please fill the company number here"
+                required
+                title="Please fill the company number here"
                 value={company_no}
                 onChange={handleCompanyNoChange}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 maxLength={18}
               />
             </div>
@@ -927,10 +971,11 @@ function Grid() {
                 className="exp-input-field form-control"
                 type="text"
                 placeholder=""
-                required title="Please fill the company name here"
+                required
+                title="Please fill the company name here"
                 value={company_name}
                 onChange={handleCompanyNameChange}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 maxLength={250}
               />
             </div>
@@ -945,10 +990,11 @@ function Grid() {
                 className="exp-input-field form-control"
                 type="text"
                 placeholder=""
-                required title="Please fill the city here"
+                required
+                title="Please fill the city here"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 maxLength={100}
               />
             </div>
@@ -963,10 +1009,11 @@ function Grid() {
                 className="exp-input-field form-control"
                 type="text"
                 placeholder=""
-                required title="Please fill the state here"
+                required
+                title="Please fill the state here"
                 value={state}
                 onChange={(e) => setState(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 maxLength={100}
               />
             </div>
@@ -979,14 +1026,14 @@ function Grid() {
               <input
                 id="pin"
                 className="exp-input-field form-control"
-                type="number"  // Changed to text to enforce maxLength
+                type="number" // Changed to text to enforce maxLength
                 placeholder=""
                 required
                 title="Please fill the Pin Code here"
                 value={pincode}
                 maxLength={10} // Set the max length to 10
                 onChange={handlesetPincode}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               />
             </div>
           </div>
@@ -1000,36 +1047,34 @@ function Grid() {
                 className="exp-input-field form-control"
                 type="text"
                 placeholder=""
-                required title="Please fill the country here"
+                required
+                title="Please fill the country here"
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               />
             </div>
           </div>
           <div className="col-md-3 form-group">
             <div class="exp-form-floating">
-              <label class="exp-form-labels">
-                GST No
-              </label>
+              <label class="exp-form-labels">GST No</label>
               <input
                 id="city"
                 className="exp-input-field form-control"
                 type="text"
                 placeholder=""
-                required title="Please fill the city here"
+                required
+                title="Please fill the city here"
                 value={company_gst_no}
                 onChange={(e) => setcompany_gst_no(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 maxLength={100}
               />
             </div>
           </div>
           <div className="col-md-3 form-group">
             <div class="exp-form-floating">
-              <label class="exp-form-labels">
-                Status
-              </label>
+              <label class="exp-form-labels">Status</label>
               <div title="Select the Status">
                 <Select
                   id="status"
@@ -1039,6 +1084,10 @@ function Grid() {
                   options={filteredOptionStatus}
                   className="exp-input-field"
                   placeholder=""
+                  classNamePrefix="react-select"
+                  styles={{
+                    menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                  }}
                 />
               </div>
             </div>
@@ -1046,13 +1095,23 @@ function Grid() {
           <div className="col-md-3 form-group mt-4">
             <div class="exp-form-floating">
               <div class=" d-flex  justify-content-center">
-                <div class=''>
-                  <icon className=" text-dark popups-btn fs-6" onClick={handleSearch} required title="Search">
+                <div class="">
+                  <icon
+                    className=" text-dark popups-btn fs-6"
+                    onClick={handleSearch}
+                    required
+                    title="Search"
+                  >
                     <i class="fa-solid fa-magnifying-glass"></i>
                   </icon>
                 </div>
                 <div>
-                  <icon className=" popups-btn text-dark fs-6" onClick={clearInputFields} required title="Reload">
+                  <icon
+                    className=" popups-btn text-dark fs-6"
+                    onClick={clearInputFields}
+                    required
+                    title="Reload"
+                  >
                     <FontAwesomeIcon icon="fa-solid fa-arrow-rotate-right" />
                   </icon>
                 </div>
@@ -1075,13 +1134,20 @@ function Grid() {
           />
         </div>
         <div>
-          <CompanyImagePopup open={open} handleClose={handleClose} companyNo={selectedCompanyNo} companyLogo={selectedCompanyLogo} />
+          <CompanyImagePopup
+            open={open}
+            handleClose={handleClose}
+            companyNo={selectedCompanyNo}
+            companyLogo={selectedCompanyLogo}
+          />
         </div>
       </div>
       <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
         <div className="row ms-2">
           <div className="d-flex justify-content-start">
-            <p className="col-md-6">{labels.createdBy}: {createdBy}</p>
+            <p className="col-md-6">
+              {labels.createdBy}: {createdBy}
+            </p>
             <p className="col-md-">
               {labels.createdDate}: {createdDate}
             </p>

@@ -2,19 +2,18 @@ import React, { useState, useEffect, useRef } from "react";
 import "./input.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useLocation } from "react-router-dom";
-import Select from 'react-select'
+import Select from "react-select";
 import { useNavigate } from "react-router-dom";
-import 'react-toastify/dist/ReactToastify.css';
-import LoadingScreen from './Loading';
-import { ToastContainer, toast } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
+import LoadingScreen from "./Loading";
+import { ToastContainer, toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import DefaultProductImage from "./DefaultIMG/User.png";
 
+const config = require("./Apiconfig");
 
-const config = require('./Apiconfig');
-
-function UserInput({ }) {
+function UserInput({}) {
   const [user_code, setUser_code] = useState("");
   const [user_name, setUser_name] = useState("");
   const [first_name, setFirst_name] = useState("");
@@ -26,10 +25,10 @@ function UserInput({ }) {
   const [email_id, setEmail_id] = useState("");
   const [dob, setDob] = useState("");
   const [gender, setGender] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState('');
-  const [selectedRole, setSelectedRole] = useState('');
-  const [selectedLog, setSelectedLog] = useState('');
-  const [selectedGender, setSelectedGender] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedRole, setSelectedRole] = useState("");
+  const [selectedLog, setSelectedLog] = useState("");
+  const [selectedGender, setSelectedGender] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const [statusdrop, setStatusdrop] = useState([]);
   const [roleDrop, setRoleDrop] = useState([]);
@@ -54,7 +53,7 @@ function UserInput({ }) {
   const [hasValueChanged, setHasValueChanged] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const created_by = sessionStorage.getItem('selectedUserCode')
+  const created_by = sessionStorage.getItem("selectedUserCode");
   const modified_by = sessionStorage.getItem("selectedUserCode");
 
   const [UserCodeNameDrop, setUserCodeNameDrop] = useState([]);
@@ -69,14 +68,13 @@ function UserInput({ }) {
   const mode = locationState.mode || "create";
   const selectedRow = locationState.selectedRow || null;
   const userCode = location.state?.user_code;
-  const company_code = sessionStorage.getItem('selectedCompanyCode');
+  const company_code = sessionStorage.getItem("selectedCompanyCode");
 
-
-    const filteredOptionRole = Array.isArray(roleDrop)
+  const filteredOptionRole = Array.isArray(roleDrop)
     ? roleDrop.map((option) => ({
-      value: option.role_id,
-      label: `${option.role_id} - ${option.role_name}`,
-    }))
+        value: option.role_id,
+        label: `${option.role_id} - ${option.role_name}`,
+      }))
     : [];
 
   useEffect(() => {
@@ -102,7 +100,7 @@ function UserInput({ }) {
         },
         body: JSON.stringify({
           user_code: userCode,
-          company_code
+          company_code,
         }),
       });
 
@@ -120,25 +118,23 @@ function UserInput({ }) {
         setLog_in_out(user.log_in_out || "");
         setUser_status(user.user_status || "");
         setGender(user.gender || "");
-        setSuperAdmin(
-          user.super_admin?.toLowerCase() === "yes"
-        );
+        setSuperAdmin(user.super_admin?.toLowerCase() === "yes");
         setSelectedStatus({
           label: user.user_status,
           value: user.user_status,
         });
         // Find the selected role from the dropdown list
-const selectedRoleOption = filteredOptionRole.find(
-  (role) => role.value === user.role_id
-);
+        const selectedRoleOption = filteredOptionRole.find(
+          (role) => role.value === user.role_id,
+        );
 
-setRole(user.role_id || "");
-setSelectedRole(
-  selectedRoleOption || {
-    value: user.role_id,
-    label: `${user.role_id} - ${user.role_name || ""}`,
-  }
-);
+        setRole(user.role_id || "");
+        setSelectedRole(
+          selectedRoleOption || {
+            value: user.role_id,
+            label: `${user.role_id} - ${user.role_name || ""}`,
+          },
+        );
         setSelectedLog({
           label: user.log_in_out,
           value: user.log_in_out,
@@ -150,9 +146,7 @@ setSelectedRole(
         setEmail_id(user.email_id || "");
 
         if (user.dob) {
-          const formattedDate = new Date(user.dob)
-            .toISOString()
-            .split("T")[0];
+          const formattedDate = new Date(user.dob).toISOString().split("T")[0];
           setDob(formattedDate);
         } else {
           setDob("");
@@ -265,7 +259,7 @@ setSelectedRole(
       throw new Error("Invalid base64 string");
     }
 
-    const parts = base64Data.split(',');
+    const parts = base64Data.split(",");
     if (parts.length !== 2) {
       throw new Error("Base64 string is not properly formatted");
     }
@@ -290,14 +284,12 @@ setSelectedRole(
     return new File([fileBlob], fileName, { type: mime[1] });
   };
 
-
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
     if (file) {
       const maxSize = 1 * 1024 * 1024;
       if (file.size > maxSize) {
-
-        toast.error('File size exceeds 1MB. Please upload a smaller file.')
+        toast.error("File size exceeds 1MB. Please upload a smaller file.");
         event.target.value = null;
         return;
       }
@@ -308,102 +300,97 @@ setSelectedRole(
     }
   };
 
-
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setStatusdrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/Loginorout`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setLoginoroutdrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/gender`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setGenderdrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/UserRole`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setRoleDrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   const filteredOptionStatus = Array.isArray(statusdrop)
     ? statusdrop.map((option) => ({
-      value: option.attributedetails_name,
-      label: option.attributedetails_name,
-    }))
+        value: option.attributedetails_name,
+        label: option.attributedetails_name,
+      }))
     : [];
-
-
 
   const filteredOptionUserCode = Array.isArray(UserCodeNameDrop)
     ? UserCodeNameDrop.map((option) => ({
-      value: option.EmployeeId,
-      label: `${option.EmployeeId} - ${option.Name}`,
-    }))
+        value: option.EmployeeId,
+        label: `${option.EmployeeId} - ${option.Name}`,
+      }))
     : [];
 
   const filteredOptionLog = Array.isArray(Loginoroutdrop)
     ? Loginoroutdrop.map((option) => ({
-      value: option.attributedetails_name,
-      label: option.attributedetails_name,
-    }))
+        value: option.attributedetails_name,
+        label: option.attributedetails_name,
+      }))
     : [];
 
   const filteredOptionGender = Array.isArray(Genderdrop)
     ? Genderdrop.map((option) => ({
-      value: option.attributedetails_name,
-      label: option.attributedetails_name,
-    }))
+        value: option.attributedetails_name,
+        label: option.attributedetails_name,
+      }))
     : [];
-
 
   const handleChangeStatus = (selectedStatus) => {
     setSelectedStatus(selectedStatus);
-    setUser_status(selectedStatus ? selectedStatus.value : '');
+    setUser_status(selectedStatus ? selectedStatus.value : "");
   };
 
   const handleChangeRole = (selectedRole) => {
@@ -419,12 +406,12 @@ setSelectedRole(
 
   const handleChangeLog = (selectedLog) => {
     setSelectedLog(selectedLog);
-    setLog_in_out(selectedLog ? selectedLog.value : '');
+    setLog_in_out(selectedLog ? selectedLog.value : "");
   };
 
   const handleChangeGender = (selectedGender) => {
     setSelectedGender(selectedGender);
-    setGender(selectedGender ? selectedGender.value : '');
+    setGender(selectedGender ? selectedGender.value : "");
   };
 
   const handleInsert = async () => {
@@ -452,7 +439,10 @@ setSelectedRole(
 
     try {
       const formData = new FormData();
-      formData.append("company_code", sessionStorage.getItem("selectedCompanyCode"));
+      formData.append(
+        "company_code",
+        sessionStorage.getItem("selectedCompanyCode"),
+      );
       formData.append("user_code", user_code);
       formData.append("user_name", user_name);
       formData.append("first_name", first_name);
@@ -478,7 +468,7 @@ setSelectedRole(
 
       if (response.ok) {
         toast.success("Data inserted Successfully", {
-          onClose: () => clearInputFields()
+          onClose: () => clearInputFields(),
         });
       } else if (response.status === 400) {
         const errorResponse = await response.json();
@@ -486,16 +476,15 @@ setSelectedRole(
         toast.warning(errorResponse.message);
       } else {
         console.error("Failed to insert data");
-        toast.error('Failed to insert data');
+        toast.error("Failed to insert data");
       }
     } catch (error) {
       console.error("Error inserting data:", error);
-      toast.error('Error inserting data: ' + error.message);
+      toast.error("Error inserting data: " + error.message);
     } finally {
       setLoading(false);
     }
   };
-
 
   function validateEmail(email) {
     const emailRegex = /^[A-Za-z\._\-0-9]*[@][A-Za-z]*[\.][a-z]{2,4}$/;
@@ -513,11 +502,11 @@ setSelectedRole(
   };
 
   const handleKeyDown = (e, nextRef, currentRef) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.preventDefault();
 
       // For update mode, skip to Email from Log In/Out
-      if (mode === 'update' && currentRef === loginlogout) {
+      if (mode === "update" && currentRef === loginlogout) {
         email.current?.focus();
       } else {
         nextRef?.current?.focus();
@@ -526,12 +515,12 @@ setSelectedRole(
   };
 
   const handleKeyDownStatus = async (e) => {
-    if (e.key === 'Enter' && hasValueChanged) { // Only trigger search if the value has changed
+    if (e.key === "Enter" && hasValueChanged) {
+      // Only trigger search if the value has changed
       // Trigger the search function
       setHasValueChanged(false); // Reset the flag after search
     }
   };
-
 
   const handleUpdate = async () => {
     if (
@@ -558,7 +547,10 @@ setSelectedRole(
 
     try {
       const formData = new FormData();
-      formData.append("company_code", sessionStorage.getItem("selectedCompanyCode"));
+      formData.append(
+        "company_code",
+        sessionStorage.getItem("selectedCompanyCode"),
+      );
       formData.append("user_code", user_code);
       formData.append("user_name", user_name);
       formData.append("first_name", first_name);
@@ -596,17 +588,17 @@ setSelectedRole(
       }
     } catch (error) {
       console.error("Error Update data:", error);
-      toast.error('Error inserting data: ' + error.message);
+      toast.error("Error inserting data: " + error.message);
     } finally {
       setLoading(false);
     }
   };
 
-    const today = new Date();
+  const today = new Date();
   const maxDob = new Date(
     today.getFullYear() - 18,
     today.getMonth(),
-    today.getDate()
+    today.getDate(),
   )
     .toISOString()
     .split("T")[0];
@@ -614,20 +606,32 @@ setSelectedRole(
   return (
     <div class="container-fluid Topnav-screen ">
       <div className="">
-        <div class=""  >
+        <div class="">
           {loading && <LoadingScreen />}
-          <ToastContainer position="top-right" className="toast-design" theme="colored" />
+          <ToastContainer
+            position="top-right"
+            className="toast-design"
+            theme="colored"
+          />
           <div class="row ">
-            <div class="col-md-12 text-center" >
-              <div >
-              </div>
+            <div class="col-md-12 text-center">
+              <div></div>
               <div>
                 <div>
                   <div className="shadow-lg p-0 bg-body-tertiary rounded  ">
-                    <div className=" mb-0 d-flex justify-content-between" >
-                      <h1 align="left" class="purbut">{mode === "update" ? 'Update User' : 'Add User'}</h1>
-                      <h1 align="left" class="mobileview fs-4">{mode === "update" ? 'Update User' : 'Add User'}</h1>
-                      <button onClick={handleNavigate} className=" btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
+                    <div className=" mb-0 d-flex justify-content-between">
+                      <h1 align="left" class="purbut">
+                        {mode === "update" ? "Update User" : "Add User"}
+                      </h1>
+                      <h1 align="left" class="mobileview fs-4">
+                        {mode === "update" ? "Update User" : "Add User"}
+                      </h1>
+                      <button
+                        onClick={handleNavigate}
+                        className=" btn btn-danger shadow-none rounded-0 h-70 fs-5"
+                        required
+                        title="Close"
+                      >
                         <i class="fa-solid fa-xmark"></i>
                       </button>
                     </div>
@@ -642,7 +646,11 @@ setSelectedRole(
                     <div class="exp-form-floating">
                       <div class="d-flex justify-content-start">
                         <div>
-                          <label for="state" class="exp-form-labels" className={`${error && !user_code ? 'text-danger' : ''}`}>
+                          <label
+                            for="state"
+                            class="exp-form-labels"
+                            className={`${error && !user_code ? "text-danger" : ""}`}
+                          >
                             User Code<span className="text-danger">*</span>
                           </label>
                         </div>
@@ -652,18 +660,31 @@ setSelectedRole(
                         class="exp-input-field form-control"
                         type="text"
                         placeholder=""
-                        required title="Please enter the user code"
+                        required
+                        title="Please enter the user code"
                         value={user_code}
                         onChange={(e) => setUser_code(e.target.value)}
                         maxLength={18}
                         ref={usercode}
                         onKeyDown={(e) => {
                           // Allow Ctrl/Cmd shortcuts
-                          if (e.ctrlKey || e.metaKey) { return; }
+                          if (e.ctrlKey || e.metaKey) {
+                            return;
+                          }
                           // Allow letters, numbers, and space
                           if (!/[a-zA-Z0-9 ]/.test(e.key)) {
                             // Allow control/navigation keys
-                            const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Tab", "Home", "End",];
+                            const allowedKeys = [
+                              "Backspace",
+                              "Delete",
+                              "ArrowLeft",
+                              "ArrowRight",
+                              "ArrowUp",
+                              "ArrowDown",
+                              "Tab",
+                              "Home",
+                              "End",
+                            ];
                             if (!allowedKeys.includes(e.key)) {
                               e.preventDefault();
                             }
@@ -679,7 +700,11 @@ setSelectedRole(
                     <div class="exp-form-floating">
                       <div class="d-flex justify-content-start">
                         <div>
-                          <label for="state" class="exp-form-labels" className={`${error && !user_name ? 'text-danger' : ''}`}>
+                          <label
+                            for="state"
+                            class="exp-form-labels"
+                            className={`${error && !user_name ? "text-danger" : ""}`}
+                          >
                             User Name<span className="text-danger">*</span>
                           </label>
                         </div>
@@ -689,18 +714,31 @@ setSelectedRole(
                         class="exp-input-field form-control"
                         type="text"
                         placeholder=""
-                        required title="Please enter the user name"
+                        required
+                        title="Please enter the user name"
                         value={user_name}
                         onChange={(e) => setUser_name(e.target.value)}
                         maxLength={250}
                         ref={username}
                         onKeyDown={(e) => {
                           // Allow Ctrl/Cmd shortcuts
-                          if (e.ctrlKey || e.metaKey) { return; }
+                          if (e.ctrlKey || e.metaKey) {
+                            return;
+                          }
                           // Allow letters, numbers, and space
                           if (!/[a-zA-Z0-9 ]/.test(e.key)) {
                             // Allow control/navigation keys
-                            const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Tab", "Home", "End",];
+                            const allowedKeys = [
+                              "Backspace",
+                              "Delete",
+                              "ArrowLeft",
+                              "ArrowRight",
+                              "ArrowUp",
+                              "ArrowDown",
+                              "Tab",
+                              "Home",
+                              "End",
+                            ];
                             if (!allowedKeys.includes(e.key)) {
                               e.preventDefault();
                             }
@@ -715,7 +753,11 @@ setSelectedRole(
                     <div class="exp-form-floating">
                       <div class="d-flex justify-content-start">
                         <div>
-                          <label for="state" class="exp-form-labels" className={`${error && !first_name ? 'text-danger' : ''}`}>
+                          <label
+                            for="state"
+                            class="exp-form-labels"
+                            className={`${error && !first_name ? "text-danger" : ""}`}
+                          >
                             First Name<span className="text-danger">*</span>
                           </label>
                         </div>
@@ -725,18 +767,31 @@ setSelectedRole(
                         class="exp-input-field form-control"
                         type="text"
                         placeholder=""
-                        required title="Please enter the first name"
+                        required
+                        title="Please enter the first name"
                         value={first_name}
                         onChange={(e) => setFirst_name(e.target.value)}
                         maxLength={250}
                         ref={firstname}
                         onKeyDown={(e) => {
                           // Allow Ctrl/Cmd shortcuts
-                          if (e.ctrlKey || e.metaKey) { return; }
+                          if (e.ctrlKey || e.metaKey) {
+                            return;
+                          }
                           // Allow letters, numbers, and space
                           if (!/[a-zA-Z0-9 ]/.test(e.key)) {
                             // Allow control/navigation keys
-                            const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Tab", "Home", "End",];
+                            const allowedKeys = [
+                              "Backspace",
+                              "Delete",
+                              "ArrowLeft",
+                              "ArrowRight",
+                              "ArrowUp",
+                              "ArrowDown",
+                              "Tab",
+                              "Home",
+                              "End",
+                            ];
                             if (!allowedKeys.includes(e.key)) {
                               e.preventDefault();
                             }
@@ -751,7 +806,11 @@ setSelectedRole(
                     <div class="exp-form-floating">
                       <div class="d-flex justify-content-start">
                         <div>
-                          <label for="state" class="exp-form-labels" className={`${error && !last_name ? 'text-danger' : ''}`}>
+                          <label
+                            for="state"
+                            class="exp-form-labels"
+                            className={`${error && !last_name ? "text-danger" : ""}`}
+                          >
                             Last Name<span className="text-danger">*</span>
                           </label>
                         </div>
@@ -761,18 +820,31 @@ setSelectedRole(
                         class="exp-input-field form-control"
                         type="text"
                         placeholder=""
-                        required title="Please enter the last name"
+                        required
+                        title="Please enter the last name"
                         value={last_name}
                         onChange={(e) => setLast_name(e.target.value)}
                         maxLength={250}
                         ref={lastname}
                         onKeyDown={(e) => {
                           // Allow Ctrl/Cmd shortcuts
-                          if (e.ctrlKey || e.metaKey) { return; }
+                          if (e.ctrlKey || e.metaKey) {
+                            return;
+                          }
                           // Allow letters, numbers, and space
                           if (!/[a-zA-Z0-9 ]/.test(e.key)) {
                             // Allow control/navigation keys
-                            const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Tab", "Home", "End",];
+                            const allowedKeys = [
+                              "Backspace",
+                              "Delete",
+                              "ArrowLeft",
+                              "ArrowRight",
+                              "ArrowUp",
+                              "ArrowDown",
+                              "Tab",
+                              "Home",
+                              "End",
+                            ];
                             if (!allowedKeys.includes(e.key)) {
                               e.preventDefault();
                             }
@@ -787,8 +859,9 @@ setSelectedRole(
                     <div class="exp-form-floating">
                       <label
                         for="state"
-                        className={`exp-form-labels ${error && !user_password ? "text-danger" : ""
-                          }`}
+                        className={`exp-form-labels ${
+                          error && !user_password ? "text-danger" : ""
+                        }`}
                       >
                         Password<span className="text-danger">*</span>
                       </label>
@@ -825,7 +898,11 @@ setSelectedRole(
                     <div class="exp-form-floating">
                       <div class="d-flex justify-content-start">
                         <div>
-                          <label for="state" class="exp-form-labels" className={`${error && !user_status ? 'text-danger' : ''}`}>
+                          <label
+                            for="state"
+                            class="exp-form-labels"
+                            className={`${error && !user_status ? "text-danger" : ""}`}
+                          >
                             Status<span className="text-danger">*</span>
                           </label>
                         </div>
@@ -840,7 +917,13 @@ setSelectedRole(
                           placeholder=""
                           maxLength={50}
                           ref={Status}
-                          onKeyDown={(e) => handleKeyDown(e, loginlogout, Status)}
+                          onKeyDown={(e) =>
+                            handleKeyDown(e, loginlogout, Status)
+                          }
+                          classNamePrefix="react-select"
+                          styles={{
+                            menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                          }}
                         />
                         {/* {error && !user_status && <div className="text-danger">Status should not be blank</div>} */}
                       </div>
@@ -848,7 +931,9 @@ setSelectedRole(
                   </div>
                   <div className="col-md-3 form-group  mb-2">
                     <div class="exp-form-floating">
-                      <label for="loginout" class="exp-form-labels">Log In/Out</label>
+                      <label for="loginout" class="exp-form-labels">
+                        Log In/Out
+                      </label>
                       <div title="Select the Log In/Out">
                         <Select
                           id="loginout"
@@ -859,7 +944,13 @@ setSelectedRole(
                           placeholder=""
                           maxLength={3}
                           ref={loginlogout}
-                          onKeyDown={(e) => handleKeyDown(e, usertype, loginlogout)}
+                          onKeyDown={(e) =>
+                            handleKeyDown(e, usertype, loginlogout)
+                          }
+                          classNamePrefix="react-select"
+                          styles={{
+                            menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                          }}
                         />
                       </div>
                     </div>
@@ -869,7 +960,11 @@ setSelectedRole(
                     <div class="exp-form-floating">
                       <div class="d-flex justify-content-start">
                         <div>
-                          <label for="state" class="exp-form-labels" className={`${error && !user_status ? 'text-danger' : ''}`}>
+                          <label
+                            for="state"
+                            class="exp-form-labels"
+                            className={`${error && !user_status ? "text-danger" : ""}`}
+                          >
                             Role ID<span className="text-danger">*</span>
                           </label>
                         </div>
@@ -885,6 +980,10 @@ setSelectedRole(
                           maxLength={50}
                           ref={usertype}
                           onKeyDown={(e) => handleKeyDown(e, email, usertype)}
+                          classNamePrefix="react-select"
+                          styles={{
+                            menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                          }}
                         />
                         {/* {error && !user_status && <div className="text-danger">User Type should not be blank</div>} */}
                       </div>
@@ -895,7 +994,11 @@ setSelectedRole(
                     <div class="exp-form-floating">
                       <div class="d-flex justify-content-start">
                         <div>
-                          <label for="state" class="exp-form-labels" className={`${error && !email_id ? 'text-danger' : ''}`}>
+                          <label
+                            for="state"
+                            class="exp-form-labels"
+                            className={`${error && !email_id ? "text-danger" : ""}`}
+                          >
                             Email<span className="text-danger">*</span>
                           </label>
                         </div>
@@ -905,7 +1008,8 @@ setSelectedRole(
                         class="exp-input-field form-control"
                         type="email"
                         placeholder=""
-                        required title="Please enter the email ID"
+                        required
+                        title="Please enter the email ID"
                         value={email_id}
                         onChange={(e) => setEmail_id(e.target.value)}
                         maxLength={150}
@@ -919,7 +1023,11 @@ setSelectedRole(
                     <div class="exp-form-floating">
                       <div class="d-flex justify-content-start">
                         <div>
-                          <label for="state" class="exp-form-labels" className={`${error && !dob ? 'text-danger' : ''}`}>
+                          <label
+                            for="state"
+                            class="exp-form-labels"
+                            className={`${error && !dob ? "text-danger" : ""}`}
+                          >
                             DOB<span className="text-danger">*</span>
                           </label>
                         </div>
@@ -930,7 +1038,8 @@ setSelectedRole(
                         type="date"
                         placeholder=""
                         max={maxDob}
-                        required title="Please enter the DOB"
+                        required
+                        title="Please enter the DOB"
                         value={dob}
                         onChange={(e) => setDob(e.target.value)}
                         ref={Dob}
@@ -955,21 +1064,28 @@ setSelectedRole(
                           maxLength={50}
                           ref={Gender}
                           onKeyDown={(e) => handleKeyDown(e, ImagE, Gender)}
+                          classNamePrefix="react-select"
+                          styles={{
+                            menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                          }}
                         />
                       </div>
                     </div>
                   </div>
                   <div className="col-md-3 form-group mb-2 ">
                     <div class="exp-form-floating">
-                      <label for="locno" class="exp-form-labels">Image</label>
-                      <input type="file"
+                      <label for="locno" class="exp-form-labels">
+                        Image
+                      </label>
+                      <input
+                        type="file"
                         class="exp-input-field form-control"
                         accept="image/*"
                         onChange={handleFileSelect}
                         ref={ImagE}
                         // onKeyDown={(e) => handleKeyDown(e, ImagE)}
                         onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
+                          if (e.key === "Enter") {
                             e.preventDefault();
                             const fileInput = ImagE.current;
                             if (fileInput && fileInput.files.length > 0) {
@@ -998,29 +1114,45 @@ setSelectedRole(
                       </div>
                     </div>
                   )} */}
-                <div className="col-md-3 form-group mb-2">
-
-                  <div className="image-preview-frame">
-                    <img
-                      src={selectedImage || DefaultProductImage}
-                      alt="Selected Preview"
-                      className="avatar rounded sm mt-4"
-                      style={{ height: "200px", width: "200px" }}
-                    />
+                  <div className="col-md-3 form-group mb-2">
+                    <div className="image-preview-frame">
+                      <img
+                        src={selectedImage || DefaultProductImage}
+                        alt="Selected Preview"
+                        className="avatar rounded sm mt-4"
+                        style={{ height: "200px", width: "200px" }}
+                      />
+                    </div>
                   </div>
-                </div>                  
-                <div className="col-md-3 form-group mt-3">
-                    <div className="exp-form-floating d-flex align-items-center gap-2" style={{ minHeight: "58px" }} >
+                  <div className="col-md-3 form-group mt-3">
+                    <div
+                      className="exp-form-floating d-flex align-items-center gap-2"
+                      style={{ minHeight: "58px" }}
+                    >
                       <input
                         className="form-check-input m-2"
                         type="checkbox"
                         id="superAdmin"
                         checked={superAdmin}
-                        disabled={!["sa", "super admin"].includes(role_id?.toLowerCase())}
+                        disabled={
+                          !["sa", "super admin"].includes(
+                            role_id?.toLowerCase(),
+                          )
+                        }
                         onChange={(e) => setSuperAdmin(e.target.checked)}
-                        style={{ width: "1.5em", height: "1.5em", cursor: "pointer", }}
+                        style={{
+                          width: "1.5em",
+                          height: "1.5em",
+                          cursor: "pointer",
+                        }}
                       />
-                      <label htmlFor="superAdmin" className="exp-form-labels m-0" style={{ cursor: "pointer" }} >Super Admin</label>
+                      <label
+                        htmlFor="superAdmin"
+                        className="exp-form-labels m-0"
+                        style={{ cursor: "pointer" }}
+                      >
+                        Super Admin
+                      </label>
                     </div>
                   </div>
                   {/* <div className="col-md-3 form-group  mb-2">
@@ -1066,11 +1198,19 @@ setSelectedRole(
                   </div> */}
                   <div class="col-md-3 form-group ">
                     {mode === "create" ? (
-                      <button onClick={handleInsert} className="mt-4" title="Save">
+                      <button
+                        onClick={handleInsert}
+                        className="mt-4"
+                        title="Save"
+                      >
                         <i class="fa-solid fa-floppy-disk"></i>
                       </button>
                     ) : (
-                      <button onClick={handleUpdate} className="mt-4" title="Update">
+                      <button
+                        onClick={handleUpdate}
+                        className="mt-4"
+                        title="Update"
+                      >
                         <i class="fa-solid fa-pen-to-square"></i>
                       </button>
                     )}

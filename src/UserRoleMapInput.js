@@ -1,34 +1,34 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./input.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Select from 'react-select'
+import Select from "react-select";
 import { useNavigate } from "react-router-dom";
-import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer, toast } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer, toast } from "react-toastify";
 import { useLocation } from "react-router-dom";
-import LoadingScreen from './Loading';
+import LoadingScreen from "./Loading";
 
-const config = require('./Apiconfig');
+const config = require("./Apiconfig");
 
-function UserRoleInput({ }) {
+function UserRoleInput({}) {
   const [user_code, setuser_code] = useState("");
   const [role_id, setrole_id] = useState("");
   const [usercodedrop, setusercodedrop] = useState([]);
   const [roleiddrop, setroleiddrop] = useState([]);
   const [error, setError] = useState("");
-  const [selectedUser, setSelectedUser] = useState('');
-  const [selectedRole, setSelectedRole] = useState('');
+  const [selectedUser, setSelectedUser] = useState("");
+  const [selectedRole, setSelectedRole] = useState("");
   const navigate = useNavigate();
   const usercode = useRef(null);
   const roleid = useRef(null);
   const [hasValueChanged, setHasValueChanged] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const created_by = sessionStorage.getItem('selectedUserCode')
+  const created_by = sessionStorage.getItem("selectedUserCode");
   const modified_by = sessionStorage.getItem("selectedUserCode");
 
   const [isUpdated, setIsUpdated] = useState(false);
-  const [keyfield, setKeyfield] = useState('');
+  const [keyfield, setKeyfield] = useState("");
   const location = useLocation();
   const { mode, selectedRow } = location.state || {};
 
@@ -55,7 +55,6 @@ function UserRoleInput({ }) {
         label: selectedRow.role_id,
         value: selectedRow.role_id,
       });
-
     } else if (mode === "create") {
       clearInputFields();
     }
@@ -68,64 +67,61 @@ function UserRoleInput({ }) {
   // }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/usercode`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setusercodedrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/roleid`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setroleiddrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   const filteredOptionUser = Array.isArray(usercodedrop)
     ? usercodedrop.map((option) => ({
-      value: option.user_code,
-      label: `${option.user_code} - ${option.user_name}`,
-    }))
+        value: option.user_code,
+        label: `${option.user_code} - ${option.user_name}`,
+      }))
     : [];
 
   const filteredOptionRole = Array.isArray(roleiddrop)
     ? roleiddrop.map((option) => ({
-      value: option.role_id,
-      label: `${option.role_id} - ${option.role_name}`,
-    }))
+        value: option.role_id,
+        label: `${option.role_id} - ${option.role_name}`,
+      }))
     : [];
 
   const handleChangeUser = (selectedUser) => {
     setSelectedUser(selectedUser);
-    setuser_code(selectedUser ? selectedUser.value : '');
+    setuser_code(selectedUser ? selectedUser.value : "");
   };
 
   const handleChangeRole = (selectedRole) => {
     setSelectedRole(selectedRole);
-    setrole_id(selectedRole ? selectedRole.value : '');
+    setrole_id(selectedRole ? selectedRole.value : "");
   };
 
   const handleInsert = async () => {
-    if (
-      !user_code ||
-      !role_id
-    ) {
+    if (!user_code || !role_id) {
       setError(" ");
       toast.warning("Error: Missing required fields");
       return;
@@ -133,18 +129,21 @@ function UserRoleInput({ }) {
     setLoading(true);
 
     try {
-      const response = await fetch(`${config.apiBaseUrl}/addUserRoleMappingData`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${config.apiBaseUrl}/addUserRoleMappingData`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
+            user_code,
+            role_id,
+            created_by: sessionStorage.getItem("selectedUserCode"),
+          }),
         },
-        body: JSON.stringify({
-          company_code: sessionStorage.getItem('selectedCompanyCode'),
-          user_code,
-          role_id,
-          created_by: sessionStorage.getItem('selectedUserCode')
-        }),
-      });
+      );
 
       if (response.ok) {
         toast.success("Data inserted Successfully", {
@@ -157,23 +156,29 @@ function UserRoleInput({ }) {
       }
     } catch (error) {
       console.error("Error inserting data:", error);
-      toast.error('Error inserting data: ' + error.message);
+      toast.error("Error inserting data: " + error.message);
     } finally {
       setLoading(false);
     }
   };
 
   const handleNavigate = () => {
-     navigate("/UserRoleMapping", {
-    state: {
-      preservedRowData: location.state?.preservedRowData,
-      preservedInputs: location.state?.preservedInputs
-    }
-  });
+    navigate("/UserRoleMapping", {
+      state: {
+        preservedRowData: location.state?.preservedRowData,
+        preservedInputs: location.state?.preservedInputs,
+      },
+    });
   };
 
-  const handleKeyDown = async (e, nextFieldRef, value, hasValueChanged, setHasValueChanged) => {
-    if (e.key === 'Enter') {
+  const handleKeyDown = async (
+    e,
+    nextFieldRef,
+    value,
+    hasValueChanged,
+    setHasValueChanged,
+  ) => {
+    if (e.key === "Enter") {
       // Check if the value has changed and handle the search logic
       if (hasValueChanged) {
         await handleKeyDownStatus(e); // Trigger the search function
@@ -190,17 +195,15 @@ function UserRoleInput({ }) {
   };
 
   const handleKeyDownStatus = async (e) => {
-    if (e.key === 'Enter' && hasValueChanged) { // Only trigger search if the value has changed
+    if (e.key === "Enter" && hasValueChanged) {
+      // Only trigger search if the value has changed
       // Trigger the search function
       setHasValueChanged(false); // Reset the flag after search
     }
   };
 
   const handleUpdate = async () => {
-    if (
-      !user_code ||
-      !role_id
-    ) {
+    if (!user_code || !role_id) {
       setError(" ");
       toast.warning("Error: Missing required fields");
       return;
@@ -218,7 +221,7 @@ function UserRoleInput({ }) {
           user_code,
           role_id,
           modified_by,
-          keyfield
+          keyfield,
         }),
       });
       if (response.ok) {
@@ -232,7 +235,7 @@ function UserRoleInput({ }) {
       }
     } catch (error) {
       console.error("Error Update data:", error);
-      toast.error('Error Update data: ' + error.message);
+      toast.error("Error Update data: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -241,20 +244,36 @@ function UserRoleInput({ }) {
   return (
     <div class="container-fluid Topnav-screen ">
       <div className="">
-        <div class=""  >
+        <div class="">
           {loading && <LoadingScreen />}
-          <ToastContainer position="top-right" className="toast-design" theme="colored" />
+          <ToastContainer
+            position="top-right"
+            className="toast-design"
+            theme="colored"
+          />
           <div class="row ">
-            <div class="" >
-              <div >
-              </div>
+            <div class="">
+              <div></div>
               <div>
                 <div>
                   <div className="shadow-lg p-0 bg-body-tertiary rounded">
                     <div className="mb-0 d-flex justify-content-between">
-                      <h1 align="left" class="purbut ">{mode === "update" ? 'Update Role Mapping' : 'Add Role Mapping'}</h1>
-                      <h1 align="left" class="mobileview fs-4">{mode === "update" ? 'Update Role Mapping' : 'Add Role Mapping'}</h1>
-                      <button onClick={handleNavigate} className=" btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
+                      <h1 align="left" class="purbut ">
+                        {mode === "update"
+                          ? "Update Role Mapping"
+                          : "Add Role Mapping"}
+                      </h1>
+                      <h1 align="left" class="mobileview fs-4">
+                        {mode === "update"
+                          ? "Update Role Mapping"
+                          : "Add Role Mapping"}
+                      </h1>
+                      <button
+                        onClick={handleNavigate}
+                        className=" btn btn-danger shadow-none rounded-0 h-70 fs-5"
+                        required
+                        title="Close"
+                      >
                         <i class="fa-solid fa-xmark"></i>
                       </button>
                     </div>
@@ -269,7 +288,11 @@ function UserRoleInput({ }) {
                     <div class="exp-form-floating">
                       <div class="d-flex justify-content-start">
                         <div>
-                          <label for="rid" class="exp-form-labels" className={`${error && !user_code ? 'text-danger' : ''}`}>
+                          <label
+                            for="rid"
+                            class="exp-form-labels"
+                            className={`${error && !user_code ? "text-danger" : ""}`}
+                          >
                             User Code<span className="text-danger">*</span>
                           </label>
                         </div>
@@ -285,6 +308,10 @@ function UserRoleInput({ }) {
                           maxLength={18}
                           ref={usercode}
                           onKeyDown={(e) => handleKeyDown(e, roleid, usercode)}
+                          classNamePrefix="react-select"
+                          styles={{
+                            menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                          }}
                         />
                         {/* {error && !user_code && <div className="text-danger">User Code should not be blank</div>} */}
                       </div>
@@ -294,7 +321,11 @@ function UserRoleInput({ }) {
                     <div class="exp-form-floating">
                       <div class="d-flex justify-content-start">
                         <div>
-                          <label for="rid" class="exp-form-labels" className={`${error && !role_id ? 'text-danger' : ''}`}>
+                          <label
+                            for="rid"
+                            class="exp-form-labels"
+                            className={`${error && !role_id ? "text-danger" : ""}`}
+                          >
                             Role ID<span className="text-danger">*</span>
                           </label>
                         </div>
@@ -311,13 +342,17 @@ function UserRoleInput({ }) {
                           ref={roleid}
                           // onKeyDown={(e) => handleKeyDown(e, roleid)}
                           onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
+                            if (e.key === "Enter") {
                               if (mode === "create") {
                                 handleInsert();
                               } else {
                                 handleUpdate();
                               }
                             }
+                          }}
+                          classNamePrefix="react-select"
+                          styles={{
+                            menu: (provided) => ({ ...provided, zIndex: 9999 }),
                           }}
                         />
                         {/* {error && !role_id && <div className="text-danger">Role Id should not be blank</div>} */}
@@ -371,7 +406,11 @@ function UserRoleInput({ }) {
                         <i class="fa-solid fa-floppy-disk"></i>
                       </button>
                     ) : (
-                      <button onClick={handleUpdate} className="" title="Update">
+                      <button
+                        onClick={handleUpdate}
+                        className=""
+                        title="Update"
+                      >
                         <i class="fa-solid fa-pen-to-square"></i>
                       </button>
                     )}
