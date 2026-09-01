@@ -6,14 +6,14 @@ import "ag-grid-enterprise";
 import "./apps.css";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { ToastContainer, toast } from 'react-toastify';
-import Select from 'react-select';
-import { showConfirmationToast } from './ToastConfirmation';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ToastContainer, toast } from "react-toastify";
+import Select from "react-select";
+import { showConfirmationToast } from "./ToastConfirmation";
 import labels from "./Labels";
-import LoadingScreen from './Loading';
+import LoadingScreen from "./Loading";
 
-const config = require('./Apiconfig');
+const config = require("./Apiconfig");
 
 function AccNameGrid() {
   const [editedData, setEditedData] = useState([]);
@@ -48,37 +48,34 @@ function AccNameGrid() {
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [loading, setLoading] = useState(false);
 
-
   const [createdBy, setCreatedBy] = useState("");
   const [modifiedBy, setModifiedBy] = useState("");
   const [createdDate, setCreatedDate] = useState("");
   const [modifiedDate, setModifiedDate] = useState("");
 
   //code added by Harish purpose of set user permisssion
-  const permissions = JSON.parse(sessionStorage.getItem('permissions')) || {};
+  const permissions = JSON.parse(sessionStorage.getItem("permissions")) || {};
   const AccNamePermission = permissions
-    .filter(permission => permission.screen_type === 'AccountName')
-    .map(permission => permission.permission_type.toLowerCase());
-
-
+    .filter((permission) => permission.screen_type === "AccountName")
+    .map((permission) => permission.permission_type.toLowerCase());
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((response) => response.json())
       .then((data) => {
         // Extract city names from the fetched data
-        const statusOption = data.map(option => option.attributedetails_name);
+        const statusOption = data.map((option) => option.attributedetails_name);
         setStatusGriddrop(statusOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
@@ -86,10 +83,10 @@ function AccNameGrid() {
       .then((response) => response.json())
       .then((data) => {
         // Extract city names from the fetched data
-        const statusOption = data.map(option => option.company_no);
+        const statusOption = data.map((option) => option.company_no);
         setCompanyGriddrop(statusOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
@@ -97,10 +94,10 @@ function AccNameGrid() {
       .then((response) => response.json())
       .then((data) => {
         // Extract city names from the fetched data
-        const statusOption = data.map(option => option.keyfield);
+        const statusOption = data.map((option) => option.keyfield);
         setTransactionGriddrop(statusOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
@@ -108,10 +105,10 @@ function AccNameGrid() {
       .then((response) => response.json())
       .then((data) => {
         // Extract city names from the fetched data
-        const statusOption = data.map(option => option.keyfield);
+        const statusOption = data.map((option) => option.keyfield);
         setSalesGriddrop(statusOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
@@ -119,82 +116,82 @@ function AccNameGrid() {
       .then((response) => response.json())
       .then((data) => {
         // Extract city names from the fetched data
-        const statusOption = data.map(option => option.attributedetails_name);
+        const statusOption = data.map((option) => option.attributedetails_name);
         setBrokerGriddrop(statusOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setStatusdrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/city`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((response) => response.json())
       .then((data) => {
         // Extract city names from the fetched data
-        const cityNames = data.map(option => option.attributedetails_name);
+        const cityNames = data.map((option) => option.attributedetails_name);
         setDrop(cityNames);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/country`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((response) => response.json())
       .then((data) => {
         // Extract city names from the fetched data
-        const countries = data.map(option => option.attributedetails_name);
+        const countries = data.map((option) => option.attributedetails_name);
         setCondrop(countries);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/state`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((response) => response.json())
       .then((data) => {
         // Extract city names from the fetched data
-        const States = data.map(option => option.attributedetails_name);
+        const States = data.map((option) => option.attributedetails_name);
         setStatedrop(States);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   const filteredOptionStatus = statusdrop.map((option) => ({
@@ -204,9 +201,8 @@ function AccNameGrid() {
 
   const handleChangeStatus = (selectedStatus) => {
     setSelectedStatus(selectedStatus);
-    setstatus(selectedStatus ? selectedStatus.value : '');
+    setstatus(selectedStatus ? selectedStatus.value : "");
   };
-
 
   const reloadGridData = () => {
     try {
@@ -214,7 +210,9 @@ function AccNameGrid() {
     } catch (error) {
       console.error("Error reloading grid data:", error);
 
-      toast.error("An error occurred while reloading grid data. Please try again later")
+      toast.error(
+        "An error occurred while reloading grid data. Please try again later",
+      );
     }
   };
 
@@ -224,12 +222,22 @@ function AccNameGrid() {
       const response = await fetch(`${config.apiBaseUrl}/getAccNameSearch`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          company_code: sessionStorage.getItem('selectedCompanyCode'), account_code, account_name, acc_addr_1, acc_area_code, acc_state_code, acc_country_code,
-          acc_mobile_no, base_accgroup_code, standard_accgroup_code, user_accgroup_code, status
-        })
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          account_code,
+          account_name,
+          acc_addr_1,
+          acc_area_code,
+          acc_state_code,
+          acc_country_code,
+          acc_mobile_no,
+          base_accgroup_code,
+          standard_accgroup_code,
+          user_accgroup_code,
+          status,
+        }),
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -437,7 +445,6 @@ function AccNameGrid() {
       },
     },
     {
-
       headerName: "Credit Limit",
       field: "acc_credit_limit",
       editable: true,
@@ -514,7 +521,8 @@ function AccNameGrid() {
     }
 
     const reportData = selectedRows.map((row) => {
-      const formatValue = (val) => (val !== undefined && val !== null ? val : '');
+      const formatValue = (val) =>
+        val !== undefined && val !== null ? val : "";
 
       const addressParts = [
         row.acc_addr_1,
@@ -523,7 +531,7 @@ function AccNameGrid() {
         row.acc_addr_4,
         row.acc_area_code,
         row.acc_state_code,
-        row.acc_country_code
+        row.acc_country_code,
       ].map(formatValue);
 
       const formattedAddress = `
@@ -536,11 +544,10 @@ function AccNameGrid() {
         ${addressParts[6]}
       `;
 
-
       return {
         "Accountant Code": formatValue(row.account_code),
         "Accountant Name": formatValue(row.account_name),
-        "Address": formattedAddress,
+        Address: formattedAddress,
         "IMEX No": formatValue(row.acc_imex_no),
         "Office No": formatValue(row.acc_office_no),
         "Resi No": formatValue(row.acc_resi_no),
@@ -556,10 +563,9 @@ function AccNameGrid() {
         "Standard Account Code": formatValue(row.standard_accgroup_code),
         "User Account Code": formatValue(row.user_accgroup_code),
         "Accountant Subcode": formatValue(row.account_subcode),
-        "Status": formatValue(row.status),
+        Status: formatValue(row.status),
       };
     });
-
 
     const reportWindow = window.open("", "_blank");
     reportWindow.document.write("<html><head><title>Chart of Accounts</title>");
@@ -646,12 +652,11 @@ function AccNameGrid() {
     reportWindow.document.write("</tbody></table>");
 
     reportWindow.document.write(
-      '<button class="report-button" onclick="window.print()">Print</button>'
+      '<button class="report-button" onclick="window.print()">Print</button>',
     );
     reportWindow.document.write("</body></html>");
     reportWindow.document.close();
   };
-
 
   /*const handleNavigateToForm = () => {
     navigate("/form");
@@ -671,7 +676,7 @@ function AccNameGrid() {
   // const onCellValueChanged = (params) => {
   //   const updatedRowData = [...rowData];
   //   const rowIndex = updatedRowData.findIndex(
-  //     (row) => row.account_code === params.data.account_code // Use the unique identifier 
+  //     (row) => row.account_code === params.data.account_code // Use the unique identifier
   //   );
   //   if (rowIndex !== -1) {
   //     updatedRowData[rowIndex][params.colDef.field] = params.newValue;
@@ -685,7 +690,7 @@ function AccNameGrid() {
   const onCellValueChanged = (params) => {
     const updatedRowData = [...rowData];
     const rowIndex = updatedRowData.findIndex(
-      (row) => row.account_code === params.data.account_code
+      (row) => row.account_code === params.data.account_code,
     );
 
     if (rowIndex !== -1) {
@@ -694,7 +699,7 @@ function AccNameGrid() {
 
       setEditedData((prevData) => {
         const existingIndex = prevData.findIndex(
-          (item) => item.account_code === params.data.account_code
+          (item) => item.account_code === params.data.account_code,
         );
 
         if (existingIndex !== -1) {
@@ -709,34 +714,39 @@ function AccNameGrid() {
   };
 
   const saveEditedData = async () => {
-    const selectedRowsData = editedData.filter(row => selectedRows.some(selectedRow => selectedRow.account_code === row.account_code));
+    const selectedRowsData = editedData.filter((row) =>
+      selectedRows.some(
+        (selectedRow) => selectedRow.account_code === row.account_code,
+      ),
+    );
 
     if (selectedRowsData.length === 0) {
-
-      toast.warning("Please select and modify at least one row to update its data")
+      toast.warning(
+        "Please select and modify at least one row to update its data",
+      );
       return;
     }
     showConfirmationToast(
       "Are you sure you want to update the data in the selected rows?",
       async () => {
         try {
-          const modified_by = sessionStorage.getItem('selectedUserCode');
-          const company_code = sessionStorage.getItem('selectedCompanyCode');
+          const modified_by = sessionStorage.getItem("selectedUserCode");
+          const company_code = sessionStorage.getItem("selectedCompanyCode");
 
           const response = await fetch(`${config.apiBaseUrl}/updateAccName`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
               "Modified-By": modified_by,
-              "company_code": company_code
+              company_code: company_code,
             },
             body: JSON.stringify({ editedData: selectedRowsData }), // Send only the selected rows for saving
-            "modified_by": modified_by,
-            "company_code": company_code,
+            modified_by: modified_by,
+            company_code: company_code,
           });
           if (response.status === 200) {
             setTimeout(() => {
-              toast.success("Data Updated Successfully")
+              toast.success("Data Updated Successfully");
               handleSearch();
             }, 1000);
             return;
@@ -751,7 +761,7 @@ function AccNameGrid() {
       },
       () => {
         toast.info("Data update cancelled.");
-      }
+      },
     );
   };
 
@@ -763,8 +773,8 @@ function AccNameGrid() {
       return;
     }
 
-    const modified_by = sessionStorage.getItem('selectedUserCode');
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const modified_by = sessionStorage.getItem("selectedUserCode");
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
     const account_codesToDelete = selectedRows.map((row) => row.account_code);
 
     showConfirmationToast(
@@ -776,16 +786,17 @@ function AccNameGrid() {
             headers: {
               "Content-Type": "application/json",
               "Modified-By": modified_by,
-              "company_code": company_code
+              company_code: company_code,
             },
             body: JSON.stringify({ account_codes: account_codesToDelete }),
-            modified_by: modified_by, company_code: company_code
+            modified_by: modified_by,
+            company_code: company_code,
           });
 
           if (response.ok) {
             console.log("Rows deleted successfully:", account_codesToDelete);
             setTimeout(() => {
-              toast.success("Data Deleted successfully")
+              toast.success("Data Deleted successfully");
               handleSearch();
             }, 1000);
           } else {
@@ -799,7 +810,7 @@ function AccNameGrid() {
       },
       () => {
         toast.info("Data Delete cancelled.");
-      }
+      },
     );
   };
 
@@ -831,36 +842,67 @@ function AccNameGrid() {
     }
   };
 
-
   return (
     <div className="container-fluid Topnav-screen">
       {loading && <LoadingScreen />}
-      <ToastContainer position="top-right" className="toast-design" theme="colored" />
+      <ToastContainer
+        position="top-right"
+        className="toast-design"
+        theme="colored"
+      />
       <div align="">
         <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2">
-          <div class="d-flex justify-content-between" >
+          <div class="d-flex justify-content-between">
             <div className="d-flex justify-content-start">
-              <h1 className="purbut">
-                Chart of Accounts
-              </h1>
+              <h1 className="purbut">Chart of Accounts</h1>
             </div>
-            <div class="d-flex justify-content-end purbut me-3" >
-              {['add', 'all permission'].some(permission => AccNamePermission.includes(permission)) && (
-                <addbutton className="purbut" onClick={handleNavigatesToForm}
-                  required title="Add Customer"> <i class="fa-solid fa-user-plus"></i> </addbutton>
+            <div class="d-flex justify-content-end purbut me-3">
+              {["add", "all permission"].some((permission) =>
+                AccNamePermission.includes(permission),
+              ) && (
+                <addbutton
+                  className="purbut"
+                  onClick={handleNavigatesToForm}
+                  required
+                  title="Add Customer"
+                >
+                  {" "}
+                  <i class="fa-solid fa-user-plus"></i>{" "}
+                </addbutton>
               )}
-              {['delete', 'all permission'].some(permission => AccNamePermission.includes(permission)) && (
-                <delbutton className="purbut" onClick={deleteSelectedRows} required title="Delete">
+              {["delete", "all permission"].some((permission) =>
+                AccNamePermission.includes(permission),
+              ) && (
+                <delbutton
+                  className="purbut"
+                  onClick={deleteSelectedRows}
+                  required
+                  title="Delete"
+                >
                   <i class="fa-solid fa-user-minus"></i>
                 </delbutton>
               )}
-              {['update', 'all permission'].some(permission => AccNamePermission.includes(permission)) && (
-                <savebutton className="purbut" onClick={saveEditedData} required title="Update">
+              {["update", "all permission"].some((permission) =>
+                AccNamePermission.includes(permission),
+              ) && (
+                <savebutton
+                  className="purbut"
+                  onClick={saveEditedData}
+                  required
+                  title="Update"
+                >
                   <i class="fa-solid fa-floppy-disk"></i>
                 </savebutton>
               )}
-              {['all permission', 'view'].some(permission => AccNamePermission.includes(permission)) && (
-                <printbutton className="purbut" onClick={generateReport} required title="Generate Report">
+              {["all permission", "view"].some((permission) =>
+                AccNamePermission.includes(permission),
+              ) && (
+                <printbutton
+                  className="purbut"
+                  onClick={generateReport}
+                  required
+                  title="Generate Report"
+                >
                   <i class="fa-solid fa-print"></i>
                 </printbutton>
               )}
@@ -868,52 +910,51 @@ function AccNameGrid() {
             <div className="mobileview ">
               <div className="d-flex justify-content-between">
                 <div className="d-flex justify-content-start">
-                  <h1 className="h1">
-                    Chart of Accounts
-                  </h1>
+                  <h1 className="h1">Chart of Accounts</h1>
                 </div>
                 <div className="d-flex justify-content-end">
                   <div class="dropdown me-3 mt-3">
-                    <button class="btn btn-primary dropdown-toggle p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button
+                      class="btn btn-primary dropdown-toggle p-1"
+                      type="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
                       <i class="fa-solid fa-list"></i>
                     </button>
                     <ul class="dropdown-menu menu">
                       <li class="iconbutton d-flex justify-content-center text-success">
-                        {['add', 'all permission'].some(permission => AccNamePermission.includes(permission)) && (
-                          <icon
-                            class="icon"
-                            onClick={handleNavigatesToForm}
-                          >
+                        {["add", "all permission"].some((permission) =>
+                          AccNamePermission.includes(permission),
+                        ) && (
+                          <icon class="icon" onClick={handleNavigatesToForm}>
                             <i class="fa-solid fa-user-plus"></i>
                           </icon>
                         )}
                       </li>
                       <li class="iconbutton  d-flex justify-content-center text-danger">
-                        {['delete', 'all permission'].some(permission => AccNamePermission.includes(permission)) && (
-                          <icon
-                            class="icon"
-                            onClick={deleteSelectedRows}
-                          >
+                        {["delete", "all permission"].some((permission) =>
+                          AccNamePermission.includes(permission),
+                        ) && (
+                          <icon class="icon" onClick={deleteSelectedRows}>
                             <i class="fa-solid fa-user-minus"></i>
                           </icon>
                         )}
                       </li>
                       <li class="iconbutton  d-flex justify-content-center text-primary ">
-                        {['update', 'all permission'].some(permission => AccNamePermission.includes(permission)) && (
-                          <icon
-                            class="icon"
-                            onClick={saveEditedData}
-                          >
+                        {["update", "all permission"].some((permission) =>
+                          AccNamePermission.includes(permission),
+                        ) && (
+                          <icon class="icon" onClick={saveEditedData}>
                             <i class="fa-solid fa-floppy-disk"></i>
                           </icon>
                         )}
                       </li>
                       <li class="iconbutton  d-flex justify-content-center ">
-                        {['all permission', 'view'].some(permission => AccNamePermission.includes(permission)) && (
-                          <icon
-                            class="icon"
-                            onClick={generateReport}
-                          >
+                        {["all permission", "view"].some((permission) =>
+                          AccNamePermission.includes(permission),
+                        ) && (
+                          <icon class="icon" onClick={generateReport}>
                             <i class="fa-solid fa-print"></i>
                           </icon>
                         )}
@@ -937,10 +978,11 @@ function AccNameGrid() {
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the code here"
+                  required
+                  title="Please fill the code here"
                   value={account_code}
                   onChange={(e) => setaccount_code(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={18}
                 />
               </div>
@@ -955,10 +997,11 @@ function AccNameGrid() {
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the name here"
+                  required
+                  title="Please fill the name here"
                   value={account_name}
                   onChange={(e) => setaccount_name(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={250}
                 />
               </div>
@@ -973,10 +1016,11 @@ function AccNameGrid() {
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the address here"
+                  required
+                  title="Please fill the address here"
                   value={acc_addr_1}
                   onChange={(e) => setacc_addr_1(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={250}
                 />
               </div>
@@ -991,10 +1035,11 @@ function AccNameGrid() {
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the area here"
+                  required
+                  title="Please fill the area here"
                   value={acc_area_code}
                   onChange={(e) => setacc_area_code(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={100}
                 />
               </div>
@@ -1009,10 +1054,11 @@ function AccNameGrid() {
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the state here"
+                  required
+                  title="Please fill the state here"
                   value={acc_state_code}
                   onChange={(e) => setacc_state_code(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={100}
                 />
               </div>
@@ -1027,10 +1073,11 @@ function AccNameGrid() {
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the country here"
+                  required
+                  title="Please fill the country here"
                   value={acc_country_code}
                   onChange={(e) => setacc_country_code(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={100}
                 />
               </div>
@@ -1045,37 +1092,52 @@ function AccNameGrid() {
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the contact number here"
+                  required
+                  title="Please fill the contact number here"
                   value={acc_mobile_no}
                   onChange={(e) => setacc_mobile_no(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={20}
                 />
               </div>
             </div>
             <div className="col-md-3 form-group">
               <div class="exp-form-floating">
-                <label class="exp-form-labels">
-                  Status
-                </label>
-                              <div title="Select the Status">        
-                <Select
-                  id="status"
-                  value={selectedStatus}
-                  onChange={handleChangeStatus}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  options={filteredOptionStatus}
-                  className="exp-input-field"
-                  placeholder=""
-                />
-              </div>
+                <label class="exp-form-labels">Status</label>
+                <div title="Select the Status">
+                  <Select
+                    id="status"
+                    value={selectedStatus}
+                    onChange={handleChangeStatus}
+                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                    options={filteredOptionStatus}
+                    className="exp-input-field"
+                    placeholder=""
+                    classNamePrefix="react-select"
+                    styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                  />
+                </div>
               </div>
             </div>
             <div className="col-md-3 form-group">
               <div class="exp-form-floating">
                 <div class=" d-flex justify-content-center mt-4 ">
-                  <icon className="popups-btn fs-6 p-3" onClick={handleSearch} required title="Search"><i className="fas fa-search"></i></icon>
-                  <icon className="popups-btn fs-6 p-3" onClick={reloadGridData} required title="Refresh"><FontAwesomeIcon icon="fa-solid fa-arrow-rotate-right" /></icon>
+                  <icon
+                    className="popups-btn fs-6 p-3"
+                    onClick={handleSearch}
+                    required
+                    title="Search"
+                  >
+                    <i className="fas fa-search"></i>
+                  </icon>
+                  <icon
+                    className="popups-btn fs-6 p-3"
+                    onClick={reloadGridData}
+                    required
+                    title="Refresh"
+                  >
+                    <FontAwesomeIcon icon="fa-solid fa-arrow-rotate-right" />
+                  </icon>
                 </div>
               </div>
             </div>
@@ -1094,11 +1156,14 @@ function AccNameGrid() {
               onRowSelected={onRowSelected}
             />
           </div>
-        </div></div>
+        </div>
+      </div>
       <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
         <div className="row ms-2">
           <div className="d-flex justify-content-start">
-            <p className="col-md-6">{labels.createdBy}: {createdBy}</p>
+            <p className="col-md-6">
+              {labels.createdBy}: {createdBy}
+            </p>
             <p className="col-md-">
               {labels.createdDate}: {createdDate}
             </p>
@@ -1116,6 +1181,5 @@ function AccNameGrid() {
     </div>
   );
 }
-
 
 export default AccNameGrid;

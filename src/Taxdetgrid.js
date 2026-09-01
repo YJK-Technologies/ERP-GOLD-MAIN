@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
@@ -7,13 +6,13 @@ import "ag-grid-enterprise";
 import "./apps.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Select from 'react-select';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Select from "react-select";
 import labels from "./Labels";
-import { ToastContainer, toast } from 'react-toastify';
-import LoadingScreen from './Loading';
-import 'react-toastify/dist/ReactToastify.css';
-import { showConfirmationToast } from './ToastConfirmation';
+import { ToastContainer, toast } from "react-toastify";
+import LoadingScreen from "./Loading";
+import "react-toastify/dist/ReactToastify.css";
+import { showConfirmationToast } from "./ToastConfirmation";
 
 function TaxDetGrid() {
   const [rowData, setRowData] = useState([]);
@@ -22,7 +21,7 @@ function TaxDetGrid() {
   const [searchValue, setSearchValue] = useState("");
   const navigate = useNavigate();
   const [selectedRows, setSelectedRows] = useState([]);
-  const config = require('./Apiconfig');
+  const config = require("./Apiconfig");
   const [tax_type_header, settax_type_header] = useState("");
   const [tax_name_details, settax_name_details] = useState("");
   const [tax_percentage, settax_percentage] = useState(0);
@@ -33,10 +32,10 @@ function TaxDetGrid() {
   const [editedData, setEditedData] = useState([]);
   const [statusdrop, setStatusdrop] = useState([]);
   const [transactiondrop, setTransactiondrop] = useState([]);
-  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState("");
   const [statusgriddrop, setStatusGriddrop] = useState([]);
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);    
+  const [loading, setLoading] = useState(false);
   const [createdBy, setCreatedBy] = useState("");
   const [modifiedBy, setModifiedBy] = useState("");
   const [createdDate, setCreatedDate] = useState("");
@@ -45,110 +44,117 @@ function TaxDetGrid() {
   const location = useLocation();
 
   //code added by Harish purpose of set user permisssion
-  const permissions = JSON.parse(sessionStorage.getItem('permissions')) || {};
+  const permissions = JSON.parse(sessionStorage.getItem("permissions")) || {};
   const taxDetGrid = permissions
-    .filter(permission => permission.screen_type === 'Tax')
-    .map(permission => permission.permission_type.toLowerCase());
+    .filter((permission) => permission.screen_type === "Tax")
+    .map((permission) => permission.permission_type.toLowerCase());
 
   useEffect(() => {
-      if (location.state?.preservedRowData) {
-        setRowData(location.state.preservedRowData);
+    if (location.state?.preservedRowData) {
+      setRowData(location.state.preservedRowData);
+    }
+
+    if (location.state?.preservedInputs) {
+      settax_type_header(location.state.preservedInputs.tax_type_header || "");
+      settax_name_details(
+        location.state.preservedInputs.tax_name_details || "",
+      );
+      settax_percentage(location.state.preservedInputs.tax_percentage || 0);
+      settax_shortname(location.state.preservedInputs.tax_shortname || "");
+      settax_accountcode(location.state.preservedInputs.tax_accountcode || "");
+      settransaction_type(
+        location.state.preservedInputs.transaction_type || "",
+      );
+      setstatus(location.state.preservedInputs.status || "");
+
+      if (location.state.preservedInputs.status) {
+        setSelectedStatus({
+          label: location.state.preservedInputs.status,
+          value: location.state.preservedInputs.status,
+        });
       }
-    
-      if (location.state?.preservedInputs) {
-        settax_type_header(location.state.preservedInputs.tax_type_header || "");
-        settax_name_details(location.state.preservedInputs.tax_name_details || "");
-        settax_percentage(location.state.preservedInputs.tax_percentage || 0);
-        settax_shortname(location.state.preservedInputs.tax_shortname || "");
-        settax_accountcode(location.state.preservedInputs.tax_accountcode || "");
-        settransaction_type(location.state.preservedInputs.transaction_type || "");
-        setstatus(location.state.preservedInputs.status || "");
-    
-        if (location.state.preservedInputs.status) {
-          setSelectedStatus({
-            label: location.state.preservedInputs.status,
-            value: location.state.preservedInputs.status,
-          });
-        }
-      }
-    }, [location.state]);
+    }
+  }, [location.state]);
 
   const reloadGridData = () => {
     window.location.reload();
   };
 
   const clearInputFields = () => {
-settax_type_header("");
-settax_name_details("");
-    settax_percentage(0);
-    settax_shortname("");
-    settax_accountcode("");
-    settransaction_type("");
-    setstatus("");
-    setRowData([]);
-  };
+    settax_type_header("");
+    settax_name_details("");
+    settax_percentage(0);
+    settax_shortname("");
+    settax_accountcode("");
+    settransaction_type("");
+    setstatus("");
+    setRowData([]);
+  };
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
-    
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
-    })      .then((response) => response.json())
-      .then((data) => {
-        // Extract city names from the fetched data
-        const statusOption = data.map(option => option.attributedetails_name);
-        setStatusGriddrop(statusOption);
-      })
-      .catch((error) => console.error('Error fetching data:', error));
-  }, []);
-
-  useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
-    
-    fetch(`${config.apiBaseUrl}/Transaction`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((response) => response.json())
       .then((data) => {
         // Extract city names from the fetched data
-        const Status = data.map(option => option.attributedetails_name);
-        setTransactiondrop(Status);
+        const statusOption = data.map((option) => option.attributedetails_name);
+        setStatusGriddrop(statusOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
-    
-    fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+
+    fetch(`${config.apiBaseUrl}/Transaction`, {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Extract city names from the fetched data
+        const Status = data.map((option) => option.attributedetails_name);
+        setTransactiondrop(Status);
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
+
+  useEffect(() => {
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+
+    fetch(`${config.apiBaseUrl}/status`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setStatusdrop(val));
   }, []);
-  const filteredOptionStatus = [{ value: 'All', label: 'All' }, ...statusdrop.map((option) => ({
-    value: option.attributedetails_name,
-    label: option.attributedetails_name,
-  }))];
+  const filteredOptionStatus = [
+    { value: "All", label: "All" },
+    ...statusdrop.map((option) => ({
+      value: option.attributedetails_name,
+      label: option.attributedetails_name,
+    })),
+  ];
 
   const handleChangeStatus = (selectedStatus) => {
     setSelectedStatus(selectedStatus);
-    setstatus(selectedStatus ? selectedStatus.value : '');
+    setstatus(selectedStatus ? selectedStatus.value : "");
     setError(false);
   };
-
 
   const handleSearch = async () => {
     setLoading(true);
@@ -156,21 +162,26 @@ settax_name_details("");
       const response = await fetch(`${config.apiBaseUrl}/taxSearchdata`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          company_code: sessionStorage.getItem('selectedCompanyCode'), tax_type_header, tax_name_details, tax_percentage, tax_shortname,
-          transaction_type, status, tax_accountcode
-        }) // Send company_no and company_name as search criteria
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          tax_type_header,
+          tax_name_details,
+          tax_percentage,
+          tax_shortname,
+          transaction_type,
+          status,
+          tax_accountcode,
+        }), // Send company_no and company_name as search criteria
       });
       if (response.ok) {
         const searchData = await response.json();
         setRowData(searchData);
-        console.log("data fetched successfully")
-
+        console.log("data fetched successfully");
       } else if (response.status === 404) {
         console.log("Data not found");
-        toast.warning("Data not found")
+        toast.warning("Data not found");
         setRowData([]);
       } else {
         const errorResponse = await response.json();
@@ -179,15 +190,12 @@ settax_name_details("");
     } catch (error) {
       console.error("Error saving data:", error);
       toast.error("Error updating data: " + error.message);
-    }finally {
+    } finally {
       setLoading(false);
     }
-
   };
 
-
   const columnDefs = [
-
     {
       headerCheckboxSelection: true,
       checkboxSelection: true,
@@ -202,10 +210,7 @@ settax_name_details("");
         };
 
         return (
-          <span
-            style={{ cursor: "pointer" }}
-            onClick={handleClick}
-          >
+          <span style={{ cursor: "pointer" }} onClick={handleClick}>
             {params.value}
           </span>
         );
@@ -215,7 +220,6 @@ settax_name_details("");
       cellEditorParams: {
         maxLength: 18,
       },
-
     },
     {
       headerName: "Tax Name Details",
@@ -230,7 +234,6 @@ settax_name_details("");
       },
     },
     {
-
       headerName: "Tax Percentage",
       field: "tax_percentage",
       editable: true,
@@ -240,7 +243,6 @@ settax_name_details("");
       // minWidth: 150,
     },
     {
-
       headerName: "Short Name",
       field: "tax_shortname",
       editable: true,
@@ -256,7 +258,7 @@ settax_name_details("");
       cellStyle: {
         textAlign: "center",
       },
-    //  minWidth: 150,
+      //  minWidth: 150,
     },
     {
       headerName: "Transaction Type",
@@ -280,12 +282,9 @@ settax_name_details("");
       // minWidth: 150,
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
-        values: statusgriddrop
+        values: statusgriddrop,
       },
-
     },
-
-
   ];
 
   const defaultColDef = {
@@ -313,8 +312,8 @@ settax_name_details("");
     const selectedRows = gridApi.getSelectedRows();
     if (selectedRows.length === 0) {
       toast.warning("Please select at least one row to generate a report");
-      return
-    };
+      return;
+    }
 
     const reportData = selectedRows.map((row) => {
       return {
@@ -329,7 +328,7 @@ settax_name_details("");
         "Tax Short Name": row.tax_shortname,
         "Tax Account Code": row.tax_accountcode,
         "Transaction Type": row.transaction_type,
-        "Status": row.status,
+        Status: row.status,
         //"Founded Date": row.FoundedDate,
         //"Website URL": row.WebsiteURL,
         //"Company Logo": row.Company_logo,
@@ -428,13 +427,11 @@ settax_name_details("");
     reportWindow.document.write("</tbody></table>");
 
     reportWindow.document.write(
-      '<button class="report-button" onclick="window.print()">Print</button>'
+      '<button class="report-button" onclick="window.print()">Print</button>',
     );
     reportWindow.document.write("</body></html>");
     reportWindow.document.close();
   };
-
-
 
   /*const handleNavigateToForm = () => {
     navigate("/form");
@@ -444,49 +441,50 @@ settax_name_details("");
     navigate("/AddTaxDetails", { state: { mode: "create" } }); // Pass selectedRows as props to the Input component
   };
   const handleNavigateWithRowData = (selectedRow) => {
-  navigate("/addTaxDetails", {
-    state: {
-      mode: "update",
-      selectedRow,
+    navigate("/addTaxDetails", {
+      state: {
+        mode: "update",
+        selectedRow,
 
-      preservedRowData: rowData,
+        preservedRowData: rowData,
 
-      preservedInputs: {
-        tax_type_header,
-        tax_name_details,
-        tax_percentage,
-        tax_shortname,
-        tax_accountcode,
-        transaction_type,
-        status
+        preservedInputs: {
+          tax_type_header,
+          tax_name_details,
+          tax_percentage,
+          tax_shortname,
+          tax_accountcode,
+          transaction_type,
+          status,
+        },
       },
-    },
-  });
-};
+    });
+  };
   const onSelectionChanged = () => {
     const selectedNodes = gridApi.getSelectedNodes();
     const selectedData = selectedNodes.map((node) => node.data);
     setSelectedRows(selectedData);
   };
 
-
-
-
   const onCellValueChanged = (params) => {
     const updatedRowData = [...rowData];
     const rowIndex = updatedRowData.findIndex(
-      (row) => row.tax_type_header === params.data.tax_type_header && row.tax_name_details === params.data.tax_name_details
+      (row) =>
+        row.tax_type_header === params.data.tax_type_header &&
+        row.tax_name_details === params.data.tax_name_details,
     );
-  
+
     if (rowIndex !== -1) {
       updatedRowData[rowIndex][params.colDef.field] = params.newValue;
       setRowData(updatedRowData);
-  
+
       setEditedData((prevData) => {
         const existingIndex = prevData.findIndex(
-          (item) => item.tax_type_header === params.data.tax_type_header && item.tax_name_details === params.data.tax_name_details
+          (item) =>
+            item.tax_type_header === params.data.tax_type_header &&
+            item.tax_name_details === params.data.tax_name_details,
         );
-  
+
         if (existingIndex !== -1) {
           const updatedEdited = [...prevData];
           updatedEdited[existingIndex] = updatedRowData[rowIndex];
@@ -498,14 +496,14 @@ settax_name_details("");
     }
   };
 
-
   const saveEditedData = async () => {
-
     // Filter the editedData state to include only the selected rows
-    const selectedRowsData = editedData.filter(row =>
-      selectedRows.some(selectedRow =>
-        selectedRow.tax_type_header === row.tax_type_header && selectedRow.tax_name_details === row.tax_name_details
-      )
+    const selectedRowsData = editedData.filter((row) =>
+      selectedRows.some(
+        (selectedRow) =>
+          selectedRow.tax_type_header === row.tax_type_header &&
+          selectedRow.tax_name_details === row.tax_name_details,
+      ),
     );
 
     if (selectedRowsData.length === 0) {
@@ -518,65 +516,71 @@ settax_name_details("");
       async () => {
         setLoading(true);
         try {
-          const modified_by = sessionStorage.getItem('selectedUserCode');
-          const company_code = sessionStorage.getItem("selectedCompanyCode")
+          const modified_by = sessionStorage.getItem("selectedUserCode");
+          const company_code = sessionStorage.getItem("selectedCompanyCode");
 
           const response = await fetch(`${config.apiBaseUrl}/updTaxdetData`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
               "Modified-By": modified_by,
-              "company_code": company_code
-
+              company_code: company_code,
             },
             body: JSON.stringify({
-              tax_type_headersToUpdate: selectedRowsData.map(row => row.tax_type_header),
-              tax_name_detailssToUpdate: selectedRowsData.map(row => row.tax_name_details),
-              company_code: (sessionStorage.getItem("selectedCompanyCode")),
+              tax_type_headersToUpdate: selectedRowsData.map(
+                (row) => row.tax_type_header,
+              ),
+              tax_name_detailssToUpdate: selectedRowsData.map(
+                (row) => row.tax_name_details,
+              ),
+              company_code: sessionStorage.getItem("selectedCompanyCode"),
               updatedData: selectedRowsData,
-              "modified_by": modified_by
-
+              modified_by: modified_by,
             }), // Send the selected rows for saving along with their header and detail codes
           });
 
           if (response.ok) {
             setTimeout(() => {
-              toast.success("Data Updated Successfully")
+              toast.success("Data Updated Successfully");
               handleSearch();
             }, 1000);
             return;
           } else {
             const errorResponse = await response.json();
-            toast.warning(errorResponse.message || "Failed to insert sales data");
+            toast.warning(
+              errorResponse.message || "Failed to insert sales data",
+            );
           }
         } catch (error) {
           console.error("Error saving data:", error);
           toast.error("Error Updating Data: " + error.message);
-        }finally {
+        } finally {
           setLoading(false);
         }
-    
       },
       () => {
         toast.info("Data updated cancelled.");
-      }
+      },
     );
   };
-
 
   const deleteSelectedRows = async () => {
     const selectedRows = gridApi.getSelectedRows();
 
     if (selectedRows.length === 0) {
-      toast.warning("Please select atleast One Row to Delete")
+      toast.warning("Please select atleast One Row to Delete");
       return;
     }
 
-    const modified_by = sessionStorage.getItem('selectedUserCode');
-    const company_code = sessionStorage.getItem("selectedCompanyCode")
+    const modified_by = sessionStorage.getItem("selectedUserCode");
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
-    const tax_type_headersToDelete = selectedRows.map((row) => row.tax_type_header);
-    const tax_name_detailsToDelete = selectedRows.map((row) => row.tax_name_details);
+    const tax_type_headersToDelete = selectedRows.map(
+      (row) => row.tax_type_header,
+    );
+    const tax_name_detailsToDelete = selectedRows.map(
+      (row) => row.tax_name_details,
+    );
 
     showConfirmationToast(
       "Are you sure you want to Delete the data in the selected rows?",
@@ -588,39 +592,40 @@ settax_name_details("");
             headers: {
               "Content-Type": "application/json",
               "Modified-By": modified_by,
-              "company_code": company_code
-
+              company_code: company_code,
             },
-            body: JSON.stringify({ tax_type_headersToDelete, tax_name_detailsToDelete, company_code }),
-            "modified_by": modified_by,
-            "company_code": company_code
-
+            body: JSON.stringify({
+              tax_type_headersToDelete,
+              tax_name_detailsToDelete,
+              company_code,
+            }),
+            modified_by: modified_by,
+            company_code: company_code,
 
             // Corrected the key name to match the server-side expectation
           });
 
           if (response.ok) {
             setTimeout(() => {
-              toast.success("Data Deleted successfully")
+              toast.success("Data Deleted successfully");
               handleSearch();
             }, 1000);
-
           } else {
             const errorResponse = await response.json();
-            toast.warning(errorResponse.message || "Failed to insert sales data");
+            toast.warning(
+              errorResponse.message || "Failed to insert sales data",
+            );
           }
         } catch (error) {
           console.error("Error deleting rows:", error);
-          toast.error('Error Deleting Data: ' + error.message);
-        }
-        finally {
+          toast.error("Error Deleting Data: " + error.message);
+        } finally {
           setLoading(false);
         }
-    
       },
       () => {
         toast.info("Data Delete cancelled.");
-      }
+      },
     );
   };
 
@@ -652,27 +657,40 @@ settax_name_details("");
     }
   };
 
-
-
   return (
     <div className="container-fluid Topnav-screen">
       <div>
-      {loading && <LoadingScreen />}
-        <ToastContainer position="top-right" className="toast-design" theme="colored" />
+        {loading && <LoadingScreen />}
+        <ToastContainer
+          position="top-right"
+          className="toast-design"
+          theme="colored"
+        />
         <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
           <div className=" d-flex justify-content-between  ">
             <div class="d-flex justify-content-start">
               <h1 align="left" className="purbut me-5">
                 Tax
-              </h1></div>
-
+              </h1>
+            </div>
 
             <div className="d-flex justify-content-end purbut me-3">
-              {['add', 'all permission'].some(permission => taxDetGrid.includes(permission)) && (
-                <addbutton className="purbut" onClick={handleNavigatesToForm}
-                  required title="Add Tax"> <i class="fa-solid fa-user-plus"></i> </addbutton>
+              {["add", "all permission"].some((permission) =>
+                taxDetGrid.includes(permission),
+              ) && (
+                <addbutton
+                  className="purbut"
+                  onClick={handleNavigatesToForm}
+                  required
+                  title="Add Tax"
+                >
+                  {" "}
+                  <i class="fa-solid fa-user-plus"></i>{" "}
+                </addbutton>
               )}
-              {['delete', 'all permission'].some(permission => taxDetGrid.includes(permission)) && (
+              {["delete", "all permission"].some((permission) =>
+                taxDetGrid.includes(permission),
+              ) && (
                 <delbutton
                   className="purbut"
                   onClick={deleteSelectedRows}
@@ -682,7 +700,9 @@ settax_name_details("");
                   <i class="fa-solid fa-user-minus"></i>
                 </delbutton>
               )}
-              {['update', 'all permission'].some(permission => taxDetGrid.includes(permission)) && (
+              {["update", "all permission"].some((permission) =>
+                taxDetGrid.includes(permission),
+              ) && (
                 <savebutton
                   className="purbut"
                   onClick={saveEditedData}
@@ -693,9 +713,9 @@ settax_name_details("");
                 </savebutton>
               )}
 
-
-
-              {['all permission', 'view'].some(permission => taxDetGrid.includes(permission)) && (
+              {["all permission", "view"].some((permission) =>
+                taxDetGrid.includes(permission),
+              ) && (
                 <printbutton
                   class="purbut"
                   onClick={generateReport}
@@ -710,54 +730,54 @@ settax_name_details("");
             <div class="mobileview">
               <div class="d-flex justify-content-between">
                 <div className="d-flex justify-content-start me-5">
-                  <h1 align="left" className="h1">Tax</h1>
+                  <h1 align="left" className="h1">
+                    Tax
+                  </h1>
                 </div>
 
-                <div class="dropdown mt-1 me-5 " >
-                  <button class="btn btn-primary dropdown-toggle p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="dropdown mt-1 me-5 ">
+                  <button
+                    class="btn btn-primary dropdown-toggle p-1"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
                     <i class="fa-solid fa-list"></i>
                   </button>
 
                   <ul class="dropdown-menu">
                     <li class="iconbutton d-flex justify-content-center text-success">
-                      {['add', 'all permission'].some(permission => taxDetGrid.includes(permission)) && (
-                        <icon
-                          class="icon"
-                          onClick={handleNavigatesToForm}
-                        >
-                          <i class="fa-solid fa-user-plus"></i>
-                          {" "}
+                      {["add", "all permission"].some((permission) =>
+                        taxDetGrid.includes(permission),
+                      ) && (
+                        <icon class="icon" onClick={handleNavigatesToForm}>
+                          <i class="fa-solid fa-user-plus"></i>{" "}
                         </icon>
                       )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center text-danger">
-                      {['delete', 'all permission'].some(permission => taxDetGrid.includes(permission)) && (
-                        <icon
-                          class="icon"
-                          onClick={deleteSelectedRows}
-                        >
-
+                      {["delete", "all permission"].some((permission) =>
+                        taxDetGrid.includes(permission),
+                      ) && (
+                        <icon class="icon" onClick={deleteSelectedRows}>
                           <i class="fa-solid fa-user-minus"></i>
                         </icon>
                       )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center text-primary ">
-                      {['update', 'all permission'].some(permission => taxDetGrid.includes(permission)) && (
-                        <icon
-                          class="icon"
-                          onClick={saveEditedData}
-                        >
+                      {["update", "all permission"].some((permission) =>
+                        taxDetGrid.includes(permission),
+                      ) && (
+                        <icon class="icon" onClick={saveEditedData}>
                           <i class="fa-solid fa-floppy-disk"></i>
                         </icon>
                       )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center ">
-                      {['all permission', 'view'].some(permission => taxDetGrid.includes(permission)) && (
-                        <icon
-                          class="icon"
-                          onClick={generateReport}
-                        >
-
+                      {["all permission", "view"].some((permission) =>
+                        taxDetGrid.includes(permission),
+                      ) && (
+                        <icon class="icon" onClick={generateReport}>
                           <i class="fa-solid fa-print"></i>
                         </icon>
                       )}
@@ -770,56 +790,62 @@ settax_name_details("");
         </div>
 
         <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
-
           <div className="row ms-4 mt-3 mb-3 me-4">
             <div className="col-md-3 form-group">
               <div class="exp-form-floating">
                 <label for="tcode" class="exp-form-labels">
                   Tax Type
-                </label><input
+                </label>
+                <input
                   id="wcode"
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the tax type here"
+                  required
+                  title="Please fill the tax type here"
                   value={tax_type_header}
                   onChange={(e) => settax_type_header(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={18}
                 />
-
               </div>
             </div>
             <div className="col-md-3 form-group">
               <div class="exp-form-floating">
                 <label for="tname" class="exp-form-labels">
                   Tax Name Details
-                </label><input
+                </label>
+                <input
                   id="wname"
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the tax detail here"
+                  required
+                  title="Please fill the tax detail here"
                   value={tax_name_details}
                   onChange={(e) => settax_name_details(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={250}
                 />
-
               </div>
             </div>
             <div className="col-md-3 form-group">
               <div className="exp-form-floating">
-                <label htmlFor="Tax percentage" className="exp-form-labels">Tax percentage</label>
+                <label htmlFor="Tax percentage" className="exp-form-labels">
+                  Tax percentage
+                </label>
                 <input
                   id="status"
                   className="exp-input-field form-control"
                   type="number" // Change input type to "number"
                   placeholder=""
-                  required title="Please fill the tax percentage here"
+                  required
+                  title="Please fill the tax percentage here"
                   value={tax_percentage}
-                  onChange={(e) => settax_percentage(parseFloat(e.target.value))} // Ensure value is parsed as a number
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onChange={(e) =>
+                    settax_percentage(parseFloat(e.target.value))
+                  } // Ensure value is parsed as a number
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 />
               </div>
             </div>
@@ -828,77 +854,77 @@ settax_name_details("");
               <div class="exp-form-floating">
                 <label for="name" class="exp-form-labels">
                   Tax Short Name
-                </label><input
+                </label>
+                <input
                   id="wloc"
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the tax name here"
+                  required
+                  title="Please fill the tax name here"
                   value={tax_shortname}
                   onChange={(e) => settax_shortname(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={250}
                 />
-
               </div>
             </div>
             <div className="col-md-3 form-group">
               <div class="exp-form-floating">
                 <label for="account" class="exp-form-labels">
                   Tax Account Code
-                </label><input
+                </label>
+                <input
                   id="wloc"
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the tax account code here"
+                  required
+                  title="Please fill the tax account code here"
                   value={tax_accountcode}
                   onChange={(e) => settax_accountcode(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={9}
                 />
-
               </div>
             </div>
             <div className="col-md-3 form-group">
               <div class="exp-form-floating">
                 <label for="Transaction" class="exp-form-labels">
                   Transaction Type
-                </label><input
+                </label>
+                <input
                   id="wloc"
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the transaction type here"
+                  required
+                  title="Please fill the transaction type here"
                   value={transaction_type}
                   onChange={(e) => settransaction_type(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={250}
                 />
-
               </div>
             </div>
             <div className="col-md-3 form-group">
               <div class="exp-form-floating">
-                <label class="exp-form-labels">
-                  Status
-                </label>
-                 <div title="Select the Status">
-                <Select
-                  id="status"
-                  value={selectedStatus}
-                  onChange={handleChangeStatus}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  options={filteredOptionStatus}
-                  className="exp-input-field"
-                  placeholder=""
-                  maxLength={18}
-                />
-
+                <label class="exp-form-labels">Status</label>
+                <div title="Select the Status">
+                  <Select
+                    id="status"
+                    value={selectedStatus}
+                    onChange={handleChangeStatus}
+                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                    options={filteredOptionStatus}
+                    className="exp-input-field"
+                    placeholder=""
+                    maxLength={18}
+                    classNamePrefix="react-select"
+                    styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                  />
+                </div>
               </div>
-              </div>
-
-
             </div>
             <div className="col-md-2 form-group mt-4">
               <div class="exp-form-floating">
@@ -928,12 +954,6 @@ settax_name_details("");
             </div>
           </div>
 
-
-
-
-
-
-
           {/* <p>Result Set</p>  */}
 
           <div class="ag-theme-alpine" style={{ height: 547, width: "100%" }}>
@@ -956,7 +976,9 @@ settax_name_details("");
       <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
         <div className="row ms-2">
           <div className="d-flex justify-content-start">
-            <p className="col-md-6">{labels.createdBy}: {createdBy}</p>
+            <p className="col-md-6">
+              {labels.createdBy}: {createdBy}
+            </p>
             <p className="col-md-">
               {labels.createdDate}: {createdDate}
             </p>

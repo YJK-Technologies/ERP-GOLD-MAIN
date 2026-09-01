@@ -6,16 +6,14 @@ import "ag-grid-enterprise";
 import "./apps.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dropdown, DropdownButton } from "react-bootstrap";
-import Select from 'react-select';
+import Select from "react-select";
 import labels from "./Labels";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { showConfirmationToast } from './ToastConfirmation';
-import LoadingScreen from './Loading';
-
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { showConfirmationToast } from "./ToastConfirmation";
+import LoadingScreen from "./Loading";
 
 function CustomerDetGrid() {
   const [editedData, setEditedData] = useState([]);
@@ -45,241 +43,248 @@ function CustomerDetGrid() {
   const [salesgriddrop, setSalesGriddrop] = useState([]);
   const [brokergriddrop, setBrokerGriddrop] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState(null);
-  const config = require('./Apiconfig');
+  const config = require("./Apiconfig");
 
   const [createdBy, setCreatedBy] = useState("");
   const [modifiedBy, setModifiedBy] = useState("");
   const [createdDate, setCreatedDate] = useState("");
   const [modifiedDate, setModifiedDate] = useState("");
-  const [selectedCustomer, setselectedCust] = useState('');
-  const [default_customer, setdefaultCust] = useState('');
+  const [selectedCustomer, setselectedCust] = useState("");
+  const [default_customer, setdefaultCust] = useState("");
   const [customerdrop, setcustomerdrop] = useState([]);
 
   const location = useLocation();
 
   //code added by Harish purpose of set user permisssion
-  const permissions = JSON.parse(sessionStorage.getItem('permissions')) || {};
+  const permissions = JSON.parse(sessionStorage.getItem("permissions")) || {};
   const customerdetPermission = permissions
-    .filter(permission => permission.screen_type === 'Customer')
-    .map(permission => permission.permission_type.toLowerCase());
-
-    useEffect(() => {
-          if (location.state?.preservedRowData) {
-            setRowData(location.state.preservedRowData);
-          }
-        
-          if (location.state?.preservedInputs) {
-            setcustomer_code(location.state.preservedInputs.customer_code || "");
-            setcustomer_name(location.state.preservedInputs.customer_name || "");
-            setpanno(location.state.preservedInputs.panno || "");
-            setcustomer_gst_no(location.state.preservedInputs.customer_gst_no || "");
-            setcustomer_addr_1(location.state.preservedInputs.customer_addr_1 || "");
-            setcustomer_area(location.state.preservedInputs.customer_area || "");
-            setcustomer_state(location.state.preservedInputs.customer_state || "");
-            setcustomer_country(location.state.preservedInputs.customer_country || "");
-            setcustomer_mobile_no(location.state.preservedInputs.customer_mobile_no || "");
-            setstatus(location.state.preservedInputs.status || "");
-            setdefaultCust(location.state.preservedInputs.default_customer || "");
-
-            if (location.state.preservedInputs.status) {
-              setSelectedStatus({
-                label: location.state.preservedInputs.status,
-                value: location.state.preservedInputs.status,
-              });
-            }
-            if (location.state.preservedInputs.default_customer) {
-              setselectedCust({
-                label: location.state.preservedInputs.default_customer,
-                value: location.state.preservedInputs.default_customer,
-              });
-            }
-          }
-        }, [location.state]);
+    .filter((permission) => permission.screen_type === "Customer")
+    .map((permission) => permission.permission_type.toLowerCase());
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    if (location.state?.preservedRowData) {
+      setRowData(location.state.preservedRowData);
+    }
+
+    if (location.state?.preservedInputs) {
+      setcustomer_code(location.state.preservedInputs.customer_code || "");
+      setcustomer_name(location.state.preservedInputs.customer_name || "");
+      setpanno(location.state.preservedInputs.panno || "");
+      setcustomer_gst_no(location.state.preservedInputs.customer_gst_no || "");
+      setcustomer_addr_1(location.state.preservedInputs.customer_addr_1 || "");
+      setcustomer_area(location.state.preservedInputs.customer_area || "");
+      setcustomer_state(location.state.preservedInputs.customer_state || "");
+      setcustomer_country(
+        location.state.preservedInputs.customer_country || "",
+      );
+      setcustomer_mobile_no(
+        location.state.preservedInputs.customer_mobile_no || "",
+      );
+      setstatus(location.state.preservedInputs.status || "");
+      setdefaultCust(location.state.preservedInputs.default_customer || "");
+
+      if (location.state.preservedInputs.status) {
+        setSelectedStatus({
+          label: location.state.preservedInputs.status,
+          value: location.state.preservedInputs.status,
+        });
+      }
+      if (location.state.preservedInputs.default_customer) {
+        setselectedCust({
+          label: location.state.preservedInputs.default_customer,
+          value: location.state.preservedInputs.default_customer,
+        });
+      }
+    }
+  }, [location.state]);
+
+  useEffect(() => {
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((response) => response.json())
       .then((data) => {
-        const statusOption = data.map(option => option.attributedetails_name);
+        const statusOption = data.map((option) => option.attributedetails_name);
         setStatusGriddrop(statusOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
     fetch(`${config.apiBaseUrl}/Companyno`)
       .then((response) => response.json())
       .then((data) => {
-        const statusOption = data.map(option => option.company_no);
+        const statusOption = data.map((option) => option.company_no);
         setCompanyGriddrop(statusOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
     fetch(`${config.apiBaseUrl}/trcode`)
       .then((response) => response.json())
       .then((data) => {
-        const statusOption = data.map(option => option.keyfield);
+        const statusOption = data.map((option) => option.keyfield);
         setTransactionGriddrop(statusOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
     fetch(`${config.apiBaseUrl}/smcode`)
       .then((response) => response.json())
       .then((data) => {
-        const statusOption = data.map(option => option.keyfield);
+        const statusOption = data.map((option) => option.keyfield);
         setSalesGriddrop(statusOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
     fetch(`${config.apiBaseUrl}/brcode`)
       .then((response) => response.json())
       .then((data) => {
-        const statusOption = data.map(option => option.attributedetails_name);
+        const statusOption = data.map((option) => option.attributedetails_name);
         setBrokerGriddrop(statusOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setStatusdrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/city`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((response) => response.json())
       .then((data) => {
-        const cityNames = data.map(option => option.attributedetails_name);
+        const cityNames = data.map((option) => option.attributedetails_name);
         setDrop(cityNames);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/country`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((response) => response.json())
       .then((data) => {
-        const countries = data.map(option => option.attributedetails_name);
+        const countries = data.map((option) => option.attributedetails_name);
         setCondrop(countries);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/state`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((response) => response.json())
       .then((data) => {
-        const States = data.map(option => option.attributedetails_name);
+        const States = data.map((option) => option.attributedetails_name);
         setStatedrop(States);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-  const filteredOptionStatus = [{ value: 'All', label: 'All' }, ...statusdrop.map((option) => ({
-    value: option.attributedetails_name,
-    label: option.attributedetails_name,
-  }))];
+  const filteredOptionStatus = [
+    { value: "All", label: "All" },
+    ...statusdrop.map((option) => ({
+      value: option.attributedetails_name,
+      label: option.attributedetails_name,
+    })),
+  ];
 
   const handleChangeCustomer = (selectedCustomer) => {
     setselectedCust(selectedCustomer);
-    setdefaultCust(selectedCustomer ? selectedCustomer.value : '');
+    setdefaultCust(selectedCustomer ? selectedCustomer.value : "");
   };
 
-
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/getdefCustomer`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setcustomerdrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
-
 
   const handleChangeStatus = (selectedStatus) => {
     setSelectedStatus(selectedStatus);
-    setstatus(selectedStatus ? selectedStatus.value : '');
+    setstatus(selectedStatus ? selectedStatus.value : "");
   };
 
-  const filteredOptioncustomer = [{ value: 'All', label: 'All' }, ...customerdrop.map((option) => ({
-    value: option.attributedetails_name,
-    label: option.attributedetails_name,
-  }))];
-
+  const filteredOptioncustomer = [
+    { value: "All", label: "All" },
+    ...customerdrop.map((option) => ({
+      value: option.attributedetails_name,
+      label: option.attributedetails_name,
+    })),
+  ];
 
   const reloadGridData = () => {
     window.location.reload();
   };
 
   const clearInputFields = () => {
-setcustomer_code("");
-setcustomer_name("");
-setpanno("");
-setcustomer_gst_no("");
-setcustomer_addr_1("");
-setcustomer_area("");
-setcustomer_state("");
-setcustomer_country("");
-setcustomer_mobile_no("");
-setstatus("");
-setdefaultCust("");
-setSelectedStatus("");
-setselectedCust("");
-    setRowData([]);
-  };
+    setcustomer_code("");
+    setcustomer_name("");
+    setpanno("");
+    setcustomer_gst_no("");
+    setcustomer_addr_1("");
+    setcustomer_area("");
+    setcustomer_state("");
+    setcustomer_country("");
+    setcustomer_mobile_no("");
+    setstatus("");
+    setdefaultCust("");
+    setSelectedStatus("");
+    setselectedCust("");
+    setRowData([]);
+  };
 
   const handleSearch = async () => {
     setLoading(true);
@@ -288,9 +293,22 @@ setselectedCust("");
       const response = await fetch(`${config.apiBaseUrl}/customerSearchdata`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), customer_code, customer_name, panno, customer_gst_no, customer_addr_1, customer_area, customer_state, customer_country, customer_mobile_no, status, default_customer })
+        body: JSON.stringify({
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          customer_code,
+          customer_name,
+          panno,
+          customer_gst_no,
+          customer_addr_1,
+          customer_area,
+          customer_state,
+          customer_country,
+          customer_mobile_no,
+          status,
+          default_customer,
+        }),
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -298,7 +316,7 @@ setselectedCust("");
         console.log("Data fetched successfully");
       } else if (response.status === 404) {
         console.log("Data not found");
-        toast.warning("Data not found")
+        toast.warning("Data not found");
         setRowData([]);
       } else {
         const errorResponse = await response.json();
@@ -307,8 +325,7 @@ setselectedCust("");
     } catch (error) {
       console.error("Error saving data:", error);
       toast.error("Error updating data: " + error.message);
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -330,10 +347,7 @@ setselectedCust("");
         };
 
         return (
-          <span
-            style={{ cursor: "pointer" }}
-            onClick={handleClick}
-          >
+          <span style={{ cursor: "pointer" }} onClick={handleClick}>
             {params.value}
           </span>
         );
@@ -617,11 +631,12 @@ setselectedCust("");
     const selectedRows = gridApi.getSelectedRows();
     if (selectedRows.length === 0) {
       toast.warning("Please select at least one row to generate a report");
-      return
-    };
+      return;
+    }
 
     const reportData = selectedRows.map((row) => {
-      const formatValue = (val) => (val !== undefined && val !== null ? val : '');
+      const formatValue = (val) =>
+        val !== undefined && val !== null ? val : "";
 
       const addressParts = [
         row.customer_addr_1,
@@ -646,8 +661,8 @@ setselectedCust("");
       return {
         "Customer Code": formatValue(row.customer_code),
         "Customer Name": formatValue(row.customer_name),
-        "Address": formattedAddress,
-        "Status": formatValue(row.status),
+        Address: formattedAddress,
+        Status: formatValue(row.status),
         "PAN No": formatValue(row.panno),
         "GST No": formatValue(row.customer_gst_no),
         "Customer IMEX No": formatValue(row.customer_imex_no),
@@ -749,7 +764,7 @@ setselectedCust("");
     reportWindow.document.write("</tbody></table>");
 
     reportWindow.document.write(
-      '<button class="report-button" onclick="window.print()">Print</button>'
+      '<button class="report-button" onclick="window.print()">Print</button>',
     );
     reportWindow.document.write("</body></html>");
     reportWindow.document.close();
@@ -760,29 +775,29 @@ setselectedCust("");
   };
 
   const handleNavigateWithRowData = (selectedRow) => {
-  navigate("/AddCustomerDetails", {
-    state: {
-      mode: "update",
-      selectedRow,
+    navigate("/AddCustomerDetails", {
+      state: {
+        mode: "update",
+        selectedRow,
 
-      preservedRowData: rowData,
+        preservedRowData: rowData,
 
-      preservedInputs: {
-        customer_code,
-        customer_name,
-        panno,
-        customer_gst_no,
-        customer_addr_1,
-        customer_area,
-        customer_state,
-        customer_country,
-        customer_mobile_no,
-        status,
-        default_customer
+        preservedInputs: {
+          customer_code,
+          customer_name,
+          panno,
+          customer_gst_no,
+          customer_addr_1,
+          customer_area,
+          customer_state,
+          customer_country,
+          customer_mobile_no,
+          status,
+          default_customer,
+        },
       },
-    },
-  });
-};
+    });
+  };
 
   const onSelectionChanged = () => {
     const selectedNodes = gridApi.getSelectedNodes();
@@ -794,7 +809,10 @@ setselectedCust("");
   const onCellValueChanged = (params) => {
     const updatedRowData = [...rowData];
     const rowIndex = updatedRowData.findIndex(
-      (row) => row.customer_code === params.data.customer_code && row.company_code === params.data.company_code && row.keyfield == params.data.keyfield
+      (row) =>
+        row.customer_code === params.data.customer_code &&
+        row.company_code === params.data.company_code &&
+        row.keyfield == params.data.keyfield,
     );
     if (rowIndex !== -1) {
       updatedRowData[rowIndex][params.colDef.field] = params.newValue;
@@ -805,18 +823,21 @@ setselectedCust("");
     }
   };
 
-
   const saveEditedData = async () => {
-    const modified_by = sessionStorage.getItem('selectedUserCode');
+    const modified_by = sessionStorage.getItem("selectedUserCode");
     // Filter the editedData state to include only the selected rows
-    const selectedRowsData = editedData.filter(row =>
-      selectedRows.some(selectedRow =>
-        selectedRow.customer_code === row.customer_code && selectedRow.company_code === row.company_code
-      )
+    const selectedRowsData = editedData.filter((row) =>
+      selectedRows.some(
+        (selectedRow) =>
+          selectedRow.customer_code === row.customer_code &&
+          selectedRow.company_code === row.company_code,
+      ),
     );
 
     if (selectedRowsData.length === 0) {
-      toast.warning("Please select and modify at least one row to update its data");
+      toast.warning(
+        "Please select and modify at least one row to update its data",
+      );
       return;
     }
     showConfirmationToast(
@@ -824,90 +845,102 @@ setselectedCust("");
       async () => {
         setLoading(true);
         try {
-          const response = await fetch(`${config.apiBaseUrl}/updcustomerdetData`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "modified-by": modified_by
+          const response = await fetch(
+            `${config.apiBaseUrl}/updcustomerdetData`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "modified-by": modified_by,
+              },
+              body: JSON.stringify({
+                customer_codesToUpdate: selectedRowsData.map(
+                  (row) => row.customer_code,
+                ),
+                company_codesToUpdate: selectedRowsData.map(
+                  (row) => row.company_code,
+                ),
+                updatedData: selectedRowsData,
+              }),
             },
-            body: JSON.stringify({
-              customer_codesToUpdate: selectedRowsData.map(row => row.customer_code),
-              company_codesToUpdate: selectedRowsData.map(row => row.company_code),
-              updatedData: selectedRowsData,
-            }),
-          });
+          );
 
           if (response.status === 200) {
             setTimeout(() => {
-              toast.success("Data updated successfully")
+              toast.success("Data updated successfully");
               handleSearch();
             }, 3000);
             return;
-
           } else {
             const errorResponse = await response.json();
-            toast.warning(errorResponse.message || "Failed to insert sales data");
+            toast.warning(
+              errorResponse.message || "Failed to insert sales data",
+            );
           }
         } catch (error) {
           console.error("Error saving data:", error);
           toast.error("Error Updating Data: " + error.message);
-        }
-        finally {
+        } finally {
           setLoading(false);
         }
       },
       () => {
         toast.info("Data updated cancelled.");
-      }
+      },
     );
   };
 
   const deleteSelectedRows = async () => {
     const selectedRows = gridApi.getSelectedRows();
     if (selectedRows.length === 0) {
-      toast.warning("Please select atleast One Row to Delete")
+      toast.warning("Please select atleast One Row to Delete");
       return;
     }
 
-    const modified_by = sessionStorage.getItem('selectedUserCode');
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const modified_by = sessionStorage.getItem("selectedUserCode");
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     showConfirmationToast(
       "Are you sure you want to Delete the data in the selected rows?",
       async () => {
         setLoading(true);
         try {
-          const response = await fetch(`${config.apiBaseUrl}/customerdeleteData`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Modified-By": modified_by,
+          const response = await fetch(
+            `${config.apiBaseUrl}/customerdeleteData`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Modified-By": modified_by,
+                "company-code": company_code,
+              },
+              body: JSON.stringify({ keyfieldsToDelete: selectedRows }),
+              modified_by: modified_by,
               "company-code": company_code,
             },
-            body: JSON.stringify({ keyfieldsToDelete: selectedRows }),
-            "modified_by": modified_by,
-            "company-code": company_code,
-          });
+          );
 
           if (response.ok) {
             setTimeout(() => {
-              toast.success("Data Deleted successfully")
+              toast.success("Data Deleted successfully");
               handleSearch();
             }, 1000);
           } else {
             const errorResponse = await response.json();
-            toast.warning(errorResponse.message || "Failed to insert sales data");
+            toast.warning(
+              errorResponse.message || "Failed to insert sales data",
+            );
           }
         } catch (error) {
           console.error("Error deleting rows:", error);
-          toast.error('Error Deleting Data: ' + error.message);
+          toast.error("Error Deleting Data: " + error.message);
         } finally {
           setLoading(false);
         }
       },
       () => {
         toast.info("Data Delete cancelled.");
-      }
+      },
     );
   };
 
@@ -942,30 +975,65 @@ setselectedCust("");
     <div className="container-fluid Topnav-screen">
       <div>
         {loading && <LoadingScreen />}
-        <ToastContainer position="top-right" className="toast-design" theme="colored" />
+        <ToastContainer
+          position="top-right"
+          className="toast-design"
+          theme="colored"
+        />
         <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
           <div className=" d-flex justify-content-between  ">
             <div class="d-flex justify-content-start">
               <h1 align="left" className="purbut me-5">
                 Customer
-              </h1></div>
+              </h1>
+            </div>
             <div className="d-flex justify-content-end purbut me-3">
-              {['add', 'all permission'].some(permission => customerdetPermission.includes(permission)) && (
-                <addbutton className="" onClick={handleNavigatesToForm}
-                  required title="Add Customer"> <i class="fa-solid fa-user-plus"></i> </addbutton>
+              {["add", "all permission"].some((permission) =>
+                customerdetPermission.includes(permission),
+              ) && (
+                <addbutton
+                  className=""
+                  onClick={handleNavigatesToForm}
+                  required
+                  title="Add Customer"
+                >
+                  {" "}
+                  <i class="fa-solid fa-user-plus"></i>{" "}
+                </addbutton>
               )}
-              {['delete', 'all permission'].some(permission => customerdetPermission.includes(permission)) && (
-                <delbutton className="purbut" onClick={deleteSelectedRows} required title="Delete">
+              {["delete", "all permission"].some((permission) =>
+                customerdetPermission.includes(permission),
+              ) && (
+                <delbutton
+                  className="purbut"
+                  onClick={deleteSelectedRows}
+                  required
+                  title="Delete"
+                >
                   <i class="fa-solid fa-user-minus"></i>
                 </delbutton>
               )}
-              {['update', 'all permission'].some(permission => customerdetPermission.includes(permission)) && (
-                <savebutton className="purbut" onClick={saveEditedData} required title="Update">
+              {["update", "all permission"].some((permission) =>
+                customerdetPermission.includes(permission),
+              ) && (
+                <savebutton
+                  className="purbut"
+                  onClick={saveEditedData}
+                  required
+                  title="Update"
+                >
                   <i class="fa-solid fa-floppy-disk"></i>
                 </savebutton>
               )}
-              {['all permission', 'view'].some(permission => customerdetPermission.includes(permission)) && (
-                <printbutton class="purbut" onClick={generateReport} required title="Generate Report">
+              {["all permission", "view"].some((permission) =>
+                customerdetPermission.includes(permission),
+              ) && (
+                <printbutton
+                  class="purbut"
+                  onClick={generateReport}
+                  required
+                  title="Generate Report"
+                >
                   <i class="fa-solid fa-print"></i>
                 </printbutton>
               )}
@@ -973,36 +1041,51 @@ setselectedCust("");
             <div class="mobileview">
               <div class="d-flex justify-content-between">
                 <div className="d-flex justify-content-start">
-                  <h1 align="left" className="h1" >Customer</h1>
+                  <h1 align="left" className="h1">
+                    Customer
+                  </h1>
                 </div>
                 <div class="dropdown mt-1 me-5">
-                  <button class="btn btn-primary dropdown-toggle p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <button
+                    class="btn btn-primary dropdown-toggle p-1"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
                     <i class="fa-solid fa-list"></i>
                   </button>
                   <ul class="dropdown-menu menu">
                     <li class="iconbutton d-flex justify-content-center text-success">
-                      {['add', 'all permission'].some(permission => customerdetPermission.includes(permission)) && (
+                      {["add", "all permission"].some((permission) =>
+                        customerdetPermission.includes(permission),
+                      ) && (
                         <icon class="icon" onClick={handleNavigatesToForm}>
                           <i class="fa-solid fa-user-plus"></i>
                         </icon>
                       )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center text-danger">
-                      {['delete', 'all permission'].some(permission => customerdetPermission.includes(permission)) && (
+                      {["delete", "all permission"].some((permission) =>
+                        customerdetPermission.includes(permission),
+                      ) && (
                         <icon class="icon" onClick={deleteSelectedRows}>
                           <i class="fa-solid fa-user-minus"></i>
                         </icon>
                       )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center text-primary ">
-                      {['update', 'all permission'].some(permission => customerdetPermission.includes(permission)) && (
+                      {["update", "all permission"].some((permission) =>
+                        customerdetPermission.includes(permission),
+                      ) && (
                         <icon class="icon" onClick={saveEditedData}>
                           <i class="fa-solid fa-floppy-disk"></i>
                         </icon>
                       )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center ">
-                      {['all permission', 'view'].some(permission => customerdetPermission.includes(permission)) && (
+                      {["all permission", "view"].some((permission) =>
+                        customerdetPermission.includes(permission),
+                      ) && (
                         <icon class="icon" onClick={generateReport}>
                           <i class="fa-solid fa-print"></i>
                         </icon>
@@ -1020,15 +1103,17 @@ setselectedCust("");
               <div class="exp-form-floating">
                 <label for="cuscode" class="exp-form-labels">
                   Code
-                </label><input
+                </label>
+                <input
                   id="cuscode"
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Enter the Code"
+                  required
+                  title="Enter the Code"
                   value={customer_code}
                   onChange={(e) => setcustomer_code(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={18}
                 />
               </div>
@@ -1037,15 +1122,17 @@ setselectedCust("");
               <div class="exp-form-floating">
                 <label for="cusname" class="exp-form-labels">
                   Name
-                </label><input
+                </label>
+                <input
                   id="cusname"
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Enter the Name "
+                  required
+                  title="Enter the Name "
                   value={customer_name}
                   onChange={(e) => setcustomer_name(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={250}
                 />
               </div>
@@ -1054,15 +1141,17 @@ setselectedCust("");
               <div class="exp-form-floating">
                 <label for="panno" class="exp-form-labels">
                   Pan No
-                </label> <input
+                </label>{" "}
+                <input
                   id="panno"
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Enter the Pan No"
+                  required
+                  title="Enter the Pan No"
                   value={panno}
                   onChange={(e) => setpanno(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={18}
                 />
               </div>
@@ -1071,15 +1160,17 @@ setselectedCust("");
               <div class="exp-form-floating">
                 <label for="cusgst" class="exp-form-labels">
                   GST No
-                </label><input
+                </label>
+                <input
                   id="cusgst"
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Enter the GST No"
+                  required
+                  title="Enter the GST No"
                   value={customer_gst_no}
                   onChange={(e) => setcustomer_gst_no(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={15}
                 />
               </div>
@@ -1088,15 +1179,17 @@ setselectedCust("");
               <div class="exp-form-floating">
                 <label for="cusaddr1" class="exp-form-labels">
                   Address
-                </label> <input
+                </label>{" "}
+                <input
                   id="cusaddr1"
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Enter the Address"
+                  required
+                  title="Enter the Address"
                   value={customer_addr_1}
                   onChange={(e) => setcustomer_addr_1(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={250}
                 />
               </div>
@@ -1105,15 +1198,17 @@ setselectedCust("");
               <div class="exp-form-floating">
                 <label for="cusarcode" class="exp-form-labels">
                   City
-                </label><input
+                </label>
+                <input
                   id="cusarcode"
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Enter the City"
+                  required
+                  title="Enter the City"
                   value={customer_area}
                   onChange={(e) => setcustomer_area(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={100}
                 />
               </div>
@@ -1122,15 +1217,17 @@ setselectedCust("");
               <div class="exp-form-floating">
                 <label for="cusstatcode" class="exp-form-labels">
                   State
-                </label><input
+                </label>
+                <input
                   id="cusstatcode"
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Enter the State"
+                  required
+                  title="Enter the State"
                   value={customer_state}
                   onChange={(e) => setcustomer_state(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={100}
                 />
               </div>
@@ -1139,15 +1236,17 @@ setselectedCust("");
               <div class="exp-form-floating">
                 <label for="cuscountrycode" class="exp-form-labels">
                   Country
-                </label> <input
+                </label>{" "}
+                <input
                   id="cuscountrycode"
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Enter the Country"
+                  required
+                  title="Enter the Country"
                   value={customer_country}
                   onChange={(e) => setcustomer_country(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={100}
                 />
               </div>
@@ -1156,34 +1255,38 @@ setselectedCust("");
               <div class="exp-form-floating">
                 <label for="contactno" class="exp-form-labels">
                   Mobile No
-                </label><input
+                </label>
+                <input
                   id="contactno"
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Enter the Mobile No"
+                  required
+                  title="Enter the Mobile No"
                   value={customer_mobile_no}
                   onChange={(e) => setcustomer_mobile_no(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={20}
                 />
               </div>
             </div>
             <div className="col-md-3 form-group">
               <div class="exp-form-floating">
-                <label class="exp-form-labels">
-                  Status
-                </label>
+                <label class="exp-form-labels">Status</label>
                 <div title="Select the Status">
-                <Select
-                  id="status"
-                  value={selectedStatus}
-                  onChange={handleChangeStatus}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  options={filteredOptionStatus}
-                  className="exp-input-field"
-                  placeholder=""
-                />
+                  <Select
+                    id="status"
+                    value={selectedStatus}
+                    onChange={handleChangeStatus}
+                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                    options={filteredOptionStatus}
+                    className="exp-input-field"
+                    placeholder=""
+                    classNamePrefix="react-select"
+                    styles={{
+                      menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                    }}
+                  />
                 </div>
               </div>
             </div>
@@ -1193,23 +1296,47 @@ setselectedCust("");
                   Default Customer
                 </label>
                 <div title="Select the Default Customer">
-                <Select
-                  id="officeType"
-                  value={selectedCustomer}
-                  onChange={handleChangeCustomer}
-                  options={filteredOptioncustomer}
-                  className="exp-input-field"
-                  placeholder=""
-                />
+                  <Select
+                    id="officeType"
+                    value={selectedCustomer}
+                    onChange={handleChangeCustomer}
+                    options={filteredOptioncustomer}
+                    className="exp-input-field"
+                    placeholder=""
+                    classNamePrefix="react-select"
+                    styles={{
+                      menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                    }}
+                  />
                 </div>
               </div>
             </div>
             <div className="col-md-3 form-group mt-4">
               <div class="exp-form-floating">
                 <div class=" d-flex  justify-content-center">
-                  <div class=''><icon className="popups-btn fs-6 p-3" onClick={handleSearch} required title="Search"><i className="fas fa-search"></i></icon></div>
-                  <div><icon className="popups-btn fs-6 p-3" onClick={clearInputFields} required title="Reload"><FontAwesomeIcon icon="fa-solid fa-arrow-rotate-right" /></icon></div>
-                </div> </div></div>
+                  <div class="">
+                    <icon
+                      className="popups-btn fs-6 p-3"
+                      onClick={handleSearch}
+                      required
+                      title="Search"
+                    >
+                      <i className="fas fa-search"></i>
+                    </icon>
+                  </div>
+                  <div>
+                    <icon
+                      className="popups-btn fs-6 p-3"
+                      onClick={clearInputFields}
+                      required
+                      title="Reload"
+                    >
+                      <FontAwesomeIcon icon="fa-solid fa-arrow-rotate-right" />
+                    </icon>
+                  </div>
+                </div>{" "}
+              </div>
+            </div>
           </div>
           <div class="ag-theme-alpine" style={{ height: 485, width: "100%" }}>
             <AgGridReact
@@ -1230,7 +1357,9 @@ setselectedCust("");
       <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
         <div className="row ms-2">
           <div className="d-flex justify-content-start">
-            <p className="col-md-6">{labels.createdBy}: {createdBy}</p>
+            <p className="col-md-6">
+              {labels.createdBy}: {createdBy}
+            </p>
             <p className="col-md-">
               {labels.createdDate} : {createdDate}
             </p>

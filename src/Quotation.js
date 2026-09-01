@@ -15,13 +15,13 @@ import QuotationPopup from "./QuotationPopup";
 import { ToastContainer, toast } from "react-toastify";
 import "./mobile.css";
 import labels from "./Labels";
-import Select from 'react-select';
-import { showConfirmationToast } from './ToastConfirmation';
-import QuotationCustomerPopup from './SalesVendorPopup';
-import { useLocation } from 'react-router-dom';
-import DeletedQuotaionHelp from './DeletedQuotationPopup';
+import Select from "react-select";
+import { showConfirmationToast } from "./ToastConfirmation";
+import QuotationCustomerPopup from "./SalesVendorPopup";
+import { useLocation } from "react-router-dom";
+import DeletedQuotaionHelp from "./DeletedQuotationPopup";
 import LZString from "lz-string";
-import LoadingScreen from './Loading';
+import LoadingScreen from "./Loading";
 
 const config = require("./Apiconfig");
 
@@ -29,7 +29,9 @@ function Quotation() {
   const [rowData, setRowData] = useState([]);
   const [transaction_no, settransaction_no] = useState("");
   const [rowDataTax, setRowDataTax] = useState([]);
-  const [rowDataTerms, setrowDataTerms] = useState([{ serialNumber: 1, Terms_conditions: '' }]);
+  const [rowDataTerms, setrowDataTerms] = useState([
+    { serialNumber: 1, Terms_conditions: "" },
+  ]);
   const [showUpdateButton, setShowUpdateButton] = useState(false);
   const [entryDate, setEntryDate] = useState("");
   const [TotalBill, setTotalBill] = useState("");
@@ -61,88 +63,89 @@ function Quotation() {
   const [transactionNo, setTransactionNo] = useState("");
   const [activeTable, setActiveTable] = useState("myTable");
   const [screensDrop, setScreensDrop] = useState([]);
-  const [Screens, setScreens] = useState('');
+  const [Screens, setScreens] = useState("");
   const [selectedscreens, setSelectedscreens] = useState(null);
 
   const location = useLocation();
-  const savedPath = sessionStorage.getItem('currentPath');
-  
+  const savedPath = sessionStorage.getItem("currentPath");
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // 1. Ensure keys only trigger on F-keys
+      if (!["F1", "F2", "F3", "F4", "F5", "F6", "F8"].includes(e.key)) {
+        return;
+      }
 
-      useEffect(() => {
-          const handleKeyDown = (e) => {
-            // 1. Ensure keys only trigger on F-keys
-            if (!['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F8'].includes(e.key)) {
-              return;
-            }
-      
-            // 2. Prevent default browser shortcut actions (e.g., F1 Help, F5 Refresh)
-            e.preventDefault();
-            e.stopPropagation();
-      
-            // 3. Prevent execution if screen is currently loading
-            if (loading) return;
-      
-            switch (e.key) {
-              case 'F1':
-                // Open Item Search Popup
-                setOpen(true); 
-                break;
-      
-              // case 'F2':
-              //   // Open Customer Search Popup
-              //   setOpen2(true); 
-              //   break;
-      
-              case 'F3':
-                // New / Reset Sales Invoice Form
-                if (window.confirm("Start a new adjustment? Unsaved changes will be lost.")) {
-                  handleReload(); 
-                }
-                break;  
-      
-              case 'F4':
-                // Save / Complete Invoice (Same logic as Save Button)
-                handleSaveButtonClick(); 
-                break;
-      
-              case 'F5':
-                // Search Existing Invoices to Edit
-                setOpen(true); 
-                break;
-      
-              case 'F6':
-                // Delete selected line item in AG Grid
-                if ( transaction_no) {
-                  handleDeleteButtonClick();
-                } else {
-                  alert("Please save the invoice before deleting.");
-                }
-                break;
-      
-              case 'F8':
-                // Print Invoice
-                if (showExcelButton && transaction_no) {
-                  generateReport();
-                } else {
-                  alert("Please save the invoice before printing.");
-                }
-                break;
-      
-              default:
-                break;
-            }
-          };
-      
-          // Attach listener
-          window.addEventListener('keydown', handleKeyDown);
-      
-          // Clean up listener on unmount
-          return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-          };
-        }, [loading, showExcelButton, transaction_no, rowData]);
-      
+      // 2. Prevent default browser shortcut actions (e.g., F1 Help, F5 Refresh)
+      e.preventDefault();
+      e.stopPropagation();
+
+      // 3. Prevent execution if screen is currently loading
+      if (loading) return;
+
+      switch (e.key) {
+        case "F1":
+          // Open Item Search Popup
+          setOpen(true);
+          break;
+
+        // case 'F2':
+        //   // Open Customer Search Popup
+        //   setOpen2(true);
+        //   break;
+
+        case "F3":
+          // New / Reset Sales Invoice Form
+          if (
+            window.confirm(
+              "Start a new adjustment? Unsaved changes will be lost.",
+            )
+          ) {
+            handleReload();
+          }
+          break;
+
+        case "F4":
+          // Save / Complete Invoice (Same logic as Save Button)
+          handleSaveButtonClick();
+          break;
+
+        case "F5":
+          // Search Existing Invoices to Edit
+          setOpen(true);
+          break;
+
+        case "F6":
+          // Delete selected line item in AG Grid
+          if (transaction_no) {
+            handleDeleteButtonClick();
+          } else {
+            alert("Please save the invoice before deleting.");
+          }
+          break;
+
+        case "F8":
+          // Print Invoice
+          if (showExcelButton && transaction_no) {
+            generateReport();
+          } else {
+            alert("Please save the invoice before printing.");
+          }
+          break;
+
+        default:
+          break;
+      }
+    };
+
+    // Attach listener
+    window.addEventListener("keydown", handleKeyDown);
+
+    // Clean up listener on unmount
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [loading, showExcelButton, transaction_no, rowData]);
 
   //code added by Pavun purpose of set user permisssion
   const permissions = JSON.parse(sessionStorage.getItem("permissions")) || {};
@@ -153,25 +156,28 @@ function Quotation() {
   useEffect(() => {
     const currentPath = location.pathname;
     console.log(`Current path: ${currentPath}`);
-    if (savedPath !== '/Quotation') {
-      sessionStorage.getItem('QuotationScreenSelection');
+    if (savedPath !== "/Quotation") {
+      sessionStorage.getItem("QuotationScreenSelection");
     }
   }, [location]);
 
   useEffect(() => {
-    const savedScreen = sessionStorage.getItem('QuotationScreenSelection');
+    const savedScreen = sessionStorage.getItem("QuotationScreenSelection");
     if (savedScreen) {
-      setSelectedscreens({ value: savedScreen, label: savedScreen === 'Add' ? 'Add' : 'Delete' });
+      setSelectedscreens({
+        value: savedScreen,
+        label: savedScreen === "Add" ? "Add" : "Delete",
+      });
       setScreens(savedScreen);
     } else {
-      setSelectedscreens({ value: 'Add', label: 'Add' });
-      setScreens('Add');
+      setSelectedscreens({ value: "Add", label: "Add" });
+      setScreens("Add");
     }
   }, []);
 
   useEffect(() => {
-    const companyCode = sessionStorage.getItem('selectedCompanyCode');
-        
+    const companyCode = sessionStorage.getItem("selectedCompanyCode");
+
     fetch(`${config.apiBaseUrl}/getEvent`, {
       method: "POST",
       headers: {
@@ -181,7 +187,6 @@ function Quotation() {
         company_code: companyCode,
       }),
     })
-
       .then((response) => response.json())
       .then((data) => setScreensDrop(data))
       .catch((error) => console.error("Error fetching purchase types:", error));
@@ -189,9 +194,9 @@ function Quotation() {
 
   const handleChangeScreens = (selected) => {
     setSelectedscreens(selected);
-    const screenValue = selected?.value === 'Add' ? 'Add' : 'Delete';
+    const screenValue = selected?.value === "Add" ? "Add" : "Delete";
     setScreens(screenValue);
-    sessionStorage.setItem('QuotationScreenSelection', screenValue);
+    sessionStorage.setItem("QuotationScreenSelection", screenValue);
   };
 
   const filteredOptionScreens = screensDrop.map((option) => ({
@@ -220,7 +225,7 @@ function Quotation() {
           prevData.map((row) => ({
             ...row,
             billTo: row.fieldName === "Customer Code" ? row.billTo : "", // Retain only Customer Code field's value
-          }))
+          })),
         );
       } else {
         handleCustomerDetailsBillTo(params.data.billTo);
@@ -228,32 +233,29 @@ function Quotation() {
     }
   };
 
-
   useEffect(() => {
-    const companyCode = sessionStorage.getItem('selectedCompanyCode');
+    const companyCode = sessionStorage.getItem("selectedCompanyCode");
 
     const fetchData = async () => {
       try {
-        const response = await 
-        
-    fetch(`${config.apiBaseUrl}/TermsQO`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        company_code: companyCode,
-      }),
-    })
+        const response = await fetch(`${config.apiBaseUrl}/TermsQO`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            company_code: companyCode,
+          }),
+        });
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error("Network response was not ok");
         }
         const result = await response.json();
         const updatedData = await Promise.all(
           result.map(async (item) => ({
             ...item,
-            Terms_conditions: item.attributedetails_name
-          }))
+            Terms_conditions: item.attributedetails_name,
+          })),
         );
         setrowDataTerms(updatedData);
       } catch (error) {
@@ -263,7 +265,6 @@ function Quotation() {
 
     fetchData();
   }, []);
-
 
   const columnHeader = [
     {
@@ -284,18 +285,22 @@ function Quotation() {
       cellRenderer: (params) => {
         const cellWidth = params.column.getActualWidth();
         const isWideEnough = cellWidth > 150;
-        const showSearchIcon = params.data.fieldName === "Customer Code" && isWideEnough;
+        const showSearchIcon =
+          params.data.fieldName === "Customer Code" && isWideEnough;
 
         return (
-          <div className="position-relative d-flex align-items-center" style={{ minHeight: '100%' }}>
+          <div
+            className="position-relative d-flex align-items-center"
+            style={{ minHeight: "100%" }}
+          >
             <div className="flex-grow-1">
               {params.editing ? (
                 <input
                   type="text"
                   className="form-control"
-                  value={params.value || ''}
+                  value={params.value || ""}
                   onChange={(e) => params.setValue(e.target.value)}
-                  style={{ width: '100%' }}
+                  style={{ width: "100%" }}
                 />
               ) : (
                 params.value
@@ -306,10 +311,10 @@ function Quotation() {
               <span
                 className="icon searchIcon"
                 style={{
-                  position: 'absolute',
-                  right: '10px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
+                  position: "absolute",
+                  right: "10px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
                 }}
                 onClick={handleShowModal}
               >
@@ -356,7 +361,7 @@ function Quotation() {
             customer_country,
             customer_mobile_no,
             contact_person,
-            customer_gst_no
+            customer_gst_no,
           },
         ] = searchData;
 
@@ -388,7 +393,7 @@ function Quotation() {
               default:
                 return row;
             }
-          })
+          }),
         );
       } else if (response.status === 404) {
         toast.warning("Data not found", {
@@ -397,7 +402,7 @@ function Quotation() {
               prevRowData.map((row) => ({
                 ...row,
                 billTo: "",
-              }))
+              })),
             );
           },
         });
@@ -437,7 +442,8 @@ function Quotation() {
   //CODE FOR TOTAL WEIGHT, TOTAL TAX AND TOTAL AMOUNT CALCULATION
   const ItemAmountCalculation = async (params) => {
     try {
-      const response = await fetch(`${config.apiBaseUrl}/ItemAmountCalculation`,
+      const response = await fetch(
+        `${config.apiBaseUrl}/ItemAmountCalculation`,
         {
           method: "POST",
           headers: {
@@ -451,9 +457,9 @@ function Quotation() {
             tax_type_header: params.data.taxType,
             tax_name_details: params.data.taxDetail,
             tax_percentage: params.data.taxPercentage,
-            keyfield: params.data.keyField
+            keyfield: params.data.keyField,
           }),
-        }
+        },
       );
 
       if (response.ok) {
@@ -469,8 +475,7 @@ function Quotation() {
               return {
                 ...row,
                 TotalItemAmount: matchedItem.TotalItemAmount,
-                TotalTaxAmount: matchedItem.TotalTaxAmount 
-                
+                TotalTaxAmount: matchedItem.TotalTaxAmount,
               };
             }
           }
@@ -482,10 +487,11 @@ function Quotation() {
         setRowDataTax((prevRowDataTax) => {
           let updatedRowDataTaxCopy = [...prevRowDataTax];
 
-        searchData.forEach((item) => {
-          updatedRowDataTaxCopy = updatedRowDataTaxCopy.filter(row => 
-            !(row.ItemSNO === item.ItemSNO && row.TaxSNO === item.TaxSNO)
-         );
+          searchData.forEach((item) => {
+            updatedRowDataTaxCopy = updatedRowDataTaxCopy.filter(
+              (row) =>
+                !(row.ItemSNO === item.ItemSNO && row.TaxSNO === item.TaxSNO),
+            );
 
             const newRow = {
               ItemSNO: item.ItemSNO,
@@ -499,28 +505,41 @@ function Quotation() {
             };
             updatedRowDataTaxCopy.push(newRow);
             console.log(newRow);
+          });
+
+          updatedRowDataTaxCopy.sort((a, b) => a.ItemSNO - b.ItemSNO);
+
+          return updatedRowDataTaxCopy;
         });
 
-        updatedRowDataTaxCopy.sort((a, b) => a.ItemSNO - b.ItemSNO);
-
-        return updatedRowDataTaxCopy;
-    });
-      
-        const hasPurchaseQty = updatedRowData.some(row => row.purchaseQty >= 0);
+        const hasPurchaseQty = updatedRowData.some(
+          (row) => row.purchaseQty >= 0,
+        );
 
         if (hasPurchaseQty) {
-          const totalItemAmounts = updatedRowData.map((row) => row.TotalItemAmount || 0).join(",");
-          const totalTaxAmounts = updatedRowData.map((row) => row.TotalTaxAmount || 0).join(",");
+          const totalItemAmounts = updatedRowData
+            .map((row) => row.TotalItemAmount || 0)
+            .join(",");
+          const totalTaxAmounts = updatedRowData
+            .map((row) => row.TotalTaxAmount || 0)
+            .join(",");
 
           // Remove trailing commas if present
-          const formattedTotalItemAmounts = totalItemAmounts.endsWith(",")? totalItemAmounts.slice(0, -1): totalItemAmounts;
-          const formattedTotalTaxAmounts = totalTaxAmounts.endsWith(",")? totalTaxAmounts.slice(0, -1): totalTaxAmounts;
+          const formattedTotalItemAmounts = totalItemAmounts.endsWith(",")
+            ? totalItemAmounts.slice(0, -1)
+            : totalItemAmounts;
+          const formattedTotalTaxAmounts = totalTaxAmounts.endsWith(",")
+            ? totalTaxAmounts.slice(0, -1)
+            : totalTaxAmounts;
 
           console.log("formattedTotalItemAmounts", formattedTotalItemAmounts);
           console.log("formattedTotalTaxAmounts", formattedTotalTaxAmounts);
 
           // Ensure that TotalAmountCalculation receives numbers, not strings
-           TotalAmountCalculation(formattedTotalTaxAmounts,formattedTotalItemAmounts)
+          TotalAmountCalculation(
+            formattedTotalTaxAmounts,
+            formattedTotalItemAmounts,
+          );
         } else {
           console.log("No rows with purchaseQty greater than 0 found");
         }
@@ -535,10 +554,17 @@ function Quotation() {
     }
   };
 
-  const TotalAmountCalculation = async ( formattedTotalTaxAmounts, formattedTotalItemAmounts ) => {
-    if ( parseFloat(formattedTotalTaxAmounts) >= 0 && parseFloat(formattedTotalItemAmounts) >= 0 ) {
+  const TotalAmountCalculation = async (
+    formattedTotalTaxAmounts,
+    formattedTotalItemAmounts,
+  ) => {
+    if (
+      parseFloat(formattedTotalTaxAmounts) >= 0 &&
+      parseFloat(formattedTotalItemAmounts) >= 0
+    ) {
       try {
-        const response = await fetch(`${config.apiBaseUrl}/TotalAmountCalculation`,
+        const response = await fetch(
+          `${config.apiBaseUrl}/TotalAmountCalculation`,
           {
             method: "POST",
             headers: {
@@ -547,9 +573,9 @@ function Quotation() {
             body: JSON.stringify({
               Tax_amount: formattedTotalTaxAmounts,
               Putchase_amount: formattedTotalItemAmounts,
-              company_code:sessionStorage.getItem("selectedCompanyCode")
+              company_code: sessionStorage.getItem("selectedCompanyCode"),
             }),
-          }
+          },
         );
         if (response.ok) {
           const data = await response.json();
@@ -580,7 +606,6 @@ function Quotation() {
     }
     return window.btoa(binary);
   };
-
 
   //CODE ITEM CODE TO ADD NEW ROW FUNCTION
   const handleCellValueChanged = (params) => {
@@ -679,26 +704,28 @@ function Quotation() {
   //   }
   // };
 
-
   const handleDelete = (params) => {
     const serialNumberToDelete = params.data.serialNumber;
 
-    const updatedRowData = rowData.filter(row => Number(row.serialNumber) !== Number(serialNumberToDelete));
-    const updatedRowDataTax = rowDataTax.filter(row => Number(row.ItemSNO) !== Number(serialNumberToDelete));
+    const updatedRowData = rowData.filter(
+      (row) => Number(row.serialNumber) !== Number(serialNumberToDelete),
+    );
+    const updatedRowDataTax = rowDataTax.filter(
+      (row) => Number(row.ItemSNO) !== Number(serialNumberToDelete),
+    );
 
     setRowData(updatedRowData);
     setRowDataTax(updatedRowDataTax);
 
-
     const updatedRowDataWithNewSerials = updatedRowData.map((row, index) => ({
       ...row,
-      serialNumber: index + 1
+      serialNumber: index + 1,
     }));
     setRowData(updatedRowDataWithNewSerials);
 
     const updatedRowDataTaxWithNewSerials = updatedRowDataTax.map((taxRow) => {
       const correspondingRow = updatedRowDataWithNewSerials.find(
-        (dataRow) => dataRow.keyField === taxRow.keyfield
+        (dataRow) => dataRow.keyField === taxRow.keyfield,
       );
 
       return correspondingRow
@@ -707,31 +734,37 @@ function Quotation() {
     });
     setRowDataTax(updatedRowDataTaxWithNewSerials);
 
-    const totalItemAmounts = updatedRowData.map(row => row.TotalItemAmount || '0.00').join(',');
-    const totalTaxAmounts = updatedRowData.map(row => row.TotalTaxAmount || '0.00').join(',');
+    const totalItemAmounts = updatedRowData
+      .map((row) => row.TotalItemAmount || "0.00")
+      .join(",");
+    const totalTaxAmounts = updatedRowData
+      .map((row) => row.TotalTaxAmount || "0.00")
+      .join(",");
 
-    const formattedTotalItemAmounts = totalItemAmounts.endsWith(',') ? totalItemAmounts.slice(0, -1) : totalItemAmounts;
-    const formattedTotalTaxAmounts = totalTaxAmounts.endsWith(',') ? totalTaxAmounts.slice(0, -1) : totalTaxAmounts;
+    const formattedTotalItemAmounts = totalItemAmounts.endsWith(",")
+      ? totalItemAmounts.slice(0, -1)
+      : totalItemAmounts;
+    const formattedTotalTaxAmounts = totalTaxAmounts.endsWith(",")
+      ? totalTaxAmounts.slice(0, -1)
+      : totalTaxAmounts;
 
     TotalAmountCalculation(formattedTotalTaxAmounts, formattedTotalItemAmounts);
-
   };
 
   const handleDeleteTerms = (params) => {
     const serialNumberToDelete = params.data.serialNumber;
 
-    const updatedRowData = rowData.filter(row => Number(row.serialNumber) !== Number(serialNumberToDelete));
-
+    const updatedRowData = rowData.filter(
+      (row) => Number(row.serialNumber) !== Number(serialNumberToDelete),
+    );
 
     setrowDataTerms(updatedRowData);
 
-
     const updatedRowDataWithNewSerials = updatedRowData.map((row, index) => ({
       ...row,
-      serialNumber: index + 1
+      serialNumber: index + 1,
     }));
     setrowDataTerms(updatedRowDataWithNewSerials);
-
   };
 
   function qtyValueSetter(params) {
@@ -740,27 +773,27 @@ function Quotation() {
     return true;
   }
 
-      const [rowdatapatch, setrowdatapatch] = useState([
-          { fieldName: 'Kind Attention',Notes:''},
-          { fieldName: 'Quotation Validity',Notes:''}  
-      ]);
+  const [rowdatapatch, setrowdatapatch] = useState([
+    { fieldName: "Kind Attention", Notes: "" },
+    { fieldName: "Quotation Validity", Notes: "" },
+  ]);
 
-      const columnPatch = [
-        { 
-          headerName: 'Details', 
-          field: 'fieldName', 
-          editable: false 
-        },
-        {
-            headerName: 'Notes',
-            field: 'Notes',
-            editable: true,
-            onCellValueChanged: onCellValueChangedBillTo,
-            cellEditorParams: {
-                maxLength: 250
-            },
-        }
-    ];
+  const columnPatch = [
+    {
+      headerName: "Details",
+      field: "fieldName",
+      editable: false,
+    },
+    {
+      headerName: "Notes",
+      field: "Notes",
+      editable: true,
+      onCellValueChanged: onCellValueChangedBillTo,
+      cellEditorParams: {
+        maxLength: 250,
+      },
+    },
+  ];
 
   const columnDefs = [
     {
@@ -861,7 +894,8 @@ function Quotation() {
         if (params.value) {
           const base64Image = arrayBufferToBase64(params.value.data);
           return (
-            <img src={`data:image/jpeg;base64,${base64Image}`}
+            <img
+              src={`data:image/jpeg;base64,${base64Image}`}
               alt="Product Image"
               style={{ width: " 50px", height: "50px" }}
             />
@@ -870,7 +904,7 @@ function Quotation() {
           return "";
         }
       },
-      hide: false
+      hide: false,
     },
     {
       headerName: "Unit Price",
@@ -929,14 +963,14 @@ function Quotation() {
       sortable: false,
     },
     {
-      headerName: 'KeyField',
-      field: 'keyField',
+      headerName: "KeyField",
+      field: "keyField",
       editable: false,
       // maxWidth: 150,
       filter: true,
       sortable: false,
       hide: true,
-    }
+    },
   ];
 
   //DEFINE TAX DETAIL COLUMNS
@@ -984,13 +1018,13 @@ function Quotation() {
       editable: false,
     },
     {
-      headerName: 'Keyfield',
-      field: 'keyfield',
+      headerName: "Keyfield",
+      field: "keyfield",
       // minWidth: 301,
       sortable: false,
       editable: false,
       hide: true,
-    }
+    },
   ];
 
   const DeleteTerms = (params) => {
@@ -1014,8 +1048,8 @@ function Quotation() {
 
   const columnDefsTermsConditions = [
     {
-      headerName: 'S.No',
-      field: 'serialNumber',
+      headerName: "S.No",
+      field: "serialNumber",
       maxWidth: 70,
       valueGetter: (params) => params.node.rowIndex + 1,
       sortable: false,
@@ -1023,23 +1057,32 @@ function Quotation() {
       maxHeight: 50,
     },
     {
-      headerName: '',
-      field: 'delete',
+      headerName: "",
+      field: "delete",
       editable: false,
       maxWidth: 25,
       tooltipValueGetter: () => "Delete",
       onCellClicked: DeleteTerms,
       cellRenderer: function () {
-        return <FontAwesomeIcon icon="fa-solid fa-trash" style={{ cursor: 'pointer', marginRight: "12px" }} />;
+        return (
+          <FontAwesomeIcon
+            icon="fa-solid fa-trash"
+            style={{ cursor: "pointer", marginRight: "12px" }}
+          />
+        );
       },
-      cellStyle: { display: 'flex', justifyContent: 'center', alignItems: 'center' },
+      cellStyle: {
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      },
       sortable: false,
       minHeight: 50,
       maxHeight: 50,
     },
     {
-      headerName: 'Terms & Conditions',
-      field: 'Terms_conditions',
+      headerName: "Terms & Conditions",
+      field: "Terms_conditions",
       // minWidth: 1000,
       // maxWidth: 1000,
       minHeight: 50,
@@ -1047,7 +1090,7 @@ function Quotation() {
       maxLength: 250,
       sortable: false,
       editable: true,
-      flex:true,
+      flex: true,
       onCellValueChanged: (params) => handleValueChanged(params),
     },
   ];
@@ -1055,7 +1098,10 @@ function Quotation() {
   const handleValueChanged = (params) => {
     const { data, colDef } = params;
     // Ensure the field is Terms_conditions and the value is not empty
-    if (colDef.field === "Terms_conditions" && data.Terms_conditions?.trim() !== "") {
+    if (
+      colDef.field === "Terms_conditions" &&
+      data.Terms_conditions?.trim() !== ""
+    ) {
       const isLastRow = rowDataTerms[rowDataTerms.length - 1] === data;
       if (isLastRow) {
         // Add a new row with an incremented serial number
@@ -1068,78 +1114,79 @@ function Quotation() {
     }
   };
 
-
   const handleUpdateButtonClick = async () => {
-    if (!transactionNo || !entryDate ) {
-        setError(" ");
-        toast.warning("Error: Missing required fields");
-        return;
+    if (!transactionNo || !entryDate) {
+      setError(" ");
+      toast.warning("Error: Missing required fields");
+      return;
     }
     setLoading(true);
 
     try {
-       
       const billToData = headerRowData.reduce((acc, row) => {
         acc[row.fieldName] = row.billTo;
         return acc;
-    }, {});
+      }, {});
 
-    const datapatch = rowdatapatch.reduce((acc, row) => {
-      acc[row.fieldName] = row.Notes;
-      return acc;
-  }, {});
+      const datapatch = rowdatapatch.reduce((acc, row) => {
+        acc[row.fieldName] = row.Notes;
+        return acc;
+      }, {});
 
-    const Header = {
-      company_code: sessionStorage.getItem("selectedCompanyCode"),
-      transaction_no: transactionNo,
-      customer_code: billToData['Customer Code'],
-      customer_name: billToData['Customer Name'],
-      customer_addr_1: billToData['Address 1'],
-      customer_addr_2: billToData['Address 2'],
-      customer_addr_3: billToData['Address 3'],
-      customer_addr_4: billToData['Address 4'],
-      customer_state: billToData['State'],
-      customer_country: billToData['Country'],
-      customer_mobile_no: billToData['Mobile No'],
-      customer_gst_no: billToData['GST No'],
-      contact_person: billToData['Contact Person'],
-      kind_attention: datapatch['Kind Attention'] ? datapatch['Kind Attention'] : null,
-      quotation_validity: datapatch['Quotation Validity'] ? datapatch['Quotation Validity'] : null,
-      Entry_date: entryDate,
-      purchase_amount: TotalPurchase,
-      tax_amount: TotalTax,
-      rounded_off: round_difference,
-      total_amount: TotalBill,
-      modified_by: sessionStorage.getItem("selectedUserCode"),
-    };
+      const Header = {
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
+        transaction_no: transactionNo,
+        customer_code: billToData["Customer Code"],
+        customer_name: billToData["Customer Name"],
+        customer_addr_1: billToData["Address 1"],
+        customer_addr_2: billToData["Address 2"],
+        customer_addr_3: billToData["Address 3"],
+        customer_addr_4: billToData["Address 4"],
+        customer_state: billToData["State"],
+        customer_country: billToData["Country"],
+        customer_mobile_no: billToData["Mobile No"],
+        customer_gst_no: billToData["GST No"],
+        contact_person: billToData["Contact Person"],
+        kind_attention: datapatch["Kind Attention"]
+          ? datapatch["Kind Attention"]
+          : null,
+        quotation_validity: datapatch["Quotation Validity"]
+          ? datapatch["Quotation Validity"]
+          : null,
+        Entry_date: entryDate,
+        purchase_amount: TotalPurchase,
+        tax_amount: TotalTax,
+        rounded_off: round_difference,
+        total_amount: TotalBill,
+        modified_by: sessionStorage.getItem("selectedUserCode"),
+      };
 
-        const response = await fetch(`${config.apiBaseUrl}/updQuotationheader`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(Header),
-        });
+      const response = await fetch(`${config.apiBaseUrl}/updQuotationheader`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(Header),
+      });
 
-        if (response.ok) {
-          await saveQuotationDetails(transactionNo);
-          await saveQuotationTaxDetails(transactionNo);
-          await savequoDetailTerms(transactionNo);
-            setShowExcelButton(true);
-            setShowUpdateButton(true);
-            toast.success("Qutation Data updated Successfully")
-
-        } else {
-            const error = await response.json();
-            toast.error('Error inserting data' + error.message);
-        }
+      if (response.ok) {
+        await saveQuotationDetails(transactionNo);
+        await saveQuotationTaxDetails(transactionNo);
+        await savequoDetailTerms(transactionNo);
+        setShowExcelButton(true);
+        setShowUpdateButton(true);
+        toast.success("Qutation Data updated Successfully");
+      } else {
+        const error = await response.json();
+        toast.error("Error inserting data" + error.message);
+      }
     } catch (error) {
-        console.error("Error inserting data:", error);
-        toast.error('Error inserting data: ' + error.message);
+      console.error("Error inserting data:", error);
+      toast.error("Error inserting data: " + error.message);
     } finally {
       setLoading(false);
     }
-};
+  };
   //CODE TO SAVE PURCHASE HEADER
   const handleSaveButtonClick = async () => {
     if (!entryDate) {
@@ -1154,12 +1201,12 @@ function Quotation() {
 
     const filteredRowData = rowData.filter(
       (row) =>
-        row.purchaseQty > 0 && row.TotalItemAmount > 0 && row.purchaseAmt > 0
+        row.purchaseQty > 0 && row.TotalItemAmount > 0 && row.purchaseAmt > 0,
     );
 
     if (filteredRowData.length === 0 || rowDataTax.length === 0) {
       toast.warning(
-        "please check Qty, Unit price and Total values Should be greater than Zero"
+        "please check Qty, Unit price and Total values Should be greater than Zero",
       );
       return;
     }
@@ -1169,29 +1216,32 @@ function Quotation() {
       const billToData = headerRowData.reduce((acc, row) => {
         acc[row.fieldName] = row.billTo;
         return acc;
-    }, {});
+      }, {});
 
-    const datapatch = rowdatapatch.reduce((acc, row) => {
-      acc[row.fieldName] = row.Notes;
-      return acc;
-  }, {});
-
+      const datapatch = rowdatapatch.reduce((acc, row) => {
+        acc[row.fieldName] = row.Notes;
+        return acc;
+      }, {});
 
       const Header = {
         company_code: sessionStorage.getItem("selectedCompanyCode"),
-        customer_code: billToData['Customer Code'],
-        customer_name: billToData['Customer Name'],
-        customer_addr_1: billToData['Address 1'],
-        customer_addr_2: billToData['Address 2'],
-        customer_addr_3: billToData['Address 3'],
-        customer_addr_4: billToData['Address 4'],
-        customer_state: billToData['State'],
-        customer_country: billToData['Country'],
-        customer_mobile_no: billToData['Mobile No'],
-        customer_gst_no: billToData['GST No'],
-        contact_person: billToData['Contact Person'],
-        kind_attention: datapatch['Kind Attention'] ? datapatch['Kind Attention'] : null,
-        quotation_validity: datapatch['Quotation Validity'] ? datapatch['Quotation Validity'] : null,
+        customer_code: billToData["Customer Code"],
+        customer_name: billToData["Customer Name"],
+        customer_addr_1: billToData["Address 1"],
+        customer_addr_2: billToData["Address 2"],
+        customer_addr_3: billToData["Address 3"],
+        customer_addr_4: billToData["Address 4"],
+        customer_state: billToData["State"],
+        customer_country: billToData["Country"],
+        customer_mobile_no: billToData["Mobile No"],
+        customer_gst_no: billToData["GST No"],
+        contact_person: billToData["Contact Person"],
+        kind_attention: datapatch["Kind Attention"]
+          ? datapatch["Kind Attention"]
+          : null,
+        quotation_validity: datapatch["Quotation Validity"]
+          ? datapatch["Quotation Validity"]
+          : null,
         Entry_date: entryDate,
         purchase_amount: TotalPurchase,
         tax_amount: TotalTax,
@@ -1227,7 +1277,7 @@ function Quotation() {
       }
     } catch (error) {
       console.error("Error inserting data:", error);
-      toast.warning("Error inserting data:")
+      toast.warning("Error inserting data:");
     } finally {
       setLoading(false);
     }
@@ -1239,14 +1289,20 @@ function Quotation() {
       const customer_code = headerRowData[0]?.billTo || "";
       const customer_name = headerRowData[1]?.billTo || "";
       const validRows = rowData.filter(
-        (row) => row.itemCode && row.itemName && row.purchaseQty > 0
+        (row) => row.itemCode && row.itemName && row.purchaseQty > 0,
       );
 
       for (const row of validRows) {
         const formData = new FormData();
 
-        formData.append("created_by", sessionStorage.getItem("selectedUserCode"));
-        formData.append("company_code", sessionStorage.getItem("selectedCompanyCode"));
+        formData.append(
+          "created_by",
+          sessionStorage.getItem("selectedUserCode"),
+        );
+        formData.append(
+          "company_code",
+          sessionStorage.getItem("selectedCompanyCode"),
+        );
         formData.append("item_code", row.itemCode);
         formData.append("item_name", row.itemName);
         formData.append("bill_qty", row.purchaseQty);
@@ -1269,17 +1325,22 @@ function Quotation() {
           console.warn("Invalid image data, skipping image upload.");
         }
 
-        const response = await fetch(`${config.apiBaseUrl}/addquotationdetail`, {
-          method: "POST",
-          body: formData,
-        });
+        const response = await fetch(
+          `${config.apiBaseUrl}/addquotationdetail`,
+          {
+            method: "POST",
+            body: formData,
+          },
+        );
 
         if (response.ok) {
           console.log("Quotation details inserted successfully");
         } else {
           const errorResponse = await response.json();
           console.error("Error:", errorResponse.message);
-          toast.warning(errorResponse.message || "Error occurred while saving data.");
+          toast.warning(
+            errorResponse.message || "Error occurred while saving data.",
+          );
         }
       }
     } catch (error) {
@@ -1295,9 +1356,8 @@ function Quotation() {
       const customer_code = headerRowData[0].billTo;
       for (const row of rowData) {
         const matchingTaxRows = rowDataTax.filter(
-          (taxRow) => taxRow.Item_code === row.itemCode
+          (taxRow) => taxRow.Item_code === row.itemCode,
         );
-
 
         for (const taxRow of matchingTaxRows) {
           const uniqueKey = `${transaction_no}-${taxRow.ItemSNO}-${taxRow.TaxSNO}`;
@@ -1322,14 +1382,15 @@ function Quotation() {
             created_by: sessionStorage.getItem("selectedUserCode"),
           };
 
-          const response = await fetch(`${config.apiBaseUrl}/addquotetaxdetail`,
+          const response = await fetch(
+            `${config.apiBaseUrl}/addquotetaxdetail`,
             {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify(Details),
-            }
+            },
           );
 
           if (response.ok) {
@@ -1351,7 +1412,9 @@ function Quotation() {
   const savequoDetailTerms = async (transaction_no) => {
     try {
       // Filter rows where Terms_conditions is non-empty
-      const validRows = rowDataTerms.filter(row => row.Terms_conditions.trim() !== '');
+      const validRows = rowDataTerms.filter(
+        (row) => row.Terms_conditions.trim() !== "",
+      );
 
       // if (validRows.length === 0) {
       //     toast.warning('No valid Terms & Conditions to save.');
@@ -1360,50 +1423,58 @@ function Quotation() {
 
       for (const row of validRows) {
         const Details = {
-          created_by: sessionStorage.getItem('selectedUserCode'),
-          company_code: sessionStorage.getItem('selectedCompanyCode'),
+          created_by: sessionStorage.getItem("selectedUserCode"),
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
           transaction_no: transaction_no,
           Terms_conditions: row.Terms_conditions,
         };
 
         try {
-          const response = await fetch(`${config.apiBaseUrl}/quoTermsandConditions`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
+          const response = await fetch(
+            `${config.apiBaseUrl}/quoTermsandConditions`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(Details),
             },
-            body: JSON.stringify(Details),
-          });
+          );
 
           if (response.ok) {
             console.log("Terms & Conditions saved successfully");
           } else {
             const errorResponse = await response.json();
-            toast.warning(errorResponse.message || "Failed to save Terms & Conditions");
+            toast.warning(
+              errorResponse.message || "Failed to save Terms & Conditions",
+            );
             console.error(errorResponse.details || errorResponse.message);
           }
         } catch (error) {
           console.error(`Error saving row: ${row.Terms_conditions}`, error);
-          toast.error('Error saving data: ' + error.message);
+          toast.error("Error saving data: " + error.message);
         }
       }
     } catch (error) {
       console.error("Error saving data:", error);
-      toast.error('Error saving data: ' + error.message);
+      toast.error("Error saving data: " + error.message);
     }
   };
 
-
   const PrintHeaderData = async () => {
     try {
-      const response = await fetch(`${config.apiBaseUrl}/refNumberToQuotationHeaderPrintData`,
+      const response = await fetch(
+        `${config.apiBaseUrl}/refNumberToQuotationHeaderPrintData`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'),transaction_no: transactionNo }),
-        }
+          body: JSON.stringify({
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
+            transaction_no: transactionNo,
+          }),
+        },
       );
 
       if (response.ok) {
@@ -1429,8 +1500,11 @@ function Quotation() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'),transaction_no: transactionNo }),
-        }
+          body: JSON.stringify({
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
+            transaction_no: transactionNo,
+          }),
+        },
       );
 
       if (response.ok) {
@@ -1456,8 +1530,11 @@ function Quotation() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'),transaction_no: transactionNo.toString() }),
-        }
+          body: JSON.stringify({
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
+            transaction_no: transactionNo.toString(),
+          }),
+        },
       );
 
       if (response.ok) {
@@ -1475,22 +1552,22 @@ function Quotation() {
   };
 
   const openPrintWindow = (url, headerKey, detailKey, taxKey) => {
-    const printWindow = window.open(url, '_blank');
+    const printWindow = window.open(url, "_blank");
 
     if (printWindow) {
-        printWindow.addEventListener("beforeunload", () => {
-            sessionStorage.removeItem(headerKey);
-            sessionStorage.removeItem(detailKey);
-            sessionStorage.removeItem(taxKey);
-            console.log("Session storage cleared after print window closed.");
-        });
+      printWindow.addEventListener("beforeunload", () => {
+        sessionStorage.removeItem(headerKey);
+        sessionStorage.removeItem(detailKey);
+        sessionStorage.removeItem(taxKey);
+        console.log("Session storage cleared after print window closed.");
+      });
     }
-};
+  };
 
   const generateReport = async () => {
     if (!transactionNo) {
       setDeleteError(" ");
-      toast.warning('Error: Missing required fields');
+      toast.warning("Error: Missing required fields");
       return;
     }
     setLoading(true);
@@ -1501,17 +1578,25 @@ function Quotation() {
       const taxData = await PrintSumTax();
 
       if (headerData && detailData && taxData) {
-
         let url, headerKey, detailKey, taxKey;
 
-        headerKey = 'QuotationheaderData';
-        detailKey = 'QuotationdetailData';
-        taxKey = 'QuotationtaxData';
-        url = '/QuotationPrint'; 
+        headerKey = "QuotationheaderData";
+        detailKey = "QuotationdetailData";
+        taxKey = "QuotationtaxData";
+        url = "/QuotationPrint";
 
-        sessionStorage.setItem(headerKey, LZString.compress(JSON.stringify(headerData)));
-        sessionStorage.setItem(detailKey, LZString.compress(JSON.stringify(detailData)));
-        sessionStorage.setItem(taxKey, LZString.compress(JSON.stringify(taxData)));
+        sessionStorage.setItem(
+          headerKey,
+          LZString.compress(JSON.stringify(headerData)),
+        );
+        sessionStorage.setItem(
+          detailKey,
+          LZString.compress(JSON.stringify(detailData)),
+        );
+        sessionStorage.setItem(
+          taxKey,
+          LZString.compress(JSON.stringify(taxData)),
+        );
 
         // sessionStorage.setItem('QuotationheaderData', JSON.stringify(headerData));
         // sessionStorage.setItem('QuotationdetailData', JSON.stringify(detailData));
@@ -1547,7 +1632,7 @@ function Quotation() {
     let updatedRowDataCopy = [...rowData];
     let highestSerialNumber = updatedRowDataCopy.reduce(
       (max, row) => Math.max(max, row.serialNumber),
-      0
+      0,
     );
 
     for (const item of selectedData) {
@@ -1558,7 +1643,7 @@ function Quotation() {
       }
 
       const existingItemWithSameCode = updatedRowDataCopy.find(
-        (row) => row.serialNumber === global && row.itemCode === globalItem
+        (row) => row.serialNumber === global && row.itemCode === globalItem,
       );
 
       if (existingItemWithSameCode) {
@@ -1570,7 +1655,7 @@ function Quotation() {
         existingItemWithSameCode.taxDetail = item.taxDetails;
         existingItemWithSameCode.taxPercentage = item.taxPer;
         existingItemWithSameCode.itemImages = itemImages;
-        existingItemWithSameCode.keyField = `${existingItemWithSameCode.serialNumber || ''}-${existingItemWithSameCode.itemCode || ''}`;
+        existingItemWithSameCode.keyField = `${existingItemWithSameCode.serialNumber || ""}-${existingItemWithSameCode.itemCode || ""}`;
       } else {
         console.log("else");
         highestSerialNumber += 1;
@@ -1583,7 +1668,7 @@ function Quotation() {
           taxDetail: item.taxDetails,
           taxPercentage: item.taxPer,
           itemImages: itemImages,
-          keyField: `${highestSerialNumber}-${item.itemCode || ''}`,
+          keyField: `${highestSerialNumber}-${item.itemCode || ""}`,
         };
         updatedRowDataCopy.push(newRow);
       }
@@ -1604,7 +1689,9 @@ function Quotation() {
     if (date >= financialYearStart && date <= financialYearEnd) {
       setEntryDate(date);
     } else {
-      toast.warning("Transaction date must be between April 1st, 2024 and March 31st, 2025.");
+      toast.warning(
+        "Transaction date must be between April 1st, 2024 and March 31st, 2025.",
+      );
     }
   };
 
@@ -1643,7 +1730,7 @@ function Quotation() {
         body: JSON.stringify({
           transaction_no: transactionNo,
           company_code: sessionStorage.getItem("selectedCompanyCode"),
-          modified_by : sessionStorage.getItem("selectedUserCode")
+          modified_by: sessionStorage.getItem("selectedUserCode"),
         }),
       });
       if (response.ok) {
@@ -1651,7 +1738,11 @@ function Quotation() {
         return true;
       } else {
         const errorResponse = await response.json();
-        return errorResponse.details || errorResponse.message || "Failed to delete header.";
+        return (
+          errorResponse.details ||
+          errorResponse.message ||
+          "Failed to delete header."
+        );
       }
     } catch (error) {
       return "Error deleting header: " + error.message;
@@ -1674,7 +1765,11 @@ function Quotation() {
         return true;
       } else {
         const errorResponse = await response.json();
-        return errorResponse.details || errorResponse.message || "Failed to delete detail.";
+        return (
+          errorResponse.details ||
+          errorResponse.message ||
+          "Failed to delete detail."
+        );
       }
     } catch (error) {
       return "Error deleting detail: " + error.message;
@@ -1697,7 +1792,11 @@ function Quotation() {
         return true;
       } else {
         const errorResponse = await response.json();
-        return errorResponse.details || errorResponse.message || "Failed to delete tax detail.";
+        return (
+          errorResponse.details ||
+          errorResponse.message ||
+          "Failed to delete tax detail."
+        );
       }
     } catch (error) {
       return "Error deleting tax detail: " + error.message;
@@ -1706,22 +1805,32 @@ function Quotation() {
 
   const DeleteTermsQuotation = async () => {
     try {
-      const response = await fetch(`${config.apiBaseUrl}/QuoTermsandConditionsDelete`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${config.apiBaseUrl}/QuoTermsandConditionsDelete`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            transaction_no: transactionNo.toString(),
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
+          }),
         },
-        body: JSON.stringify({
-          transaction_no: transactionNo.toString(),
-          company_code: sessionStorage.getItem("selectedCompanyCode"),
-        }),
-      });
+      );
       if (response.ok) {
-        console.log("Terms and conditions deleted successfully:", transactionNo);
+        console.log(
+          "Terms and conditions deleted successfully:",
+          transactionNo,
+        );
         return true;
       } else {
         const errorResponse = await response.json();
-        return errorResponse.details || errorResponse.message || "Failed to delete terms and conditions.";
+        return (
+          errorResponse.details ||
+          errorResponse.message ||
+          "Failed to delete terms and conditions."
+        );
       }
     } catch (error) {
       return "Error deleting terms and conditions: " + error.message;
@@ -1745,7 +1854,12 @@ function Quotation() {
           const termsResult = await DeleteTermsQuotation();
           const headerResult = await handleDeleteHeader();
 
-          if (headerResult === true && detailResult === true && taxDetailResult === true && termsResult === true) {
+          if (
+            headerResult === true &&
+            detailResult === true &&
+            taxDetailResult === true &&
+            termsResult === true
+          ) {
             console.log("Data Deleted Successfully");
             toast.success("Data Deleted Successfully", {
               autoClose: true,
@@ -1776,7 +1890,7 @@ function Quotation() {
       },
       () => {
         toast.info("Data deletion cancelled.");
-      }
+      },
     );
   };
 
@@ -1883,118 +1997,116 @@ function Quotation() {
   // };
 
   const handleExcelDownload = () => {
-  const headerData = [{
-    "Entry Date": entryDate,
-    "Transaction No": transactionNo,
-    "Customer Code": headerRowData[0].billTo,
-    "Customer Name": headerRowData[1].billTo,
-    "Customer Address 1": headerRowData[2].billTo,
-    "Customer Address 2": headerRowData[3].billTo,
-    "Customer Address 3": headerRowData[4].billTo,
-    "Customer Address 4": headerRowData[5].billTo,
-    "Customer State": headerRowData[6].billTo,
-    "Customer Country": headerRowData[7].billTo,
-    "Customer Mobile No": headerRowData[8].billTo,
-    "Customer GST No": headerRowData[9].billTo,
-    "Contact Person": headerRowData[10].billTo,
-    "Purchase Amount": TotalPurchase,
-    "Tax Amount": TotalTax,
-    "Rounded Off": round_difference,
-    "Total Amount": TotalBill,
-  }];
+    const headerData = [
+      {
+        "Entry Date": entryDate,
+        "Transaction No": transactionNo,
+        "Customer Code": headerRowData[0].billTo,
+        "Customer Name": headerRowData[1].billTo,
+        "Customer Address 1": headerRowData[2].billTo,
+        "Customer Address 2": headerRowData[3].billTo,
+        "Customer Address 3": headerRowData[4].billTo,
+        "Customer Address 4": headerRowData[5].billTo,
+        "Customer State": headerRowData[6].billTo,
+        "Customer Country": headerRowData[7].billTo,
+        "Customer Mobile No": headerRowData[8].billTo,
+        "Customer GST No": headerRowData[9].billTo,
+        "Contact Person": headerRowData[10].billTo,
+        "Purchase Amount": TotalPurchase,
+        "Tax Amount": TotalTax,
+        "Rounded Off": round_difference,
+        "Total Amount": TotalBill,
+      },
+    ];
 
-  const itemData = rowData
-    .filter(row => row.itemCode && row.itemName && row.purchaseQty > 0)
-    .map(row => ({
-      "Entry Date": entryDate,
-      "Transaction No": transactionNo,
-      "Customer Name": headerRowData[1].billTo,
-      "Item SNo": row.serialNumber,
-      "Item Code": row.itemCode,
-      "HSN Code": row.HSN_code,
-      "Item Name": row.itemName,
-      "Bill Qty": row.purchaseQty,
-      "Item Amount": row.purchaseAmt,
-      "Bill Rate": row.TotalItemAmount,
-      "Tax Amount": row.TotalTaxAmount,
-    }));
+    const itemData = rowData
+      .filter((row) => row.itemCode && row.itemName && row.purchaseQty > 0)
+      .map((row) => ({
+        "Entry Date": entryDate,
+        "Transaction No": transactionNo,
+        "Customer Name": headerRowData[1].billTo,
+        "Item SNo": row.serialNumber,
+        "Item Code": row.itemCode,
+        "HSN Code": row.HSN_code,
+        "Item Name": row.itemName,
+        "Bill Qty": row.purchaseQty,
+        "Item Amount": row.purchaseAmt,
+        "Bill Rate": row.TotalItemAmount,
+        "Tax Amount": row.TotalTaxAmount,
+      }));
 
-  const taxDetailsData = rowDataTax.map(taxRow => {
-    const matchedItem = rowData.find(
-      row => Number(row.serialNumber) === Number(taxRow.ItemSNO)
-    );
+    const taxDetailsData = rowDataTax.map((taxRow) => {
+      const matchedItem = rowData.find(
+        (row) => Number(row.serialNumber) === Number(taxRow.ItemSNO),
+      );
 
-    return {
-      "Transaction No": transactionNo.toString(),
-      "Entry Date": entryDate,
-      "Item SNo": taxRow.ItemSNO,
-      "Item Code": matchedItem ? matchedItem.itemCode : "",
-      "Item Name": matchedItem ? matchedItem.itemName : "",
-      "Tax SNo": taxRow.TaxSNO,
-      "Tax Type": taxRow.TaxType,
-      "Tax Amount": taxRow.TaxAmount,
-      "Tax Percentage": taxRow.TaxPercentage,
-    };
-  });
-
-  // Header Sheet
-  const headerWorksheet = XLSX.utils.aoa_to_sheet([
-    ["Quotation"],
-    [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
-    [],
-  ]);
-
-  XLSX.utils.sheet_add_json(headerWorksheet, headerData, {
-    origin: "A4",
-  });
-
-  // Merge Heading
-  headerWorksheet["!merges"] = [
-    { s: { r: 0, c: 0 }, e: { r: 0, c: 9 } },
-    { s: { r: 1, c: 0 }, e: { r: 1, c: 9 } },
-  ];
-
-  // Detail Sheets
-  const itemWorksheet = XLSX.utils.json_to_sheet(itemData);
-  const taxDetailsWorksheet = XLSX.utils.json_to_sheet(taxDetailsData);
-
-  // Auto Fit Function
-  const autoFitColumns = (worksheet, data) => {
-    if (!data || data.length === 0) return;
-
-    const cols = [];
-
-    data.forEach(row => {
-      Object.keys(row).forEach((key, i) => {
-        const value = row[key] == null ? "" : row[key].toString();
-
-        cols[i] = Math.max(
-          cols[i] || key.length,
-          key.length,
-          value.length
-        );
-      });
+      return {
+        "Transaction No": transactionNo.toString(),
+        "Entry Date": entryDate,
+        "Item SNo": taxRow.ItemSNO,
+        "Item Code": matchedItem ? matchedItem.itemCode : "",
+        "Item Name": matchedItem ? matchedItem.itemName : "",
+        "Tax SNo": taxRow.TaxSNO,
+        "Tax Type": taxRow.TaxType,
+        "Tax Amount": taxRow.TaxAmount,
+        "Tax Percentage": taxRow.TaxPercentage,
+      };
     });
 
-    worksheet["!cols"] = cols.map(width => ({
-      wch: width + 5,
-    }));
+    // Header Sheet
+    const headerWorksheet = XLSX.utils.aoa_to_sheet([
+      ["Quotation"],
+      [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
+      [],
+    ]);
+
+    XLSX.utils.sheet_add_json(headerWorksheet, headerData, {
+      origin: "A4",
+    });
+
+    // Merge Heading
+    headerWorksheet["!merges"] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 9 } },
+      { s: { r: 1, c: 0 }, e: { r: 1, c: 9 } },
+    ];
+
+    // Detail Sheets
+    const itemWorksheet = XLSX.utils.json_to_sheet(itemData);
+    const taxDetailsWorksheet = XLSX.utils.json_to_sheet(taxDetailsData);
+
+    // Auto Fit Function
+    const autoFitColumns = (worksheet, data) => {
+      if (!data || data.length === 0) return;
+
+      const cols = [];
+
+      data.forEach((row) => {
+        Object.keys(row).forEach((key, i) => {
+          const value = row[key] == null ? "" : row[key].toString();
+
+          cols[i] = Math.max(cols[i] || key.length, key.length, value.length);
+        });
+      });
+
+      worksheet["!cols"] = cols.map((width) => ({
+        wch: width + 5,
+      }));
+    };
+
+    // Apply Auto Width
+    autoFitColumns(headerWorksheet, headerData);
+    autoFitColumns(itemWorksheet, itemData);
+    autoFitColumns(taxDetailsWorksheet, taxDetailsData);
+
+    // Workbook
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, headerWorksheet, "Header Data");
+    XLSX.utils.book_append_sheet(workbook, itemWorksheet, "Detail Data");
+    XLSX.utils.book_append_sheet(workbook, taxDetailsWorksheet, "Tax Details");
+
+    XLSX.writeFile(workbook, "Quotation.xlsx");
   };
-
-  // Apply Auto Width
-  autoFitColumns(headerWorksheet, headerData);
-  autoFitColumns(itemWorksheet, itemData);
-  autoFitColumns(taxDetailsWorksheet, taxDetailsData);
-
-  // Workbook
-  const workbook = XLSX.utils.book_new();
-
-  XLSX.utils.book_append_sheet(workbook, headerWorksheet, "Header Data");
-  XLSX.utils.book_append_sheet(workbook, itemWorksheet, "Detail Data");
-  XLSX.utils.book_append_sheet(workbook, taxDetailsWorksheet, "Tax Details");
-
-  XLSX.writeFile(workbook, "Quotation.xlsx");
-};
 
   const handleQuotationData = async (data) => {
     if (data && data.length > 0) {
@@ -2024,7 +2136,6 @@ function Quotation() {
           GSTNo,
           attention,
           Quotation_Validity,
-
         },
       ] = data;
 
@@ -2044,7 +2155,7 @@ function Quotation() {
         console.error("entry element not found");
       }
       const totalPurchaseAmount = document.getElementById(
-        "totalPurchaseAmount"
+        "totalPurchaseAmount",
       );
       if (totalPurchaseAmount) {
         totalPurchaseAmount.value = PurchaseAmount;
@@ -2097,10 +2208,8 @@ function Quotation() {
 
       setrowdatapatch([
         { fieldName: "Kind Attention", Notes: attention },
-        { fieldName: "Quotation Validity", Notes: Quotation_Validity }
-  
+        { fieldName: "Quotation Validity", Notes: Quotation_Validity },
       ]);
-
     } else {
       console.log("Data not fetched...!");
     }
@@ -2120,14 +2229,14 @@ function Quotation() {
             transaction_no: TransactionNo,
             company_code: sessionStorage.getItem("selectedCompanyCode"),
           }),
-        }
+        },
       );
 
       if (response.ok) {
         const searchData = await response.json();
         const newRowData = [];
         const taxDataMap = {};
-  
+
         searchData.forEach(
           ({
             ItemSNo,
@@ -2146,9 +2255,9 @@ function Quotation() {
               TaxPercentage: tax_per,
               TaxAmount: tax_amt,
               TaxName: tax_type,
-              keyfield: `${ItemSNo}-${item_code || ''}`,
+              keyfield: `${ItemSNo}-${item_code || ""}`,
             });
-  
+
             if (!taxDataMap[ItemSNo]) {
               taxDataMap[ItemSNo] = {
                 tax_type: tax_type,
@@ -2156,14 +2265,14 @@ function Quotation() {
                 tax_percents: [],
               };
             }
-  
+
             taxDataMap[ItemSNo].tax_names.push(tax_name_details);
             taxDataMap[ItemSNo].tax_percents.push(tax_per);
-          }
+          },
         );
-  
+
         await QuotationDetailView(TransactionNo, taxDataMap);
-  
+
         setRowDataTax(newRowData);
       } else if (response.status === 404) {
         console.log("Data not found");
@@ -2175,7 +2284,7 @@ function Quotation() {
       console.error("Error fetching search data:", error);
     }
   };
-  
+
   const QuotationDetailView = async (TransactionNo, taxDataMap) => {
     try {
       const response = await fetch(
@@ -2189,13 +2298,13 @@ function Quotation() {
             transaction_no: TransactionNo,
             company_code: sessionStorage.getItem("selectedCompanyCode"),
           }),
-        }
+        },
       );
-  
+
       if (response.ok) {
         const searchData = await response.json();
         console.log(searchData);
-  
+
         const newRowData = [];
         searchData.forEach((item) => {
           const {
@@ -2208,15 +2317,15 @@ function Quotation() {
             tax_amount,
             bill_rate,
             hsn,
-            Description
+            Description,
           } = item;
-  
+
           const taxInfo = taxDataMap[ItemSNo] || {
-            tax_type: '',
+            tax_type: "",
             tax_names: [],
             tax_percents: [],
           };
-  
+
           newRowData.push({
             serialNumber: ItemSNo,
             itemCode: item_code,
@@ -2228,13 +2337,13 @@ function Quotation() {
             TotalTaxAmount: tax_amount,
             purchaseAmt: item_amt,
             TotalItemAmount: bill_rate,
-            taxType: taxInfo.tax_type, 
-            taxDetail: taxInfo.tax_names.join(", "), 
+            taxType: taxInfo.tax_type,
+            taxDetail: taxInfo.tax_names.join(", "),
             taxPercentage: taxInfo.tax_percents.join(", "),
-            keyField: `${ItemSNo}-${item_code || ''}`,
+            keyField: `${ItemSNo}-${item_code || ""}`,
           });
         });
-  
+
         setRowData(newRowData);
       } else if (response.status === 404) {
         console.log("Data not found");
@@ -2260,30 +2369,23 @@ function Quotation() {
             transaction_no: TransactionNo,
             company_code: sessionStorage.getItem("selectedCompanyCode"),
           }),
-        }
+        },
       );
 
       if (response.ok) {
         const searchData = await response.json();
-        console.log(searchData)
+        console.log(searchData);
 
         const newRowData = [];
-        searchData.forEach(item => {
-          const {
-
-            Terms_conditions
-
-          } = item;
+        searchData.forEach((item) => {
+          const { Terms_conditions } = item;
 
           newRowData.push({
             Terms_conditions: Terms_conditions,
-
           });
-
         });
 
         setrowDataTerms(newRowData);
-
       } else if (response.status === 404) {
         console.log("Data not found");
         setrowDataTerms([]);
@@ -2295,13 +2397,10 @@ function Quotation() {
     }
   };
 
-
-
   const handleKeyPressRef = (e) => {
     if (e.key === "Enter") {
       handleRefNo(transactionNo);
     }
-
   };
 
   const handleRefNo = async (code) => {
@@ -2347,10 +2446,9 @@ function Quotation() {
           ]);
 
           setrowdatapatch([
-            { fieldName: "Kind Attention", Notes: item.kind_attention},
-            { fieldName: "Quotation Validity", Notes: item.quotation_validity},
+            { fieldName: "Kind Attention", Notes: item.kind_attention },
+            { fieldName: "Quotation Validity", Notes: item.quotation_validity },
           ]);
-
         } else {
           console.log("Header Data is empty or not found");
           setEntryDate("");
@@ -2364,12 +2462,17 @@ function Quotation() {
         if (searchData.Detail && searchData.Detail.length > 0) {
           const updatedRowData = searchData.Detail.map((item) => {
             const matchingDetails = searchData.TaxDetail.filter(
-              (detailItem) => detailItem.ItemSNo === item.ItemSNo
-          );
-          const taxDetail = matchingDetails.map((detail) => detail.tax_name_details).join(', ');
-          const taxPercentage = matchingDetails.map((detail) => detail.tax_per).join(', ');
+              (detailItem) => detailItem.ItemSNo === item.ItemSNo,
+            );
+            const taxDetail = matchingDetails
+              .map((detail) => detail.tax_name_details)
+              .join(", ");
+            const taxPercentage = matchingDetails
+              .map((detail) => detail.tax_per)
+              .join(", ");
 
-          const taxType = matchingDetails.length > 0 ? matchingDetails[0].tax_type : '';
+            const taxType =
+              matchingDetails.length > 0 ? matchingDetails[0].tax_type : "";
 
             return {
               serialNumber: item.ItemSNo,
@@ -2380,13 +2483,13 @@ function Quotation() {
                 : null,
               purchaseQty: item.bill_qty,
               purchaseAmt: item.item_amt,
-              Description: item.Description || '',
+              Description: item.Description || "",
               HSN_code: item.hsn,
               image: item.item_images,
               taxType,
               taxDetail,
               taxPercentage,
-              keyField: `${item.ItemSNo}-${item.item_code || ''}`,
+              keyField: `${item.ItemSNo}-${item.item_code || ""}`,
               TotalTaxAmount: item.tax_amount,
               TotalItemAmount: item.bill_rate,
             };
@@ -2394,7 +2497,6 @@ function Quotation() {
 
           setRowData(updatedRowData);
         } else {
-
           console.log("Detail Data is empty or not found");
 
           setRowData([
@@ -2412,7 +2514,6 @@ function Quotation() {
               TotalTaxAmount: 0,
               TotalItemAmount: 0,
             },
-
           ]);
         }
 
@@ -2425,7 +2526,7 @@ function Quotation() {
             TaxPercentage: item.tax_per,
             TaxAmount: item.tax_amt,
             TaxName: item.tax_type,
-            keyfield: `${item.ItemSNo}-${item.item_code || ''}`,
+            keyfield: `${item.ItemSNo}-${item.item_code || ""}`,
           }));
 
           console.log("Updated Row Data Tax:", updatedRowDataTax);
@@ -2434,7 +2535,6 @@ function Quotation() {
           console.log("Tax Data is empty or not found");
           setRowDataTax([]);
         }
-
 
         if (searchData.Terms && searchData.Terms.length > 0) {
           const updatedRowData = searchData.Terms.map((item) => {
@@ -2445,12 +2545,10 @@ function Quotation() {
 
           setrowDataTerms(updatedRowData);
         } else {
-
           console.log(" Data is empty or not found");
 
           setrowDataTerms([]);
         }
-
 
         console.log("data fetched successfully");
       } else if (response.status === 404) {
@@ -2492,17 +2590,19 @@ function Quotation() {
   };
 
   useEffect(() => {
-       fetch(`${config.apiBaseUrl}/getItem`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                company_code: sessionStorage.getItem("selectedCompanyCode"),
-              }),
-            })
+    fetch(`${config.apiBaseUrl}/getItem`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
+      }),
+    })
       .then((data) => data.json())
       .then((data) => {
         setProductDrop(data);
-        const defaultInvoice = data.find((item) => item.attributedetails_name === "Product") || data[0];
+        const defaultInvoice =
+          data.find((item) => item.attributedetails_name === "Product") ||
+          data[0];
         if (defaultInvoice) {
           setSelectedProduct({
             value: defaultInvoice.attributedetails_name,
@@ -2519,7 +2619,7 @@ function Quotation() {
 
   const handleChangeProduct = (selectedProduct) => {
     setSelectedProduct(selectedProduct);
-    setProduct(selectedProduct ? selectedProduct.value : '');
+    setProduct(selectedProduct ? selectedProduct.value : "");
     fetchCodes(selectedProduct.value);
   };
 
@@ -2568,55 +2668,53 @@ function Quotation() {
 
   const fetchCodes = (selectedValue) => {
     fetch(`${config.apiBaseUrl}/getcodetest`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            company_code: sessionStorage.getItem("selectedCompanyCode"),
-            filter: selectedValue,
-        }),
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
+        filter: selectedValue,
+      }),
     })
-        .then((response) => response.json())
-        .then((data) => {
-            const formattedData = data.map((item) => ({
-                value: item.code,
-                label: `${item.code} - ${item.name}`,
-            }));
-            setDynamicOptions(formattedData);
-        })
-        .catch((error) => {
-            console.error('Error fetching product codes:', error);
-        });
-};
+      .then((response) => response.json())
+      .then((data) => {
+        const formattedData = data.map((item) => ({
+          value: item.code,
+          label: `${item.code} - ${item.name}`,
+        }));
+        setDynamicOptions(formattedData);
+      })
+      .catch((error) => {
+        console.error("Error fetching product codes:", error);
+      });
+  };
 
   const handleChangeDynamicOption = (selectedOption) => {
-    console.log('Selected Option:', selectedOption);
-    console.log('Selected Product:', selectedProduct);
+    console.log("Selected Option:", selectedOption);
+    console.log("Selected Product:", selectedProduct);
 
     setSelectedDynamicOption(selectedOption);
 
-    if (selectedProduct && selectedProduct.value === 'Item') {
+    if (selectedProduct && selectedProduct.value === "Item") {
       handleItemCode(selectedOption.value);
-      console.log(selectedOption.value)
-    } else if (selectedProduct && selectedProduct.value === 'Product') {
+      console.log(selectedOption.value);
+    } else if (selectedProduct && selectedProduct.value === "Product") {
       handlequotationProductCode(selectedOption.value);
-
     }
   };
-
 
   const handlequotationProductCode = async (Product_Code) => {
     try {
       const response = await fetch(`${config.apiBaseUrl}/Quotation`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           Product_Code,
-          company_code: sessionStorage.getItem("selectedCompanyCode")
-        })
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+        }),
       });
 
       if (response.ok) {
@@ -2624,7 +2722,8 @@ function Quotation() {
         console.log(searchData);
 
         // Get the last serial number or default to 0 if rowData is empty
-        const lastSerialNumber = rowData.length > 0 ? rowData[rowData.length - 1].serialNumber : 0;
+        const lastSerialNumber =
+          rowData.length > 0 ? rowData[rowData.length - 1].serialNumber : 0;
         const updatedSerialNo = lastSerialNumber + 1;
 
         // Map the fetched data into new rows with appropriate properties
@@ -2639,13 +2738,13 @@ function Quotation() {
           taxType: matchedItem.tax_type,
           taxDetail: matchedItem.combined_tax_details,
           taxPercentage: matchedItem.combined_tax_percent,
-          keyField: `${updatedSerialNo}-${matchedItem.product_code || ''}` // Unique key for each row
+          keyField: `${updatedSerialNo}-${matchedItem.product_code || ""}`, // Unique key for each row
         }));
 
         // Update the state by appending the new rows to the previous row data
-        setRowData(prevRowData => [...prevRowData, ...newRows]);
+        setRowData((prevRowData) => [...prevRowData, ...newRows]);
       } else if (response.status === 404) {
-        toast.warning('Data not found');
+        toast.warning("Data not found");
       } else {
         console.log("Bad request");
       }
@@ -2706,18 +2805,25 @@ function Quotation() {
   // };
   const handleItemCode = async (Item_code) => {
     try {
-      const response = await fetch(`${config.apiBaseUrl}/getItemCodeSalesDataQuote`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${config.apiBaseUrl}/getItemCodeSalesDataQuote`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            Item_code,
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
+          }),
         },
-        body: JSON.stringify({ Item_code, company_code: sessionStorage.getItem("selectedCompanyCode") }),
-      });
+      );
 
       if (response.ok) {
         const searchData = await response.json();
 
-        const lastSerialNumber = rowData.length > 0 ? rowData[rowData.length - 1].serialNumber : 0;
+        const lastSerialNumber =
+          rowData.length > 0 ? rowData[rowData.length - 1].serialNumber : 0;
         const updatedSerialNo = lastSerialNumber + 1;
 
         const newRows = searchData.map((matchedItem) => ({
@@ -2732,13 +2838,13 @@ function Quotation() {
           taxDetail: matchedItem.combined_tax_details,
           taxPercentage: matchedItem.combined_tax_percent,
 
-          keyField: `${updatedSerialNo || ''}-${matchedItem.Item_code || ''}`,
+          keyField: `${updatedSerialNo || ""}-${matchedItem.Item_code || ""}`,
           image: matchedItem.image,
         }));
 
         setRowData((prevRowData) => [...prevRowData, ...newRows]);
       } else if (response.status === 404) {
-        toast.warning('Data not found');
+        toast.warning("Data not found");
       } else {
         console.log("Bad request");
       }
@@ -2753,7 +2859,21 @@ function Quotation() {
 
   const handleVendor = async (data) => {
     if (data && data.length > 0) {
-      const [{ CustomerCode, CustomerName, Address1, Address2, Address3, Address4, State, Country, MobileNo, ContactPerson, GSTNo }] = data;
+      const [
+        {
+          CustomerCode,
+          CustomerName,
+          Address1,
+          Address2,
+          Address3,
+          Address4,
+          State,
+          Country,
+          MobileNo,
+          ContactPerson,
+          GSTNo,
+        },
+      ] = data;
 
       setHeaderRowData((prevRowData) =>
         prevRowData.map((row) => {
@@ -2783,11 +2903,10 @@ function Quotation() {
             default:
               return row;
           }
-        })
+        }),
       );
-
     } else {
-      console.error('Data is empty or undefined');
+      console.error("Data is empty or undefined");
     }
   };
 
@@ -2802,25 +2921,28 @@ function Quotation() {
   const [RoundOff, setRoundOff] = useState("");
   const [GrandTotal, setGrandTotal] = useState("");
 
-  
   const [deletedrowdatapatch, setdeleterowdatapatch] = useState([
-    { fieldName: 'Kind Attention',deletedNotes:''},
-    { fieldName: 'Quotation Validity',deletedNotes:''}
-]);
+    { fieldName: "Kind Attention", deletedNotes: "" },
+    { fieldName: "Quotation Validity", deletedNotes: "" },
+  ]);
 
-const columDeletedPatch = [
-  { headerName: 'Details', field: 'fieldName', maxWidth: 240, editable: false },
-  {
-      headerName: 'Notes',
-      field: 'deletedNotes',
+  const columDeletedPatch = [
+    {
+      headerName: "Details",
+      field: "fieldName",
+      maxWidth: 240,
+      editable: false,
+    },
+    {
+      headerName: "Notes",
+      field: "deletedNotes",
       editable: true,
       onCellValueChanged: onCellValueChangedBillTo,
       cellEditorParams: {
-          maxLength: 250
+        maxLength: 250,
       },
-  }
-];
-
+    },
+  ];
 
   const deletedColumnDetail = [
     {
@@ -2874,7 +2996,8 @@ const columDeletedPatch = [
         if (params.value) {
           const base64Image = arrayBufferToBase64(params.value.data);
           return (
-            <img src={`data:image/jpeg;base64,${base64Image}`}
+            <img
+              src={`data:image/jpeg;base64,${base64Image}`}
               alt="Product Image"
               style={{ width: " 50px", height: "50px" }}
             />
@@ -2883,7 +3006,7 @@ const columDeletedPatch = [
           return "";
         }
       },
-      hide: false
+      hide: false,
     },
     {
       headerName: "Unit Price",
@@ -2996,8 +3119,8 @@ const columDeletedPatch = [
 
   const deletedTermsConditions = [
     {
-      headerName: 'S.No',
-      field: 'deletedSerialNumber',
+      headerName: "S.No",
+      field: "deletedSerialNumber",
       maxWidth: 70,
       valueGetter: (params) => params.node.rowIndex + 1,
       sortable: false,
@@ -3005,8 +3128,8 @@ const columDeletedPatch = [
       maxHeight: 50,
     },
     {
-      headerName: 'Terms & Conditions',
-      field: 'deletedTermsConditions',
+      headerName: "Terms & Conditions",
+      field: "deletedTermsConditions",
       // minWidth: 1000,
       // maxWidth: 1000,
       minHeight: 50,
@@ -3021,7 +3144,6 @@ const columDeletedPatch = [
     if (e.key === "Enter") {
       handleDeletedTransaction(TransactionNo);
     }
-
   };
 
   const handleDeletedTransaction = async (code) => {
@@ -3049,8 +3171,11 @@ const columDeletedPatch = [
           setTax(item.tax_amount);
 
           setdeleterowdatapatch([
-            { fieldName: 'Kind Attention', deletedNotes: item.kind_attention},
-            { fieldName: 'Quotation Validity', deletedNotes: item.quotation_validity}
+            { fieldName: "Kind Attention", deletedNotes: item.kind_attention },
+            {
+              fieldName: "Quotation Validity",
+              deletedNotes: item.quotation_validity,
+            },
           ]);
 
           setDeletedHeaderRowData([
@@ -3066,7 +3191,6 @@ const columDeletedPatch = [
             { fieldName: "GST No", deletedBillTo: item.customer_gst_no },
             { fieldName: "Contact Person", deletedBillTo: item.contact_person },
           ]);
-
         } else {
           console.log("Header Data is empty or not found");
           setTransactionDate("");
@@ -3162,9 +3286,29 @@ const columDeletedPatch = [
 
   const handleDeletedQuotationData = async (data) => {
     if (data && data.length > 0) {
-      const [{ TransactionNo, CustomerCode, EntryDate, CustomerName, CustomerAddr1, CustomerAddr2, CustomerAddr3,
-        CustomerAddr4, CustomerState, CustomerCountry, ContactPerson, ContactMobileNo, TaxAmount,KIND_attention,Quotation_validity,
-        PurchaseAmount, RoundOff, TotalAmount,GSTNo }] = data;
+      const [
+        {
+          TransactionNo,
+          CustomerCode,
+          EntryDate,
+          CustomerName,
+          CustomerAddr1,
+          CustomerAddr2,
+          CustomerAddr3,
+          CustomerAddr4,
+          CustomerState,
+          CustomerCountry,
+          ContactPerson,
+          ContactMobileNo,
+          TaxAmount,
+          KIND_attention,
+          Quotation_validity,
+          PurchaseAmount,
+          RoundOff,
+          TotalAmount,
+          GSTNo,
+        },
+      ] = data;
 
       const transactionNumber = document.getElementById("TransactionNo");
       if (transactionNumber) {
@@ -3233,11 +3377,9 @@ const columDeletedPatch = [
       ]);
 
       setdeleterowdatapatch([
-        { fieldName: "Kind Attention", deletedNotes: KIND_attention},
+        { fieldName: "Kind Attention", deletedNotes: KIND_attention },
         { fieldName: "Quotation Validity", deletedNotes: Quotation_validity },
-
       ]);
-
     } else {
       console.log("Data not fetched...!");
     }
@@ -3246,16 +3388,18 @@ const columDeletedPatch = [
 
   const DeletedQuotationTaxView = async (TransactionNo) => {
     try {
-      const response = await fetch(`${config.apiBaseUrl}/getDeletedQuotationTaxDetailView`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${config.apiBaseUrl}/getDeletedQuotationTaxDetailView`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            transaction_no: TransactionNo,
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
+          }),
         },
-        body: JSON.stringify({
-          transaction_no: TransactionNo,
-          company_code: sessionStorage.getItem("selectedCompanyCode"),
-        }),
-      }
       );
 
       if (response.ok) {
@@ -3279,7 +3423,7 @@ const columDeletedPatch = [
               deletedTaxPercentage: tax_per,
               deletedTaxAmount: parseFloat(tax_amt).toFixed(2),
             });
-          }
+          },
         );
 
         setDeletedRowDataTax(newRowData);
@@ -3288,7 +3432,9 @@ const columDeletedPatch = [
         setDeletedRowDataTax([]);
       } else {
         const errorResponse = await response.json();
-        toast.warning(errorResponse.message || "Failed to save Terms & Conditions");
+        toast.warning(
+          errorResponse.message || "Failed to save Terms & Conditions",
+        );
         console.error(errorResponse.details || errorResponse.message);
       }
     } catch (error) {
@@ -3298,16 +3444,18 @@ const columDeletedPatch = [
 
   const DeletedQuotationDetailView = async (TransactionNo) => {
     try {
-      const response = await fetch(`${config.apiBaseUrl}/getDeletedQuotationDetailView`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${config.apiBaseUrl}/getDeletedQuotationDetailView`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            transaction_no: TransactionNo,
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
+          }),
         },
-        body: JSON.stringify({
-          transaction_no: TransactionNo,
-          company_code: sessionStorage.getItem("selectedCompanyCode"),
-        }),
-      }
       );
 
       if (response.ok) {
@@ -3326,7 +3474,7 @@ const columDeletedPatch = [
             tax_amount,
             bill_rate,
             hsn,
-            Description
+            Description,
           } = item;
 
           newRowData.push({
@@ -3349,7 +3497,9 @@ const columDeletedPatch = [
         setDeletedRowData([]);
       } else {
         const errorResponse = await response.json();
-        toast.warning(errorResponse.message || "Failed to save Terms & Conditions");
+        toast.warning(
+          errorResponse.message || "Failed to save Terms & Conditions",
+        );
         console.error(errorResponse.details || errorResponse.message);
       }
     } catch (error) {
@@ -3359,24 +3509,26 @@ const columDeletedPatch = [
 
   const DeletedTermsView = async (TransactionNo) => {
     try {
-      const response = await fetch(`${config.apiBaseUrl}/getDeletedQuotationTerms`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${config.apiBaseUrl}/getDeletedQuotationTerms`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            transaction_no: TransactionNo,
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
+          }),
         },
-        body: JSON.stringify({
-          transaction_no: TransactionNo,
-          company_code: sessionStorage.getItem("selectedCompanyCode"),
-        }),
-      }
       );
 
       if (response.ok) {
         const searchData = await response.json();
-        console.log(searchData)
+        console.log(searchData);
 
         const newRowData = [];
-        searchData.forEach(item => {
+        searchData.forEach((item) => {
           const { Terms_conditions } = item;
           newRowData.push({
             deletedTermsConditions: Terms_conditions,
@@ -3384,13 +3536,14 @@ const columDeletedPatch = [
         });
 
         setDeletedRowDataTerms(newRowData);
-
       } else if (response.status === 404) {
         console.log("Data not found");
         setDeletedRowDataTerms([]);
       } else {
         const errorResponse = await response.json();
-        toast.warning(errorResponse.message || "Failed to save Terms & Conditions");
+        toast.warning(
+          errorResponse.message || "Failed to save Terms & Conditions",
+        );
         console.error(errorResponse.details || errorResponse.message);
       }
     } catch (error) {
@@ -3399,7 +3552,7 @@ const columDeletedPatch = [
   };
 
   //Default Date functionality
-  const currentDate = new Date().toISOString().split('T')[0];
+  const currentDate = new Date().toISOString().split("T")[0];
 
   useEffect(() => {
     setEntryDate(currentDate);
@@ -3408,22 +3561,31 @@ const columDeletedPatch = [
   const handleDateChange = (e) => {
     const selectedDate = e.target.value;
 
-    if (selectedDate >= financialYearStart && selectedDate <= financialYearEnd) {
+    if (
+      selectedDate >= financialYearStart &&
+      selectedDate <= financialYearEnd
+    ) {
       if (selectedDate !== currentDate) {
         console.log("Date has been changed.");
       }
       setEntryDate(selectedDate);
     } else {
-      toast.warning('Transaction date must be between April 1st, 2024 and March 31st, 2025.');
+      toast.warning(
+        "Transaction date must be between April 1st, 2024 and March 31st, 2025.",
+      );
     }
   };
 
   return (
     <div className="">
-      {Screens === 'Add' ? (
+      {Screens === "Add" ? (
         <div className="container-fluid Topnav-screen">
-        {loading && <LoadingScreen />}
-          <ToastContainer position="top-right" className="toast-design" theme="colored" />
+          {loading && <LoadingScreen />}
+          <ToastContainer
+            position="top-right"
+            className="toast-design"
+            theme="colored"
+          />
           <div>
             <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
               <div class="d-flex justify-content-between">
@@ -3446,34 +3608,67 @@ const columDeletedPatch = [
                     />
                   </div>
                   {buttonsVisible &&
-                    ["add", "all permission"].some((permission) => quotationPermission.includes(permission)) && (
-                      <savebutton className="purbut" onClick={handleSaveButtonClick} title="Save">
+                    ["add", "all permission"].some((permission) =>
+                      quotationPermission.includes(permission),
+                    ) && (
+                      <savebutton
+                        className="purbut"
+                        onClick={handleSaveButtonClick}
+                        title="Save"
+                      >
                         <i class="fa-regular fa-floppy-disk"></i>
                       </savebutton>
                     )}
 
-{showUpdateButton && ['update', 'all permission'].some(permission => quotationPermission.includes(permission)) && (
-                                <savebutton className="purbut" onClick={handleUpdateButtonClick} title='Update' >
-                                    <i class="fa-solid fa-floppy-disk"></i>
-                                </savebutton>
-                            )} 
+                  {showUpdateButton &&
+                    ["update", "all permission"].some((permission) =>
+                      quotationPermission.includes(permission),
+                    ) && (
+                      <savebutton
+                        className="purbut"
+                        onClick={handleUpdateButtonClick}
+                        title="Update"
+                      >
+                        <i class="fa-solid fa-floppy-disk"></i>
+                      </savebutton>
+                    )}
 
-                  {["delete", "all permission"].some((permission) => quotationPermission.includes(permission)) && (
-                    <delbutton className="purbut" onClick={handleDeleteButtonClick} title="Delete">
+                  {["delete", "all permission"].some((permission) =>
+                    quotationPermission.includes(permission),
+                  ) && (
+                    <delbutton
+                      className="purbut"
+                      onClick={handleDeleteButtonClick}
+                      title="Delete"
+                    >
                       <i class="fa-solid fa-trash"></i>
                     </delbutton>
                   )}
-                  {["all permission", "view"].some((permission) => quotationPermission.includes(permission)) && (
-                    <printbutton className="purbut" title="Print" onClick={generateReport}>
+                  {["all permission", "view"].some((permission) =>
+                    quotationPermission.includes(permission),
+                  ) && (
+                    <printbutton
+                      className="purbut"
+                      title="Print"
+                      onClick={generateReport}
+                    >
                       <i class="fa-solid fa-file-pdf"></i>
                     </printbutton>
                   )}
                   {showExcelButton && (
-                    <printbutton className="purbut" title="Excel" onClick={handleExcelDownload}>
+                    <printbutton
+                      className="purbut"
+                      title="Excel"
+                      onClick={handleExcelDownload}
+                    >
                       <i class="fa-solid fa-file-excel"></i>
                     </printbutton>
                   )}
-                  <printbutton className="purbut" title="Reload" onClick={handleReload}>
+                  <printbutton
+                    className="purbut"
+                    title="Reload"
+                    onClick={handleReload}
+                  >
                     <i class="fa-solid fa-arrow-rotate-right"></i>
                   </printbutton>
                 </div>
@@ -3486,13 +3681,20 @@ const columDeletedPatch = [
                     </h1>
                   </div>
                   <div class="dropdown mt-1 ms-5" style={{ paddingLeft: 0 }}>
-                    <button class="btn btn-primary dropdown-toggle p-1 ms-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button
+                      class="btn btn-primary dropdown-toggle p-1 ms-3"
+                      type="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
                       <i class="fa-solid fa-list"></i>
                     </button>
                     <ul class="dropdown-menu menu">
                       {buttonsVisible && (
                         <li class="iconbutton d-flex justify-content-center text-success">
-                          {["add", "all permission"].some((permission) => quotationPermission.includes(permission)) && (
+                          {["add", "all permission"].some((permission) =>
+                            quotationPermission.includes(permission),
+                          ) && (
                             <icon class="icon" onClick={handleSaveButtonClick}>
                               <i class="fa-regular fa-floppy-disk"></i>
                             </icon>
@@ -3500,14 +3702,18 @@ const columDeletedPatch = [
                         </li>
                       )}
                       <li class="iconbutton  d-flex justify-content-center text-danger">
-                        {["delete", "all permission"].some((permission) => quotationPermission.includes(permission)) && (
+                        {["delete", "all permission"].some((permission) =>
+                          quotationPermission.includes(permission),
+                        ) && (
                           <icon class="icon" onClick={handleDeleteButtonClick}>
                             <i class="fa-solid fa-trash"></i>
                           </icon>
                         )}
                       </li>
                       <li class="iconbutton  d-flex justify-content-center text-warning">
-                        {["all permission", "view"].some((permission) => quotationPermission.includes(permission)) && (
+                        {["all permission", "view"].some((permission) =>
+                          quotationPermission.includes(permission),
+                        ) && (
                           <icon class="icon" onClick={generateReport}>
                             <i class="fa-solid fa-file-pdf"></i>
                           </icon>
@@ -3515,7 +3721,7 @@ const columDeletedPatch = [
                       </li>
                       {showExcelButton && (
                         <li class="iconbutton  d-flex justify-content-center">
-                          <icon class="icon" onClick={handleExcelDownload} >
+                          <icon class="icon" onClick={handleExcelDownload}>
                             <i class="fa-solid fa-file-excel"></i>
                           </icon>
                         </li>
@@ -3533,58 +3739,72 @@ const columDeletedPatch = [
             <div className="shadow-lg p-1 bg-body-tertiary rounded  pt-3 pb-4">
               <div className="row ms-3 me-3">
                 {/* <div className=""> */}
-                  <div className="col-md-4 form-group mb-2">
-                    <label className={`${deleteError && !transactionNo ? "red" : ""}`}>
-                      Transaction No{showAsterisk && <span className="text-danger">*</span>}
-                    </label>
-                    <div className="exp-form-floating">
-                      <div class="d-flex justify-content-end">
-                        <input
-                          id="RefNo"
-                          className="exp-input-field form-control justify-content-start"
-                          type="text"
-                          placeholder=""
-                          title="Enter the Transaction No"
-                          required
-                          value={transactionNo}
-                          onChange={(e) => setTransactionNo(e.target.value)}
-                          maxLength={50}
-                          onKeyPress={handleKeyPressRef}
-                          autoComplete="off"
-                        />
-                        <div className="position-absolute mt-1 me-2">
-                          <span className="icon searchIcon" title="Quotation Help" onClick={handlePurchase}>
-                            <i class="fa fa-search"></i>
-                          </span>
-                        </div>
+                <div className="col-md-4 form-group mb-2">
+                  <label
+                    className={`${deleteError && !transactionNo ? "red" : ""}`}
+                  >
+                    Transaction No
+                    {showAsterisk && <span className="text-danger">*</span>}
+                  </label>
+                  <div className="exp-form-floating">
+                    <div class="d-flex justify-content-end">
+                      <input
+                        id="RefNo"
+                        className="exp-input-field form-control justify-content-start"
+                        type="text"
+                        placeholder=""
+                        title="Enter the Transaction No"
+                        required
+                        value={transactionNo}
+                        onChange={(e) => setTransactionNo(e.target.value)}
+                        maxLength={50}
+                        onKeyPress={handleKeyPressRef}
+                        autoComplete="off"
+                      />
+                      <div className="position-absolute mt-1 me-2">
+                        <span
+                          className="icon searchIcon"
+                          title="Quotation Help"
+                          onClick={handlePurchase}
+                        >
+                          <i class="fa fa-search"></i>
+                        </span>
                       </div>
                     </div>
                   </div>
-                  <div className="col-md-4 form-group mb-2 ">
-                    <div class="exp-form-floating">
-                      <label for="" className={`${error && !entryDate ? "red" : ""}`}>
-                        Transaction Date{!showAsterisk && <span className="text-danger">*</span>}
-                      </label>
-                      <input
-                        name="transactionDate"
-                        id="entryDate"
-                        className="exp-input-field form-control"
-                        type="date"
-                        placeholder=""
-                        title="Enter the Transaction Date"
-                        required
-                        min={financialYearStart}
-                        max={financialYearEnd}
-                        value={entryDate}
-                        onChange={handleDateChange}
-                      />
-                    </div>
-                  </div>
-                {/* </div> */}
                 </div>
-                <div className="row ms-2 me-3 g-0">
+                <div className="col-md-4 form-group mb-2 ">
+                  <div class="exp-form-floating">
+                    <label
+                      for=""
+                      className={`${error && !entryDate ? "red" : ""}`}
+                    >
+                      Transaction Date
+                      {!showAsterisk && <span className="text-danger">*</span>}
+                    </label>
+                    <input
+                      name="transactionDate"
+                      id="entryDate"
+                      className="exp-input-field form-control"
+                      type="date"
+                      placeholder=""
+                      title="Enter the Transaction Date"
+                      required
+                      min={financialYearStart}
+                      max={financialYearEnd}
+                      value={entryDate}
+                      onChange={handleDateChange}
+                    />
+                  </div>
+                </div>
+                {/* </div> */}
+              </div>
+              <div className="row ms-2 me-3 g-0">
                 <div className="col-md-6">
-                  <div className="ag-theme-alpine" style={{ height: 240, width: "100%" }}>
+                  <div
+                    className="ag-theme-alpine"
+                    style={{ height: 240, width: "100%" }}
+                  >
                     <AgGridReact
                       columnDefs={columnDefsTermsConditions}
                       rowData={rowDataTerms}
@@ -3597,7 +3817,10 @@ const columDeletedPatch = [
                   </div>
                 </div>
                 <div className="col-md-6">
-                  <div className="ag-theme-alpine" style={{ height: 240, width: "100%" }}>
+                  <div
+                    className="ag-theme-alpine"
+                    style={{ height: 240, width: "100%" }}
+                  >
                     <AgGridReact
                       columnDefs={columnPatch}
                       rowData={rowdatapatch}
@@ -3606,8 +3829,11 @@ const columDeletedPatch = [
                     />
                   </div>
                 </div>
-                </div>
-              <div className="ag-theme-alpine mt-2" style={{ height: 360, width: "100%" }}>
+              </div>
+              <div
+                className="ag-theme-alpine mt-2"
+                style={{ height: 360, width: "100%" }}
+              >
                 <AgGridReact
                   columnDefs={columnHeader}
                   rowData={headerRowData}
@@ -3616,7 +3842,10 @@ const columDeletedPatch = [
                 />
               </div>
             </div>
-            <div className="shadow-lg p-1 bg-body-tertiary rounded mt-2 pt-3 pb-4" align="left">
+            <div
+              className="shadow-lg p-1 bg-body-tertiary rounded mt-2 pt-3 pb-4"
+              align="left"
+            >
               <div className="row ms-3 me-3">
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
@@ -3693,43 +3922,48 @@ const columDeletedPatch = [
                     />
                   </div>
                 </div>
-                <div className="col-md-3 form-group mb-2" style={{ justifyContent: "center" }}>
+                <div
+                  className="col-md-3 form-group mb-2"
+                  style={{ justifyContent: "center" }}
+                >
                   <label htmlFor="party_code">Product/Items Filter</label>
                   <div className="exp-form-floating">
                     <div title="Select the Product/Items Filter">
-                    <div class="d-flex justify-content-between">
-                      
-                      <Select
-                        id="Product"
-                        value={selectedProduct}
-                        onChange={handleChangeProduct}
-                        options={filteredOptionProduct}
-                        className="exp-input-field"
-                        placeholder=""
-                        required
-                        title="Please select the product/items filter"
-                      />
-                    </div>
+                      <div class="d-flex justify-content-between">
+                        <Select
+                          id="Product"
+                          value={selectedProduct}
+                          onChange={handleChangeProduct}
+                          options={filteredOptionProduct}
+                          className="exp-input-field"
+                          placeholder=""
+                          required
+                          title="Please select the product/items filter"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div className="col-md-3 form-group mb-2" style={{ justifyContent: "center" }}>
+                <div
+                  className="col-md-3 form-group mb-2"
+                  style={{ justifyContent: "center" }}
+                >
                   <label htmlFor="party_code">Product/Items Name</label>
                   <div className="exp-form-floating">
                     <div title="Select the Product/Items Name">
-                    <div class="d-flex justify-content-between">
-                      <Select
-                        className="exp-input-field"
-                        id='itemCode'
-                        required
-                        placeholder=""
-                        maxLength={18}
-                        autoComplete='off'
-                        options={dynamicOptions}
-                        onChange={handleChangeDynamicOption}
-                        title="Please select the product/items name"
-                      />
-                    </div>
+                      <div class="d-flex justify-content-between">
+                        <Select
+                          className="exp-input-field"
+                          id="itemCode"
+                          required
+                          placeholder=""
+                          maxLength={18}
+                          autoComplete="off"
+                          options={dynamicOptions}
+                          onChange={handleChangeDynamicOption}
+                          title="Please select the product/items name"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -3745,7 +3979,7 @@ const columDeletedPatch = [
                 >
                   <purButton
                     type="button"
-                    title='Product / Item Details'
+                    title="Product / Item Details"
                     className={`"toggle-btn"  ${activeTable === "myTable" ? "active" : ""}`}
                     onClick={() => handleToggleTable("myTable")}
                   >
@@ -3753,7 +3987,7 @@ const columDeletedPatch = [
                   </purButton>
                   <purButton
                     type="button"
-                    title='Tax Details'
+                    title="Tax Details"
                     className={`"toggle-btn" ${activeTable === "tax" ? "active" : ""}`}
                     onClick={() => handleToggleTable("tax")}
                   >
@@ -3782,7 +4016,9 @@ const columDeletedPatch = [
                 style={{ height: 437, width: "100%" }}
               >
                 <AgGridReact
-                  columnDefs={activeTable === "myTable" ? columnDefs : columnDefsTax}
+                  columnDefs={
+                    activeTable === "myTable" ? columnDefs : columnDefsTax
+                  }
                   rowData={activeTable === "myTable" ? rowData : rowDataTax}
                   defaultColDef={{ editable: true, resizable: true }}
                   onCellValueChanged={async (event) => {
@@ -3802,9 +4038,21 @@ const columDeletedPatch = [
             </div>
           </div>
           <div>
-            <QuotationItemPopup open={open} handleClose={handleClose} handleItem={handleItem} />
-            <QuotationCustomerPopup open={open2} handleClose={handleClose} handleVendor={handleVendor} />
-            <QuotationPopup open={open3} handleClose={handleClose} handleQuotationData={handleQuotationData} />
+            <QuotationItemPopup
+              open={open}
+              handleClose={handleClose}
+              handleItem={handleItem}
+            />
+            <QuotationCustomerPopup
+              open={open2}
+              handleClose={handleClose}
+              handleVendor={handleVendor}
+            />
+            <QuotationPopup
+              open={open3}
+              handleClose={handleClose}
+              handleQuotationData={handleQuotationData}
+            />
           </div>
           <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
             <div className="row ms-2">
@@ -3830,8 +4078,12 @@ const columDeletedPatch = [
         </div>
       ) : (
         <div className="container-fluid Topnav-screen">
-        {loading && <LoadingScreen />}
-          <ToastContainer position="top-right" className="toast-design" theme="colored" />
+          {loading && <LoadingScreen />}
+          <ToastContainer
+            position="top-right"
+            className="toast-design"
+            theme="colored"
+          />
           <div>
             <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
               <div class="d-flex justify-content-between">
@@ -3886,7 +4138,11 @@ const columDeletedPatch = [
                           autoComplete="off"
                         />
                         <div className="position-absolute mt-1 me-2">
-                          <span className="icon searchIcon" title="Deleted Quotation Help" onClick={handleDeletedQuotation}>
+                          <span
+                            className="icon searchIcon"
+                            title="Deleted Quotation Help"
+                            onClick={handleDeletedQuotation}
+                          >
                             <i class="fa fa-search"></i>
                           </span>
                         </div>
@@ -3912,7 +4168,10 @@ const columDeletedPatch = [
                   </div>
                 </div>
                 <div className="col-md-4">
-                  <div className="ag-theme-alpine" style={{ height: 240, width: "100%" }}>
+                  <div
+                    className="ag-theme-alpine"
+                    style={{ height: 240, width: "100%" }}
+                  >
                     <AgGridReact
                       columnDefs={deletedTermsConditions}
                       rowData={deletedRowDataTerms}
@@ -3925,8 +4184,11 @@ const columDeletedPatch = [
                   </div>
                 </div>
                 <div className="col-md-4">
-                  <div className="ag-theme-alpine" style={{ height: 240, width: "100%" }}>
-                  <AgGridReact
+                  <div
+                    className="ag-theme-alpine"
+                    style={{ height: 240, width: "100%" }}
+                  >
+                    <AgGridReact
                       columnDefs={columDeletedPatch}
                       rowData={deletedrowdatapatch}
                       defaultColDef={{ flex: 1 }}
@@ -4028,11 +4290,18 @@ const columDeletedPatch = [
                   </div>
                 </div>
               </div>
-              <div class="d-flex justify-content-between ms-2" style={{ marginBlock: "", marginTop: "10px" }}>
-                <div align="left" class="d-flex justify-content-start" style={{ marginLeft: "25px" }}>
+              <div
+                class="d-flex justify-content-between ms-2"
+                style={{ marginBlock: "", marginTop: "10px" }}
+              >
+                <div
+                  align="left"
+                  class="d-flex justify-content-start"
+                  style={{ marginLeft: "25px" }}
+                >
                   <purButton
                     type="button"
-                    title='Product / Item Details'
+                    title="Product / Item Details"
                     className={`"toggle-btn"  ${activeTable === "myTable" ? "active" : ""}`}
                     onClick={() => handleToggleTable("myTable")}
                   >
@@ -4040,7 +4309,7 @@ const columDeletedPatch = [
                   </purButton>
                   <purButton
                     type="button"
-                    title='Tax Details'
+                    title="Tax Details"
                     className={`"toggle-btn" ${activeTable === "tax" ? "active" : ""}`}
                     onClick={() => handleToggleTable("tax")}
                   >
@@ -4048,10 +4317,21 @@ const columDeletedPatch = [
                   </purButton>
                 </div>
               </div>
-              <div className="ag-theme-alpine" style={{ height: 437, width: "100%" }}>
+              <div
+                className="ag-theme-alpine"
+                style={{ height: 437, width: "100%" }}
+              >
                 <AgGridReact
-                  columnDefs={activeTable === "myTable" ? deletedColumnDetail : deletedColumnTax}
-                  rowData={activeTable === "myTable" ? deletedRowData : deletedRowDataTax}
+                  columnDefs={
+                    activeTable === "myTable"
+                      ? deletedColumnDetail
+                      : deletedColumnTax
+                  }
+                  rowData={
+                    activeTable === "myTable"
+                      ? deletedRowData
+                      : deletedRowDataTax
+                  }
                   defaultColDef={{ editable: true, resizable: true }}
                   onGridReady={onGridReady}
                   onRowClicked={handleRowClicked}
@@ -4061,7 +4341,11 @@ const columDeletedPatch = [
             </div>
           </div>
           <div>
-            <DeletedQuotaionHelp open={open4} handleClose={handleClose} handleDeletedQuotationData={handleDeletedQuotationData} />
+            <DeletedQuotaionHelp
+              open={open4}
+              handleClose={handleClose}
+              handleDeletedQuotationData={handleDeletedQuotationData}
+            />
           </div>
           <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
             <div className="row ms-2">

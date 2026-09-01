@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
@@ -8,14 +7,14 @@ import "./apps.css";
 import "./mobile.css";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { ToastContainer, toast } from 'react-toastify';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ToastContainer, toast } from "react-toastify";
 import Select from "react-select";
-import { showConfirmationToast } from './ToastConfirmation';
+import { showConfirmationToast } from "./ToastConfirmation";
 import labels from "./Labels";
-import LoadingScreen from './Loading';
+import LoadingScreen from "./Loading";
 
-const config = require('./Apiconfig');
+const config = require("./Apiconfig");
 
 const BaseAccount = () => {
   const [rowData, setRowData] = useState([]);
@@ -37,44 +36,43 @@ const BaseAccount = () => {
   const [createdDate, setCreatedDate] = useState("");
   const [modifiedDate, setModifiedDate] = useState("");
 
-
   //code added by Pavun purpose of set user permisssion
-  const permissions = JSON.parse(sessionStorage.getItem('permissions')) || {};
+  const permissions = JSON.parse(sessionStorage.getItem("permissions")) || {};
   const BAPermissions = permissions
-    .filter(permission => permission.screen_type === 'BaseAccount')
-    .map(permission => permission.permission_type.toLowerCase());
+    .filter((permission) => permission.screen_type === "BaseAccount")
+    .map((permission) => permission.permission_type.toLowerCase());
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((response) => response.json())
       .then((data) => {
-        const statusOption = data.map(option => option.attributedetails_name);
+        const statusOption = data.map((option) => option.attributedetails_name);
         setStatusGriddrop(statusOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setStatusdrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   const filteredOptionStatus = statusdrop.map((option) => ({
@@ -84,7 +82,7 @@ const BaseAccount = () => {
 
   const handleChangeStatus = (selectedStatus) => {
     setSelectedStatus(selectedStatus);
-    setStatus(selectedStatus ? selectedStatus.value : '');
+    setStatus(selectedStatus ? selectedStatus.value : "");
   };
 
   const handleCompanyNoChange = (event) => {
@@ -101,19 +99,22 @@ const BaseAccount = () => {
       const response = await fetch(`${config.apiBaseUrl}/getsearchdataBase`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ base_accgroup_code, base_accgroup_name, status }) // Send company_no and company_name as search criteria
+        body: JSON.stringify({
+          base_accgroup_code,
+          base_accgroup_name,
+          status,
+        }), // Send company_no and company_name as search criteria
       });
       if (response.ok) {
         const searchData = await response.json();
         setRowData(searchData);
-        console.log(searchData)
-        console.log("data fetched successfully")
-
+        console.log(searchData);
+        console.log("data fetched successfully");
       } else if (response.status === 404) {
         console.log("Data not found");
-        toast.warning("Data not found")
+        toast.warning("Data not found");
       } else {
         const errorResponse = await response.json();
         toast.warning(errorResponse.message || "Failed to insert sales data");
@@ -146,15 +147,11 @@ const BaseAccount = () => {
         };
 
         return (
-          <span
-            style={{ cursor: "pointer" }}
-            onClick={handleClick}
-          >
+          <span style={{ cursor: "pointer" }} onClick={handleClick}>
             {params.value}
           </span>
         );
       },
-
     },
     {
       headerName: "Account Name",
@@ -172,7 +169,7 @@ const BaseAccount = () => {
       cellStyle: { textAlign: "left" },
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
-        values: statusgriddrop
+        values: statusgriddrop,
       },
     },
   ];
@@ -188,7 +185,6 @@ const BaseAccount = () => {
     setGridColumnApi(params.columnApi);
   };
 
-
   const generateReport = () => {
     const selectedRows = gridApi.getSelectedRows();
     if (selectedRows.length === 0) {
@@ -197,12 +193,12 @@ const BaseAccount = () => {
     }
 
     const reportData = selectedRows.map((row) => {
-      const safeValue = (val) => (val !== undefined && val !== null ? val : '');
+      const safeValue = (val) => (val !== undefined && val !== null ? val : "");
 
       return {
         "Account Code": safeValue(row.base_accgroup_code),
         "Account Name": safeValue(row.base_accgroup_name),
-        "Status": safeValue(row.status),
+        Status: safeValue(row.status),
       };
     });
 
@@ -291,7 +287,7 @@ const BaseAccount = () => {
     reportWindow.document.write("</tbody></table>");
 
     reportWindow.document.write(
-      '<button class="report-button" onclick="window.print()">Print</button>'
+      '<button class="report-button" onclick="window.print()">Print</button>',
     );
     reportWindow.document.write("</body></html>");
     reportWindow.document.close();
@@ -310,12 +306,11 @@ const BaseAccount = () => {
     setSelectedRows(selectedData);
   };
 
-
   // Assuming you have a unique identifier for each row, such as 'id'
   // const onCellValueChanged = (params) => {
   //   const updatedRowData = [...rowData];
   //   const rowIndex = updatedRowData.findIndex(
-  //     (row) => row.base_accgroup_code === params.data.base_accgroup_code // Use the unique identifier 
+  //     (row) => row.base_accgroup_code === params.data.base_accgroup_code // Use the unique identifier
   //   );
   //   if (rowIndex !== -1) {
   //     updatedRowData[rowIndex][params.colDef.field] = params.newValue;
@@ -329,7 +324,7 @@ const BaseAccount = () => {
   const onCellValueChanged = (params) => {
     const updatedRowData = [...rowData];
     const rowIndex = updatedRowData.findIndex(
-      (row) => row.base_accgroup_code === params.data.base_accgroup_code
+      (row) => row.base_accgroup_code === params.data.base_accgroup_code,
     );
 
     if (rowIndex !== -1) {
@@ -338,7 +333,7 @@ const BaseAccount = () => {
 
       setEditedData((prevData) => {
         const existingIndex = prevData.findIndex(
-          (item) => item.base_accgroup_code === params.data.base_accgroup_code
+          (item) => item.base_accgroup_code === params.data.base_accgroup_code,
         );
 
         if (existingIndex !== -1) {
@@ -353,9 +348,16 @@ const BaseAccount = () => {
   };
 
   const saveEditedData = async () => {
-    const selectedRowsData = editedData.filter(row => selectedRows.some((selectedRow) => selectedRow.base_accgroup_code === row.base_accgroup_code));
+    const selectedRowsData = editedData.filter((row) =>
+      selectedRows.some(
+        (selectedRow) =>
+          selectedRow.base_accgroup_code === row.base_accgroup_code,
+      ),
+    );
     if (selectedRowsData.length === 0) {
-      toast.warning("Please select and modify at least one row to update its data")
+      toast.warning(
+        "Please select and modify at least one row to update its data",
+      );
       return;
     }
 
@@ -363,19 +365,19 @@ const BaseAccount = () => {
       "Are you sure you want to update the data in the selected rows?",
       async () => {
         try {
-          const modified_by = sessionStorage.getItem('selectedUserCode');
+          const modified_by = sessionStorage.getItem("selectedUserCode");
           const response = await fetch(`${config.apiBaseUrl}/updateBase`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "Modified-By": modified_by
+              "Modified-By": modified_by,
             },
             body: JSON.stringify({ editedData: selectedRowsData }), // Send only the selected rows for saving
-            "modified_by": modified_by
+            modified_by: modified_by,
           });
           if (response.status === 200) {
             setTimeout(() => {
-              toast.success("Data Updated Successfully")
+              toast.success("Data Updated Successfully");
               handleSearch();
             }, 1000);
             return;
@@ -390,11 +392,9 @@ const BaseAccount = () => {
       },
       () => {
         toast.info("Data update cancelled.");
-      }
+      },
     );
   };
-
-
 
   const deleteSelectedRows = async () => {
     const selectedRows = gridApi.getSelectedRows();
@@ -404,8 +404,10 @@ const BaseAccount = () => {
       return;
     }
 
-    const modified_by = sessionStorage.getItem('selectedUserCode');
-    const company_nosToDelete = selectedRows.map((row) => row.base_accgroup_code);
+    const modified_by = sessionStorage.getItem("selectedUserCode");
+    const company_nosToDelete = selectedRows.map(
+      (row) => row.base_accgroup_code,
+    );
 
     showConfirmationToast(
       "Are you sure you want to Delete the data in the selected rows?",
@@ -415,16 +417,16 @@ const BaseAccount = () => {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "Modified-By": modified_by
+              "Modified-By": modified_by,
             },
             body: JSON.stringify({ company_nos: company_nosToDelete }),
-            "modified_by": modified_by
+            modified_by: modified_by,
           });
 
           if (response.ok) {
             console.log("Rows deleted successfully:", company_nosToDelete);
             setTimeout(() => {
-              toast.success("Data Deleted successfully")
+              toast.success("Data Deleted successfully");
               handleSearch();
             }, 1000);
           } else {
@@ -438,10 +440,9 @@ const BaseAccount = () => {
       },
       () => {
         toast.info("Data Delete cancelled.");
-      }
+      },
     );
   };
-
 
   const formatDate = (dateString) => {
     if (!dateString) return " "; // Return 'N/A' if the date is missing
@@ -471,38 +472,70 @@ const BaseAccount = () => {
     }
   };
 
-
   return (
     <div className="container-fluid Topnav-screen">
       {loading && <LoadingScreen />}
-      <ToastContainer position="top-right" className="toast-design" theme="colored" />
+      <ToastContainer
+        position="top-right"
+        className="toast-design"
+        theme="colored"
+      />
 
-      <div >
+      <div>
         <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
-          <div class="d-flex justify-content-between " >
+          <div class="d-flex justify-content-between ">
             <div className="d-flex justify-content-start">
-              <h1 align="left" class="purbut" >
+              <h1 align="left" class="purbut">
                 Base Account
               </h1>
             </div>
             <div class="d-flex justify-content-end me-3 purbut">
-              {['add', 'all permission'].some(permission => BAPermissions.includes(permission)) && (
-                <addbutton className="purbut" onClick={handleNavigateToForm}
-                  required title="Add Base Account"> <i class="fa-solid fa-user-plus"></i>
+              {["add", "all permission"].some((permission) =>
+                BAPermissions.includes(permission),
+              ) && (
+                <addbutton
+                  className="purbut"
+                  onClick={handleNavigateToForm}
+                  required
+                  title="Add Base Account"
+                >
+                  {" "}
+                  <i class="fa-solid fa-user-plus"></i>
                 </addbutton>
               )}
-              {['delete', 'all permission'].some(permission => BAPermissions.includes(permission)) && (
-                <delbutton className="purbut" onClick={deleteSelectedRows} required title="Delete">
+              {["delete", "all permission"].some((permission) =>
+                BAPermissions.includes(permission),
+              ) && (
+                <delbutton
+                  className="purbut"
+                  onClick={deleteSelectedRows}
+                  required
+                  title="Delete"
+                >
                   <i class="fa-solid fa-user-minus"></i>
                 </delbutton>
               )}
-              {['update', 'all permission'].some(permission => BAPermissions.includes(permission)) && (
-                <savebutton className="purbut" onClick={saveEditedData} required title="Update">
+              {["update", "all permission"].some((permission) =>
+                BAPermissions.includes(permission),
+              ) && (
+                <savebutton
+                  className="purbut"
+                  onClick={saveEditedData}
+                  required
+                  title="Update"
+                >
                   <i class="fa-solid fa-floppy-disk"></i>
                 </savebutton>
               )}
-              {['all permission', 'view'].some(permission => BAPermissions.includes(permission)) && (
-                <printbutton className="purbut" onClick={generateReport} required title="Generate Report">
+              {["all permission", "view"].some((permission) =>
+                BAPermissions.includes(permission),
+              ) && (
+                <printbutton
+                  className="purbut"
+                  onClick={generateReport}
+                  required
+                  title="Generate Report"
+                >
                   <i class="fa-solid fa-print"></i>
                 </printbutton>
               )}
@@ -511,50 +544,51 @@ const BaseAccount = () => {
           <div className="mobileview">
             <div class="d-flex justify-content-between">
               <div className="">
-                <h1 className="h1">
-                  Base Account
-                </h1>
+                <h1 className="h1">Base Account</h1>
               </div>
               <div class="dropdown mt-2 me-5">
-                <button class="btn btn-primary dropdown-toggle p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <button
+                  class="btn btn-primary dropdown-toggle p-1"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
                   <i class="fa-solid fa-list"></i>
                 </button>
                 <ul class="dropdown-menu menu">
                   <li class="iconbutton d-flex justify-content-center text-success">
-                    {['add', 'all permission'].some(permission => BAPermissions.includes(permission)) && (
-                      <icon
-                        class="icon"
-                        onClick={handleNavigateToForm}
-                      >
+                    {["add", "all permission"].some((permission) =>
+                      BAPermissions.includes(permission),
+                    ) && (
+                      <icon class="icon" onClick={handleNavigateToForm}>
                         <i class="fa-solid fa-user-plus"></i>
                       </icon>
                     )}
                   </li>
                   <li class="iconbutton  d-flex justify-content-center text-danger">
-                    {['delete', 'all permission'].some(permission => BAPermissions.includes(permission)) && (
-                      <icon
-                        class="icon"
-                        onClick={deleteSelectedRows}
-                      >
+                    {["delete", "all permission"].some((permission) =>
+                      BAPermissions.includes(permission),
+                    ) && (
+                      <icon class="icon" onClick={deleteSelectedRows}>
                         <i class="fa-solid fa-user-minus"></i>
                       </icon>
                     )}
                   </li>
-                  <li class="iconbutton  d-flex justify-content-center text-primary ">                  {['update', 'all permission'].some(permission => BAPermissions.includes(permission)) && (
-                    <icon
-                      class="icon"
-                      onClick={saveEditedData}
-                    >
-                      <i class="fa-solid fa-floppy-disk"></i>
-                    </icon>
-                  )}
+                  <li class="iconbutton  d-flex justify-content-center text-primary ">
+                    {" "}
+                    {["update", "all permission"].some((permission) =>
+                      BAPermissions.includes(permission),
+                    ) && (
+                      <icon class="icon" onClick={saveEditedData}>
+                        <i class="fa-solid fa-floppy-disk"></i>
+                      </icon>
+                    )}
                   </li>
                   <li class="iconbutton  d-flex justify-content-center ">
-                    {['all permission', 'view'].some(permission => BAPermissions.includes(permission)) && (
-                      <icon
-                        class="icon"
-                        onClick={generateReport}
-                      >
+                    {["all permission", "view"].some((permission) =>
+                      BAPermissions.includes(permission),
+                    ) && (
+                      <icon class="icon" onClick={generateReport}>
                         <i class="fa-solid fa-print"></i>
                       </icon>
                     )}
@@ -576,10 +610,11 @@ const BaseAccount = () => {
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the account code here"
+                  required
+                  title="Please fill the account code here"
                   value={base_accgroup_code}
                   onChange={handleCompanyNoChange}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={18}
                 />
               </div>
@@ -594,42 +629,53 @@ const BaseAccount = () => {
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the account name here"
+                  required
+                  title="Please fill the account name here"
                   value={base_accgroup_name}
                   onChange={handleCompanyNameChange}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={250}
                 />
               </div>
             </div>
             <div className="col-md-3 form-group">
               <div class="exp-form-floating">
-                <label class="exp-form-labels">
-                  Status
-                </label>
-                <div title="Select the Status">        
-                <Select
-                  id="status"
-                  value={selectedStatus}
-                  onChange={handleChangeStatus}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  options={filteredOptionStatus}
-                  className="exp-input-field"
-                  placeholder=""
-                />
+                <label class="exp-form-labels">Status</label>
+                <div title="Select the Status">
+                  <Select
+                    id="status"
+                    value={selectedStatus}
+                    onChange={handleChangeStatus}
+                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                    options={filteredOptionStatus}
+                    className="exp-input-field"
+                    placeholder=""
+                    classNamePrefix="react-select"
+                    styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                  />
+                </div>
               </div>
-              </div>
-            </div> 
+            </div>
             <div className="col-md-3 form-group mt-4">
               <div class="exp-form-floating">
                 <div class=" d-flex  justify-content-center">
-                  <div class=''>
-                    <icon className="popups-btn fs-6 p-3" onClick={handleSearch} required title="Search">
+                  <div class="">
+                    <icon
+                      className="popups-btn fs-6 p-3"
+                      onClick={handleSearch}
+                      required
+                      title="Search"
+                    >
                       <i className="fas fa-search"></i>
                     </icon>
                   </div>
                   <div>
-                    <icon className="popups-btn fs-6 p-3" onClick={reloadGridData} required title="Refresh">
+                    <icon
+                      className="popups-btn fs-6 p-3"
+                      onClick={reloadGridData}
+                      required
+                      title="Refresh"
+                    >
                       <FontAwesomeIcon icon="fa-solid fa-arrow-rotate-right" />
                     </icon>
                   </div>
@@ -658,7 +704,9 @@ const BaseAccount = () => {
       <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
         <div className="row ms-2">
           <div className="d-flex justify-content-start">
-            <p className="col-md-6">{labels.createdBy}: {createdBy}</p>
+            <p className="col-md-6">
+              {labels.createdBy}: {createdBy}
+            </p>
             <p className="col-md-">
               {labels.createdDate}: {createdDate}
             </p>
@@ -675,7 +723,6 @@ const BaseAccount = () => {
       </div>
     </div>
   );
-}
+};
 
-
-export default BaseAccount
+export default BaseAccount;
