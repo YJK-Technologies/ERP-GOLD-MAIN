@@ -644,6 +644,7 @@ function ReceivedGoodsRt() {
                             className="exp-input-field"
                             placeholder=""
                             onKeyDown={(e) => e.key === 'Enter' && fetchreceivedgoodsreport()}
+                            styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                         />
                         </div>
                     </div>
@@ -672,6 +673,7 @@ function ReceivedGoodsRt() {
                             options={filteredOptionStatus}
                             onKeyDown={(e) => e.key === 'Enter' && fetchreceivedgoodsreport()}
                             data-tip="Please select a default warehouse"
+                            styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                         />
                     </div>
                 </div>
