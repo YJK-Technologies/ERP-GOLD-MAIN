@@ -18,6 +18,8 @@ const Invoice = () => {
         const detail = sessionStorage.getItem('QuotationdetailData');
         const tax = sessionStorage.getItem('QuotationtaxData');
 
+        console.log(header)
+
         if (header && detail && tax) {
             setHeaderData(JSON.parse(LZString.decompress(header)));
             setDetailData(JSON.parse(LZString.decompress(detail)));
