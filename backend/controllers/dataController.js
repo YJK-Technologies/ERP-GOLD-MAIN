@@ -5593,6 +5593,29 @@ const refNumberTosalesSumTax = async (req, res) => {
   }
 };
 
+const refNumberTosalesTCPrintData = async (req, res) => {
+  const { transaction_no, company_code } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    const result = await pool.request()
+      .input("mode", sql.NVarChar, "STC")
+      .input("transaction_no", sql.NVarChar, transaction_no)
+      .input("company_code", sql.NVarChar, company_code)
+      .query(`EXEC sp_print @mode,@transaction_no,@company_code,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+    // Process result sets
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset); // 200 OK if data is found
+    } else {
+      res.status(404).json("Data not found"); // 404 Not Found if no data is found
+    }
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
 
 const getAllDashboardData = async (req, res) => {
   const { company_code, user_code } = req.body;
@@ -29460,6 +29483,7 @@ module.exports = {
   refNumberTosalesHeaderPrintData,
   refNumberTosalesDetailPrintData,
   refNumberTosalesSumTax,
+  refNumberTosalesTCPrintData,
   getitemstockvalue,
   getAllItemVarient,
   getitemvairentname,

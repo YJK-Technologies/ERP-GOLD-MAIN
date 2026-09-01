@@ -1222,6 +1222,7 @@ const Dashboard = () => {
                     onChange={handleChangeManager}
                     options={filteredOptionManager}
                     className="col-md-12"
+                    styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                   />
                   <button
                     className=" shadow-none col-md-6"
@@ -1381,6 +1382,7 @@ const Dashboard = () => {
                     options={filteredOptionMartial}
                     onChange={handleChangeMartial}
                     onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                    styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                     value={selectedMaritalStatus} />
                 </div>
               </div>
@@ -1394,6 +1396,7 @@ const Dashboard = () => {
                     options={filteredOptionShift}
                     onChange={handleChangeShift}
                     onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                    styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                     value={selectedShift} />
                 </div>
               </div>

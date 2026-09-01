@@ -3,13 +3,13 @@ import "./input.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Select from "react-select";
 import { useNavigate, useLocation } from "react-router-dom";
-import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer, toast } from 'react-toastify';
-import LoadingScreen from './Loading';
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer, toast } from "react-toastify";
+import LoadingScreen from "./Loading";
 
 const config = require("./Apiconfig");
 
-function LocInfoInput({ }) {
+function LocInfoInput({}) {
   const [location_no, setlocation_no] = useState("");
   const [location_name, setlocation_name] = useState("");
   const [short_name, setshort_name] = useState("");
@@ -66,7 +66,7 @@ function LocInfoInput({ }) {
     setcity("");
     setstate("");
     setcountry("");
-    setstatus("")
+    setstatus("");
     setSelectedCity("");
     setselectedState("");
     setselectedCountry("");
@@ -115,63 +115,62 @@ function LocInfoInput({ }) {
   const created_by = sessionStorage.getItem("selectedUserCode");
   const modified_by = sessionStorage.getItem("selectedUserCode");
 
-
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
     fetch(`${config.apiBaseUrl}/city`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setdrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
     fetch(`${config.apiBaseUrl}/country`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setcondrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/state`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setstatedrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setstatusdrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   const filteredOptionCity = drop.map((option) => ({
@@ -274,7 +273,7 @@ function LocInfoInput({ }) {
       }
     } catch (error) {
       console.error("Error inserting data:", error);
-      toast.error('Error inserting data: ' + error.message);
+      toast.error("Error inserting data: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -340,7 +339,7 @@ function LocInfoInput({ }) {
       }
     } catch (error) {
       console.error("Error Update data:", error);
-      toast.error('Error Update data: ' + error.message);
+      toast.error("Error Update data: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -352,20 +351,20 @@ function LocInfoInput({ }) {
   }
 
   const handleNavigate = () => {
-  navigate("/Location", {
-    state: {
-      preservedRowData: location.state?.preservedRowData,
-      preservedInputs: location.state?.preservedInputs,
-    },
-  });
-};
+    navigate("/Location", {
+      state: {
+        preservedRowData: location.state?.preservedRowData,
+        preservedInputs: location.state?.preservedInputs,
+      },
+    });
+  };
 
   const handleKeyDown = async (
     e,
     nextFieldRef,
     value,
     hasValueChanged,
-    setHasValueChanged
+    setHasValueChanged,
   ) => {
     if (e.key === "Enter") {
       // Check if the value has changed and handle the search logic
@@ -396,15 +395,30 @@ function LocInfoInput({ }) {
       <div className="">
         <div class="">
           {loading && <LoadingScreen />}
-          <ToastContainer position="top-right" className="toast-design" theme="colored" />
+          <ToastContainer
+            position="top-right"
+            className="toast-design"
+            theme="colored"
+          />
           <div class="row ">
-            <div class="" >
-              <div >
+            <div class="">
+              <div>
                 <div className="shadow-lg p-0 bg-body-tertiary rounded ">
-                  <div className="mb-0 d-flex justify-content-between" >
-                    <h1 align="left" class="purbut" > {mode === "update" ? 'Update Location' : 'Add Location'}</h1>
-                    <h1 align="left" class="fs-4 mobileview" > {mode === "update" ? 'Update Location' : 'Add Location'}</h1>
-                    <button onClick={handleNavigate} className=" btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
+                  <div className="mb-0 d-flex justify-content-between">
+                    <h1 align="left" class="purbut">
+                      {" "}
+                      {mode === "update" ? "Update Location" : "Add Location"}
+                    </h1>
+                    <h1 align="left" class="fs-4 mobileview">
+                      {" "}
+                      {mode === "update" ? "Update Location" : "Add Location"}
+                    </h1>
+                    <button
+                      onClick={handleNavigate}
+                      className=" btn btn-danger shadow-none rounded-0 h-70 fs-5"
+                      required
+                      title="Close"
+                    >
                       <i class="fa-solid fa-xmark"></i>
                     </button>
                   </div>
@@ -418,7 +432,11 @@ function LocInfoInput({ }) {
                     <div class="exp-form-floating">
                       <div class="d-flex justify-content-start">
                         <div>
-                          <label for="state" class="exp-form-labels" className={`${error && !location_no ? 'text-danger' : ''}`}>
+                          <label
+                            for="state"
+                            class="exp-form-labels"
+                            className={`${error && !location_no ? "text-danger" : ""}`}
+                          >
                             Location No<span className="text-danger">*</span>
                           </label>
                         </div>
@@ -450,7 +468,11 @@ function LocInfoInput({ }) {
                     <div class="exp-form-floating">
                       <div class="d-flex justify-content-start">
                         <div>
-                          <label for="state" class="exp-form-labels" className={`${error && !location_name ? 'text-danger' : ''}`}>
+                          <label
+                            for="state"
+                            class="exp-form-labels"
+                            className={`${error && !location_name ? "text-danger" : ""}`}
+                          >
                             Location Name<span className="text-danger">*</span>
                           </label>
                         </div>
@@ -491,9 +513,7 @@ function LocInfoInput({ }) {
                         title="Please enter the short name"
                         value={short_name}
                         onChange={(e) => setshort_name(e.target.value)}
-                        onKeyDown={(e) =>
-                          handleKeyDown(e, address, shortname)
-                        }
+                        onKeyDown={(e) => handleKeyDown(e, address, shortname)}
                         maxLength={250}
                         ref={shortname}
                       />
@@ -503,7 +523,11 @@ function LocInfoInput({ }) {
                     <div class="exp-form-floating">
                       <div class="d-flex justify-content-start">
                         <div>
-                          <label for="state" class="exp-form-labels" className={`${error && !address1 ? 'text-danger' : ''}`}>
+                          <label
+                            for="state"
+                            class="exp-form-labels"
+                            className={`${error && !address1 ? "text-danger" : ""}`}
+                          >
                             Address 1<span className="text-danger">*</span>
                           </label>
                         </div>
@@ -532,7 +556,11 @@ function LocInfoInput({ }) {
                     <div class="exp-form-floating">
                       <div class="d-flex justify-content-start">
                         <div>
-                          <label for="state" class="exp-form-labels" className={`${error && !address2 ? 'text-danger' : ''}`}>
+                          <label
+                            for="state"
+                            class="exp-form-labels"
+                            className={`${error && !address2 ? "text-danger" : ""}`}
+                          >
                             Address 2<span className="text-danger">*</span>
                           </label>
                         </div>
@@ -546,9 +574,7 @@ function LocInfoInput({ }) {
                         title="Please enter the address"
                         value={address2}
                         ref={AddresS2}
-                        onKeyDown={(e) =>
-                          handleKeyDown(e, Address3, AddresS2)
-                        }
+                        onKeyDown={(e) => handleKeyDown(e, Address3, AddresS2)}
                         onChange={(e) => setaddress2(e.target.value)}
                         maxLength={250}
                       />
@@ -583,7 +609,11 @@ function LocInfoInput({ }) {
                     <div class="exp-form-floating">
                       <div class="d-flex justify-content-start">
                         <div>
-                          <label for="state" class="exp-form-labels" className={`${error && !city ? 'text-danger' : ''}`}>
+                          <label
+                            for="state"
+                            class="exp-form-labels"
+                            className={`${error && !city ? "text-danger" : ""}`}
+                          >
                             City<span className="text-danger">*</span>
                           </label>
                         </div>
@@ -604,9 +634,13 @@ function LocInfoInput({ }) {
                               State,
                               City,
                               hasValueChanged,
-                              setHasValueChanged
+                              setHasValueChanged,
                             )
                           }
+                          classNamePrefix="react-select"
+                          styles={{
+                            menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                          }}
                         />
                         {/* {error && !city && (
                         <div className="text-danger">
@@ -620,7 +654,11 @@ function LocInfoInput({ }) {
                     <div class="exp-form-floating">
                       <div class="d-flex justify-content-start">
                         <div>
-                          <label for="state" class="exp-form-labels" className={`${error && !state ? 'text-danger' : ''}`}>
+                          <label
+                            for="state"
+                            class="exp-form-labels"
+                            className={`${error && !state ? "text-danger" : ""}`}
+                          >
                             State<span className="text-danger">*</span>
                           </label>
                         </div>
@@ -641,9 +679,13 @@ function LocInfoInput({ }) {
                               Pincode,
                               State,
                               hasValueChanged,
-                              setHasValueChanged
+                              setHasValueChanged,
                             )
                           }
+                          classNamePrefix="react-select"
+                          styles={{
+                            menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                          }}
                         />
                         {/* {error && !state && (
                         <div className="text-danger">
@@ -657,7 +699,11 @@ function LocInfoInput({ }) {
                     <div class="exp-form-floating">
                       <div class="d-flex justify-content-start">
                         <div>
-                          <label for="state" class="exp-form-labels" className={`${error && !pincode ? 'text-danger' : ''}`}>
+                          <label
+                            for="state"
+                            class="exp-form-labels"
+                            className={`${error && !pincode ? "text-danger" : ""}`}
+                          >
                             Pin Code<span className="text-danger">*</span>
                           </label>
                         </div>
@@ -674,7 +720,7 @@ function LocInfoInput({ }) {
                         ref={Pincode}
                         onChange={(e) =>
                           setpincode(
-                            e.target.value.replace(/\D/g, "").slice(0, 13)
+                            e.target.value.replace(/\D/g, "").slice(0, 13),
                           )
                         }
                         maxLength={100}
@@ -690,7 +736,11 @@ function LocInfoInput({ }) {
                     <div class="exp-form-floating">
                       <div class="d-flex justify-content-start">
                         <div>
-                          <label for="state" class="exp-form-labels" className={`${error && !country ? 'text-danger' : ''}`}>
+                          <label
+                            for="state"
+                            class="exp-form-labels"
+                            className={`${error && !country ? "text-danger" : ""}`}
+                          >
                             Country<span className="text-danger">*</span>
                           </label>
                         </div>
@@ -706,6 +756,10 @@ function LocInfoInput({ }) {
                           maxLength={100}
                           ref={Country}
                           onKeyDown={(e) => handleKeyDown(e, email, Status)}
+                          classNamePrefix="react-select"
+                          styles={{
+                            menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                          }}
                         />
                       </div>
                     </div>
@@ -714,7 +768,11 @@ function LocInfoInput({ }) {
                     <div class="exp-form-floating">
                       <div class="d-flex justify-content-start">
                         <div>
-                          <label for="state" class="exp-form-labels" className={`${error && !email_id ? 'text-danger' : ''}`}>
+                          <label
+                            for="state"
+                            class="exp-form-labels"
+                            className={`${error && !email_id ? "text-danger" : ""}`}
+                          >
                             Email<span className="text-danger">*</span>
                           </label>
                         </div>
@@ -743,7 +801,11 @@ function LocInfoInput({ }) {
                     <div class="exp-form-floating">
                       <div class="d-flex justify-content-start">
                         <div>
-                          <label for="state" class="exp-form-labels" className={`${error && !status ? 'text-danger' : ''}`}>
+                          <label
+                            for="state"
+                            class="exp-form-labels"
+                            className={`${error && !status ? "text-danger" : ""}`}
+                          >
                             Status<span className="text-danger">*</span>
                           </label>
                         </div>
@@ -758,6 +820,10 @@ function LocInfoInput({ }) {
                           placeholder=""
                           ref={Status}
                           onKeyDown={(e) => handleKeyDown(e, Contactno, Status)}
+                          classNamePrefix="react-select"
+                          styles={{
+                            menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                          }}
                         />
                         {/* {error && !status && (
                         <div className="text-danger">
@@ -771,7 +837,11 @@ function LocInfoInput({ }) {
                     <div class="exp-form-floating">
                       <div class="d-flex justify-content-start">
                         <div>
-                          <label for="state" class="exp-form-labels" className={`${error && !contact_no ? 'text-danger' : ''}`}>
+                          <label
+                            for="state"
+                            class="exp-form-labels"
+                            className={`${error && !contact_no ? "text-danger" : ""}`}
+                          >
                             Contact No<span className="text-danger">*</span>
                           </label>
                         </div>
@@ -787,12 +857,12 @@ function LocInfoInput({ }) {
                         ref={Contactno}
                         onChange={(e) =>
                           setcontact_no(
-                            e.target.value.replace(/\D/g, "").slice(0, 50)
+                            e.target.value.replace(/\D/g, "").slice(0, 50),
                           )
                         }
                         maxLength={50}
                         onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
+                          if (e.key === "Enter") {
                             if (mode === "create") {
                               handleInsert();
                             } else {
@@ -851,11 +921,19 @@ function LocInfoInput({ }) {
                   </div> */}
                   <div class="col-md-3 form-group ">
                     {mode === "create" ? (
-                      <button onClick={handleInsert} className="mt-4 me-2" title="Save">
+                      <button
+                        onClick={handleInsert}
+                        className="mt-4 me-2"
+                        title="Save"
+                      >
                         <i class="fa-solid fa-floppy-disk"></i>
                       </button>
                     ) : (
-                      <button onClick={handleUpdate} className="mt-4" title="Update">
+                      <button
+                        onClick={handleUpdate}
+                        className="mt-4"
+                        title="Update"
+                      >
                         <i class="fa-solid fa-pen-to-square"></i>
                       </button>
                     )}

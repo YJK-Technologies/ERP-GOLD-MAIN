@@ -6,15 +6,14 @@ import "ag-grid-enterprise";
 import "./apps.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Select from 'react-select';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Select from "react-select";
 import labels from "./Labels";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { showConfirmationToast } from './ToastConfirmation';
-import LoadingScreen from './Loading';
-const config = require('./Apiconfig');
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { showConfirmationToast } from "./ToastConfirmation";
+import LoadingScreen from "./Loading";
+const config = require("./Apiconfig");
 
 function Desgination() {
   const [open2, setOpen2] = React.useState(false);
@@ -42,82 +41,77 @@ function Desgination() {
   const location = useLocation();
 
   //code added by Pavun purpose of set user permisssion
-  const permissions = JSON.parse(sessionStorage.getItem('permissions')) || {};
+  const permissions = JSON.parse(sessionStorage.getItem("permissions")) || {};
   const companyPermissions = permissions
-    .filter(permission => permission.screen_type === 'Company')
-    .map(permission => permission.permission_type.toLowerCase());
+    .filter((permission) => permission.screen_type === "Company")
+    .map((permission) => permission.permission_type.toLowerCase());
 
   useEffect(() => {
-        if (location.state?.preservedRowData) {
-          setRowData(location.state.preservedRowData);
-        }
-      
-        if (location.state?.preservedInputs) {
-          setdept_id(location.state.preservedInputs.dept_id || "");
-          setdesgination_id(location.state.preservedInputs.desgination_id || "");
-          setStatus(location.state.preservedInputs.status || "");
-      
-          if (location.state.preservedInputs.status) {
-            setSelectedStatus({
-              label: location.state.preservedInputs.status,
-              value: location.state.preservedInputs.status,
-            });
-          }
-        }
-      }, [location.state]);
+    if (location.state?.preservedRowData) {
+      setRowData(location.state.preservedRowData);
+    }
 
+    if (location.state?.preservedInputs) {
+      setdept_id(location.state.preservedInputs.dept_id || "");
+      setdesgination_id(location.state.preservedInputs.desgination_id || "");
+      setStatus(location.state.preservedInputs.status || "");
 
+      if (location.state.preservedInputs.status) {
+        setSelectedStatus({
+          label: location.state.preservedInputs.status,
+          value: location.state.preservedInputs.status,
+        });
+      }
+    }
+  }, [location.state]);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
-    }).then((response) => response.json())
+      body: JSON.stringify({ company_code }),
+    })
+      .then((response) => response.json())
       .then((data) => {
         // Extract city names from the fetched data
-        const statusOption = data.map(option => option.attributedetails_name);
+        const statusOption = data.map((option) => option.attributedetails_name);
         setStatusGriddrop(statusOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setStatusdrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-
-  const filteredOptionStatus = [{ value: 'All', label: 'All' }, ...statusdrop.map((option) => ({
-    value: option.attributedetails_name,
-    label: option.attributedetails_name,
-  }))];
+  const filteredOptionStatus = [
+    { value: "All", label: "All" },
+    ...statusdrop.map((option) => ({
+      value: option.attributedetails_name,
+      label: option.attributedetails_name,
+    })),
+  ];
 
   const handleChangeStatus = (selectedStatus) => {
     setSelectedStatus(selectedStatus);
-    setStatus(selectedStatus ? selectedStatus.value : '');
+    setStatus(selectedStatus ? selectedStatus.value : "");
     setHasValueChanged(true);
   };
-
-
-
-
-
-
 
   const reloadGridDatas = async () => {
     try {
@@ -129,35 +123,44 @@ function Desgination() {
       } else {
         console.error("Failed to reload grid data");
 
-        toast.error("Failed to reload grid data. Please try again later")
+        toast.error("Failed to reload grid data. Please try again later");
       }
     } catch (error) {
       console.error("Error reloading grid data:", error);
-      toast.error("An error occurred while reloading grid data. Please try again later")
+      toast.error(
+        "An error occurred while reloading grid data. Please try again later",
+      );
     }
   };
 
   const handleSearch = async () => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode')
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
     setLoading(true);
 
     try {
-      const response = await fetch(`${config.apiBaseUrl}/DesginationSerachData`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
+      const response = await fetch(
+        `${config.apiBaseUrl}/DesginationSerachData`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            dept_id,
+            desgination_id,
+            status,
+            company_code,
+          }), // Send company_no and company_name as search criteria
         },
-        body: JSON.stringify({ dept_id, desgination_id, status, company_code }) // Send company_no and company_name as search criteria
-      });
+      );
       if (response.ok) {
         const searchData = await response.json();
         setRowData(searchData);
-        console.log(searchData)
-        console.log("data fetched successfully")
-
+        console.log(searchData);
+        console.log("data fetched successfully");
       } else if (response.status === 404) {
         console.log("Data not found");
-        toast.warning("Data not found")
+        toast.warning("Data not found");
         setRowData([]);
       } else {
         const errorResponse = await response.json();
@@ -169,7 +172,6 @@ function Desgination() {
     } finally {
       setLoading(false);
     }
-
   };
 
   const reloadGridData = () => {
@@ -177,12 +179,12 @@ function Desgination() {
   };
 
   const clearInputFields = () => {
-setdept_id("");
-setdesgination_id("");
-setStatus("");
-setSelectedStatus("");
-    setRowData([]);
-  };
+    setdept_id("");
+    setdesgination_id("");
+    setStatus("");
+    setSelectedStatus("");
+    setRowData([]);
+  };
 
   const columnDefs = [
     {
@@ -200,10 +202,7 @@ setSelectedStatus("");
           handleNavigateWithRowData(params.data);
         };
         return (
-          <span
-            style={{ cursor: "pointer" }}
-            onClick={handleClick}
-          >
+          <span style={{ cursor: "pointer" }} onClick={handleClick}>
             {params.value}
           </span>
         );
@@ -235,16 +234,16 @@ setSelectedStatus("");
       cellStyle: { textAlign: "left" },
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
-        values: statusgriddrop
+        values: statusgriddrop,
       },
     },
     {
-      headerName: 'Keyfield',
-      field: 'keyfield',
+      headerName: "Keyfield",
+      field: "keyfield",
       editable: true,
       filter: true,
       hide: true,
-      sortable: false
+      sortable: false,
     },
   ];
 
@@ -263,20 +262,19 @@ setSelectedStatus("");
     setGridColumnApi(params.columnApi);
   };
 
-
   const generateReport = () => {
     const selectedRows = gridApi.getSelectedRows();
     if (selectedRows.length === 0) {
       toast.warning("Please select at least one row to generate a report");
-      return
-    };
+      return;
+    }
 
     const reportData = selectedRows.map((row) => {
       return {
         "Department ID": row.dept_id,
         "Desgination ID": row.desgination_id,
-        "Desgination": row.desgination,
-        "status": row.status,
+        Desgination: row.desgination,
+        status: row.status,
       };
     });
 
@@ -365,33 +363,31 @@ setSelectedStatus("");
     reportWindow.document.write("</tbody></table>");
 
     reportWindow.document.write(
-      '<button class="report-button" onclick="window.print()">Print</button>'
+      '<button class="report-button" onclick="window.print()">Print</button>',
     );
     reportWindow.document.write("</body></html>");
     reportWindow.document.close();
   };
 
-
-
   const handleNavigateToForm = () => {
     navigate("/AddDesgination", { state: { mode: "create" } }); // Pass selectedRows as props to the Input component
   };
   const handleNavigateWithRowData = (selectedRow) => {
-  navigate("/AddDesgination", {
-    state: {
-      mode: "update",
-      selectedRow,
+    navigate("/AddDesgination", {
+      state: {
+        mode: "update",
+        selectedRow,
 
-      preservedRowData: rowData,
+        preservedRowData: rowData,
 
-      preservedInputs: {
-        dept_id,
-        desgination_id,
-        status,
+        preservedInputs: {
+          dept_id,
+          desgination_id,
+          status,
+        },
       },
-    },
-  });
-};
+    });
+  };
   const onSelectionChanged = () => {
     const selectedNodes = gridApi.getSelectedNodes();
     const selectedData = selectedNodes.map((node) => node.data);
@@ -401,7 +397,7 @@ setSelectedStatus("");
   const onCellValueChanged = (params) => {
     const updatedRowData = [...rowData];
     const rowIndex = updatedRowData.findIndex(
-      (row) => row.keyfield === params.data.keyfield // Use the unique identifier 
+      (row) => row.keyfield === params.data.keyfield, // Use the unique identifier
     );
     if (rowIndex !== -1) {
       updatedRowData[rowIndex][params.colDef.field] = params.newValue;
@@ -412,34 +408,39 @@ setSelectedStatus("");
     }
   };
 
-
   const saveEditedData = async () => {
-    const modified_by = sessionStorage.getItem('selectedUserCode');
+    const modified_by = sessionStorage.getItem("selectedUserCode");
 
-    const selectedRowsData = editedData.filter(row => selectedRows.some(selectedRow => selectedRow.keyfield === row.keyfield));
+    const selectedRowsData = editedData.filter((row) =>
+      selectedRows.some((selectedRow) => selectedRow.keyfield === row.keyfield),
+    );
     if (selectedRowsData.length === 0) {
-      toast.warning("Please select and modify at least one row to update its data");
+      toast.warning(
+        "Please select and modify at least one row to update its data",
+      );
       return;
     }
     showConfirmationToast(
       "Are you sure you want to update the data in the selected rows?",
       async () => {
-
         setLoading(true);
 
         try {
-          const response = await fetch(`${config.apiBaseUrl}/UpdateDesgintion`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "modified-by": modified_by
+          const response = await fetch(
+            `${config.apiBaseUrl}/UpdateDesgintion`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "modified-by": modified_by,
+              },
+              body: JSON.stringify({ editedData: selectedRowsData }),
             },
-            body: JSON.stringify({ editedData: selectedRowsData }),
-          });
+          );
 
           if (response.status === 200) {
             setTimeout(() => {
-              toast.success("Data Updated Successfully")
+              toast.success("Data Updated Successfully");
               handleSearch();
             }, 1000);
             return;
@@ -453,11 +454,10 @@ setSelectedStatus("");
         } finally {
           setLoading(false);
         }
-
       },
       () => {
         toast.info("Data updated cancelled.");
-      }
+      },
     );
   };
 
@@ -465,58 +465,57 @@ setSelectedStatus("");
     const selectedRows = gridApi.getSelectedRows();
 
     if (selectedRows.length === 0) {
-      toast.warning("Please select atleast One Row to Delete")
+      toast.warning("Please select atleast One Row to Delete");
       return;
     }
 
-    const modified_by = sessionStorage.getItem('selectedUserCode');
+    const modified_by = sessionStorage.getItem("selectedUserCode");
 
     const keyfieldsToDelete = selectedRows.map((row) => row.keyfield);
 
     showConfirmationToast(
       "Are you sure you want to Delete the data in the selected rows?",
       async () => {
-
         setLoading(true);
 
         try {
-          const response = await fetch(`${config.apiBaseUrl}/desginationDelete`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Modified-By": modified_by
+          const response = await fetch(
+            `${config.apiBaseUrl}/desginationDelete`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Modified-By": modified_by,
+              },
+              body: JSON.stringify({ keyfield: keyfieldsToDelete }),
             },
-            body: JSON.stringify({ keyfield: keyfieldsToDelete })
-          });
+          );
 
           if (response.ok) {
             setTimeout(() => {
-              toast.success("Data Deleted successfully")
+              toast.success("Data Deleted successfully");
               handleSearch();
             }, 1000);
-
           } else {
             const errorResponse = await response.json();
             toast.warning(errorResponse.message || "Failed to Delete data");
           }
         } catch (error) {
           console.error("Error deleting rows:", error);
-          toast.error('Error Deleting Data: ' + error.message);
-        }
-        finally {
+          toast.error("Error Deleting Data: " + error.message);
+        } finally {
           setLoading(false);
         }
-
       },
       () => {
         toast.info("Data Delete cancelled.");
-      }
+      },
     );
   };
 
-
   const handleKeyDownStatus = async (e) => {
-    if (e.key === 'Enter' && hasValueChanged) { // Only trigger search if the value has changed
+    if (e.key === "Enter" && hasValueChanged) {
+      // Only trigger search if the value has changed
       await handleSearch(); // Trigger the search function
       setHasValueChanged(false); // Reset the flag after search
     }
@@ -550,12 +549,15 @@ setSelectedStatus("");
     }
   };
 
-
   return (
     <div className="container-fluid Topnav-screen">
       <div>
         {loading && <LoadingScreen />}
-        <ToastContainer position="top-right" className="toast-design" theme="colored" />
+        <ToastContainer
+          position="top-right"
+          className="toast-design"
+          theme="colored"
+        />
         <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
           <div className=" d-flex justify-content-between  ">
             <div class="d-flex justify-content-start">
@@ -564,12 +566,22 @@ setSelectedStatus("");
               </h1>
             </div>
             <div className="d-flex justify-content-end purbut me-3">
-              {['add', 'all permission'].some(permission => companyPermissions.includes(permission)) && (
-                <addbutton className="purbut" onClick={handleNavigateToForm}
-                  required title="Add Company"> <i class="fa-solid fa-user-plus"></i>
+              {["add", "all permission"].some((permission) =>
+                companyPermissions.includes(permission),
+              ) && (
+                <addbutton
+                  className="purbut"
+                  onClick={handleNavigateToForm}
+                  required
+                  title="Add Company"
+                >
+                  {" "}
+                  <i class="fa-solid fa-user-plus"></i>
                 </addbutton>
               )}
-              {['delete', 'all permission'].some(permission => companyPermissions.includes(permission)) && (
+              {["delete", "all permission"].some((permission) =>
+                companyPermissions.includes(permission),
+              ) && (
                 <delbutton
                   className="purbut"
                   onClick={deleteSelectedRows}
@@ -579,7 +591,9 @@ setSelectedStatus("");
                   <i class="fa-solid fa-user-minus"></i>
                 </delbutton>
               )}
-              {['update', 'all permission'].some(permission => companyPermissions.includes(permission)) && (
+              {["update", "all permission"].some((permission) =>
+                companyPermissions.includes(permission),
+              ) && (
                 <savebutton
                   className="purbut"
                   onClick={saveEditedData}
@@ -589,7 +603,9 @@ setSelectedStatus("");
                   <i class="fa-solid fa-floppy-disk"></i>
                 </savebutton>
               )}
-              {['all permission', 'view'].some(permission => companyPermissions.includes(permission)) && (
+              {["all permission", "view"].some((permission) =>
+                companyPermissions.includes(permission),
+              ) && (
                 <printbutton
                   class="purbut"
                   onClick={generateReport}
@@ -603,52 +619,51 @@ setSelectedStatus("");
             <div class="mobileview">
               <div class="d-flex justify-content-between me-4">
                 <div className="d-flex justify-content-start ">
-                  <h1 className="h1"> Designation Info
-                  </h1>
+                  <h1 className="h1"> Designation Info</h1>
                 </div>
-                <div class="dropdown mt-2 me-5 " >
-                  <button class="btn btn-primary dropdown-toggle p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="dropdown mt-2 me-5 ">
+                  <button
+                    class="btn btn-primary dropdown-toggle p-1"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
                     <i class="fa-solid fa-list"></i>
                   </button>
                   <ul class="dropdown-menu menu">
                     <li class="iconbutton d-flex justify-content-center text-success">
-                      {['add', 'all permission'].some(permission => companyPermissions.includes(permission)) && (
-                        <icon
-                          class="icon"
-                          onClick={handleNavigateToForm}
-                        >
-                          <i class="fa-solid fa-user-plus"></i>
-                          {" "}
+                      {["add", "all permission"].some((permission) =>
+                        companyPermissions.includes(permission),
+                      ) && (
+                        <icon class="icon" onClick={handleNavigateToForm}>
+                          <i class="fa-solid fa-user-plus"></i>{" "}
                         </icon>
                       )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center text-danger">
-                      {['delete', 'all permission'].some(permission => companyPermissions.includes(permission)) && (
-                        <icon
-                          class="icon"
-                          onClick={deleteSelectedRows}
-                        >
-
+                      {["delete", "all permission"].some((permission) =>
+                        companyPermissions.includes(permission),
+                      ) && (
+                        <icon class="icon" onClick={deleteSelectedRows}>
                           <i class="fa-solid fa-user-minus"></i>
                         </icon>
                       )}
                     </li>
-                    <li class="iconbutton  d-flex justify-content-center text-primary ">                  {['update', 'all permission'].some(permission => companyPermissions.includes(permission)) && (
-                      <icon
-                        class="icon"
-                        onClick={saveEditedData}
-                      >
-                        <i class="fa-solid fa-floppy-disk"></i>
-                      </icon>
-                    )}
+                    <li class="iconbutton  d-flex justify-content-center text-primary ">
+                      {" "}
+                      {["update", "all permission"].some((permission) =>
+                        companyPermissions.includes(permission),
+                      ) && (
+                        <icon class="icon" onClick={saveEditedData}>
+                          <i class="fa-solid fa-floppy-disk"></i>
+                        </icon>
+                      )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center ">
-                      {['all permission', 'view'].some(permission => companyPermissions.includes(permission)) && (
-                        <icon
-                          class="icon"
-                          onClick={generateReport}
-                        >
-
+                      {["all permission", "view"].some((permission) =>
+                        companyPermissions.includes(permission),
+                      ) && (
+                        <icon class="icon" onClick={generateReport}>
                           <i class="fa-solid fa-print"></i>
                         </icon>
                       )}
@@ -671,10 +686,11 @@ setSelectedStatus("");
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the department ID here"
+                  required
+                  title="Please fill the department ID here"
                   value={dept_id}
                   onChange={(e) => setdept_id(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={18}
                 />
               </div>
@@ -689,19 +705,18 @@ setSelectedStatus("");
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the Desgiantion ID here"
+                  required
+                  title="Please fill the Desgiantion ID here"
                   value={desgination_id}
                   onChange={(e) => setdesgination_id(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={250}
                 />
               </div>
             </div>
             <div className="col-md-3 form-group">
               <div class="exp-form-floating">
-                <label class="exp-form-labels">
-                  Status
-                </label>
+                <label class="exp-form-labels">Status</label>
                 <div title="Select the Status">
                   <Select
                     id="status"
@@ -712,6 +727,10 @@ setSelectedStatus("");
                     placeholder=""
                     onKeyDown={handleKeyDownStatus}
                     ref={Status}
+                    classNamePrefix="react-select"
+                    styles={{
+                      menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                    }}
                   />
                 </div>
               </div>
@@ -719,20 +738,30 @@ setSelectedStatus("");
             <div className="col-md-3 form-group mt-4">
               <div class="exp-form-floating">
                 <div class=" d-flex  justify-content-center">
-                  <div class=''>
-                    <icon className="popups-btn fs-6 p-3" onClick={handleSearch} required title="Search">
+                  <div class="">
+                    <icon
+                      className="popups-btn fs-6 p-3"
+                      onClick={handleSearch}
+                      required
+                      title="Search"
+                    >
                       <i className="fas fa-search"></i>
-                      </icon>
-                      </div>
+                    </icon>
+                  </div>
                   <div>
-                    <icon className="popups-btn fs-6 p-3" onClick={clearInputFields} required title="Reload">
+                    <icon
+                      className="popups-btn fs-6 p-3"
+                      onClick={clearInputFields}
+                      required
+                      title="Reload"
+                    >
                       <FontAwesomeIcon icon="fa-solid fa-arrow-rotate-right" />
                     </icon>
-                    </div>
-                </div> 
+                  </div>
                 </div>
-                </div>
-                </div>
+              </div>
+            </div>
+          </div>
           <div class="ag-theme-alpine" style={{ height: 455, width: "100%" }}>
             <AgGridReact
               rowData={rowData}
@@ -746,13 +775,15 @@ setSelectedStatus("");
               paginationAutoPageSize={true}
               onRowSelected={onRowSelected}
             />
-            </div>
+          </div>
         </div>
       </div>
       <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
         <div className="row ms-2">
           <div className="d-flex justify-content-start">
-            <p className="col-md-6">{labels.createdBy}: {createdBy}</p>
+            <p className="col-md-6">
+              {labels.createdBy}: {createdBy}
+            </p>
             <p className="col-md-">
               {labels.createdDate}: {createdDate}
             </p>

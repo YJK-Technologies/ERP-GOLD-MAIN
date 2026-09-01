@@ -4,19 +4,18 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import "ag-grid-enterprise";
 import "./apps.css";
-import Select from 'react-select';
+import Select from "react-select";
 import { useNavigate, useLocation } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import ItemImagePopup from './ItemImageHelp'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import ItemImagePopup from "./ItemImageHelp";
 import labels from "./Labels";
-import Barcode from 'react-barcode';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import LoadingScreen from './Loading';
-import { showConfirmationToast } from './ToastConfirmation';
-const config = require('./Apiconfig');
-
+import Barcode from "react-barcode";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import LoadingScreen from "./Loading";
+import { showConfirmationToast } from "./ToastConfirmation";
+const config = require("./Apiconfig");
 
 function ItemBrandGrid() {
   const [rowData, setRowData] = useState([]);
@@ -34,14 +33,14 @@ function ItemBrandGrid() {
   const [Item_Our_Brand, setItem_Our_Brand] = useState("");
   const [status, setstatus] = useState("");
   const [statusdrop, setStatusdrop] = useState([]);
-  const [selectedBrand, setSelectedBrand] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedBrand, setSelectedBrand] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
   const [statusgriddrop, setStatusGriddrop] = useState([]);
   const [brandgriddrop, setBrandGriddrop] = useState([]);
   const [ourbranddrop, setourbranddrop] = useState([]);
   const [selectedItemCode, setSelectedItemCode] = useState(null);
   const [selectedItemImage, setSelectedItemIamge] = useState(null);
-  const [loading, setLoading] = useState(false);    
+  const [loading, setLoading] = useState(false);
   const [createdBy, setCreatedBy] = useState("");
   const [modifiedBy, setModifiedBy] = useState("");
   const [createdDate, setCreatedDate] = useState("");
@@ -65,129 +64,131 @@ function ItemBrandGrid() {
   };
 
   //code added by Harish purpose of set user permisssion
-  const permissions = JSON.parse(sessionStorage.getItem('permissions')) || {};
+  const permissions = JSON.parse(sessionStorage.getItem("permissions")) || {};
   const itemBrandPermission = permissions
-    .filter(permission => permission.screen_type === 'Item')
-    .map(permission => permission.permission_type.toLowerCase());
-
-    useEffect(() => {
-        if (location.state?.preservedRowData) {
-          setRowData(location.state.preservedRowData);
-        }
-    
-        if (location.state?.preservedInputs) {
-          setItem_code(location.state.preservedInputs.Item_code || "");
-          setItem_variant(location.state.preservedInputs.Item_variant || "");
-          setItem_name(location.state.preservedInputs.Item_name || "");
-          setItem_short_name(location.state.preservedInputs.Item_short_name || "");
-          setItem_Our_Brand(location.state.preservedInputs.Item_Our_Brand || "");
-          setstatus(location.state.preservedInputs.status || "");
-    
-          if (location.state.preservedInputs.Item_Our_Brand) {
-            setSelectedBrand({
-              label: location.state.preservedInputs.Item_Our_Brand,
-              value: location.state.preservedInputs.Item_Our_Brand,
-            });
-          }
-          if (location.state.preservedInputs.status) {
-            setSelectedStatus({
-              label: location.state.preservedInputs.status,
-              value: location.state.preservedInputs.status,
-            });
-          }
-        }
-      }, [location.state]);
+    .filter((permission) => permission.screen_type === "Item")
+    .map((permission) => permission.permission_type.toLowerCase());
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
-    
+    if (location.state?.preservedRowData) {
+      setRowData(location.state.preservedRowData);
+    }
+
+    if (location.state?.preservedInputs) {
+      setItem_code(location.state.preservedInputs.Item_code || "");
+      setItem_variant(location.state.preservedInputs.Item_variant || "");
+      setItem_name(location.state.preservedInputs.Item_name || "");
+      setItem_short_name(location.state.preservedInputs.Item_short_name || "");
+      setItem_Our_Brand(location.state.preservedInputs.Item_Our_Brand || "");
+      setstatus(location.state.preservedInputs.status || "");
+
+      if (location.state.preservedInputs.Item_Our_Brand) {
+        setSelectedBrand({
+          label: location.state.preservedInputs.Item_Our_Brand,
+          value: location.state.preservedInputs.Item_Our_Brand,
+        });
+      }
+      if (location.state.preservedInputs.status) {
+        setSelectedStatus({
+          label: location.state.preservedInputs.status,
+          value: location.state.preservedInputs.status,
+        });
+      }
+    }
+  }, [location.state]);
+
+  useEffect(() => {
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+
     fetch(`${config.apiBaseUrl}/ourbrand`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setourbranddrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
-    
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
-    })      .then((response) => response.json())
+      body: JSON.stringify({ company_code }),
+    })
+      .then((response) => response.json())
       .then((data) => {
         // Extract city names from the fetched data
-        const statusOption = data.map(option => option.attributedetails_name);
+        const statusOption = data.map((option) => option.attributedetails_name);
         setStatusGriddrop(statusOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
-    
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+
     fetch(`${config.apiBaseUrl}/ourbrand`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
-    })      .then((response) => response.json())
+      body: JSON.stringify({ company_code }),
+    })
+      .then((response) => response.json())
       .then((data) => {
         // Extract city names from the fetched data
-        const brandOption = data.map(option => option.attributedetails_name);
+        const brandOption = data.map((option) => option.attributedetails_name);
         setBrandGriddrop(brandOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-
-
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
-    
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setStatusdrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
+  const filteredOptionBrand = [
+    { value: "All", label: "All" },
+    ...ourbranddrop.map((option) => ({
+      value: option.attributedetails_name,
+      label: option.attributedetails_name,
+    })),
+  ];
 
-
-  const filteredOptionBrand = [{ value: 'All', label: 'All' }, ...ourbranddrop.map((option) => ({
-    value: option.attributedetails_name,
-    label: option.attributedetails_name,
-  }))];
-
-  const filteredOptionStatus = [{ value: 'All', label: 'All' }, ...statusdrop.map((option) => ({
-    value: option.attributedetails_name,
-    label: option.attributedetails_name,
-  }))];
-
+  const filteredOptionStatus = [
+    { value: "All", label: "All" },
+    ...statusdrop.map((option) => ({
+      value: option.attributedetails_name,
+      label: option.attributedetails_name,
+    })),
+  ];
 
   const handleChangeBrand = (selectedBrand) => {
     setSelectedBrand(selectedBrand);
-    setItem_Our_Brand(selectedBrand ? selectedBrand.value : '');
+    setItem_Our_Brand(selectedBrand ? selectedBrand.value : "");
   };
-
 
   const handleChangeStatus = (selectedStatus) => {
     setSelectedStatus(selectedStatus);
-    setstatus(selectedStatus ? selectedStatus.value : '');
+    setstatus(selectedStatus ? selectedStatus.value : "");
   };
 
   const reloadGridData = () => {
@@ -195,35 +196,43 @@ function ItemBrandGrid() {
   };
 
   const clearInputFields = () => {
-setItem_code("");
-setItem_variant("");
-setItem_name("");
-setItem_short_name("");
-setItem_Our_Brand("");
-setstatus("");
-setSelectedBrand("");
-setSelectedStatus("");
-    setRowData([]);
-  };
+    setItem_code("");
+    setItem_variant("");
+    setItem_name("");
+    setItem_short_name("");
+    setItem_Our_Brand("");
+    setstatus("");
+    setSelectedBrand("");
+    setSelectedStatus("");
+    setRowData([]);
+  };
 
   const handleSearch = async () => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode')
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
     setLoading(true);
     try {
       const response = await fetch(`${config.apiBaseUrl}/itemsearchdata`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ company_code, Item_code, Item_name, Item_variant, Item_short_name, Item_Our_Brand, status }) // Send company_no and company_name as search criteria
+        body: JSON.stringify({
+          company_code,
+          Item_code,
+          Item_name,
+          Item_variant,
+          Item_short_name,
+          Item_Our_Brand,
+          status,
+        }), // Send company_no and company_name as search criteria
       });
       if (response.ok) {
         const searchData = await response.json();
         setRowData(searchData);
-        console.log("data fetched successfully")
+        console.log("data fetched successfully");
       } else if (response.status === 404) {
         console.log("Data not found");
-        toast.warning("Data not found")
+        toast.warning("Data not found");
         setRowData([]);
       } else {
         const errorResponse = await response.json();
@@ -232,15 +241,13 @@ setSelectedStatus("");
     } catch (error) {
       console.error("Error saving data:", error);
       toast.error("Error updating data: " + error.message);
-    }finally {
+    } finally {
       setLoading(false);
     }
-
   };
 
-
   const arrayBufferToBase64 = (buffer) => {
-    let binary = '';
+    let binary = "";
     const bytes = new Uint8Array(buffer);
     const len = bytes.byteLength;
     for (let i = 0; i < len; i++) {
@@ -250,8 +257,6 @@ setSelectedStatus("");
   };
 
   const columnDefs = [
-
-
     {
       headerCheckboxSelection: true,
       checkboxSelection: true,
@@ -271,10 +276,7 @@ setSelectedStatus("");
         };
 
         return (
-          <span
-            style={{ cursor: "pointer" }}
-            onClick={handleClick}
-          >
+          <span style={{ cursor: "pointer" }} onClick={handleClick}>
             {params.value}
           </span>
         );
@@ -302,27 +304,32 @@ setSelectedStatus("");
       },
     },
     {
-  headerName: "Barcode",
-  field: "Barcode_Data",
-  cellRenderer: (params) => {
+      headerName: "Barcode",
+      field: "Barcode_Data",
+      cellRenderer: (params) => {
+        if (!params.value || params.value.trim() === "") {
+          return "";
+        }
 
-    if (!params.value || params.value.trim() === "") {
-      return "";
-    }
-
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <Barcode
-          value={params.value}
-          width={1.5}
-          height={50}
-          format="CODE128"
-          displayValue={false}
-        />
-      </div>
-    );
-  },
-},
+        return (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Barcode
+              value={params.value}
+              width={1.5}
+              height={50}
+              format="CODE128"
+              displayValue={false}
+            />
+          </div>
+        );
+      },
+    },
     {
       headerName: "Item Image",
       field: "item_images",
@@ -337,7 +344,8 @@ setSelectedStatus("");
         if (params.value) {
           const base64Image = arrayBufferToBase64(params.value.data);
           return (
-            <img src={`data:image/jpeg;base64,${base64Image}`}
+            <img
+              src={`data:image/jpeg;base64,${base64Image}`}
               alt="Item Image"
               style={{ width: " 50px", height: "50px" }}
             />
@@ -346,7 +354,7 @@ setSelectedStatus("");
           return "";
         }
       },
-      // onCellClicked: (params) => {  
+      // onCellClicked: (params) => {
       //   const input = document.createElement("input");
       //   input.type = "file";
       //   input.accept = "image/*";
@@ -357,7 +365,7 @@ setSelectedStatus("");
       //     if (file) {
       //       const reader = new FileReader();
       //       reader.onloadend = function () {
-      //         const base64String = reader.result.split(',')[1]; 
+      //         const base64String = reader.result.split(',')[1];
       //         const binaryString = atob(base64String);
       //         const len = binaryString.length;
       //         const bytes = new Uint8Array(len);
@@ -367,7 +375,7 @@ setSelectedStatus("");
       //         const arrayBuffer = bytes.buffer;
       //         params.node.setDataValue("item_images", { data: arrayBuffer });
       //       };
-      //       reader.readAsDataURL(file); 
+      //       reader.readAsDataURL(file);
       //     }
       //   };
       // }
@@ -561,7 +569,7 @@ setSelectedStatus("");
       // minWidth: 150,
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
-        values: brandgriddrop
+        values: brandgriddrop,
       },
     },
     {
@@ -572,10 +580,9 @@ setSelectedStatus("");
       // minWidth: 150,
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
-        values: statusgriddrop
+        values: statusgriddrop,
       },
     },
-
   ];
 
   const defaultColDef = {
@@ -599,18 +606,17 @@ setSelectedStatus("");
     const selectedRows = gridApi.getSelectedRows();
     if (selectedRows.length === 0) {
       toast.warning("Please select at least one row to generate a report");
-      return
-    };
+      return;
+    }
 
     const reportData = selectedRows.map((row) => {
       return {
-
-        "Code": row.Item_code,
-        "Type": row.Item_variant,
+        Code: row.Item_code,
+        Type: row.Item_variant,
         "Item Name": row.Item_name,
         "Item Weight": row.Item_wigh,
         "Base UOM": row.Item_BaseUOM,
-        "SecondaryUOM": row.Item_SecondaryUOM,
+        SecondaryUOM: row.Item_SecondaryUOM,
         "Short Name": row.Item_short_name,
         "Base UOM": row.Item_BaseUOM,
         "Without Tax": row.Item_Last_salesRate_ExTax,
@@ -624,7 +630,7 @@ setSelectedStatus("");
         "HSN Code": row.hsn,
         "Register Brand": row.Item_Register_Brand,
         "Our Brand": row.Item_Our_Brand,
-        "Status": row.status,
+        Status: row.status,
         // "Annual Report URL": row.AnnualReportURL,
         // "created by": row.created_by,
         // "created date": row.created_date,
@@ -718,7 +724,7 @@ setSelectedStatus("");
     reportWindow.document.write("</tbody></table>");
 
     reportWindow.document.write(
-      '<button class="report-button" onclick="window.print()">Print</button>'
+      '<button class="report-button" onclick="window.print()">Print</button>',
     );
     reportWindow.document.write("</body></html>");
     reportWindow.document.close();
@@ -760,7 +766,9 @@ setSelectedStatus("");
   const onCellValueChanged = (params) => {
     const updatedRowData = [...rowData];
     const rowIndex = updatedRowData.findIndex(
-      (row) => row.Item_code === params.data.Item_code && row.Item_variant === params.data.Item_variant
+      (row) =>
+        row.Item_code === params.data.Item_code &&
+        row.Item_variant === params.data.Item_variant,
     );
     if (rowIndex !== -1) {
       updatedRowData[rowIndex][params.colDef.field] = params.newValue;
@@ -772,13 +780,18 @@ setSelectedStatus("");
   };
 
   const saveEditedData = async () => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
-    const modified_by = sessionStorage.getItem('selectedUserCode');
-    const selectedRowsData = editedData.filter(row => selectedRows.some(selectedRow => selectedRow.Item_code === row.Item_code));
-
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+    const modified_by = sessionStorage.getItem("selectedUserCode");
+    const selectedRowsData = editedData.filter((row) =>
+      selectedRows.some(
+        (selectedRow) => selectedRow.Item_code === row.Item_code,
+      ),
+    );
 
     if (selectedRowsData.length === 0) {
-      toast.warning("Please select and modify at least one row to update its data");
+      toast.warning(
+        "Please select and modify at least one row to update its data",
+      );
       return;
     }
 
@@ -787,22 +800,18 @@ setSelectedStatus("");
       async () => {
         setLoading(true);
         try {
-
-
           const response = await fetch(`${config.apiBaseUrl}/updateitemData`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "company_code": company_code,
-              "Modified-By": modified_by
+              company_code: company_code,
+              "Modified-By": modified_by,
             },
 
-
             body: JSON.stringify({ editedData: selectedRowsData }), // Send only the selected rows for saving
-            "company_code": company_code,
-            "modified_by": modified_by
+            company_code: company_code,
+            modified_by: modified_by,
           });
-
 
           if (response.status === 200) {
             toast.success("Data Updated Successfully", {
@@ -817,28 +826,26 @@ setSelectedStatus("");
         } catch (error) {
           console.error("Error saving data:", error);
           toast.error("Error Updating Data: " + error.message);
-        }finally {
+        } finally {
           setLoading(false);
         }
-    
       },
       () => {
         toast.info("Data updated cancelled.");
-      }
+      },
     );
   };
-
 
   const deleteSelectedRows = async () => {
     const selectedRows = gridApi.getSelectedRows();
 
     if (selectedRows.length === 0) {
-      toast.warning("Please select atleast One Row to Delete")
+      toast.warning("Please select atleast One Row to Delete");
       return;
     }
 
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
-    const modified_by = sessionStorage.getItem('selectedUserCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+    const modified_by = sessionStorage.getItem("selectedUserCode");
     const Item_codesToDelete = selectedRows.map((row) => row.Item_code);
 
     showConfirmationToast(
@@ -846,17 +853,20 @@ setSelectedStatus("");
       async () => {
         setLoading(true);
         try {
-          const response = await fetch(`${config.apiBaseUrl}/delItemBrandData`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "company_code": company_code,
-              "Modified-By": modified_by
+          const response = await fetch(
+            `${config.apiBaseUrl}/delItemBrandData`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                company_code: company_code,
+                "Modified-By": modified_by,
+              },
+              body: JSON.stringify({ Item_codes: Item_codesToDelete }),
+              company_code: company_code,
+              modified_by: modified_by,
             },
-            body: JSON.stringify({ Item_codes: Item_codesToDelete }),
-            "company_code": company_code,
-            "modified_by": modified_by
-          });
+          );
 
           if (response.ok) {
             toast.success("Data Deleted successfully", {
@@ -866,18 +876,16 @@ setSelectedStatus("");
           }
         } catch (err) {
           console.error("Error deleting rows:", err);
-          toast.error('Error Deleting Data:' + err.message);
-        }finally {
+          toast.error("Error Deleting Data:" + err.message);
+        } finally {
           setLoading(false);
         }
-    
       },
       () => {
         toast.info("Data Delete cancelled.");
-      }
+      },
     );
   };
-
 
   const formatDate = (dateString) => {
     if (!dateString) return ""; // Return 'N/A' if the date is missing
@@ -907,13 +915,15 @@ setSelectedStatus("");
     }
   };
 
-
-
   return (
     <div className="container-fluid Topnav-screen">
       <div>
-      {loading && <LoadingScreen />}
-        <ToastContainer position="top-right" className="toast-design" theme="colored" />
+        {loading && <LoadingScreen />}
+        <ToastContainer
+          position="top-right"
+          className="toast-design"
+          theme="colored"
+        />
         <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
           <div className=" d-flex justify-content-between  ">
             <div class="d-flex justify-content-start">
@@ -923,22 +933,47 @@ setSelectedStatus("");
             </div>
 
             <div className="d-flex justify-content-end purbut me-3">
-              {['add', 'all permission'].some(permission => itemBrandPermission.includes(permission)) && (
-                <addbutton className="purbut" onClick={handleNavigateToForm}
-                  required title="Add Item"> <i class="fa-solid fa-user-plus"></i> </addbutton>
+              {["add", "all permission"].some((permission) =>
+                itemBrandPermission.includes(permission),
+              ) && (
+                <addbutton
+                  className="purbut"
+                  onClick={handleNavigateToForm}
+                  required
+                  title="Add Item"
+                >
+                  {" "}
+                  <i class="fa-solid fa-user-plus"></i>{" "}
+                </addbutton>
               )}
-              {['delete', 'all permission'].some(permission => itemBrandPermission.includes(permission)) && (
+              {["delete", "all permission"].some((permission) =>
+                itemBrandPermission.includes(permission),
+              ) && (
                 <delbutton
-                  className="purbut" onClick={deleteSelectedRows} required title="Delete">
+                  className="purbut"
+                  onClick={deleteSelectedRows}
+                  required
+                  title="Delete"
+                >
                   <i class="fa-solid fa-user-minus"></i>
                 </delbutton>
               )}
-              {['update', 'all permission'].some(permission => itemBrandPermission.includes(permission)) && (
-                <savebutton class="purbut" onClick={saveEditedData} required title="Update"><i class="fa-solid fa-floppy-disk"></i></savebutton>
+              {["update", "all permission"].some((permission) =>
+                itemBrandPermission.includes(permission),
+              ) && (
+                <savebutton
+                  class="purbut"
+                  onClick={saveEditedData}
+                  required
+                  title="Update"
+                >
+                  <i class="fa-solid fa-floppy-disk"></i>
+                </savebutton>
               )}
 
-
-              {['all permission', 'view'].some(permission => itemBrandPermission.includes(permission)) && (
+              {["all permission", "view"].some((permission) =>
+                itemBrandPermission.includes(permission),
+              ) && (
                 <printbutton
                   class="purbut"
                   onClick={generateReport}
@@ -950,67 +985,58 @@ setSelectedStatus("");
               )}
             </div>
 
-
             <div class="mobileview">
               <div class="d-flex justify-content-between">
                 <div class="d-flex justify-content-between">
-                  <h1 align="left" className="h1">Item</h1>
+                  <h1 align="left" className="h1">
+                    Item
+                  </h1>
                 </div>
-                <div class="dropdown mt-1 me-5 ms-5" >
-                  <button class="btn btn-primary dropdown-toggle p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="dropdown mt-1 me-5 ms-5">
+                  <button
+                    class="btn btn-primary dropdown-toggle p-1"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
                     <i class="fa-solid fa-list"></i>
                   </button>
                   <ul class="dropdown-menu menu">
                     <li class="iconbutton d-flex justify-content-center text-success">
                       {["add", "all permission"].some((permission) =>
-                        itemBrandPermission.includes(permission)
+                        itemBrandPermission.includes(permission),
                       ) && (
-                          <icon
-                            class="icon"
-                            onClick={handleNavigateToForm}
-                          >
-                            <i class="fa-solid fa-user-plus"></i>
-                            {" "}
-                          </icon>
-                        )}
+                        <icon class="icon" onClick={handleNavigateToForm}>
+                          <i class="fa-solid fa-user-plus"></i>{" "}
+                        </icon>
+                      )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center text-danger">
                       {["delete", "all permission"].some((permission) =>
-                        itemBrandPermission.includes(permission)
+                        itemBrandPermission.includes(permission),
                       ) && (
-                          <icon
-                            class="icon"
-                            onClick={deleteSelectedRows}
-                          >
-
-                            <i class="fa-solid fa-user-minus"></i>
-                          </icon>
-                        )}
+                        <icon class="icon" onClick={deleteSelectedRows}>
+                          <i class="fa-solid fa-user-minus"></i>
+                        </icon>
+                      )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center text-primary ">
                       {["update", "all permission"].some((permission) =>
-                        itemBrandPermission.includes(permission)
+                        itemBrandPermission.includes(permission),
                       ) && (
-                          <icon
-                            class="icon"
-                            onClick={saveEditedData}
-                          >
-                            <i class="fa-solid fa-floppy-disk"></i>
-                          </icon>
-                        )}{" "}
+                        <icon class="icon" onClick={saveEditedData}>
+                          <i class="fa-solid fa-floppy-disk"></i>
+                        </icon>
+                      )}{" "}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center ">
                       {["all permission", "view"].some((permission) =>
-                        itemBrandPermission.includes(permission)
+                        itemBrandPermission.includes(permission),
                       ) && (
-                          <icon
-                            class="icon"
-                            onClick={generateReport}
-                          >
-
-                            <i class="fa-solid fa-print"></i>
-                          </icon>
-                        )}
+                        <icon class="icon" onClick={generateReport}>
+                          <i class="fa-solid fa-print"></i>
+                        </icon>
+                      )}
                     </li>
                   </ul>
                 </div>
@@ -1019,42 +1045,43 @@ setSelectedStatus("");
           </div>
         </div>
         <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
-
           <div className="row ms-4 mt-3 mb-3  me-4">
             <div className="col-md-3 form-group">
               <div class="exp-form-floating">
                 <label for="Icode" class="exp-form-labels">
                   Code
-                </label><input
+                </label>
+                <input
                   id="Icode"
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the code here"
+                  required
+                  title="Please fill the code here"
                   value={Item_code}
                   onChange={(e) => setItem_code(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={18}
                 />
-
               </div>
             </div>
             <div className="col-md-3 form-group">
               <div class="exp-form-floating">
                 <label for="Itemvar" class="exp-form-labels">
                   Variant
-                </label> <input
+                </label>{" "}
+                <input
                   id="Itemvar"
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the variant here"
+                  required
+                  title="Please fill the variant here"
                   value={Item_variant}
                   onChange={(e) => setItem_variant(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={18}
                 />
-
               </div>
             </div>
 
@@ -1062,18 +1089,19 @@ setSelectedStatus("");
               <div class="exp-form-floating">
                 <label for="Iname" class="exp-form-labels">
                   Name
-                </label><input
+                </label>
+                <input
                   id="Iname"
                   className="exp-input-field form-control"
                   type=""
                   placeholder=""
-                  required title="Please fill the name here"
+                  required
+                  title="Please fill the name here"
                   value={Item_name}
                   onChange={(e) => setItem_name(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={40}
                 />
-
               </div>
             </div>
 
@@ -1081,18 +1109,19 @@ setSelectedStatus("");
               <div class="exp-form-floating">
                 <label for="Ishname" class="exp-form-labels">
                   Short Name
-                </label><input
+                </label>
+                <input
                   id="Ishname"
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the short name here"
+                  required
+                  title="Please fill the short name here"
                   value={Item_short_name}
                   onChange={(e) => setItem_short_name(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={50}
                 />
-
               </div>
             </div>
             <div className="col-md-3 form-group">
@@ -1101,46 +1130,71 @@ setSelectedStatus("");
                   Our Brand
                 </label>
                 <div title="Select the Own Brand">
-                <Select
-                  id="ahsts"
-                  value={selectedBrand}
-                  onChange={handleChangeBrand}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  options={filteredOptionBrand}
-                  className="exp-input-field"
-                  placeholder=""
-                  maxLength={30}
-                />
-              </div>
+                  <Select
+                    id="ahsts"
+                    value={selectedBrand}
+                    onChange={handleChangeBrand}
+                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                    options={filteredOptionBrand}
+                    className="exp-input-field"
+                    placeholder=""
+                    maxLength={30}
+                    classNamePrefix="react-select"
+                    styles={{
+                      menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                    }}
+                  />
+                </div>
               </div>
             </div>
 
-
             <div className="col-md-3 form-group">
               <div class="exp-form-floating">
-                <label class="exp-form-labels">
-                  Status
-                </label>
-<div title="Select the Status">
-                <Select
-                  id="ahsts"
-                  value={selectedStatus}
-                  onChange={handleChangeStatus}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  options={filteredOptionStatus}
-                  className="exp-input-field"
-                  placeholder=""
-                />
-</div>
+                <label class="exp-form-labels">Status</label>
+                <div title="Select the Status">
+                  <Select
+                    id="ahsts"
+                    value={selectedStatus}
+                    onChange={handleChangeStatus}
+                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                    options={filteredOptionStatus}
+                    className="exp-input-field"
+                    placeholder=""
+                    classNamePrefix="react-select"
+                    styles={{
+                      menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                    }}
+                  />
+                </div>
               </div>
             </div>
             <div className="col-md-3 form-group mt-4">
               <div class="exp-form-floating">
                 <div class=" d-flex  justify-content-center">
-
-                  <div class=''><icon className="popups-btn fs-6 p-3" onClick={handleSearch} required title="Search"><i className="fas fa-search"></i></icon></div>
-                  <div><icon className="popups-btn fs-6 p-3" onClick={clearInputFields} required title="Reload"><FontAwesomeIcon icon="fa-solid fa-arrow-rotate-right" /></icon></div>
-                </div> </div></div></div>
+                  <div class="">
+                    <icon
+                      className="popups-btn fs-6 p-3"
+                      onClick={handleSearch}
+                      required
+                      title="Search"
+                    >
+                      <i className="fas fa-search"></i>
+                    </icon>
+                  </div>
+                  <div>
+                    <icon
+                      className="popups-btn fs-6 p-3"
+                      onClick={clearInputFields}
+                      required
+                      title="Reload"
+                    >
+                      <FontAwesomeIcon icon="fa-solid fa-arrow-rotate-right" />
+                    </icon>
+                  </div>
+                </div>{" "}
+              </div>
+            </div>
+          </div>
 
           {/* <p>Result Set</p> */}
 
@@ -1155,28 +1209,41 @@ setSelectedStatus("");
               pagination={true}
               onSelectionChanged={onSelectionChanged}
               paginationAutoPageSize={true}
-              onRowSelected={onRowSelected} />
+              onRowSelected={onRowSelected}
+            />
           </div>
         </div>
         <div>
-          <ItemImagePopup open={open} handleClose={handleClose} itemCode={selectedItemCode} itemImage={selectedItemImage} />
+          <ItemImagePopup
+            open={open}
+            handleClose={handleClose}
+            itemCode={selectedItemCode}
+            itemImage={selectedItemImage}
+          />
         </div>
       </div>
       <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
         <div className="row ms-2">
           <div className="d-flex justify-content-start">
-            <p className="col-md-6">{labels.createdBy}: {createdBy}</p>
-            <p className="col-md-6">{labels.createdDate}: {createdDate}</p>
+            <p className="col-md-6">
+              {labels.createdBy}: {createdBy}
+            </p>
+            <p className="col-md-6">
+              {labels.createdDate}: {createdDate}
+            </p>
           </div>
           <div className="d-flex justify-content-start">
-            <p className="col-md-6">{labels.modifiedBy}: {modifiedBy}</p>
-            <p className="col-md-6"> {labels.modifiedDate}: {modifiedDate}</p>
+            <p className="col-md-6">
+              {labels.modifiedBy}: {modifiedBy}
+            </p>
+            <p className="col-md-6">
+              {" "}
+              {labels.modifiedDate}: {modifiedDate}
+            </p>
           </div>
         </div>
       </div>
     </div>
-
-
   );
 }
 

@@ -2,16 +2,16 @@ import React, { useState, useEffect, useRef } from "react";
 import "./input.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
-import { useLocation } from 'react-router-dom';
-import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer, toast } from 'react-toastify';
-import './apps.css'
-import Select from 'react-select'
-import LoadingScreen from './Loading';
+import { useLocation } from "react-router-dom";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer, toast } from "react-toastify";
+import "./apps.css";
+import Select from "react-select";
+import LoadingScreen from "./Loading";
 
-const config = require('./Apiconfig');
+const config = require("./Apiconfig");
 
-function Input({ }) {
+function Input({}) {
   const [company_no, setCompany_no] = useState("");
   const [company_name, setCompany_name] = useState("");
   const [short_name, setShort_name] = useState("");
@@ -37,11 +37,11 @@ function Input({ }) {
   const [statedrop, setStatedrop] = useState([]);
   const [statusdrop, setStatusdrop] = useState([]);
   const [locationnodrop, setLocationdrop] = useState([]);
-  const [selectedCity, setSelectedCity] = useState('');
-  const [selectedState, setselectedState] = useState('');
-  const [selectedCountry, setselectedCountry] = useState('');
-  const [selectedStatus, setselectedStatus] = useState('');
-  const [selectedLocation, setselectedLocation] = useState('');
+  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedState, setselectedState] = useState("");
+  const [selectedCountry, setselectedCountry] = useState("");
+  const [selectedStatus, setselectedStatus] = useState("");
+  const [selectedLocation, setselectedLocation] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedSignatureImage, setselectedSignatureImage] = useState(null);
@@ -72,7 +72,7 @@ function Input({ }) {
   const [SignatureImage, setSignatureImage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const created_by = sessionStorage.getItem('selectedUserCode')
+  const created_by = sessionStorage.getItem("selectedUserCode");
   const [isUpdated, setIsUpdated] = useState(false);
   const location = useLocation();
   const { mode, selectedRow } = location.state || {};
@@ -98,7 +98,7 @@ function Input({ }) {
     setContact_no("");
     setAnnualReportURL("");
     setSelectedImage("");
-    setcompany_gst_no("")
+    setcompany_gst_no("");
     setselectedSignatureImage("");
     if (logo.current) {
       logo.current.value = null;
@@ -108,7 +108,7 @@ function Input({ }) {
     }
   };
 
-  console.log(selectedRow)
+  console.log(selectedRow);
 
   const arrayBufferToBase64 = (buffer) => {
     let binary = "";
@@ -132,27 +132,27 @@ function Input({ }) {
         label: selectedRow.city,
         value: selectedRow.city,
       });
-      setCity(selectedRow.city || "")
+      setCity(selectedRow.city || "");
       setselectedState({
         label: selectedRow.state,
         value: selectedRow.state,
       });
-      setState(selectedRow.state || "")
+      setState(selectedRow.state || "");
       setselectedCountry({
         label: selectedRow.country,
         value: selectedRow.country,
       });
-      setCountry(selectedRow.country || "")
+      setCountry(selectedRow.country || "");
       setselectedStatus({
         label: selectedRow.status,
         value: selectedRow.status,
       });
-      setStatus(selectedRow.status || '')
+      setStatus(selectedRow.status || "");
       setselectedLocation({
         label: selectedRow.location_no,
         value: selectedRow.location_no,
       });
-      setlocation_no(selectedRow.location_no || "")
+      setlocation_no(selectedRow.location_no || "");
       setPincode(selectedRow.pincode || "");
       setEmail_id(selectedRow.email_id || "");
       setWebsiteURL(selectedRow.websiteURL || "");
@@ -160,7 +160,9 @@ function Input({ }) {
       setAnnualReportURL(selectedRow.annualReportURL || "");
 
       if (selectedRow.foundedDate) {
-        const formattedDate = new Date(selectedRow.foundedDate).toISOString().split("T")[0];
+        const formattedDate = new Date(selectedRow.foundedDate)
+          .toISOString()
+          .split("T")[0];
         setFoundedDate(formattedDate);
       } else {
         setFoundedDate("");
@@ -168,34 +170,43 @@ function Input({ }) {
 
       if (selectedRow.company_logo && selectedRow.company_logo.data) {
         const base64Image = arrayBufferToBase64(selectedRow.company_logo.data);
-        const file = base64ToFile(`data:image/jpeg;base64,${base64Image}`, 'company_logo.jpg');
+        const file = base64ToFile(
+          `data:image/jpeg;base64,${base64Image}`,
+          "company_logo.jpg",
+        );
         setSelectedImage(`data:image/jpeg;base64,${base64Image}`);
-        setCompanyImage(file)
+        setCompanyImage(file);
       } else {
         setSelectedImage(null);
       }
 
-      if (selectedRow.authorisedSignatur && selectedRow.authorisedSignatur.data) {
-        const base64Image = arrayBufferToBase64(selectedRow.authorisedSignatur.data);
-        const file = base64ToFile(`data:image/jpeg;base64,${base64Image}`, 'authorisedSignatur.jpg');
+      if (
+        selectedRow.authorisedSignatur &&
+        selectedRow.authorisedSignatur.data
+      ) {
+        const base64Image = arrayBufferToBase64(
+          selectedRow.authorisedSignatur.data,
+        );
+        const file = base64ToFile(
+          `data:image/jpeg;base64,${base64Image}`,
+          "authorisedSignatur.jpg",
+        );
         setselectedSignatureImage(`data:image/jpeg;base64,${base64Image}`);
-        setSignatureImage(file)
+        setSignatureImage(file);
       } else {
         setselectedSignatureImage(null);
       }
-
     } else if (mode === "create") {
       clearInputFields();
     }
   }, [mode, selectedRow, isUpdated]);
-
 
   const base64ToFile = (base64Data, fileName) => {
     if (!base64Data || !base64Data.startsWith("data:")) {
       throw new Error("Invalid base64 string");
     }
 
-    const parts = base64Data.split(',');
+    const parts = base64Data.split(",");
     if (parts.length !== 2) {
       throw new Error("Base64 string is not properly formatted");
     }
@@ -225,7 +236,7 @@ function Input({ }) {
     if (file) {
       const maxSize = 1 * 1024 * 1024;
       if (file.size > maxSize) {
-        toast.warning('File size exceeds 1MB. Please upload a smaller file.');
+        toast.warning("File size exceeds 1MB. Please upload a smaller file.");
         event.target.value = null;
         return;
       }
@@ -239,7 +250,7 @@ function Input({ }) {
     if (file) {
       const maxSize = 1 * 1024 * 1024;
       if (file.size > maxSize) {
-        toast.warning('File size exceeds 1MB. Please upload a smaller file.');
+        toast.warning("File size exceeds 1MB. Please upload a smaller file.");
         event.target.value = null;
         return;
       }
@@ -249,63 +260,63 @@ function Input({ }) {
   };
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/city`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setDrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/country`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setCondrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/state`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setStatedrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setStatusdrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
@@ -341,27 +352,27 @@ function Input({ }) {
 
   const handleChangeCity = (selectedCity) => {
     setSelectedCity(selectedCity);
-    setCity(selectedCity ? selectedCity.value : '');
+    setCity(selectedCity ? selectedCity.value : "");
   };
 
   const handleChangeState = (selectedState) => {
     setselectedState(selectedState);
-    setState(selectedState ? selectedState.value : '');
+    setState(selectedState ? selectedState.value : "");
   };
 
   const handleChangeCountry = (selectedCountry) => {
     setselectedCountry(selectedCountry);
-    setCountry(selectedCountry ? selectedCountry.value : '');
+    setCountry(selectedCountry ? selectedCountry.value : "");
   };
 
   const handleChangeStatus = (selectedStatus) => {
     setselectedStatus(selectedStatus);
-    setStatus(selectedStatus ? selectedStatus.value : '');
+    setStatus(selectedStatus ? selectedStatus.value : "");
   };
 
   const handleChangeLocation = (selectedLocation) => {
     setselectedLocation(selectedLocation);
-    setlocation_no(selectedLocation ? selectedLocation.value : '');
+    setlocation_no(selectedLocation ? selectedLocation.value : "");
   };
 
   const handleInsert = async () => {
@@ -410,7 +421,7 @@ function Input({ }) {
       formData.append("websiteURL", websiteURL);
       formData.append("location_no", location_no);
       formData.append("company_gst_no", company_gst_no);
-      formData.append("created_by", sessionStorage.getItem('selectedUserCode'));
+      formData.append("created_by", sessionStorage.getItem("selectedUserCode"));
 
       if (companyImage) {
         formData.append("company_logo", companyImage);
@@ -438,8 +449,7 @@ function Input({ }) {
       }
     } catch (error) {
       console.error("Error inserting data:", error);
-      toast.error('Error inserting data: ' + error.message, {
-      });
+      toast.error("Error inserting data: " + error.message, {});
     } finally {
       setLoading(false);
     }
@@ -451,16 +461,22 @@ function Input({ }) {
   }
 
   const handleNavigate = () => {
-  navigate("/Company", {
-    state: {
-      preservedRowData: location.state?.preservedRowData,
-      preservedInputs: location.state?.preservedInputs
-    }
-  });
-};
+    navigate("/Company", {
+      state: {
+        preservedRowData: location.state?.preservedRowData,
+        preservedInputs: location.state?.preservedInputs,
+      },
+    });
+  };
 
-  const handleKeyDown = async (e, nextFieldRef, value, hasValueChanged, setHasValueChanged) => {
-    if (e.key === 'Enter') {
+  const handleKeyDown = async (
+    e,
+    nextFieldRef,
+    value,
+    hasValueChanged,
+    setHasValueChanged,
+  ) => {
+    if (e.key === "Enter") {
       if (hasValueChanged) {
         await handleKeyDownStatus(e);
         setHasValueChanged(false);
@@ -475,7 +491,7 @@ function Input({ }) {
   };
 
   const handleKeyDownStatus = async (e) => {
-    if (e.key === 'Enter' && hasValueChanged) {
+    if (e.key === "Enter" && hasValueChanged) {
       setHasValueChanged(false);
     }
   };
@@ -493,7 +509,7 @@ function Input({ }) {
       !email_id ||
       !status ||
       !contact_no ||
-      !location_no 
+      !location_no
     ) {
       setError(" ");
       toast.warning("Error: Missing required fields");
@@ -526,7 +542,10 @@ function Input({ }) {
       formData.append("websiteURL", websiteURL);
       formData.append("location_no", location_no);
       formData.append("company_gst_no", company_gst_no);
-      formData.append("modified_by", sessionStorage.getItem('selectedUserCode'));
+      formData.append(
+        "modified_by",
+        sessionStorage.getItem("selectedUserCode"),
+      );
 
       if (companyImage) {
         formData.append("company_logo", companyImage);
@@ -544,7 +563,7 @@ function Input({ }) {
       if (response.status === 200) {
         console.log("Data Updated successfully");
         setIsUpdated(true);
-        toast.success("Data Updated successfully!")
+        toast.success("Data Updated successfully!");
         // clearInputFields();
       } else {
         const errorResponse = await response.json();
@@ -553,25 +572,37 @@ function Input({ }) {
       }
     } catch (error) {
       console.error("Error Update data:", error);
-      toast.error('Error inserting data: ' + error.message);
+      toast.error("Error inserting data: " + error.message);
     } finally {
       setLoading(false);
     }
   };
-
 
   return (
     <div class="container-fluid Topnav-screen ">
       <div className="">
         <div class="">
           {loading && <LoadingScreen />}
-          <ToastContainer position="top-right" className="toast-design" theme="colored" />
+          <ToastContainer
+            position="top-right"
+            className="toast-design"
+            theme="colored"
+          />
           <div className="shadow-lg p-0 bg-body-tertiary rounded">
-            <div className=" mb-0 d-flex justify-content-between" >
-              <h1 align="left" class="purbut">{mode === 'update' ? 'Update Company' : 'Add Company'}</h1>
-              <h1 align="left" class="fs-4 mobileview">{mode === 'update' ? 'Update Company' : 'Add Company'}</h1>
+            <div className=" mb-0 d-flex justify-content-between">
+              <h1 align="left" class="purbut">
+                {mode === "update" ? "Update Company" : "Add Company"}
+              </h1>
+              <h1 align="left" class="fs-4 mobileview">
+                {mode === "update" ? "Update Company" : "Add Company"}
+              </h1>
 
-              <button onClick={handleNavigate} className=" btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
+              <button
+                onClick={handleNavigate}
+                className=" btn btn-danger shadow-none rounded-0 h-70 fs-5"
+                required
+                title="Close"
+              >
                 <i class="fa-solid fa-xmark"></i>
               </button>
             </div>
@@ -583,7 +614,13 @@ function Input({ }) {
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label for="cno" class="exp-form-labels" className={`${error && !company_no ? 'text-danger' : ''}`}>Company Code<span className="text-danger">*</span></label>
+                        <label
+                          for="cno"
+                          class="exp-form-labels"
+                          className={`${error && !company_no ? "text-danger" : ""}`}
+                        >
+                          Company Code<span className="text-danger">*</span>
+                        </label>
                       </div>
                     </div>
                     <input
@@ -591,12 +628,15 @@ function Input({ }) {
                       class="exp-input-field form-control"
                       type="text"
                       placeholder=""
-                      required title="Please enter the company code"
+                      required
+                      title="Please enter the company code"
                       value={company_no}
                       onChange={(e) => setCompany_no(e.target.value)}
                       maxLength={18}
                       ref={companycode}
-                      onKeyDown={(e) => handleKeyDown(e, companyname, companycode)}
+                      onKeyDown={(e) =>
+                        handleKeyDown(e, companyname, companycode)
+                      }
                       readOnly={mode === "update"}
                     />
                     {/* {error && !company_no && <div className="text-danger">Company Code should not be blank</div>} */}
@@ -607,7 +647,11 @@ function Input({ }) {
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label for="cname" class="exp-form-labels" className={`${error && !company_name ? 'text-danger' : ''}`}>
+                        <label
+                          for="cname"
+                          class="exp-form-labels"
+                          className={`${error && !company_name ? "text-danger" : ""}`}
+                        >
                           Company Name<span className="text-danger">*</span>
                         </label>
                       </div>
@@ -617,10 +661,13 @@ function Input({ }) {
                       class="exp-input-field form-control"
                       type="text"
                       placeholder=""
-                      required title="Please enter the company name"
+                      required
+                      title="Please enter the company name"
                       value={company_name}
                       onChange={(e) => setCompany_name(e.target.value)}
-                      onKeyDown={(e) => handleKeyDown(e, shortname, companyname)}
+                      onKeyDown={(e) =>
+                        handleKeyDown(e, shortname, companyname)
+                      }
                       maxLength={250}
                       ref={companyname}
                     />
@@ -641,7 +688,8 @@ function Input({ }) {
                       class="exp-input-field form-control"
                       type="text"
                       placeholder=""
-                      required title="Please enter the short name"
+                      required
+                      title="Please enter the short name"
                       value={short_name}
                       onChange={(e) => setShort_name(e.target.value)}
                       maxLength={250}
@@ -654,7 +702,11 @@ function Input({ }) {
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label for="add1" class="exp-form-labels" className={`${error && !address1 ? 'text-danger' : ''}`}>
+                        <label
+                          for="add1"
+                          class="exp-form-labels"
+                          className={`${error && !address1 ? "text-danger" : ""}`}
+                        >
                           Address 1<span className="text-danger">*</span>
                         </label>
                       </div>
@@ -664,7 +716,8 @@ function Input({ }) {
                       class="exp-input-field form-control"
                       type="text"
                       placeholder=""
-                      required title="Please enter the address"
+                      required
+                      title="Please enter the address"
                       value={address1}
                       onChange={(e) => setAddress1(e.target.value)}
                       maxLength={250}
@@ -678,7 +731,11 @@ function Input({ }) {
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label for="add2" class="exp-form-labels" className={`${error && !address2 ? 'text-danger' : ''}`}>
+                        <label
+                          for="add2"
+                          class="exp-form-labels"
+                          className={`${error && !address2 ? "text-danger" : ""}`}
+                        >
                           Address 2<span className="text-danger">*</span>
                         </label>
                       </div>
@@ -688,7 +745,8 @@ function Input({ }) {
                       class="exp-input-field form-control"
                       type="text"
                       placeholder=""
-                      required title="Please enter the address"
+                      required
+                      title="Please enter the address"
                       value={address2}
                       onChange={(e) => setAddress2(e.target.value)}
                       maxLength={250}
@@ -708,7 +766,8 @@ function Input({ }) {
                       class="exp-input-field form-control"
                       type="text"
                       placeholder=""
-                      required title="Please enter the address"
+                      required
+                      title="Please enter the address"
                       value={address3}
                       onChange={(e) => setAddress3(e.target.value)}
                       maxLength={250}
@@ -721,49 +780,76 @@ function Input({ }) {
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label For="city" className={`${error && !city ? 'text-danger' : ''}`}>City<span className="text-danger">*</span></label>
+                        <label
+                          For="city"
+                          className={`${error && !city ? "text-danger" : ""}`}
+                        >
+                          City<span className="text-danger">*</span>
+                        </label>
                       </div>
                     </div>
                     <div title="Select the City ">
-                    <Select
-                      id="city"
-                      value={selectedCity}
-                      onChange={handleChangeCity}
-                      options={filteredOptionCity}
-                      className="exp-input-field"
-                      placeholder=""
-                      ref={City}
-                      onKeyDown={(e) => handleKeyDown(e, State, City)}
-                    />
-                    {/* {error && !city && <div className="text-danger">City should not be blank</div>} */}
-                  </div></div>
+                      <Select
+                        id="city"
+                        value={selectedCity}
+                        onChange={handleChangeCity}
+                        options={filteredOptionCity}
+                        className="exp-input-field"
+                        placeholder=""
+                        ref={City}
+                        onKeyDown={(e) => handleKeyDown(e, State, City)}
+                        classNamePrefix="react-select"
+                        styles={{
+                          menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                        }}
+                      />
+                      {/* {error && !city && <div className="text-danger">City should not be blank</div>} */}
+                    </div>
+                  </div>
                 </div>
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label for="state" class="exp-form-labels" className={`${error && !state ? 'text-danger' : ''}`}>State<span className="text-danger">*</span></label>
+                        <label
+                          for="state"
+                          class="exp-form-labels"
+                          className={`${error && !state ? "text-danger" : ""}`}
+                        >
+                          State<span className="text-danger">*</span>
+                        </label>
                       </div>
                     </div>
                     <div title="Select the State">
-                    <Select
-                      id="state"
-                      value={selectedState}
-                      onChange={handleChangeState}
-                      options={filteredOptionState}
-                      className="exp-input-field"
-                      placeholder=""
-                      ref={State}
-                      onKeyDown={(e) => handleKeyDown(e, Pincode, State)}
-                    />
-                    {/* {error && !state && <div className="text-danger">State should not be blank</div>} */}
-                  </div></div>
+                      <Select
+                        id="state"
+                        value={selectedState}
+                        onChange={handleChangeState}
+                        options={filteredOptionState}
+                        className="exp-input-field"
+                        placeholder=""
+                        ref={State}
+                        onKeyDown={(e) => handleKeyDown(e, Pincode, State)}
+                        classNamePrefix="react-select"
+                        styles={{
+                          menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                        }}
+                      />
+                      {/* {error && !state && <div className="text-danger">State should not be blank</div>} */}
+                    </div>
+                  </div>
                 </div>
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label for="state" class="exp-form-labels" className={`${error && !pincode ? 'text-danger' : ''}`}>Pin Code<span className="text-danger">*</span></label>
+                        <label
+                          for="state"
+                          class="exp-form-labels"
+                          className={`${error && !pincode ? "text-danger" : ""}`}
+                        >
+                          Pin Code<span className="text-danger">*</span>
+                        </label>
                       </div>
                     </div>
                     <input
@@ -771,9 +857,14 @@ function Input({ }) {
                       class="exp-input-field form-control"
                       type="number"
                       placeholder=""
-                      required title="Please enter the pin code"
+                      required
+                      title="Please enter the pin code"
                       value={pincode}
-                      onChange={(e) => setPincode(e.target.value.replace(/\D/g, '').slice(0, 100))}
+                      onChange={(e) =>
+                        setPincode(
+                          e.target.value.replace(/\D/g, "").slice(0, 100),
+                        )
+                      }
                       maxLength={100}
                       ref={Pincode}
                       onKeyDown={(e) => handleKeyDown(e, Country, Pincode)}
@@ -785,28 +876,45 @@ function Input({ }) {
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label for="state" class="exp-form-labels" className={`${error && !country ? 'text-danger' : ''}`}>Country<span className="text-danger">*</span></label>
+                        <label
+                          for="state"
+                          class="exp-form-labels"
+                          className={`${error && !country ? "text-danger" : ""}`}
+                        >
+                          Country<span className="text-danger">*</span>
+                        </label>
                       </div>
                     </div>
                     <div title="Select the Country">
-                    <Select
-                      id="country"
-                      value={selectedCountry}
-                      onChange={handleChangeCountry}
-                      options={filteredOptionCountry}
-                      className="exp-input-field"
-                      placeholder=""
-                      ref={Country}
-                      onKeyDown={(e) => handleKeyDown(e, Email, Country)}
-                    />
-                    {/* {error && !country && <div className="text-danger">Country should not be blank</div>} */}
-                  </div></div>
+                      <Select
+                        id="country"
+                        value={selectedCountry}
+                        onChange={handleChangeCountry}
+                        options={filteredOptionCountry}
+                        className="exp-input-field"
+                        placeholder=""
+                        ref={Country}
+                        onKeyDown={(e) => handleKeyDown(e, Email, Country)}
+                        classNamePrefix="react-select"
+                        styles={{
+                          menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                        }}
+                      />
+                      {/* {error && !country && <div className="text-danger">Country should not be blank</div>} */}
+                    </div>
+                  </div>
                 </div>
                 <div className="col-md-3 form-group mb-2">
                   <div className="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label for="state" class="exp-form-labels" className={`${error && !email_id ? 'text-danger' : ''}`}>Email<span className="text-danger">*</span></label>
+                        <label
+                          for="state"
+                          class="exp-form-labels"
+                          className={`${error && !email_id ? "text-danger" : ""}`}
+                        >
+                          Email<span className="text-danger">*</span>
+                        </label>
                       </div>
                     </div>
                     <input
@@ -814,7 +922,8 @@ function Input({ }) {
                       className="exp-input-field form-control"
                       type="email"
                       placeholder=""
-                      required title="Please enter the email ID"
+                      required
+                      title="Please enter the email ID"
                       value={email_id}
                       onChange={(e) => setEmail_id(e.target.value)}
                       maxLength={150}
@@ -828,29 +937,41 @@ function Input({ }) {
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label for="state" class="exp-form-labels" className={`${error && !status ? 'text-danger' : ''}`}>Status<span className="text-danger">*</span></label>
+                        <label
+                          for="state"
+                          class="exp-form-labels"
+                          className={`${error && !status ? "text-danger" : ""}`}
+                        >
+                          Status<span className="text-danger">*</span>
+                        </label>
                       </div>
                     </div>
                     <div title="Select the Status ">
-                    <Select
-                      id="status"
-                      value={selectedStatus}
-                      onChange={handleChangeStatus}
-                      options={filteredOptionStatus}
-                      className="exp-input-field"
-                      placeholder=""
-                      ref={Status}
-                      onKeyDown={(e) => handleKeyDown(e, found, Status)}
-                    />
-                    {/* {error && !status && <div className="text-danger">Status should not be blank</div>} */}
-                  </div>
+                      <Select
+                        id="status"
+                        value={selectedStatus}
+                        onChange={handleChangeStatus}
+                        options={filteredOptionStatus}
+                        className="exp-input-field"
+                        placeholder=""
+                        ref={Status}
+                        onKeyDown={(e) => handleKeyDown(e, found, Status)}
+                        classNamePrefix="react-select"
+                        styles={{
+                          menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                        }}
+                      />
+                      {/* {error && !status && <div className="text-danger">Status should not be blank</div>} */}
+                    </div>
                   </div>
                 </div>
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label for="state" class="exp-form-labels">Founded Date</label>
+                        <label for="state" class="exp-form-labels">
+                          Founded Date
+                        </label>
                       </div>
                     </div>
                     <input
@@ -858,7 +979,8 @@ function Input({ }) {
                       class="exp-input-field form-control"
                       type="date"
                       placeholder=""
-                      required title="Please enter the founded date"
+                      required
+                      title="Please enter the founded date"
                       value={foundedDate}
                       ref={found}
                       onChange={(e) => setFoundedDate(e.target.value)}
@@ -868,13 +990,16 @@ function Input({ }) {
                 </div>
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
-                    <label for="wurl" class="exp-form-labels">Website URL</label>
+                    <label for="wurl" class="exp-form-labels">
+                      Website URL
+                    </label>
                     <input
                       id="wurl"
                       class="exp-input-field form-control"
                       type="url"
                       placeholder=""
-                      required title="Please enter the website URL"
+                      required
+                      title="Please enter the website URL"
                       value={websiteURL}
                       onChange={(e) => setWebsiteURL(e.target.value)}
                       maxLength={150}
@@ -887,7 +1012,13 @@ function Input({ }) {
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label for="state" class="exp-form-labels" className={`${error && !contact_no ? 'text-danger' : ''}`}>Contact No<span className="text-danger">*</span></label>
+                        <label
+                          for="state"
+                          class="exp-form-labels"
+                          className={`${error && !contact_no ? "text-danger" : ""}`}
+                        >
+                          Contact No<span className="text-danger">*</span>
+                        </label>
                       </div>
                     </div>
                     <input
@@ -895,9 +1026,14 @@ function Input({ }) {
                       class="exp-input-field form-control"
                       type="number"
                       placeholder=""
-                      required title="Please enter the contact number"
+                      required
+                      title="Please enter the contact number"
                       value={contact_no}
-                      onChange={(e) => setContact_no(e.target.value.replace(/\D/g, '').slice(0, 14))}
+                      onChange={(e) =>
+                        setContact_no(
+                          e.target.value.replace(/\D/g, "").slice(0, 14),
+                        )
+                      }
                       ref={ContactNo}
                       onKeyDown={(e) => handleKeyDown(e, annaual, ContactNo)}
                     />
@@ -905,13 +1041,16 @@ function Input({ }) {
                 </div>
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
-                    <label for="report" class="exp-form-labels">Annual Report URL</label>
+                    <label for="report" class="exp-form-labels">
+                      Annual Report URL
+                    </label>
                     <input
                       id="report"
                       class="exp-input-field form-control"
                       type="textarea"
                       placeholder=""
-                      required title="Please enter the annual report URL"
+                      required
+                      title="Please enter the annual report URL"
                       value={annualreportURL}
                       onChange={(e) => setAnnualReportURL(e.target.value)}
                       maxLength={150}
@@ -930,7 +1069,8 @@ function Input({ }) {
                       class="exp-input-field form-control"
                       type="text"
                       placeholder=""
-                      required title="Please enter the GST number"
+                      required
+                      title="Please enter the GST number"
                       value={company_gst_no}
                       onChange={(e) => setcompany_gst_no(e.target.value)}
                       maxLength={15}
@@ -941,20 +1081,30 @@ function Input({ }) {
                 </div>
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
-                    <label for="locno" class="exp-form-labels" className={`${error && !location_no ? 'text-danger' : ''}`}>Location No<span className="text-danger">*</span></label>
+                    <label
+                      for="locno"
+                      class="exp-form-labels"
+                      className={`${error && !location_no ? "text-danger" : ""}`}
+                    >
+                      Location No<span className="text-danger">*</span>
+                    </label>
                     <div title="Select the Location No ">
-                    <Select
-                      id="locno"
-                      value={selectedLocation}
-                      onChange={handleChangeLocation}
-                      options={filteredOptionLocation}
-                      className="exp-input-field"
-                      placeholder=""
-                      ref={locatioN}
-                      onKeyDown={(e) => handleKeyDown(e, logo, locatioN)}
-                    />
-                    {/* {error && !location_no && <div className="text-danger">Location No should not be blank</div>} */}
-                  </div>
+                      <Select
+                        id="locno"
+                        value={selectedLocation}
+                        onChange={handleChangeLocation}
+                        options={filteredOptionLocation}
+                        className="exp-input-field"
+                        placeholder=""
+                        ref={locatioN}
+                        onKeyDown={(e) => handleKeyDown(e, logo, locatioN)}
+                        classNamePrefix="react-select"
+                        styles={{
+                          menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                        }}
+                      />
+                      {/* {error && !location_no && <div className="text-danger">Location No should not be blank</div>} */}
+                    </div>
                   </div>
                 </div>
                 <div className="col-md-3 form-group mb-2">
@@ -962,7 +1112,8 @@ function Input({ }) {
                     <label for="locno" class="exp-form-labels">
                       Logo
                     </label>
-                    <input type="file"
+                    <input
+                      type="file"
                       class="exp-input-field form-control"
                       accept="image/*"
                       onChange={handleFileSelect}
@@ -978,7 +1129,7 @@ function Input({ }) {
                         src={selectedImage}
                         alt="Selected Preview"
                         className="avatar rounded sm mt-4"
-                        style={{ height: '220px', width: '220px' }}
+                        style={{ height: "220px", width: "220px" }}
                       />
                     </div>
                   </div>
@@ -988,13 +1139,14 @@ function Input({ }) {
                     <label for="locno" class="exp-form-labels">
                       Signature
                     </label>
-                    <input type="file"
+                    <input
+                      type="file"
                       class="exp-input-field form-control"
                       accept="image/*"
                       onChange={handleFileSignature}
                       ref={sign}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
+                        if (e.key === "Enter") {
                           e.preventDefault();
                           if (mode === "update") {
                             handleUpdate();
@@ -1013,7 +1165,7 @@ function Input({ }) {
                         src={selectedSignatureImage}
                         alt="Selected Preview"
                         className="avatar rounded sm mt-4"
-                        style={{ height: '220px', width: '220px' }}
+                        style={{ height: "220px", width: "220px" }}
                       />
                     </div>
                   </div>
@@ -1061,11 +1213,19 @@ function Input({ }) {
                 </div> */}
                 <div class="col-md-3 form-group d-flex justify-content-start mb-4">
                   {mode === "create" ? (
-                    <button onClick={handleInsert} className="mt-4" title="Save">
+                    <button
+                      onClick={handleInsert}
+                      className="mt-4"
+                      title="Save"
+                    >
                       <i class="fa-solid fa-floppy-disk"></i>
                     </button>
                   ) : (
-                    <button className="mt-4" title="Update" onClick={handleUpdate}>
+                    <button
+                      className="mt-4"
+                      title="Update"
+                      onClick={handleUpdate}
+                    >
                       <i class="fa-solid fa-pen-to-square"></i>
                     </button>
                   )}
@@ -1075,9 +1235,7 @@ function Input({ }) {
           </div>
         </div>
       </div>
-
     </div>
-
   );
 }
 export default Input;

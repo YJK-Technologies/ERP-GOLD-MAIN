@@ -2086,19 +2086,44 @@ setLoading(true)
     }
   };
 
+  const PrintTCPrintData = async () => {
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/refNumberTosalesTCPrintData`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ transaction_no: billNo, company_code: sessionStorage.getItem('selectedCompanyCode') })
+      });
+
+      if (response.ok) {
+        const searchData = await response.json();
+        return searchData;
+      } else if (response.status === 404) {
+        console.log("Data not found");
+      } else {
+        console.log("Bad request"); // Log the message for other errors
+      }
+    } catch (error) {
+      console.error("Error fetching search data:", error);
+    }
+  };
+
   const generateReport = async () => {
     setLoading(true)
     try {
       const headerData = await PrintHeaderData();
       const detailData = await PrintDetailData();
       const taxData = await PrintSumTax();
+      const TCPrintData = await PrintTCPrintData();
 
-      if (headerData && detailData && taxData) {
+      if (headerData && detailData && taxData && TCPrintData) {
         console.log("All API calls completed successfully");
 
         sessionStorage.setItem('SheaderData', JSON.stringify(headerData));
         sessionStorage.setItem('SdetailData', JSON.stringify(detailData));
         sessionStorage.setItem('StaxData', JSON.stringify(taxData));
+        sessionStorage.setItem('STCPrintData', JSON.stringify(TCPrintData));
 
         window.open('/SalesPrint', '_blank');
       } else {
@@ -3055,6 +3080,7 @@ setLoading(true)
     }
   ];
 
+
   const handleReload = () => {
     setLoading(true)
     window.location.reload();
@@ -3091,6 +3117,36 @@ setLoading(true)
 
   //   XLSX.writeFile(workbook, "Sales data.xlsx");
   // };
+
+ // =========================================================
+// FUNCTION TO CONVERT GRID DATA USING headerName
+// =========================================================
+const convertGridDataToExcel = (data, columnDefs) => {
+  if (!data || data.length === 0) {
+    return [];
+  }
+
+  // Only include visible AG Grid columns
+  const visibleColumns = columnDefs.filter(
+    col =>
+      col.field &&
+      col.hide !== true &&
+      col.field !== "delete"
+  );
+
+  return data.map(row => {
+    const excelRow = {};
+
+    visibleColumns.forEach(col => {
+      const field = col.field;
+      const headerName = col.headerName || field;
+
+      excelRow[headerName] = row[field] ?? "";
+    });
+
+    return excelRow;
+  });
+};
 
   const handleExcelDownload = () => {
   const filteredRowData = rowData.filter(
@@ -3142,9 +3198,19 @@ setLoading(true)
     },
   ];
 
-  // Detail Sheets
-  const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
-  const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
+// Detail Sheets
+const salesExcelData = convertGridDataToExcel(
+  filteredRowData,
+  columnDefs
+);
+
+const taxExcelData = convertGridDataToExcel(
+  filteredRowDataTax,
+  columnDefsTax
+);
+
+const rowDataSheet = XLSX.utils.json_to_sheet(salesExcelData);
+const rowDataTaxSheet = XLSX.utils.json_to_sheet(taxExcelData);
 
   // Auto Fit Function
   const autoFitColumns = (worksheet, data) => {
@@ -3168,11 +3234,11 @@ setLoading(true)
       wch: width + 5,
     }));
   };
-
-  // Apply Auto Width
-  autoFitColumns(headerSheet, headerData);
-  autoFitColumns(rowDataSheet, filteredRowData);
-  autoFitColumns(rowDataTaxSheet, filteredRowDataTax);
+  
+// Apply Auto Width
+autoFitColumns(headerSheet, headerData);
+autoFitColumns(rowDataSheet, salesExcelData);
+autoFitColumns(rowDataTaxSheet, taxExcelData);
 
   // Workbook
   const workbook = XLSX.utils.book_new();
@@ -3182,6 +3248,7 @@ setLoading(true)
 
   XLSX.writeFile(workbook, "Sales_Data.xlsx");
 };
+
   const handleKeyDown = async (e, nextFieldRef, value, hasValueChanged, setHasValueChanged) => {
     if (e.key === 'Enter') {
       if (hasValueChanged) {
@@ -3692,7 +3759,7 @@ setLoading(true)
                       value={selectedscreens}
                       onChange={handleChangeScreens}
                       options={filteredOptionScreens}
-
+                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                     />
                   </div>
                   </div>
@@ -3825,6 +3892,7 @@ setLoading(true)
                         onChange={handleChangeStatus}
                         getOptionLabel={(option) => option.label || ""}
                         getOptionValue={(option) => option.value || ""}
+                        styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                       />
                     </div>
                     </div>
@@ -3908,6 +3976,7 @@ setLoading(true)
                       required
                       data-tip="Please select a payment type"
                       autoComplete="off"
+                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                     // ref={paytype}
                     // onKeyDown={(e) => handleKeyDown(e, SaleS, paytype)}
                     />
@@ -3928,6 +3997,7 @@ setLoading(true)
                       required
                       data-tip="Please select a payment type"
                       autoComplete="off"
+                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                     // ref={SaleS}
                     // onKeyDown={(e) => handleKeyDown(e, order, SaleS)}
                     />
@@ -3948,6 +4018,7 @@ setLoading(true)
                       required
                       data-tip="Please select a payment type"
                       autoComplete="off"
+                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                     // ref={order}
                     // onKeyDown={(e) => handleKeyDown(e, billdate, order)}
                     />
@@ -4006,6 +4077,7 @@ setLoading(true)
                       onChange={handleChangeWarehouse}
                       options={filteredOptionWarehouse}
                       data-tip="Please select a default warehouse"
+                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                     />
                   </div>
                   </div>
@@ -4023,6 +4095,7 @@ setLoading(true)
                       onChange={handleChangeSalesMode}
                       options={filteredOptionSalesMode}
                       isDisabled={isLocked}
+                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                     />
                   </div>
                   </div>
@@ -4138,6 +4211,7 @@ setLoading(true)
                         value={selectedItem}
                         onChange={handleChangeItem}
                         options={filteredOptionItem}
+                        styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                       />
                       </div>
                     </div>
@@ -4258,6 +4332,7 @@ setLoading(true)
                     onChange={handleChangeScreens}
                     options={filteredOptionScreens}
                     data-tip="Please select a default warehouse"
+                    styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                   />
                 </div>
                 </div>

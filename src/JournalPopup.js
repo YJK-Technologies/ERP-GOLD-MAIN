@@ -7,7 +7,7 @@ import "ag-grid-enterprise";
 import 'ag-grid-autocomplete-editor/dist/main.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
-import { ToastContainer,toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import { format } from 'date-fns';
 import Select from 'react-select'
 const config = require('./Apiconfig');
@@ -123,25 +123,24 @@ export default function JournalPopup({ open, handleClose, handlejournal }) {
   };
 
   useEffect(() => {
-      const companyCode = sessionStorage.getItem("selectedCompanyCode");
-  
-      fetch(`${config.apiBaseUrl}/Transaction`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          company_code: companyCode,
-        }),
+    const companyCode = sessionStorage.getItem("selectedCompanyCode");
+
+    fetch(`${config.apiBaseUrl}/Transaction`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        company_code: companyCode,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Store the full API response objects
+        setTransdrop(data);
       })
-        .then((response) => response.json())
-        .then((data) => {
-          // Extract city names from the fetched data
-          const Transaction = data.map((option) => option.attributedetails_name);
-          setTransdrop(Transaction);
-        })
-        .catch((error) => console.error("Error fetching data:", error));
-    }, []);
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
 
   const handleSearchItem = async () => {
     try {
@@ -150,8 +149,10 @@ export default function JournalPopup({ open, handleClose, handlejournal }) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({  company_code : sessionStorage.getItem('selectedCompanyCode'),
-          journal_no, transaction_date, transaction_type, original_accountcode, contra_accountCode }) // Send company_no and company_name as search criteria
+        body: JSON.stringify({
+          company_code: sessionStorage.getItem('selectedCompanyCode'),
+          journal_no, transaction_date, transaction_type: transaction_type, original_accountcode, contra_accountCode
+        }) // Send company_no and company_name as search criteria
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -159,10 +160,10 @@ export default function JournalPopup({ open, handleClose, handlejournal }) {
         console.log("data fetched successfully")
       } else if (response.status === 404) {
         toast.warning("Data Not Found")
-        .then(() => {
-          setRowData([]);
-          clearInputs([])
-        });
+          .then(() => {
+            setRowData([]);
+            clearInputs([])
+          });
         console.log("Data not found"); // Log the message for 404 Not Found
       } else {
         console.log("Bad request"); // Log the message for other errors
@@ -221,7 +222,7 @@ export default function JournalPopup({ open, handleClose, handlejournal }) {
                           <div className="purbut mb-0 d-flex justify-content-between" >
                             <h1 align="left" className="purbut">Journal Help</h1>
                             <button onClick={handleClose} className="purbut btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
-                            <i class="fa-solid fa-xmark"></i>
+                              <i class="fa-solid fa-xmark"></i>
                             </button>
                           </div>
                           <div class="d-flex justify-content-between">
@@ -239,6 +240,7 @@ export default function JournalPopup({ open, handleClose, handlejournal }) {
                               maxLength={18}
                               className='exp-input-field form-control'
                               placeholder='Journal No'
+                              title="Enter the Journal No"
                               value={journal_no}
                               onChange={(e) => setjournal_no(e.target.value)}
                               autoComplete="off"
@@ -258,44 +260,32 @@ export default function JournalPopup({ open, handleClose, handlejournal }) {
                             />
                           </div>
 
-                          {/* <div className="col-sm mb-2">
-                            <input
-                              type='text'
-                              id='ItemName'
-                              className='exp-input-field form-control'
-                              placeholder=' Transaction Type'
-                              maxLength={40}
-                              value={transaction_type}
-                              onChange={(e) => settransaction_type(e.target.value)}
-                              autoComplete="off"
-                            />
-                          </div> */}
-
                           <div className="col-sm mb-2">
-                                                      <div className="exp-form-floating">
-                                                        <div title="Select the Sales type">
-                                                          <Select
-                                                            id="salesType"
-                                                            value={selectedTrans}
-                                                            onChange={handleChangeTrans}
-                                                            options={filteredOptionTrans}
-                                                            className="exp-input-field"
-                                                            placeholder="Transaction"
-                                                            required
-                                                            isClearable
-                                                            data-tip="Please select a payment type"
-                                                            autoComplete="off"
-                                                          />
-                                                        </div>
-                                                      </div>
-                                                    </div>
+                            <div className="exp-form-floating">
+                              <div title="Select the Transaction Type">
+                                <Select
+                                  id="salesType"
+                                  value={selectedTrans}
+                                  onChange={handleChangeTrans}
+                                  options={filteredOptionTrans}
+                                  className="exp-input-field"
+                                  placeholder="Transaction"
+                                  required
+                                  isClearable
+                                  data-tip="Please select a payment type"
+                                  autoComplete="off"
+                                />
+                              </div>
+                            </div>
+                          </div>
 
                           <div className="col-sm mb-2">
                             <input
                               type='text'
                               id='ShortName'
                               className='exp-input-field form-control'
-                              placeholder=' Original Acc Code'
+                              placeholder='Original Acc Code'
+                              title="Enter the Original Acc Code"
                               maxLength={50}
                               value={original_accountcode}
                               onChange={(e) => setoriginal_accountcode(e.target.value)}
@@ -307,7 +297,8 @@ export default function JournalPopup({ open, handleClose, handlejournal }) {
                               type='text'
                               id='OurBrand'
                               className='exp-input-field form-control'
-                              placeholder=' Contra Acc Code'
+                              placeholder='Contra Acc Code'
+                              title="Enter the Contra Acc Code"
                               value={contra_accountCode}
                               maxLength={30}
                               onChange={(e) => setcontra_accountCode(e.target.value)}
@@ -315,13 +306,13 @@ export default function JournalPopup({ open, handleClose, handlejournal }) {
                             />
                           </div>
                           <div className="mb-2 mt-2 d-flex justify-content-end">
-                            <icon className="icon popups-btn" onClick={handleSearchItem}>
+                            <icon className="icon popups-btn" title="Search" onClick={handleSearchItem}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
                             </icon>
-                            <icon className="icon popups-btn" onClick={handleReload}>
+                            <icon className="icon popups-btn" title="Reload" onClick={handleReload}>
                               <i class="fa-solid fa-arrow-rotate-right"></i>
                             </icon>
-                            <icon className="icon popups-btn" onClick={handleConfirm}>
+                            <icon className="icon popups-btn" title="Confirm" onClick={handleConfirm}>
                               <FontAwesomeIcon icon="fa-solid fa-check" />
                             </icon>
                           </div>
@@ -354,7 +345,7 @@ export default function JournalPopup({ open, handleClose, handlejournal }) {
                           </div>
                           <div className="mb-0 d-flex justify-content-end" >
                             <button onClick={handleClose} className="closebtn2" required title="Close">
-                            <i class="fa-solid fa-xmark"></i>
+                              <i class="fa-solid fa-xmark"></i>
                             </button>
                           </div>
                         </div>
@@ -372,6 +363,7 @@ export default function JournalPopup({ open, handleClose, handlejournal }) {
                               maxLength={18}
                               className='exp-input-field form-control'
                               placeholder='Journal No'
+                              title="Enter the Journal No"
                               value={journal_no}
                               onChange={(e) => setjournal_no(e.target.value)}
                               autoComplete="off"
@@ -379,34 +371,44 @@ export default function JournalPopup({ open, handleClose, handlejournal }) {
                           </div>
                           <div className="col-sm mb-2">
                             <input
-                              type='text'
+                              type='date'
                               id='Variant'
                               className='exp-input-field form-control'
-                              placeholder=' Transaction date'
+                              placeholder=' Transaction Date'
+                              title="Select the Transaction Date"
                               value={transaction_date}
                               maxLength={18}
                               onChange={(e) => settransaction_date(e.target.value)}
                               autoComplete="off"
                             />
                           </div>
+
                           <div className="col-sm mb-2">
-                            <input
-                              type='text'
-                              id='ItemName'
-                              className='exp-input-field form-control'
-                              placeholder=' Transaction Type'
-                              maxLength={40}
-                              value={transaction_type}
-                              onChange={(e) => settransaction_type(e.target.value)}
-                              autoComplete="off"
-                            />
+                            <div className="exp-form-floating">
+                              <div title="Select the Transaction Type">
+                                <Select
+                                  id="salesType"
+                                  value={selectedTrans}
+                                  onChange={handleChangeTrans}
+                                  options={filteredOptionTrans}
+                                  className="exp-input-field"
+                                  placeholder="Transaction"
+                                  required
+                                  isClearable
+                                  data-tip="Please select a payment type"
+                                  autoComplete="off"
+                                />
+                              </div>
+                            </div>
                           </div>
+
                           <div className="col-sm mb-2">
                             <input
                               type='text'
                               id='ShortName'
                               className='exp-input-field form-control'
-                              placeholder=' Original Acc Code'
+                              placeholder='Original Acc Code'
+                              title="Enter the Original Acc Code"
                               maxLength={50}
                               value={original_accountcode}
                               onChange={(e) => setoriginal_accountcode(e.target.value)}
@@ -418,7 +420,8 @@ export default function JournalPopup({ open, handleClose, handlejournal }) {
                               type='text'
                               id='OurBrand'
                               className='exp-input-field form-control'
-                              placeholder=' Contra Acc Code'
+                              placeholder='Contra Acc Code'
+                              title="Enter the Contra Acc Code"
                               value={contra_accountCode}
                               maxLength={30}
                               onChange={(e) => setcontra_accountCode(e.target.value)}

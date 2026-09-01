@@ -624,7 +624,7 @@ function Grid() {
                 options={filteredOptionItem}
                 className="exp-input-field"
                 placeholder=""
-
+                styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 maxLength={25}
               />
@@ -634,7 +634,8 @@ function Grid() {
             <div class="exp-form-floating">
               <label for="state" class="exp-form-labels">
                 Item Varient
-              </label><Select
+              </label>
+              <Select
                 id="ahsts"
                 value={selectedItem_variant}
                 onChange={handleChangeVariant}
@@ -643,6 +644,7 @@ function Grid() {
                 className="exp-input-field"
                 placeholder=""
                 maxLength={25}
+                styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
               />
             </div>
           </div>
