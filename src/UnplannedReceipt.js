@@ -1764,6 +1764,7 @@ const UnplannedReceipt = () => {
                   onChange={handleChangeReceipt}
                   options={filteredOptionReceipt}
                   data-tip="Please select a transaction type"
+                  styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                 />
               </div>
               </div>
@@ -1781,6 +1782,7 @@ const UnplannedReceipt = () => {
                   onChange={handleChangeWarehouse}
                   options={filteredOptionWarehouse}
                   data-tip="Please select a default warehouse"
+                  styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                 />
                 </div>
               </div>

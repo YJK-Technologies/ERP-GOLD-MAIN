@@ -766,8 +766,8 @@ const Product = () => {
       console.log("Fetched Data:", searchData);
 
       if (searchData?.warning) {
-  toast.warning(searchData.warning);
-}
+        toast.warning(searchData.warning);
+      }
 
       if (searchData?.Header?.length > 0) {
         const item = searchData.Header[0];
@@ -1072,90 +1072,89 @@ const Product = () => {
   // };
 
   const ProductDetail = async (productCode) => {
-  try {
-    const response = await fetch(`${config.apiBaseUrl}/ProductDetail`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        transaction_no: productCode,
-        company_code: sessionStorage.getItem("selectedCompanyCode"),
-      }),
-    });
-
-    const searchData = await response.json();
-
-    console.log("Product Detail Response:", searchData);
-
-    // -----------------------------------------
-    // Show warning if product has no details
-    // -----------------------------------------
-    if (searchData?.warning) {
-      toast.warning(searchData.warning);
-    }
-
-    // -----------------------------------------
-    // Get detail array
-    // -----------------------------------------
-    const details = searchData?.Detail || [];
-
-    // -----------------------------------------
-    // No details
-    // -----------------------------------------
-    if (details.length === 0) {
-      console.log("No product details found");
-
-      setRowData([
-        {
-          ItemSno: 1,
-          itemCode: "",
-          itemName: "",
-          quantity: 0,
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/ProductDetail`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      ]);
-
-      return;
-    }
-
-    // -----------------------------------------
-    // Details found
-    // -----------------------------------------
-    const newRowData = [];
-
-    details.forEach((item, index) => {
-      const {
-        item_Code,
-        item_name,
-        quantity,
-        Tax,
-        Tot_amt,
-        description,
-        tax_name_details,
-        tax_percentage,
-        tax_type,
-      } = item;
-
-      newRowData.push({
-        ItemSno: index + 1,
-        itemCode: item_Code,
-        itemName: item_name,
-        quantity: quantity,
-        TotalTaxAmount: Tax,
-        TotalItemAmount: Tot_amt,
-        description: description,
-        TaxName: tax_name_details,
-        TaxPercentage: tax_percentage,
-        TaxType: tax_type,
+        body: JSON.stringify({
+          transaction_no: productCode,
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+        }),
       });
-    });
 
-    setRowData(newRowData);
+      const searchData = await response.json();
 
-  } catch (error) {
-    console.error("Error fetching product detail data:", error);
-  }
-};
+      console.log("Product Detail Response:", searchData);
+
+      // -----------------------------------------
+      // Show warning if product has no details
+      // -----------------------------------------
+      if (searchData?.warning) {
+        toast.warning(searchData.warning);
+      }
+
+      // -----------------------------------------
+      // Get detail array
+      // -----------------------------------------
+      const details = searchData?.Detail || [];
+
+      // -----------------------------------------
+      // No details
+      // -----------------------------------------
+      if (details.length === 0) {
+        console.log("No product details found");
+
+        setRowData([
+          {
+            ItemSno: 1,
+            itemCode: "",
+            itemName: "",
+            quantity: 0,
+          },
+        ]);
+
+        return;
+      }
+
+      // -----------------------------------------
+      // Details found
+      // -----------------------------------------
+      const newRowData = [];
+
+      details.forEach((item, index) => {
+        const {
+          item_Code,
+          item_name,
+          quantity,
+          Tax,
+          Tot_amt,
+          description,
+          tax_name_details,
+          tax_percentage,
+          tax_type,
+        } = item;
+
+        newRowData.push({
+          ItemSno: index + 1,
+          itemCode: item_Code,
+          itemName: item_name,
+          quantity: quantity,
+          TotalTaxAmount: Tax,
+          TotalItemAmount: Tot_amt,
+          description: description,
+          TaxName: tax_name_details,
+          TaxPercentage: tax_percentage,
+          TaxType: tax_type,
+        });
+      });
+
+      setRowData(newRowData);
+    } catch (error) {
+      console.error("Error fetching product detail data:", error);
+    }
+  };
 
   const handleUpdateButtonClick = async () => {
     if (!productCode || !taxType || !unitPrice) {
@@ -1669,6 +1668,10 @@ const Product = () => {
                     className="exp-input-field"
                     placeholder=""
                     maxLength={50}
+                    classNamePrefix="react-select"
+                    styles={{
+                      menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                    }}
                   />
                 </div>
               </div>
@@ -1696,6 +1699,10 @@ const Product = () => {
                     className="exp-input-field"
                     placeholder=""
                     maxLength={50}
+                    classNamePrefix="react-select"
+                    styles={{
+                      menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                    }}
                   />
                 </div>
               </div>
@@ -1735,6 +1742,10 @@ const Product = () => {
                     required
                     maxLength={10}
                     data-tip="Please select a payment type"
+                    classNamePrefix="react-select"
+                    styles={{
+                      menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                    }}
                   />
                 </div>
               </div>

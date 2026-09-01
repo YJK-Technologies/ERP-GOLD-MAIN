@@ -1230,6 +1230,7 @@ const handleItemCode = async (params) => {
 
         // Construct the URL with the encoded data as query parameters
         const url = `/StockTransferTemplat?detailData=${encodedDetailData}`;
+        // const url = `/StockTransferTemplat`;
 
         // Open the URL in a new window
         window.open(url, '_blank');

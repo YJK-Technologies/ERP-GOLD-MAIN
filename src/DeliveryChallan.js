@@ -2876,6 +2876,8 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                             onChange={handleChangeScreens}
                                             options={filteredOptionScreens}
                                             data-tip="Please select a default warehouse"
+                                            classNamePrefix="react-select"
+                                            styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                                         />
                                     </div>
                                     {buttonsVisible && ['add', 'all permission'].some(permission => DcPermission.includes(permission)) && (
@@ -3027,6 +3029,7 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                                 data-tip="Please select a payment type"
                                                 autoComplete="off"
                                                 ref={payTypeRef}
+                                                styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                                             />
                                         </div>
                                         </div>
@@ -3046,6 +3049,7 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                                 data-tip="Please select a sales type"
                                                 autoComplete="off"
                                                 ref={salesTypeRef}
+                                                styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                                             />
                                         </div>
                                         </div>
@@ -3196,7 +3200,7 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                                 className="exp-input-field"
                                                 placeholder=""
                                                 required
-
+                                                styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                                             />
                                         </div>
                                         </div>
@@ -3216,6 +3220,7 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                                 autoComplete='off'
                                                 options={dynamicOptions}
                                                 onChange={handleItemCode}
+                                                styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                                             />
                                         </div>
                                         </div>
@@ -3288,6 +3293,7 @@ autoFitColumns(rowDataSheet, filteredRowData);
                                             onChange={handleChangeScreens}
                                             options={filteredOptionScreens}
                                             data-tip="Please select a default warehouse"
+                                            styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                                         />
                                     </div>
                                 </div>
