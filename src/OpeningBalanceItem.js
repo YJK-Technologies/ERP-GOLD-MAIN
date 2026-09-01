@@ -168,6 +168,7 @@ useEffect(() => {
       maxWidth: 80,
       sortable: false,
       editable: false,
+      
     },
     {
       headerName: '',

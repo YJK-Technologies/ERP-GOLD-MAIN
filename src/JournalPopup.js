@@ -363,6 +363,7 @@ export default function JournalPopup({ open, handleClose, handlejournal }) {
                               maxLength={18}
                               className='exp-input-field form-control'
                               placeholder='Journal No'
+                              title="Enter the Journal No"
                               value={journal_no}
                               onChange={(e) => setjournal_no(e.target.value)}
                               autoComplete="off"
@@ -370,34 +371,44 @@ export default function JournalPopup({ open, handleClose, handlejournal }) {
                           </div>
                           <div className="col-sm mb-2">
                             <input
-                              type='text'
+                              type='date'
                               id='Variant'
                               className='exp-input-field form-control'
-                              placeholder=' Transaction date'
+                              placeholder=' Transaction Date'
+                              title="Select the Transaction Date"
                               value={transaction_date}
                               maxLength={18}
                               onChange={(e) => settransaction_date(e.target.value)}
                               autoComplete="off"
                             />
                           </div>
+
                           <div className="col-sm mb-2">
-                            <input
-                              type='text'
-                              id='ItemName'
-                              className='exp-input-field form-control'
-                              placeholder=' Transaction Type'
-                              maxLength={40}
-                              value={transaction_type}
-                              onChange={(e) => settransaction_type(e.target.value)}
-                              autoComplete="off"
-                            />
+                            <div className="exp-form-floating">
+                              <div title="Select the Transaction Type">
+                                <Select
+                                  id="salesType"
+                                  value={selectedTrans}
+                                  onChange={handleChangeTrans}
+                                  options={filteredOptionTrans}
+                                  className="exp-input-field"
+                                  placeholder="Transaction"
+                                  required
+                                  isClearable
+                                  data-tip="Please select a payment type"
+                                  autoComplete="off"
+                                />
+                              </div>
+                            </div>
                           </div>
+
                           <div className="col-sm mb-2">
                             <input
                               type='text'
                               id='ShortName'
                               className='exp-input-field form-control'
-                              placeholder=' Original Acc Code'
+                              placeholder='Original Acc Code'
+                              title="Enter the Original Acc Code"
                               maxLength={50}
                               value={original_accountcode}
                               onChange={(e) => setoriginal_accountcode(e.target.value)}
@@ -409,7 +420,8 @@ export default function JournalPopup({ open, handleClose, handlejournal }) {
                               type='text'
                               id='OurBrand'
                               className='exp-input-field form-control'
-                              placeholder=' Contra Acc Code'
+                              placeholder='Contra Acc Code'
+                              title="Enter the Contra Acc Code"
                               value={contra_accountCode}
                               maxLength={30}
                               onChange={(e) => setcontra_accountCode(e.target.value)}
