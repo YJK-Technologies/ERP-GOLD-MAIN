@@ -3055,6 +3055,7 @@ setLoading(true)
     }
   ];
 
+
   const handleReload = () => {
     setLoading(true)
     window.location.reload();
@@ -3091,6 +3092,36 @@ setLoading(true)
 
   //   XLSX.writeFile(workbook, "Sales data.xlsx");
   // };
+
+ // =========================================================
+// FUNCTION TO CONVERT GRID DATA USING headerName
+// =========================================================
+const convertGridDataToExcel = (data, columnDefs) => {
+  if (!data || data.length === 0) {
+    return [];
+  }
+
+  // Only include visible AG Grid columns
+  const visibleColumns = columnDefs.filter(
+    col =>
+      col.field &&
+      col.hide !== true &&
+      col.field !== "delete"
+  );
+
+  return data.map(row => {
+    const excelRow = {};
+
+    visibleColumns.forEach(col => {
+      const field = col.field;
+      const headerName = col.headerName || field;
+
+      excelRow[headerName] = row[field] ?? "";
+    });
+
+    return excelRow;
+  });
+};
 
   const handleExcelDownload = () => {
   const filteredRowData = rowData.filter(
@@ -3142,9 +3173,19 @@ setLoading(true)
     },
   ];
 
-  // Detail Sheets
-  const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
-  const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
+// Detail Sheets
+const salesExcelData = convertGridDataToExcel(
+  filteredRowData,
+  columnDefs
+);
+
+const taxExcelData = convertGridDataToExcel(
+  filteredRowDataTax,
+  columnDefsTax
+);
+
+const rowDataSheet = XLSX.utils.json_to_sheet(salesExcelData);
+const rowDataTaxSheet = XLSX.utils.json_to_sheet(taxExcelData);
 
   // Auto Fit Function
   const autoFitColumns = (worksheet, data) => {
@@ -3168,11 +3209,11 @@ setLoading(true)
       wch: width + 5,
     }));
   };
-
-  // Apply Auto Width
-  autoFitColumns(headerSheet, headerData);
-  autoFitColumns(rowDataSheet, filteredRowData);
-  autoFitColumns(rowDataTaxSheet, filteredRowDataTax);
+  
+// Apply Auto Width
+autoFitColumns(headerSheet, headerData);
+autoFitColumns(rowDataSheet, salesExcelData);
+autoFitColumns(rowDataTaxSheet, taxExcelData);
 
   // Workbook
   const workbook = XLSX.utils.book_new();
@@ -3182,6 +3223,7 @@ setLoading(true)
 
   XLSX.writeFile(workbook, "Sales_Data.xlsx");
 };
+
   const handleKeyDown = async (e, nextFieldRef, value, hasValueChanged, setHasValueChanged) => {
     if (e.key === 'Enter') {
       if (hasValueChanged) {
