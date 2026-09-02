@@ -1853,32 +1853,42 @@ const handleExcelDownload = () => {
                row.unitPrice > 0
     );
 
+    // TotalItemAmount varaikum mattum map panna (hide: true irukku columns Skip aagum)
+    const mappedDetailData = filteredRowData.map(row => {
+        const rowObj = {};
+        columnDefs.forEach(col => {
+            // hide: true irukkura columns and delete column exclude aagum
+            if (col.headerName && col.field && col.field !== 'delete' && !col.hide) {
+                rowObj[col.headerName] = row[col.field] ?? '';
+            }
+        });
+        return rowObj;
+    });
+
     const headerData = [{
-        // company_code: sessionStorage.getItem("selectedCompanyCode"),
+        "Bill to customer code": headerRowData[0]?.billTo,
+        "Bill to customer name": headerRowData[1]?.billTo,
+        "Bill to customer address 1": headerRowData[2]?.billTo,
+        "Bill to customer address 2": headerRowData[3]?.billTo,
+        "Bill to customer address 3": headerRowData[4]?.billTo,
+        "Bill to customer address 4": headerRowData[5]?.billTo,
+        "Bill to customer state": headerRowData[6]?.billTo,
+        "Bill to customer country": headerRowData[7]?.billTo,
+        "Bill to customer mobile no": headerRowData[8]?.billTo,
+        "Bill to customer GST No": headerRowData[9]?.billTo,
+        "Bill to customer contact person": headerRowData[10]?.billTo,
 
-        "Bill to customer code": headerRowData[0].billTo,
-        "Bill to customer name": headerRowData[1].billTo,
-        "Bill to customer address 1": headerRowData[2].billTo,
-        "Bill to customer address 2": headerRowData[3].billTo,
-        "Bill to customer address 3": headerRowData[4].billTo,
-        "Bill to customer address 4": headerRowData[5].billTo,
-        "Bill to customer state": headerRowData[6].billTo,
-        "Bill to customer country": headerRowData[7].billTo,
-        "Bill to customer mobile no": headerRowData[8].billTo,
-        "Bill to customer GST No": headerRowData[9].billTo,
-        "Bill to customer contact person": headerRowData[10].billTo,
-
-        "Ship to customer code": headerRowData[0].shipTo,
-        "Ship to customer name": headerRowData[1].shipTo,
-        "Ship to customer address 1": headerRowData[2].shipTo,
-        "Ship to customer address 2": headerRowData[3].shipTo,
-        "Ship to customer address 3": headerRowData[4].shipTo,
-        "Ship to customer address 4": headerRowData[5].shipTo,
-        "Ship to customer state": headerRowData[6].shipTo,
-        "Ship to customer country": headerRowData[7].shipTo,
-        "Ship to customer mobile no": headerRowData[8].shipTo,
-        "Ship to customer GST No": headerRowData[9].shipTo,
-        "Ship to customer contact person": headerRowData[10].shipTo,
+        "Ship to customer code": headerRowData[0]?.shipTo,
+        "Ship to customer name": headerRowData[1]?.shipTo,
+        "Ship to customer address 1": headerRowData[2]?.shipTo,
+        "Ship to customer address 2": headerRowData[3]?.shipTo,
+        "Ship to customer address 3": headerRowData[4]?.shipTo,
+        "Ship to customer address 4": headerRowData[5]?.shipTo,
+        "Ship to customer state": headerRowData[6]?.shipTo,
+        "Ship to customer country": headerRowData[7]?.shipTo,
+        "Ship to customer mobile no": headerRowData[8]?.shipTo,
+        "Ship to customer GST No": headerRowData[9]?.shipTo,
+        "Ship to customer contact person": headerRowData[10]?.shipTo,
 
         "Transaction No": new_running_no,
         "Transaction Date": transactionDate,
@@ -1890,54 +1900,44 @@ const handleExcelDownload = () => {
 
     // Header sheet with title
     const headerSheet = XLSX.utils.aoa_to_sheet([
-        ["Delivery Challan"], // Heading
-        [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
-        [],                   // Empty row
+        ["Delivery Challan"],
+        [`Company Name : ${sessionStorage.getItem("selectedCompanyName") || ''}`],
+        [],
     ]);
 
-   // Header Data starts from Row 4
-XLSX.utils.sheet_add_json(headerSheet, headerData, {
-    origin: "A4",
-});
-    // Merge title across columns (A1:H1)
+    XLSX.utils.sheet_add_json(headerSheet, headerData, { origin: "A4" });
+
     headerSheet["!merges"] = [
-        {
-            s: { r: 0, c: 0 }, // A1
-            e: { r: 0, c: 7 }, // H1
-        },
+        { s: { r: 0, c: 0 }, e: { r: 0, c: 7 } },
     ];
 
     // Detail Sheet
-    const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
+    const rowDataSheet = XLSX.utils.json_to_sheet(mappedDetailData);
 
     // Auto adjust column width
-const autoFitColumns = (worksheet, data) => {
-    const cols = [];
+    const autoFitColumns = (worksheet, data) => {
+        if (!data || data.length === 0) return;
+        const cols = [];
 
-    data.forEach(row => {
-        Object.keys(row).forEach((key, i) => {
-            const value = row[key] == null ? "" : row[key].toString();
-
-            cols[i] = Math.max(
-                cols[i] || key.length,
-                key.length,
-                value.length
-            );
+        data.forEach(row => {
+            Object.keys(row).forEach((key, i) => {
+                const value = row[key] == null ? "" : row[key].toString();
+                cols[i] = Math.max(
+                    cols[i] || key.length,
+                    key.length,
+                    value.length
+                );
+            });
         });
-    });
 
-    worksheet["!cols"] = cols.map(width => ({
-        wch: width + 5 // Extra padding
-    }));
-};
+        worksheet["!cols"] = cols.map(width => ({
+            wch: width + 5
+        }));
+    };
 
-// Apply Auto Width
-autoFitColumns(headerSheet, headerData);
-autoFitColumns(rowDataSheet, filteredRowData);
-
-    // Auto width
-autoFitColumns(headerSheet, headerData);
-autoFitColumns(rowDataSheet, filteredRowData);
+    // Apply Auto Width
+    autoFitColumns(headerSheet, headerData);
+    autoFitColumns(rowDataSheet, mappedDetailData);
 
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");

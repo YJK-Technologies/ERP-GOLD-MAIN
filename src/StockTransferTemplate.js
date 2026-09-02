@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useReactToPrint } from 'react-to-print';
-import { useLocation } from 'react-router-dom';
+// import { useLocation } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import { saveAs } from 'file-saver';
 import html2canvas from 'html2canvas';
@@ -13,6 +13,7 @@ const config = require('./Apiconfig');
 const Template = () => {
     const componentRef = useRef("");
     const toWords = new ToWords();
+    const [detailData, setDetailData] = useState([]);
     // const [headerData, setHeaderData] = useState(null);
     // const [detailData, setDetailData] = useState([]);
     // const [taxData, setTaxData] = useState(null);
@@ -58,21 +59,31 @@ const Template = () => {
         }
       };
 
-    const location = useLocation();
-    const parseQueryParams = (query) => {
-        return query
-          .substring(1)
-          .split("&")
-          .reduce((acc, param) => {
-            const [key, value] = param.split("=");
-            acc[key] = decodeURIComponent(value);
-            return acc;
-          }, {});
-      };
+      useEffect(() => {
+    const detail = sessionStorage.getItem('STPrintData');
+
+    if (detail) {
+        setDetailData(JSON.parse(detail));
+    } else {
+        console.error("Stock Transfer print data not found in sessionStorage");
+    }
+}, []);
+
+    // const location = useLocation();
+    // const parseQueryParams = (query) => {
+    //     return query
+    //       .substring(1)
+    //       .split("&")
+    //       .reduce((acc, param) => {
+    //         const [key, value] = param.split("=");
+    //         acc[key] = decodeURIComponent(value);
+    //         return acc;
+    //       }, {});
+    //   };
     
-      const queryParams = parseQueryParams(location.search);
+    //   const queryParams = parseQueryParams(location.search);
     
-      const detailData = JSON.parse(queryParams.detailData);
+    //   const detailData = JSON.parse(queryParams.detailData);
     
     // useEffect(() => {
     //     const fetchData = async () => {
@@ -118,7 +129,7 @@ const Template = () => {
     //     }
     // }, [state.new_running_no]);
 
-    if ( !detailData) {
+    if (!detailData || detailData.length === 0) {
         return <div>Loading...</div>;
     }
 

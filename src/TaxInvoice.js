@@ -2921,7 +2921,7 @@ function TaxInvoice() {
     // Header Sheet
     const headerWorksheet = XLSX.utils.aoa_to_sheet([
         ["Invoice"],
-        [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+        [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
         [],
     ]);
 
