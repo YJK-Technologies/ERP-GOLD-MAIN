@@ -810,7 +810,7 @@ useEffect(() => {
     // Header Sheet
     const headerSheet = XLSX.utils.aoa_to_sheet([
       ["Opening Item"],
-      [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+      [`Company Namya : ${sessionStorage.getItem("selectedCompanyName")}`],
       [],
     ]);
 
