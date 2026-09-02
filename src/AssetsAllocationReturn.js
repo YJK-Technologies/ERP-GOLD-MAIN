@@ -262,7 +262,7 @@ function AssetsReturn({ }) {
     }
 
     const headerData = [{
-      "Company Code": sessionStorage.getItem("selectedCompanyCode") || "",
+      //"Company Code": sessionStorage.getItem("selectedCompanyCode") || "",
       "Allocation No": Allocationno || "",
       "Allocation Date": allocationadate || "",
       "Return No": return_no || "",
