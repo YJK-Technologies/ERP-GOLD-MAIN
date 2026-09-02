@@ -866,7 +866,7 @@ function JournalGrid() {
     // Header Sheet
     const headerSheet = XLSX.utils.aoa_to_sheet([
       ["Journal"],
-      [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+      [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
       [],
     ]);
 

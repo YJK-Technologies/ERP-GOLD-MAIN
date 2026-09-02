@@ -1223,17 +1223,20 @@ const handleItemCode = async (params) => {
         console.log("All API calls completed successfully");
         console.log(detailData)
 
+        sessionStorage.setItem('STPrintData', JSON.stringify(detailData));
+
         // Stringify data and encode it
 
-        const encodedDetailData = encodeURIComponent(JSON.stringify(detailData));
+        // const encodedDetailData = encodeURIComponent(JSON.stringify(detailData));
 
 
         // Construct the URL with the encoded data as query parameters
-        const url = `/StockTransferTemplat?detailData=${encodedDetailData}`;
+        // const url = `/StockTransferTemplat?detailData=${encodedDetailData}`;
         // const url = `/StockTransferTemplat`;
 
         // Open the URL in a new window
-        window.open(url, '_blank');
+        // window.open(url, '_blank');
+        window.open('/StockTransferPrint', '_blank');
         setStatus('Report Generated...');
       } else {
         console.log("Failed to fetch some data");

@@ -105,6 +105,15 @@ const JournalPrint = () => {
         {/* </div>
       </div> */}
 
+      {/* Company Header */}
+      <h2 style={{ margin: 0 }}>
+        {headerData[0]?.company_code}
+      </h2>
+
+      <h2 style={{ margin: 0 }}>
+        {sessionStorage.getItem("selectedCompanyName")}
+      </h2>
+
       {/* Top Line */}
       <hr
         style={{
