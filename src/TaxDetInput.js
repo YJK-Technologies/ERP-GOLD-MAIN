@@ -20,6 +20,7 @@ function TaxDetInput({ }) {
   const [tax_shortname, settax_shortname] = useState("");
   const [tax_accountcode, settax_accountcode] = useState("");
   const [transaction_type, settransaction_type] = useState("");
+  const [tax_name, settax_name] = useState("");
   const [status, setStatus] = useState("");
   const [taxtypedrop, settaxtypedrop] = useState([]);
   const [statusdrop, setStatusdrop] = useState([]);
@@ -56,6 +57,7 @@ function TaxDetInput({ }) {
     settax_percentage("");
     settax_shortname("");
     settax_accountcode("");
+    settax_name("");
   };
 
   useEffect(() => {
@@ -76,6 +78,7 @@ function TaxDetInput({ }) {
       settax_percentage(selectedRow.tax_percentage || "");
       settax_shortname(selectedRow.tax_shortname || "");
       settax_accountcode(selectedRow.tax_accountcode || "");
+      settax_name(selectedRow.tax_name || "");
 
     } else if (mode === "create") {
       clearInputFields();
@@ -317,6 +320,7 @@ function TaxDetInput({ }) {
           tax_percentage,
           tax_shortname,
           tax_accountcode,
+          tax_name,
           transaction_type: selectedTransaction.value,
           status: selectedStatus.value,
           created_by,
