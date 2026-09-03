@@ -222,6 +222,18 @@ function TaxDetGrid() {
       },
     },
     {
+      headerName: "Name",
+      field: "tax_name",
+      editable: true,
+      cellStyle: {
+        textAlign: "center",
+      },
+      // minWidth: 150,
+      cellEditorParams: {
+        maxLength: 250,
+      },
+    },
+    {
       headerName: "Tax Name Details",
       field: "tax_name_details",
       editable: true,
