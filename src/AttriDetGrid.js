@@ -34,7 +34,6 @@ function AttriDetGrid() {
 
   const location = useLocation();
 
-
   //code added by Harish purpose of set user permisssion
   const permissions = JSON.parse(sessionStorage.getItem('permissions')) || {};
   const attributePermission = permissions
@@ -125,6 +124,15 @@ function AttriDetGrid() {
           </span>
         );
       }
+    },
+    {
+      headerName: "Name",
+      field: "attributeheader_name",
+      editable: true,
+      cellStyle: { textAlign: "center" },
+      cellEditorParams: {
+        maxLength: 250,
+      },
     },
     {
       headerName: "Sub Code",

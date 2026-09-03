@@ -29,6 +29,7 @@ function AttriDetInput({}) {
   const description = useRef(null);
   const [hasValueChanged, setHasValueChanged] = useState(false);
   const created_by = sessionStorage.getItem("selectedUserCode");
+  const [attributeheader_name, setattributeheader_name] = useState("");
 
   console.log(selectedRows);
   const modified_by = sessionStorage.getItem("selectedUserCode");
@@ -45,6 +46,7 @@ function AttriDetInput({}) {
     setAttributedetails_code("");
     setAttributedetails_name("");
     setDescriptions("");
+    setattributeheader_name("");
   };
 
   useEffect(() => {
@@ -56,6 +58,7 @@ function AttriDetInput({}) {
       setAttributeheader_Code(selectedRow.attributeheader_code || "");
       setAttributedetails_code(selectedRow.attributedetails_code || "");
       setAttributedetails_name(selectedRow.attributedetails_name || "");
+      setattributeheader_name(selectedRow.attributeheader_name || "");
       setDescriptions(selectedRow.descriptions || "");
     } else if (mode === "create") {
       clearInputFields();
@@ -185,6 +188,7 @@ function AttriDetInput({}) {
           attributeheader_code,
           attributedetails_code,
           attributedetails_name,
+          attributeheader_name,
           descriptions,
           created_by,
           modified_by,
