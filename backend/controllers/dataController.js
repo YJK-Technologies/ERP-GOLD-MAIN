@@ -1769,7 +1769,7 @@ const addattridetData = async (req, res) => {
       .input('datetime3', sql.NVarChar, datetime3)
       .input('datetime4', sql.NVarChar, datetime4)
       .query(
-        `EXEC sp_attribute_Info @mode,@company_code,@attributeheader_code,'', @attributedetails_code,@attributedetails_name,@descriptions,@created_by,@modified_by,@tempstr1, @tempstr2, @tempstr3, @tempstr4, 
+        `EXEC sp_attribute_Info_sakthi @mode,@company_code,@attributeheader_code,'', @attributedetails_code,@attributedetails_name,@descriptions,@created_by,@modified_by,@tempstr1, @tempstr2, @tempstr3, @tempstr4, 
         @datetime1, @datetime2, @datetime3, @datetime4`
       );
     // Return success response
