@@ -55,13 +55,13 @@ const columnDefs = [
   },
 ];
 
-const defaultColDef = {
-  resizable: true,
-  wrapText: true,
-  sortable: true,
-  editable: true,
-  flex: 1,
-};
+// const defaultColDef = {
+//   resizable: true,
+//   wrapText: true,
+//   sortable: true,
+//   editable: true,
+//   flex: 1,
+// };
 
 export default function OIPopup({ open, handleClose, handleOb }) {
 
@@ -228,7 +228,7 @@ export default function OIPopup({ open, handleClose, handleOb }) {
                           <AgGridReact
                             rowData={rowData}
                             columnDefs={columnDefs}
-                            defaultColDef={defaultColDef}
+                            // defaultColDef={defaultColDef}
                             rowSelection="multiple"
                             pagination
                             onSelectionChanged={handleRowSelected}
@@ -331,7 +331,7 @@ export default function OIPopup({ open, handleClose, handleOb }) {
                             <AgGridReact
                               rowData={rowData}
                               columnDefs={columnDefs}
-                              defaultColDef={defaultColDef}
+                              // defaultColDef={defaultColDef}
                               rowSelection="multiple"
                               pagination
                               onSelectionChanged={handleRowSelected}

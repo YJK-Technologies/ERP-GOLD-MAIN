@@ -6,13 +6,13 @@ import "ag-grid-enterprise";
 import "./apps.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Select from "react-select";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import labels from "./Labels";
-import { showConfirmationToast } from './ToastConfirmation';
-import LoadingScreen from './Loading';
+import { showConfirmationToast } from "./ToastConfirmation";
+import LoadingScreen from "./Loading";
 
 const config = require("./Apiconfig");
 
@@ -50,26 +50,25 @@ function CompanyMappingGrid() {
     .filter((permission) => permission.screen_type === "Company Mapping")
     .map((permission) => permission.permission_type.toLowerCase());
 
-    useEffect(() => {
-      if (location.state?.preservedRowData) {
-        setRowData(location.state.preservedRowData);
-      }
-    
-      if (location.state?.preservedInputs) {
-        setuser_code(location.state.preservedInputs.user_code || "");
-        setcompany_no(location.state.preservedInputs.company_no || "");
-        setlocation_no(location.state.preservedInputs.location_no || "");
-        setstatus(location.state.preservedInputs.status || "");
-    
-        if (location.state.preservedInputs.status) {
-          setSelectedStatus({
-            label: location.state.preservedInputs.status,
-            value: location.state.preservedInputs.status,
-          });
-        }
-      }
-    }, [location.state]);
+  useEffect(() => {
+    if (location.state?.preservedRowData) {
+      setRowData(location.state.preservedRowData);
+    }
 
+    if (location.state?.preservedInputs) {
+      setuser_code(location.state.preservedInputs.user_code || "");
+      setcompany_no(location.state.preservedInputs.company_no || "");
+      setlocation_no(location.state.preservedInputs.location_no || "");
+      setstatus(location.state.preservedInputs.status || "");
+
+      if (location.state.preservedInputs.status) {
+        setSelectedStatus({
+          label: location.state.preservedInputs.status,
+          value: location.state.preservedInputs.status,
+        });
+      }
+    }
+  }, [location.state]);
 
   useEffect(() => {
     fetch(`${config.apiBaseUrl}/usercode`)
@@ -102,41 +101,43 @@ function CompanyMappingGrid() {
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((response) => response.json())
       .then((data) => {
-        const statusOption = data.map(option => option.attributedetails_name);
+        const statusOption = data.map((option) => option.attributedetails_name);
         setStatusGriddrop(statusOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setStatusdrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-
-  const filteredOptionStatus = [{ value: 'All', label: 'All' }, ...statusdrop.map((option) => ({
-    value: option.attributedetails_name,
-    label: option.attributedetails_name,
-  }))];
+  const filteredOptionStatus = [
+    { value: "All", label: "All" },
+    ...statusdrop.map((option) => ({
+      value: option.attributedetails_name,
+      label: option.attributedetails_name,
+    })),
+  ];
 
   const handleChangeStatus = (selectedStatus) => {
     setSelectedStatus(selectedStatus);
@@ -162,7 +163,7 @@ function CompanyMappingGrid() {
             location_no,
             status,
           }),
-        }
+        },
       );
       if (response.ok) {
         const searchData = await response.json();
@@ -170,7 +171,7 @@ function CompanyMappingGrid() {
         console.log("data fetched successfully");
       } else if (response.status === 404) {
         console.log("Data not found");
-        toast.warning("Data not found")
+        toast.warning("Data not found");
         setRowData([]);
       } else {
         const errorResponse = await response.json();
@@ -189,13 +190,13 @@ function CompanyMappingGrid() {
   };
 
   const clearInputFields = () => {
-    setuser_code("");
-    setcompany_no("");
-    setlocation_no("");
-    setSelectedStatus("");
-    setstatus("");
-    setRowData([]);
-  };
+    setuser_code("");
+    setcompany_no("");
+    setlocation_no("");
+    setSelectedStatus("");
+    setstatus("");
+    setRowData([]);
+  };
 
   const columnDefs = [
     {
@@ -217,14 +218,11 @@ function CompanyMappingGrid() {
         };
 
         return (
-          <span
-            style={{ cursor: "pointer" }}
-            onClick={handleClick}
-          >
+          <span style={{ cursor: "pointer" }} onClick={handleClick}>
             {params.value}
           </span>
         );
-      }
+      },
     },
     {
       headerName: "Company Code",
@@ -292,11 +290,11 @@ function CompanyMappingGrid() {
     const selectedRows = gridApi.getSelectedRows();
     if (selectedRows.length === 0) {
       toast.warning("Please select at least one row to generate a report");
-      return
-    };
+      return;
+    }
 
     const reportData = selectedRows.map((row) => {
-      const safeValue = (val) => (val !== undefined && val !== null ? val : '');
+      const safeValue = (val) => (val !== undefined && val !== null ? val : "");
 
       return {
         "User Code": safeValue(row.user_code),
@@ -308,7 +306,9 @@ function CompanyMappingGrid() {
     });
 
     const reportWindow = window.open("", "_blank");
-    reportWindow.document.write("<html><head><title>Company Mapping Report</title>");
+    reportWindow.document.write(
+      "<html><head><title>Company Mapping Report</title>",
+    );
     reportWindow.document.write("<style>");
     reportWindow.document.write(`
       body {
@@ -392,7 +392,7 @@ function CompanyMappingGrid() {
     reportWindow.document.write("</tbody></table>");
 
     reportWindow.document.write(
-      '<button class="report-button" title="Print" onclick="window.print()">Print</button>'
+      '<button class="report-button" title="Print" onclick="window.print()">Print</button>',
     );
     reportWindow.document.write("</body></html>");
     reportWindow.document.close();
@@ -409,22 +409,22 @@ function CompanyMappingGrid() {
   };
 
   const handleNavigateWithRowData = (selectedRow) => {
-  navigate("/AddCompanyMapping", {
-    state: {
-      mode: "update",
-      selectedRow,
+    navigate("/AddCompanyMapping", {
+      state: {
+        mode: "update",
+        selectedRow,
 
-      preservedRowData: rowData,
+        preservedRowData: rowData,
 
-      preservedInputs: {
-        user_code,
-        company_no,
-        location_no,
-        status,
+        preservedInputs: {
+          user_code,
+          company_no,
+          location_no,
+          status,
+        },
       },
-    },
-  });
-};
+    });
+  };
 
   // const onCellValueChanged = (params) => {
   //   const updatedRowData = [...rowData];
@@ -443,7 +443,7 @@ function CompanyMappingGrid() {
   const onCellValueChanged = (params) => {
     const updatedRowData = [...rowData];
     const rowIndex = updatedRowData.findIndex(
-      (row) => row.keyfiels === params.data.keyfiels
+      (row) => row.keyfiels === params.data.keyfiels,
     );
 
     if (rowIndex !== -1) {
@@ -452,7 +452,7 @@ function CompanyMappingGrid() {
 
       setEditedData((prevData) => {
         const existingIndex = prevData.findIndex(
-          (item) => item.keyfiels === params.data.keyfiels
+          (item) => item.keyfiels === params.data.keyfiels,
         );
 
         if (existingIndex !== -1) {
@@ -469,38 +469,37 @@ function CompanyMappingGrid() {
 
   const saveEditedData = async () => {
     const selectedRowsData = editedData.filter((row) =>
-      selectedRows.some(
-        (selectedRow) => selectedRow.keyfiels === row.keyfiels
-      )
+      selectedRows.some((selectedRow) => selectedRow.keyfiels === row.keyfiels),
     );
 
     if (selectedRowsData.length === 0) {
-      toast.warning("Please select a row to update its data")
+      toast.warning("Please select a row to update its data");
       return;
     }
 
     showConfirmationToast(
       "Are you sure you want to update the data in the selected rows?",
       async () => {
-
         try {
           const company_code = sessionStorage.getItem("selectedCompanyCode");
           const modified_by = sessionStorage.getItem("selectedUserCode");
 
-
-          const response = await fetch(`${config.apiBaseUrl}/updcompanymapping`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              company_code: company_code,
-              "modified-by": modified_by,
+          const response = await fetch(
+            `${config.apiBaseUrl}/updcompanymapping`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                company_code: company_code,
+                "modified-by": modified_by,
+              },
+              body: JSON.stringify({ editedData: selectedRowsData }),
             },
-            body: JSON.stringify({ editedData: selectedRowsData }),
-          });
+          );
 
           if (response.status === 200) {
             setTimeout(() => {
-              toast.success("Data Updated Successfully")
+              toast.success("Data Updated Successfully");
               handleSearch();
             }, 1000);
             return;
@@ -515,7 +514,7 @@ function CompanyMappingGrid() {
       },
       () => {
         toast.info("Data update cancelled.");
-      }
+      },
     );
   };
 
@@ -534,7 +533,6 @@ function CompanyMappingGrid() {
     showConfirmationToast(
       "Are you sure you want to Delete the data in the selected rows?",
       async () => {
-
         try {
           const response = await fetch(
             `${config.apiBaseUrl}/commappingdeleteData`,
@@ -548,13 +546,13 @@ function CompanyMappingGrid() {
               body: JSON.stringify({ keyfiels: keyfielsToDelete }),
               company_code: company_code,
               modified_by: modified_by,
-            }
+            },
           );
 
           if (response.ok) {
             console.log("Rows deleted successfully:", keyfielsToDelete);
             setTimeout(() => {
-              toast.success("Data Deleted successfully")
+              toast.success("Data Deleted successfully");
               handleSearch();
             }, 1000);
           } else {
@@ -568,7 +566,7 @@ function CompanyMappingGrid() {
       },
       () => {
         toast.info("Data Delete cancelled.");
-      }
+      },
     );
   };
 
@@ -607,12 +605,15 @@ function CompanyMappingGrid() {
     }
   };
 
-
   return (
     <div className="container-fluid Topnav-screen">
       <div align="">
         {loading && <LoadingScreen />}
-        <ToastContainer position="top-right" className="toast-design" theme="colored" />
+        <ToastContainer
+          position="top-right"
+          className="toast-design"
+          theme="colored"
+        />
         <div className="shadow-lg p-1 bg-body-tertiary rounded mb-2 mt-2 d-flex justify-content-between">
           <div className="d-flex justify-content-start ">
             <h1 align="left" className="purbut">
@@ -620,23 +621,51 @@ function CompanyMappingGrid() {
             </h1>
           </div>
           <div class="d-flex justify-content-end me-3">
-            {["add", "all permission"].some((permission) => companyMappingPermission.includes(permission)) && (
-              <addbutton className="purbut" onClick={handleNavigateToForm} required title="Add Company Mapping">
+            {["add", "all permission"].some((permission) =>
+              companyMappingPermission.includes(permission),
+            ) && (
+              <addbutton
+                className="purbut"
+                onClick={handleNavigateToForm}
+                required
+                title="Add Company Mapping"
+              >
                 <i class="fa-solid fa-user-plus"></i>
               </addbutton>
             )}
-            {["delete", "all permission"].some((permission) => companyMappingPermission.includes(permission)) && (
-              <delbutton className="purbut" onClick={deleteSelectedRows} required title="Delete">
+            {["delete", "all permission"].some((permission) =>
+              companyMappingPermission.includes(permission),
+            ) && (
+              <delbutton
+                className="purbut"
+                onClick={deleteSelectedRows}
+                required
+                title="Delete"
+              >
                 <i class="fa-solid fa-user-minus"></i>
               </delbutton>
             )}
-            {["update", "all permission"].some((permission) => companyMappingPermission.includes(permission)) && (
-              <savebutton class="purbut" onClick={saveEditedData} required title="Update">
+            {["update", "all permission"].some((permission) =>
+              companyMappingPermission.includes(permission),
+            ) && (
+              <savebutton
+                class="purbut"
+                onClick={saveEditedData}
+                required
+                title="Update"
+              >
                 <i class="fa-solid fa-floppy-disk"></i>
               </savebutton>
             )}
-            {["all permission", "view"].some((permission) => companyMappingPermission.includes(permission)) && (
-              <printbutton class="purbut" onClick={generateReport} required title="Generate Report">
+            {["all permission", "view"].some((permission) =>
+              companyMappingPermission.includes(permission),
+            ) && (
+              <printbutton
+                class="purbut"
+                onClick={generateReport}
+                required
+                title="Generate Report"
+              >
                 <i class="fa-solid fa-print"></i>
               </printbutton>
             )}
@@ -644,7 +673,9 @@ function CompanyMappingGrid() {
           <div class="mobileview">
             <div class=" d-flex justify-content-between">
               <div className="d-flex justify-content-start">
-                <h1 align="left" className="h1 ms-0">Company Mapping</h1>
+                <h1 align="left" className="h1 ms-0">
+                  Company Mapping
+                </h1>
               </div>
               <div className="d-flex justify-content-end  mt-2">
                 <div class="dropdown mt-2 me-5 " style={{ paddingLeft: 0 }}>
@@ -658,41 +689,37 @@ function CompanyMappingGrid() {
                   </button>
                   <ul class="dropdown-menu menu">
                     <li class="iconbutton d-flex justify-content-center text-success">
-                      {["add", "all permission"].some((permission) => companyMappingPermission.includes(permission)) && (
-                        <icon
-                          class="icon"
-                          onClick={handleNavigateToForm}
-                        >
+                      {["add", "all permission"].some((permission) =>
+                        companyMappingPermission.includes(permission),
+                      ) && (
+                        <icon class="icon" onClick={handleNavigateToForm}>
                           <i class="fa-solid fa-user-plus"></i>
                         </icon>
                       )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center text-danger">
-                      {["delete", "all permission"].some((permission) => companyMappingPermission.includes(permission)) && (
-                        <icon
-                          class="icon"
-                          onClick={deleteSelectedRows}
-                        >
+                      {["delete", "all permission"].some((permission) =>
+                        companyMappingPermission.includes(permission),
+                      ) && (
+                        <icon class="icon" onClick={deleteSelectedRows}>
                           <i class="fa-solid fa-user-minus"></i>
                         </icon>
                       )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center text-primary ">
-                      {["update", "all permission"].some((permission) => companyMappingPermission.includes(permission)) && (
-                        <icon
-                          class="icon"
-                          onClick={saveEditedData}
-                        >
+                      {["update", "all permission"].some((permission) =>
+                        companyMappingPermission.includes(permission),
+                      ) && (
+                        <icon class="icon" onClick={saveEditedData}>
                           <i class="fa-solid fa-floppy-disk"></i>
                         </icon>
                       )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center ">
-                      {["all permission", "view"].some((permission) => companyMappingPermission.includes(permission)) && (
-                        <icon
-                          class="icon"
-                          onClick={generateReport}
-                        >
+                      {["all permission", "view"].some((permission) =>
+                        companyMappingPermission.includes(permission),
+                      ) && (
+                        <icon class="icon" onClick={generateReport}>
                           <i class="fa-solid fa-print"></i>
                         </icon>
                       )}
@@ -768,16 +795,20 @@ function CompanyMappingGrid() {
                   Status
                 </label>
                 <div title="Select the Status ">
-                <Select
-                  id="status"
-                  value={selectedStatus}
-                  onChange={handleChangeStatus}
-                  options={filteredOptionStatus}
-                  className="exp-input-field"
-                  placeholder=""
-                  onKeyDown={handleKeyDownStatus}
-                />
-              </div>
+                  <Select
+                    id="status"
+                    value={selectedStatus}
+                    onChange={handleChangeStatus}
+                    options={filteredOptionStatus}
+                    className="exp-input-field"
+                    placeholder=""
+                    onKeyDown={handleKeyDownStatus}
+                    classNamePrefix="react-select"
+                    styles={{
+                      menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                    }}
+                  />
+                </div>
               </div>
             </div>
             <div className="col-md-3 form-group mt-4">
@@ -806,7 +837,6 @@ function CompanyMappingGrid() {
 
           {/* <p>Result Set</p> */}
 
-
           <div class="ag-theme-alpine" style={{ height: 450, width: "100%" }}>
             <AgGridReact
               rowData={rowData}
@@ -821,14 +851,14 @@ function CompanyMappingGrid() {
               onRowSelected={onRowSelected}
             />
           </div>
-
         </div>
-
       </div>
       <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
         <div className="row ms-2">
           <div className="d-flex justify-content-start">
-            <p className="col-md-6">{labels.createdBy}: {createdBy}</p>
+            <p className="col-md-6">
+              {labels.createdBy}: {createdBy}
+            </p>
             <p className="col-md-6">
               {labels.createdDate}: {createdDate}
             </p>

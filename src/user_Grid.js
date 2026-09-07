@@ -9,11 +9,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dropdown, DropdownButton } from "react-bootstrap";
 import swal from "sweetalert2";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Select from "react-select";
-import { showConfirmationToast } from './ToastConfirmation';
-import LoadingScreen from './Loading';
+import { showConfirmationToast } from "./ToastConfirmation";
+import LoadingScreen from "./Loading";
 import labels from "./Labels";
 
 const config = require("./Apiconfig");
@@ -111,19 +111,19 @@ function UserGrid() {
       }
 
       if (location.state?.refreshGrid) {
-        handleSearch(inputs); 
+        handleSearch(inputs);
       }
     }
   }, [location.state]);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -134,13 +134,13 @@ function UserGrid() {
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
     fetch(`${config.apiBaseUrl}/roleid`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -154,13 +154,13 @@ function UserGrid() {
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
     fetch(`${config.apiBaseUrl}/Usertype`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -171,13 +171,13 @@ function UserGrid() {
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
     fetch(`${config.apiBaseUrl}/gender`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -188,16 +188,15 @@ function UserGrid() {
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/Loginorout`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
-
       .then((response) => response.json())
       .then((data) => {
         // Extract city names from the fetched data
@@ -207,54 +206,50 @@ function UserGrid() {
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-
-
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setStatusdrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/Usertype`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setUsertypedrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/gender`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setGenderdrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
-
 
   const filteredOptionStatus = statusdrop.map((option) => ({
     value: option.attributedetails_name,
@@ -305,17 +300,17 @@ function UserGrid() {
   const handleNavigateWithRowData = (selectedRow) => {
     navigate("/AddUser", {
       state: {
-        mode: "update", 
+        mode: "update",
         user_code: selectedRow.user_code,
-        preservedInputs: { 
-          user_code, 
-          user_name, 
-          first_name, 
-          last_name, 
-          user_status, 
-          user_type, 
-          dob, 
-          gender, 
+        preservedInputs: {
+          user_code,
+          user_name,
+          first_name,
+          last_name,
+          user_status,
+          user_type,
+          dob,
+          gender,
         },
       },
     });
@@ -362,7 +357,7 @@ function UserGrid() {
           user_type: searchParams?.user_type ?? user_type,
           dob: searchParams?.dob ?? dob,
           gender: searchParams?.gender ?? gender,
-          created_by: sessionStorage.getItem("selectedUserCode")
+          created_by: sessionStorage.getItem("selectedUserCode"),
         }),
       });
 
@@ -373,7 +368,7 @@ function UserGrid() {
         console.log("Data fetched successfully");
       } else if (response.status === 404) {
         console.log("Data not found");
-        toast.warning("Data not found")
+        toast.warning("Data not found");
         setRowData([]);
       } else {
         const errorResponse = await response.json();
@@ -387,9 +382,8 @@ function UserGrid() {
     }
   };
 
-
   const arrayBufferToBase64 = (buffer) => {
-    let binary = '';
+    let binary = "";
     const bytes = new Uint8Array(buffer);
     const len = bytes.byteLength;
     for (let i = 0; i < len; i++) {
@@ -415,10 +409,7 @@ function UserGrid() {
         };
 
         return (
-          <span
-            style={{ cursor: "pointer" }}
-            onClick={handleClick}
-          >
+          <span style={{ cursor: "pointer" }} onClick={handleClick}>
             {params.value}
           </span>
         );
@@ -573,10 +564,10 @@ function UserGrid() {
     const selectedRows = gridApi.getSelectedRows();
     if (selectedRows.length === 0) {
       toast.warning("Please select at least one row to generate a report");
-      return
-    };
+      return;
+    }
     const reportData = selectedRows.map((row) => {
-      const safeValue = (val) => (val !== undefined && val !== null ? val : '');
+      const safeValue = (val) => (val !== undefined && val !== null ? val : "");
 
       return {
         "User Code": safeValue(row.user_code),
@@ -586,11 +577,11 @@ function UserGrid() {
         "User Status": safeValue(row.user_status),
         "Log In/Out": safeValue(row.log_in_out),
         "Email Id": safeValue(row.email_id),
-        "DOB": safeValue(formatDate(row.dob)),
+        DOB: safeValue(formatDate(row.dob)),
         "Role ID-Name":
           roleDropGrid.find((d) => d.value === row.role_id)?.label ||
           row.role_id,
-        "Gender": safeValue(row.gender),
+        Gender: safeValue(row.gender),
       };
     });
 
@@ -679,7 +670,7 @@ function UserGrid() {
     reportWindow.document.write("</tbody></table>");
 
     reportWindow.document.write(
-      '<button class="report-button" title="Print" onclick="window.print()">Print</button>'
+      '<button class="report-button" title="Print" onclick="window.print()">Print</button>',
     );
     reportWindow.document.write("</body></html>");
     reportWindow.document.close();
@@ -709,7 +700,7 @@ function UserGrid() {
   const onCellValueChanged = (params) => {
     const updatedRowData = [...rowData];
     const rowIndex = updatedRowData.findIndex(
-      (row) => row.user_code === params.data.user_code
+      (row) => row.user_code === params.data.user_code,
     );
 
     if (rowIndex !== -1) {
@@ -718,7 +709,7 @@ function UserGrid() {
 
       setEditedData((prevData) => {
         const existingIndex = prevData.findIndex(
-          (item) => item.user_code === params.data.user_code
+          (item) => item.user_code === params.data.user_code,
         );
 
         if (existingIndex !== -1) {
@@ -733,11 +724,10 @@ function UserGrid() {
   };
 
   const saveEditedData = async () => {
-
     const selectedRowsData = editedData.filter((row) =>
       selectedRows.some(
-        (selectedRow) => selectedRow.user_code === row.user_code
-      )
+        (selectedRow) => selectedRow.user_code === row.user_code,
+      ),
     );
 
     if (selectedRowsData.length === 0) {
@@ -748,7 +738,6 @@ function UserGrid() {
     showConfirmationToast(
       "Are you sure you want to update the data in the selected rows?",
       async () => {
-
         try {
           const company_code = sessionStorage.getItem("selectedCompanyCode");
           const modified_by = sessionStorage.getItem("selectedUserCode");
@@ -757,7 +746,7 @@ function UserGrid() {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "company_code": company_code,
+              company_code: company_code,
               "Modified-By": modified_by,
             },
             body: JSON.stringify({ editedData: selectedRowsData }),
@@ -768,13 +757,15 @@ function UserGrid() {
           if (response.ok) {
             console.log("Data saved successfully!");
             setTimeout(() => {
-              toast.success("Data Updated Successfully")
+              toast.success("Data Updated Successfully");
               handleSearch();
             }, 1000);
             return;
           } else {
             const errorResponse = await response.json();
-            toast.warning(errorResponse.message || "Failed to insert sales data");
+            toast.warning(
+              errorResponse.message || "Failed to insert sales data",
+            );
           }
         } catch (error) {
           console.error("Error saving data:", error);
@@ -783,7 +774,7 @@ function UserGrid() {
       },
       () => {
         toast.info("Data updated cancelled.");
-      }
+      },
     );
   };
 
@@ -803,13 +794,12 @@ function UserGrid() {
     showConfirmationToast(
       "Are you sure you want to Delete the data in the selected rows?",
       async () => {
-
         try {
           const response = await fetch(`${config.apiBaseUrl}/userdelete`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "company_code": company_code,
+              company_code: company_code,
               "Modified-By": modified_by,
             },
             body: JSON.stringify({ user_codes: user_codesToDelete }),
@@ -820,21 +810,23 @@ function UserGrid() {
           if (response.ok) {
             console.log("Rows deleted successfully:", user_codesToDelete);
             setTimeout(() => {
-              toast.success("Data Deleted successfully")
+              toast.success("Data Deleted successfully");
               handleSearch();
             }, 1000);
           } else {
             const errorResponse = await response.json();
-            toast.warning(errorResponse.message || "Failed to insert sales data");
+            toast.warning(
+              errorResponse.message || "Failed to insert sales data",
+            );
           }
         } catch (error) {
           console.error("Error deleting rows:", error);
-          toast.error('Error Deleting Data: ' + error.message);
+          toast.error("Error Deleting Data: " + error.message);
         }
       },
       () => {
         toast.info("Data Delete cancelled.");
-      }
+      },
     );
   };
 
@@ -877,7 +869,11 @@ function UserGrid() {
     <div className="container-fluid Topnav-screen">
       <div>
         {loading && <LoadingScreen />}
-        <ToastContainer position="top-right" className="toast-design" theme="colored" />
+        <ToastContainer
+          position="top-right"
+          className="toast-design"
+          theme="colored"
+        />
         <div className="shadow-lg p-0 bg-body-tertiary rounded  mb-2 mt-2">
           <div className=" d-flex justify-content-between  ">
             <div class="d-flex justify-content-start">
@@ -886,23 +882,52 @@ function UserGrid() {
               </h1>
             </div>
             <div className="d-flex justify-content-end purbut me-3">
-              {["add", "all permission"].some((permission) => userPermission.includes(permission)) && (
-                <addbutton className="purbut" onClick={handleNavigateToForm} required title="Add User" class="purbut">
+              {["add", "all permission"].some((permission) =>
+                userPermission.includes(permission),
+              ) && (
+                <addbutton
+                  className="purbut"
+                  onClick={handleNavigateToForm}
+                  required
+                  title="Add User"
+                  class="purbut"
+                >
                   <i class="fa-solid fa-user-plus"></i>
                 </addbutton>
               )}
-              {["delete", "all permission"].some((permission) => userPermission.includes(permission)) && (
-                <delbutton onClick={deleteSelectedRows} class="purbut" required title="Delete">
+              {["delete", "all permission"].some((permission) =>
+                userPermission.includes(permission),
+              ) && (
+                <delbutton
+                  onClick={deleteSelectedRows}
+                  class="purbut"
+                  required
+                  title="Delete"
+                >
                   <i class="fa-solid fa-user-minus"></i>
                 </delbutton>
               )}
-              {["update", "all permission"].some((permission) => userPermission.includes(permission)) && (
-                <savebutton class="purbut" onClick={saveEditedData} require title="Update">
+              {["update", "all permission"].some((permission) =>
+                userPermission.includes(permission),
+              ) && (
+                <savebutton
+                  class="purbut"
+                  onClick={saveEditedData}
+                  require
+                  title="Update"
+                >
                   <i class="fa-solid fa-floppy-disk"></i>
                 </savebutton>
               )}
-              {["all permission", "view"].some((permission) => userPermission.includes(permission)) && (
-                <printbutton class="purbut" onClick={generateReport} required title="Generate Report">
+              {["all permission", "view"].some((permission) =>
+                userPermission.includes(permission),
+              ) && (
+                <printbutton
+                  class="purbut"
+                  onClick={generateReport}
+                  required
+                  title="Generate Report"
+                >
                   <i class="fa-solid fa-print"></i>
                 </printbutton>
               )}
@@ -910,49 +935,52 @@ function UserGrid() {
             <div class="mobileview">
               <div class="d-flex justify-content-between">
                 <div className="d-flex justify-content-start">
-                  <h1 align="left" className="h1 me-5 ms-0" >User  </h1>
+                  <h1 align="left" className="h1 me-5 ms-0">
+                    User{" "}
+                  </h1>
                 </div>
                 <div class="dropdown mt-1 me-5 ms-5">
-                  <button class="btn btn-primary dropdown-toggle p-1 " type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <button
+                    class="btn btn-primary dropdown-toggle p-1 "
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
                     <i class="fa-solid fa-list"></i>
                   </button>
                   <ul class="dropdown-menu menu">
                     <li class="iconbutton d-flex justify-content-center text-success">
-                      {["add", "all permission"].some((permission) => userPermission.includes(permission)) && (
-                        <icon
-                          class="icon"
-                          onClick={handleNavigateToForm}
-                        >
+                      {["add", "all permission"].some((permission) =>
+                        userPermission.includes(permission),
+                      ) && (
+                        <icon class="icon" onClick={handleNavigateToForm}>
                           <i class="fa-solid fa-user-plus"></i>
                         </icon>
                       )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center text-danger">
-                      {["delete", "all permission"].some((permission) => userPermission.includes(permission)) && (
-                        <icon
-                          class="icon"
-                          onClick={deleteSelectedRows}
-                        >
+                      {["delete", "all permission"].some((permission) =>
+                        userPermission.includes(permission),
+                      ) && (
+                        <icon class="icon" onClick={deleteSelectedRows}>
                           <i class="fa-solid fa-user-minus"></i>
                         </icon>
                       )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center text-primary ">
-                      {["update", "all permission"].some((permission) => userPermission.includes(permission)) && (
-                        <icon
-                          class="icon"
-                          onClick={saveEditedData}
-                        >
+                      {["update", "all permission"].some((permission) =>
+                        userPermission.includes(permission),
+                      ) && (
+                        <icon class="icon" onClick={saveEditedData}>
                           <i class="fa-solid fa-floppy-disk"></i>
                         </icon>
                       )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center ">
-                      {["all permission", "view"].some((permission) => userPermission.includes(permission)) && (
-                        <icon
-                          class="icon"
-                          onClick={generateReport}
-                        >
+                      {["all permission", "view"].some((permission) =>
+                        userPermission.includes(permission),
+                      ) && (
+                        <icon class="icon" onClick={generateReport}>
                           <i class="fa-solid fa-print"></i>
                         </icon>
                       )}
@@ -1055,6 +1083,10 @@ function UserGrid() {
                     options={filteredOptionStatus}
                     className="exp-input-field"
                     placeholder=""
+                    classNamePrefix="react-select"
+                    styles={{
+                      menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                    }}
                   />
                 </div>
               </div>
@@ -1109,6 +1141,10 @@ function UserGrid() {
                     options={filteredOptionGender}
                     className="exp-input-field"
                     placeholder=""
+                    classNamePrefix="react-select"
+                    styles={{
+                      menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                    }}
                   />
                 </div>
               </div>
@@ -1116,13 +1152,23 @@ function UserGrid() {
             <div className="col-md-3 form-group mt-4">
               <div class="exp-form-floating">
                 <div class=" d-flex  justify-content-center">
-                  <div class=''>
-                    <icon className="popups-btn fs-6 p-3" onClick={handleSearch} required title="Search">
+                  <div class="">
+                    <icon
+                      className="popups-btn fs-6 p-3"
+                      onClick={handleSearch}
+                      required
+                      title="Search"
+                    >
                       <i className="fas fa-search"></i>
                     </icon>
                   </div>
                   <div>
-                    <icon className="popups-btn fs-6 p-3" onClick={clearInputFields} required title="Reload">
+                    <icon
+                      className="popups-btn fs-6 p-3"
+                      onClick={clearInputFields}
+                      required
+                      title="Reload"
+                    >
                       <FontAwesomeIcon icon="fa-solid fa-arrow-rotate-right" />
                     </icon>
                   </div>
@@ -1148,9 +1194,11 @@ function UserGrid() {
       <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
         <div className="row ms-2">
           <div className="d-flex justify-content-start">
-            <p className="col-md-6">{labels.createdBy}: {createdBy}</p>
+            <p className="col-md-6">
+              {labels.createdBy}: {createdBy}
+            </p>
             <p className="col-md-">
-              {labels.createdDate}:  {createdDate}
+              {labels.createdDate}: {createdDate}
             </p>
           </div>
           <div className="d-flex justify-content-start">

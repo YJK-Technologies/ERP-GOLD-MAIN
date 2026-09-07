@@ -1393,6 +1393,22 @@ useEffect(() => {
       return;
     }
 
+    // Bill To validation
+    const billTo = headerRowData?.[0]?.billTo?.trim();
+
+    if (!billTo) {
+      toast.warning("Please Enter Bill To");
+      return;
+    }
+
+    // Ship To validation
+    const shipTo = headerRowData?.[0]?.shipTo?.trim();
+
+    if (!shipTo) {
+      toast.warning("Please Enter Ship To");
+      return;
+    }
+
     if (rowData.length === 0 || rowDataTax.length === 0) {
       toast.warning("No item details or tax details found to save.");
       return;
@@ -3395,6 +3411,7 @@ useEffect(() => {
                       onChange={handleChangeScreens}
                       options={filteredOptionScreens}
                       data-tip="Please select a default warehouse"
+                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                     />
                   </div>
                   {buttonsVisible && ['add', 'all permission'].some(permission => purchaseOrderPermission.includes(permission)) && (
@@ -3563,6 +3580,8 @@ useEffect(() => {
                           options={filteredOptionParty}
                           className="exp-input-field"
                           placeholder=""
+                          classNamePrefix="react-select"
+                          styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                         />
                       </div>
                     </div>
@@ -3763,6 +3782,7 @@ useEffect(() => {
                       onChange={handleChangeScreens}
                       options={filteredOptionScreens}
                       data-tip="Please select a default warehouse"
+                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                     />
                   </div>
                 </div>

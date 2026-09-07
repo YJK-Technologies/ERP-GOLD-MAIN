@@ -7,15 +7,15 @@ import "./apps.css";
 import "./mobile.css";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dropdown, DropdownButton } from "react-bootstrap";
-import { ToastContainer, toast } from 'react-toastify';
-import Select from 'react-select';
-import { showConfirmationToast } from './ToastConfirmation';
+import { ToastContainer, toast } from "react-toastify";
+import Select from "react-select";
+import { showConfirmationToast } from "./ToastConfirmation";
 import labels from "./Labels";
-import LoadingScreen from './Loading';
+import LoadingScreen from "./Loading";
 
-const config = require('./Apiconfig');
+const config = require("./Apiconfig");
 
 function UserAccGrpGrid() {
   const [editedData, setEditedData] = useState([]);
@@ -44,28 +44,28 @@ function UserAccGrpGrid() {
   const [modifiedDate, setModifiedDate] = useState("");
 
   //code added by Pavun purpose of set user permisssion
-  const permissions = JSON.parse(sessionStorage.getItem('permissions')) || {};
+  const permissions = JSON.parse(sessionStorage.getItem("permissions")) || {};
   const UserAccGrpPermission = permissions
-    .filter(permission => permission.screen_type === 'UserAccountGroup')
-    .map(permission => permission.permission_type.toLowerCase());
-
+    .filter((permission) => permission.screen_type === "UserAccountGroup")
+    .map((permission) => permission.permission_type.toLowerCase());
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
-    }).then((response) => response.json())
+      body: JSON.stringify({ company_code }),
+    })
+      .then((response) => response.json())
       .then((data) => {
         // Extract city names from the fetched data
-        const statusOption = data.map(option => option.attributedetails_name);
+        const statusOption = data.map((option) => option.attributedetails_name);
         setstatusgriddrop(statusOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
@@ -73,10 +73,12 @@ function UserAccGrpGrid() {
       .then((response) => response.json())
       .then((data) => {
         // Extract city names from the fetched data
-        const statusOption = data.map(option => option.standard_accgroup_code);
+        const statusOption = data.map(
+          (option) => option.standard_accgroup_code,
+        );
         setStdAccGrpdrop(statusOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
@@ -84,25 +86,25 @@ function UserAccGrpGrid() {
       .then((response) => response.json())
       .then((data) => {
         // Extract city names from the fetched data
-        const statusOption = data.map(option => option.base_accgroup_code);
+        const statusOption = data.map((option) => option.base_accgroup_code);
         setBaseAccDrop(statusOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setStatusdrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   const filteredOptionStatus = statusdrop.map((option) => ({
@@ -112,7 +114,7 @@ function UserAccGrpGrid() {
 
   const handleChangeStatus = (selectedStatus) => {
     setSelectedStatus(selectedStatus);
-    setstatus(selectedStatus ? selectedStatus.value : '');
+    setstatus(selectedStatus ? selectedStatus.value : "");
   };
 
   const reloadGridData = () => {
@@ -120,8 +122,7 @@ function UserAccGrpGrid() {
       window.location.reload();
     } catch (error) {
       console.error("Error reloading grid data:", error);
-      toast.error("Failed to reload grid data. Please try again later")
-
+      toast.error("Failed to reload grid data. Please try again later");
     }
   };
 
@@ -131,12 +132,15 @@ function UserAccGrpGrid() {
       const response = await fetch(`${config.apiBaseUrl}/getsearchUserAccGrp`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          user_accgroup_code, user_accgroup_name, standard_accgroup_code, base_accgroup_code,
-          status
-        })
+          user_accgroup_code,
+          user_accgroup_name,
+          standard_accgroup_code,
+          base_accgroup_code,
+          status,
+        }),
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -144,8 +148,7 @@ function UserAccGrpGrid() {
         console.log("Data fetched successfully");
       } else if (response.status === 404) {
         console.log("Data not found");
-        toast.warning("Data not found")
-
+        toast.warning("Data not found");
       } else {
         const errorResponse = await response.json();
         toast.warning(errorResponse.message || "Failed to insert sales data");
@@ -236,14 +239,14 @@ function UserAccGrpGrid() {
     }
 
     const reportData = selectedRows.map((row) => {
-      const safeValue = (val) => (val !== undefined && val !== null ? val : '');
+      const safeValue = (val) => (val !== undefined && val !== null ? val : "");
 
       return {
-        "Code": safeValue(row.user_accgroup_code),
-        "Name": safeValue(row.user_accgroup_name),
+        Code: safeValue(row.user_accgroup_code),
+        Name: safeValue(row.user_accgroup_name),
         "Standard Account Code": safeValue(row.standard_accgroup_code),
         "Base Account Code": safeValue(row.base_accgroup_code),
-        "Status": safeValue(row.status),
+        Status: safeValue(row.status),
       };
     });
 
@@ -332,7 +335,7 @@ function UserAccGrpGrid() {
     reportWindow.document.write("</tbody></table>");
 
     reportWindow.document.write(
-      '<button class="report-button" onclick="window.print()">Print</button>'
+      '<button class="report-button" onclick="window.print()">Print</button>',
     );
     reportWindow.document.write("</body></html>");
     reportWindow.document.close();
@@ -352,7 +355,7 @@ function UserAccGrpGrid() {
   // const onCellValueChanged = (params) => {
   //   const updatedRowData = [...rowData];
   //   const rowIndex = updatedRowData.findIndex(
-  //     (row) => row.user_accgroup_code === params.data.user_accgroup_code // Use the unique identifier 
+  //     (row) => row.user_accgroup_code === params.data.user_accgroup_code // Use the unique identifier
   //   );
   //   if (rowIndex !== -1) {
   //     updatedRowData[rowIndex][params.colDef.field] = params.newValue;
@@ -366,7 +369,7 @@ function UserAccGrpGrid() {
   const onCellValueChanged = (params) => {
     const updatedRowData = [...rowData];
     const rowIndex = updatedRowData.findIndex(
-      (row) => row.user_accgroup_code === params.data.user_accgroup_code
+      (row) => row.user_accgroup_code === params.data.user_accgroup_code,
     );
 
     if (rowIndex !== -1) {
@@ -375,7 +378,7 @@ function UserAccGrpGrid() {
 
       setEditedData((prevData) => {
         const existingIndex = prevData.findIndex(
-          (item) => item.user_accgroup_code === params.data.user_accgroup_code
+          (item) => item.user_accgroup_code === params.data.user_accgroup_code,
         );
 
         if (existingIndex !== -1) {
@@ -390,10 +393,17 @@ function UserAccGrpGrid() {
   };
 
   const saveEditedData = async () => {
-    const selectedRowsData = editedData.filter(row => selectedRows.some(selectedRow => selectedRow.user_accgroup_code === row.user_accgroup_code));
+    const selectedRowsData = editedData.filter((row) =>
+      selectedRows.some(
+        (selectedRow) =>
+          selectedRow.user_accgroup_code === row.user_accgroup_code,
+      ),
+    );
 
     if (selectedRowsData.length === 0) {
-      toast.warning("Please select and modify at least one row to update its data")
+      toast.warning(
+        "Please select and modify at least one row to update its data",
+      );
       return;
     }
 
@@ -401,20 +411,20 @@ function UserAccGrpGrid() {
       "Are you sure you want to update the data in the selected rows?",
       async () => {
         try {
-          const modified_by = sessionStorage.getItem('selectedUserCode');
+          const modified_by = sessionStorage.getItem("selectedUserCode");
 
           const response = await fetch(`${config.apiBaseUrl}/updUserAccGrp`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "Modified-By": modified_by
+              "Modified-By": modified_by,
             },
             body: JSON.stringify({ editedData: selectedRowsData }), // Send only the selected rows for saving
-            "modified_by": modified_by
+            modified_by: modified_by,
           });
           if (response.status === 200) {
             setTimeout(() => {
-              toast.success("Data Updated Successfully")
+              toast.success("Data Updated Successfully");
               handleSearch();
             }, 1000);
             return;
@@ -429,10 +439,9 @@ function UserAccGrpGrid() {
       },
       () => {
         toast.info("Data update cancelled.");
-      }
+      },
     );
   };
-
 
   const deleteSelectedRows = async () => {
     const selectedRows = gridApi.getSelectedRows();
@@ -442,26 +451,40 @@ function UserAccGrpGrid() {
       return;
     }
 
-    const modified_by = sessionStorage.getItem('selectedUserCode');
-    const user_accgroup_codesToDelete = selectedRows.map((row) => row.user_accgroup_code);
-    const user_accgroup_nameToDelete = selectedRows.map((row) => row.user_accgroup_name);
+    const modified_by = sessionStorage.getItem("selectedUserCode");
+    const user_accgroup_codesToDelete = selectedRows.map(
+      (row) => row.user_accgroup_code,
+    );
+    const user_accgroup_nameToDelete = selectedRows.map(
+      (row) => row.user_accgroup_name,
+    );
     showConfirmationToast(
       "Are you sure you want to Delete the data in the selected rows?",
       async () => {
         try {
-          const response = await fetch(`${config.apiBaseUrl}/deleteUserAccGrp`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Modified-By": modified_by
+          const response = await fetch(
+            `${config.apiBaseUrl}/deleteUserAccGrp`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Modified-By": modified_by,
+              },
+              body: JSON.stringify({
+                user_accgroup_codesToDelete,
+                user_accgroup_nameToDelete,
+              }),
+              modified_by: modified_by, // Corrected the key name to match the server-side expectation
             },
-            body: JSON.stringify({ user_accgroup_codesToDelete, user_accgroup_nameToDelete }),
-            "modified_by": modified_by  // Corrected the key name to match the server-side expectation
-          });
+          );
           if (response.ok) {
-            console.log("Rows deleted successfully:", user_accgroup_codesToDelete, user_accgroup_nameToDelete);
+            console.log(
+              "Rows deleted successfully:",
+              user_accgroup_codesToDelete,
+              user_accgroup_nameToDelete,
+            );
             setTimeout(() => {
-              toast.success("Data Deleted successfully")
+              toast.success("Data Deleted successfully");
               handleSearch();
             }, 1000);
           } else {
@@ -475,7 +498,7 @@ function UserAccGrpGrid() {
       },
       () => {
         toast.info("Data Delete cancelled.");
-      }
+      },
     );
   };
 
@@ -510,7 +533,11 @@ function UserAccGrpGrid() {
   return (
     <div className="container-fluid Topnav-screen">
       {loading && <LoadingScreen />}
-      <ToastContainer position="top-right" className="toast-design" theme="colored" />
+      <ToastContainer
+        position="top-right"
+        className="toast-design"
+        theme="colored"
+      />
       <div align="right">
         <div className="shadow-lg p-1 bg-body-tertiary rounded mb-2">
           <div class="d-flex justify-content-between">
@@ -519,24 +546,52 @@ function UserAccGrpGrid() {
                 User Account Group
               </h1>
             </div>
-            <div class="d-flex justify-content-end me-3" >
-              {['add', 'all permission'].some(permission => UserAccGrpPermission.includes(permission)) && (
-                <addbutton class="purbut" onClick={handleNavigatesToForm} required title="Add User Account Group">
+            <div class="d-flex justify-content-end me-3">
+              {["add", "all permission"].some((permission) =>
+                UserAccGrpPermission.includes(permission),
+              ) && (
+                <addbutton
+                  class="purbut"
+                  onClick={handleNavigatesToForm}
+                  required
+                  title="Add User Account Group"
+                >
                   <i class="fa-solid fa-user-plus"></i>
                 </addbutton>
               )}
-              {['delete', 'all permission'].some(permission => UserAccGrpPermission.includes(permission)) && (
-                <delbutton class="purbut" onClick={deleteSelectedRows} required title="Delete">
+              {["delete", "all permission"].some((permission) =>
+                UserAccGrpPermission.includes(permission),
+              ) && (
+                <delbutton
+                  class="purbut"
+                  onClick={deleteSelectedRows}
+                  required
+                  title="Delete"
+                >
                   <i class="fa-solid fa-user-minus"></i>
                 </delbutton>
               )}
-              {['update', 'all permission'].some(permission => UserAccGrpPermission.includes(permission)) && (
-                <savebutton class="purbut" onClick={saveEditedData} required title="Update">
+              {["update", "all permission"].some((permission) =>
+                UserAccGrpPermission.includes(permission),
+              ) && (
+                <savebutton
+                  class="purbut"
+                  onClick={saveEditedData}
+                  required
+                  title="Update"
+                >
                   <i class="fa-solid fa-floppy-disk"></i>
                 </savebutton>
               )}
-              {['all permission', 'view'].some(permission => UserAccGrpPermission.includes(permission)) && (
-                <printbutton class="purbut" onClick={generateReport} required title="Generate Report">
+              {["all permission", "view"].some((permission) =>
+                UserAccGrpPermission.includes(permission),
+              ) && (
+                <printbutton
+                  class="purbut"
+                  onClick={generateReport}
+                  required
+                  title="Generate Report"
+                >
                   <i class="fa-solid fa-print"></i>
                 </printbutton>
               )}
@@ -550,46 +605,47 @@ function UserAccGrpGrid() {
                 </div>
                 <div class="d-flex justify-content-end ">
                   <div class="dropdown me-5 mt-3">
-                    <button class="btn btn-primary dropdown-toggle p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button
+                      class="btn btn-primary dropdown-toggle p-1"
+                      type="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
                       <i class="fa-solid fa-list"></i>
                     </button>
                     <ul class="dropdown-menu menu">
                       <li class="iconbutton d-flex justify-content-center text-success">
-                        {['add', 'all permission'].some(permission => UserAccGrpPermission.includes(permission)) && (
-                          <icon
-                            class="icon"
-                            onClick={handleNavigatesToForm}
-                          >
+                        {["add", "all permission"].some((permission) =>
+                          UserAccGrpPermission.includes(permission),
+                        ) && (
+                          <icon class="icon" onClick={handleNavigatesToForm}>
                             <i class="fa-solid fa-user-plus"></i>
                           </icon>
                         )}
                       </li>
                       <li class="iconbutton  d-flex justify-content-center text-danger">
-                        {['delete', 'all permission'].some(permission => UserAccGrpPermission.includes(permission)) && (
-                          <icon
-                            class="icon"
-                            onClick={deleteSelectedRows}
-                          >
+                        {["delete", "all permission"].some((permission) =>
+                          UserAccGrpPermission.includes(permission),
+                        ) && (
+                          <icon class="icon" onClick={deleteSelectedRows}>
                             <i class="fa-solid fa-user-minus"></i>
                           </icon>
                         )}
                       </li>
                       <li class="iconbutton  d-flex justify-content-center text-primary ">
-                        {['update', 'all permission'].some(permission => UserAccGrpPermission.includes(permission)) && (
-                          <icon
-                            class="icon"
-                            onClick={saveEditedData}
-                          >
+                        {["update", "all permission"].some((permission) =>
+                          UserAccGrpPermission.includes(permission),
+                        ) && (
+                          <icon class="icon" onClick={saveEditedData}>
                             <i class="fa-solid fa-floppy-disk"></i>
                           </icon>
                         )}
                       </li>
                       <li class="iconbutton  d-flex justify-content-center ">
-                        {['all permission', 'view'].some(permission => UserAccGrpPermission.includes(permission)) && (
-                          <icon
-                            class="icon"
-                            onClick={generateReport}
-                          >
+                        {["all permission", "view"].some((permission) =>
+                          UserAccGrpPermission.includes(permission),
+                        ) && (
+                          <icon class="icon" onClick={generateReport}>
                             <i class="fa-solid fa-print"></i>
                           </icon>
                         )}
@@ -613,10 +669,11 @@ function UserAccGrpGrid() {
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the code here"
+                  required
+                  title="Please fill the code here"
                   value={user_accgroup_code}
                   onChange={(e) => setuser_accgroup_code(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={3}
                 />
               </div>
@@ -631,10 +688,11 @@ function UserAccGrpGrid() {
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the name here"
+                  required
+                  title="Please fill the name here"
                   value={user_accgroup_name}
                   onChange={(e) => setuser_accgroup_name(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={40}
                 />
               </div>
@@ -649,10 +707,11 @@ function UserAccGrpGrid() {
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the Standard Code here"
+                  required
+                  title="Please fill the Standard Code here"
                   value={standard_accgroup_code}
                   onChange={(e) => setstandard_accgroup_code(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={2}
                 />
               </div>
@@ -667,40 +726,51 @@ function UserAccGrpGrid() {
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="Please fill the Base Code here"
+                  required
+                  title="Please fill the Base Code here"
                   value={base_accgroup_code}
                   onChange={(e) => setbase_accgroup_code(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={2}
                 />
               </div>
             </div>
             <div className="col-md-3 form-group">
               <div class="exp-form-floating">
-                <label class="exp-form-labels">
-                  Status
-                </label>
-                <div title="Select the Status">        
-                <Select
-                  id="status"
-                  value={selectedStatus}
-                  onChange={handleChangeStatus}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  options={filteredOptionStatus}
-                  className="exp-input-field"
-                  placeholder=""
-                />
-              </div>
+                <label class="exp-form-labels">Status</label>
+                <div title="Select the Status">
+                  <Select
+                    id="status"
+                    value={selectedStatus}
+                    onChange={handleChangeStatus}
+                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                    options={filteredOptionStatus}
+                    className="exp-input-field"
+                    placeholder=""
+                    classNamePrefix="react-select"
+                    styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                  />
+                </div>
               </div>
             </div>
 
             <div className="col-md-2 form-group mt-4 ms-4">
               <div class="exp-form-floating">
                 <div class=" d-flex justify-content-center">
-                  <icon className="popups-btn fs-6 p-3" onClick={handleSearch} required title="Search">
+                  <icon
+                    className="popups-btn fs-6 p-3"
+                    onClick={handleSearch}
+                    required
+                    title="Search"
+                  >
                     <i className="fas fa-search"></i>
                   </icon>
-                  <icon className="popups-btn fs-6 p-3" onClick={reloadGridData} required title="Refresh">
+                  <icon
+                    className="popups-btn fs-6 p-3"
+                    onClick={reloadGridData}
+                    required
+                    title="Refresh"
+                  >
                     <FontAwesomeIcon icon="fa-solid fa-arrow-rotate-right" />
                   </icon>
                 </div>
@@ -726,7 +796,9 @@ function UserAccGrpGrid() {
       <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
         <div className="row ms-2">
           <div className="d-flex justify-content-start">
-            <p className="col-md-6">{labels.createdBy}: {createdBy}</p>
+            <p className="col-md-6">
+              {labels.createdBy}: {createdBy}
+            </p>
             <p className="col-md-">
               {labels.createdDate}: {createdDate}
             </p>
@@ -744,7 +816,5 @@ function UserAccGrpGrid() {
     </div>
   );
 }
-
-
 
 export default UserAccGrpGrid;

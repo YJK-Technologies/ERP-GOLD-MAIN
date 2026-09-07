@@ -601,6 +601,7 @@ const QOanalysis = () => {
               className="border-secondary"
               placeholder=""
               maxLength={18}
+              styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
             />
             </div>
           </div>

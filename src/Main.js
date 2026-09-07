@@ -318,7 +318,7 @@ function Main() {
     { path: "/DeletedSales", component: <DeletedSales /> },
     { path: "/TotalStock", component: <TStock /> },
     { path: "/Stocktransfer", component: <StockTransfer /> },
-    { path: "/StockTransferTemplat", component: <StockTransferTemplate /> },
+    { path: "/StockTransferPrint", component: <StockTransferTemplate /> },
     { path: "/BaseAccount", component: <BaseAccount /> },
     { path: "/AddBaseAccount", component: <AddBaseAcc /> },
     { path: "/UserAccountGroup", component: <UserAccGrpGrid /> },

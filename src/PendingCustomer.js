@@ -397,6 +397,7 @@ function AssetsReturn({ }) {
                                     options={filteredOptionType}
                                     className="exp-input-field"
                                     placeholder=""
+                                    styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                                 />
                             </div>
                         </div>

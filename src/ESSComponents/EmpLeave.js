@@ -1,121 +1,116 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../input.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Swal from 'sweetalert2';
-import './EmployeeLoan.css'
+import Swal from "sweetalert2";
+import "./EmployeeLoan.css";
 import { useNavigate } from "react-router-dom";
-import { useLocation } from 'react-router-dom';
-import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer, toast } from 'react-toastify';
-import '../apps.css'
-import TabButtons from './Tabs.js';
-import Select from 'react-select'
-import { showConfirmationToast } from '../ToastConfirmation';
+import { useLocation } from "react-router-dom";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer, toast } from "react-toastify";
+import "../apps.css";
+import TabButtons from "./Tabs.js";
+import Select from "react-select";
+import { showConfirmationToast } from "../ToastConfirmation";
 import { AgGridReact } from "ag-grid-react";
 
-const config = require('../Apiconfig');
+const config = require("../Apiconfig");
 
-function Input({ }) {
-  
+function Input({}) {
   const [error, setError] = useState("");
   const [drop, setDrop] = useState([]);
   const [statusdrop, setStatusdrop] = useState([]);
   const [leave, setleave] = useState([]);
-  const [selectleave, setselectleave] = useState('');
+  const [selectleave, setselectleave] = useState("");
   const [open3, setOpen3] = React.useState(false);
-  const [selectedLocation, setselectedLocation] = useState('');
+  const [selectedLocation, setselectedLocation] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
   const { mode, selectedRow } = location.state || {};
   const [isUpdateMode, setIsUpdateMode] = useState(false);
   const [saveButtonVisible, setSaveButtonVisible] = useState(true);
   const [updateButtonVisible, setUpdateButtonVisible] = useState(false);
-  const [Leaveid, setLeaveid] = useState('');
-  const [filtercode, setFilterCode] = useState('');
-  const [type, settype] = useState('');
-  const [accrual, setaccrual] = useState('');
-  const [Exceedleave, setExceedleave] = useState('');
- const [rowData, setrowData] = useState([]);
-  const [LeaveId, setLeaveId] = useState(''); 
-  const[Description	,setDescription	]=useState("");
-  const[code,setcode]=useState("");
-  const [Type, setType] = useState(''); 
-  const[Accrual,setAccrual]=useState("");
-  const[TotalDaystoBeCredit,setTotalDaystoBeCredit]=useState("");
-  const[carryForward,setcarryForward]=useState("");
-  const[Exceed_Leave,setExceed_Leave]=useState("");
-  const[LeaveReason,setLeaveReason]=useState("");
-  const [TypeDrop, setTypeDrop] = useState([]); 
-  const [typedrop, settypedrop] = useState([]); 
-  const [TypeGriddrop, setTypeGriddrop] = useState([]); 
-  const [AccuralGriddrop, setAccuralGriddrop] = useState([]); 
-  const[SelectedType,setSelectedType]=useState("");
-  const[selectedtype,setselectedtype]=useState("");
-  const[SelectedAccrual,setSelectedAccrual]=useState("");
-  const[selectedaccrual,setSelectedaccrual]=useState("");
-  const[AccrualDrop,setAccrualDrop]=useState([]);
-  const[accrualDrop,setaccuraldrop]=useState([]);
-  const[ExceedLeaveDrop,setExceedLeaveDrop]=useState([]);
-  const[LeaveReasonDrop,setLeaveReasonDrop]=useState([]);
-  const[LevReasonGriddrop,setLevReasonGriddrop]=useState([]);
-  const[SelectedLeaveReason,setSelectedLeaveReason]=useState("");
-  const[SelectedExceedLeave, setSelectedExceedLeave]=useState("");
-   const [gridApi, setGridApi] = useState(null);
-   const[showAsterisk,setShowAsterisk]=useState(true)
+  const [Leaveid, setLeaveid] = useState("");
+  const [filtercode, setFilterCode] = useState("");
+  const [type, settype] = useState("");
+  const [accrual, setaccrual] = useState("");
+  const [Exceedleave, setExceedleave] = useState("");
+  const [rowData, setrowData] = useState([]);
+  const [LeaveId, setLeaveId] = useState("");
+  const [Description, setDescription] = useState("");
+  const [code, setcode] = useState("");
+  const [Type, setType] = useState("");
+  const [Accrual, setAccrual] = useState("");
+  const [TotalDaystoBeCredit, setTotalDaystoBeCredit] = useState("");
+  const [carryForward, setcarryForward] = useState("");
+  const [Exceed_Leave, setExceed_Leave] = useState("");
+  const [LeaveReason, setLeaveReason] = useState("");
+  const [TypeDrop, setTypeDrop] = useState([]);
+  const [typedrop, settypedrop] = useState([]);
+  const [TypeGriddrop, setTypeGriddrop] = useState([]);
+  const [AccuralGriddrop, setAccuralGriddrop] = useState([]);
+  const [SelectedType, setSelectedType] = useState("");
+  const [selectedtype, setselectedtype] = useState("");
+  const [SelectedAccrual, setSelectedAccrual] = useState("");
+  const [selectedaccrual, setSelectedaccrual] = useState("");
+  const [AccrualDrop, setAccrualDrop] = useState([]);
+  const [accrualDrop, setaccuraldrop] = useState([]);
+  const [ExceedLeaveDrop, setExceedLeaveDrop] = useState([]);
+  const [LeaveReasonDrop, setLeaveReasonDrop] = useState([]);
+  const [LevReasonGriddrop, setLevReasonGriddrop] = useState([]);
+  const [SelectedLeaveReason, setSelectedLeaveReason] = useState("");
+  const [SelectedExceedLeave, setSelectedExceedLeave] = useState("");
+  const [gridApi, setGridApi] = useState(null);
+  const [showAsterisk, setShowAsterisk] = useState(true);
   //  const [rowData, setRowData] = useState([]);
   const [gridColumnApi, setGridColumnApi] = useState(null);
-  
-    const [selectedRows, setSelectedRows] = useState([]);
-    const [editedData, setEditedData] = useState([]);
+
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [editedData, setEditedData] = useState([]);
   const gridApiRef = useRef(null);
   const gridColumnApiRef = useRef(null);
-   
 
+  // useEffect(() => {
+  //   // Function to fetch data from the backend API
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch(`${config.apiBaseUrl}/getsearchLeavetypes`,{
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json"
+  //         },
+  //         body: JSON.stringify({
+  // company_code :sessionStorage.getItem('selectedCompanyCode'),
+  //          })
+  //       });  // Backend URL
+  //       if (!response.ok) {
+  //         throw new Error('Network response was not ok');
+  //       }
+  //       const result = await response.json();
+  //       setrowData(result);  // Set the data in state
+  //     } catch (error) {
+  //       setError(error.message);  // Handle errors
+  //     }
+  //   };
 
-
-
-    // useEffect(() => {
-    //   // Function to fetch data from the backend API
-    //   const fetchData = async () => {
-    //     try {
-    //       const response = await fetch(`${config.apiBaseUrl}/getsearchLeavetypes`,{
-    //         method: "POST",
-    //         headers: {
-    //           "Content-Type": "application/json"
-    //         },
-    //         body: JSON.stringify({
-    // company_code :sessionStorage.getItem('selectedCompanyCode'),          
-    //          })
-    //       });  // Backend URL
-    //       if (!response.ok) {
-    //         throw new Error('Network response was not ok');
-    //       }
-    //       const result = await response.json();
-    //       setrowData(result);  // Set the data in state
-    //     } catch (error) {
-    //       setError(error.message);  // Handle errors
-    //     } 
-    //   };
-
-    //   fetchData();  // Call the fetchData function
-    // }, []); 
+  //   fetchData();  // Call the fetchData function
+  // }, []);
 
   const handleSearch = async () => {
     try {
       const response = await fetch(`${config.apiBaseUrl}/getLeaveTypeSearch`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           LeaveId: Leaveid,
           code: filtercode,
-          Type:type,
+          Type: type,
           Accrual: accrual,
-          Exceed_Leave:Exceedleave,
-          company_code :sessionStorage.getItem('selectedCompanyCode'),   
-          Location_Code: sessionStorage.getItem('selectedLocationCode'),       
-         })
+          Exceed_Leave: Exceedleave,
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          Location_Code: sessionStorage.getItem("selectedLocationCode"),
+        }),
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -135,10 +130,8 @@ function Input({ }) {
     }
   };
 
-
   const columnDefs = [
-
-{
+    {
       headerName: "Actions",
       field: "actions",
       // minWidth: 110,
@@ -148,13 +141,16 @@ function Input({ }) {
         const isWideEnough = cellWidth > 20;
         const showIcons = isWideEnough;
         return (
-          <div className="position-relative d-flex align-items-center" style={{ minHeight: '100%', justifyContent: 'center' }}>
+          <div
+            className="position-relative d-flex align-items-center"
+            style={{ minHeight: "100%", justifyContent: "center" }}
+          >
             {showIcons && (
               <>
                 <span
                   className="icon mx-2"
                   onClick={() => saveEditedData(params.data, params.node.data)}
-                  style={{ cursor: 'pointer' }}
+                  style={{ cursor: "pointer" }}
                 >
                   <i className="fa-regular fa-floppy-disk"></i>
                 </span>
@@ -162,7 +158,7 @@ function Input({ }) {
                 <span
                   className="icon mx-2"
                   onClick={() => deleteSelectedRows(params.data)}
-                  style={{ cursor: 'pointer' }}
+                  style={{ cursor: "pointer" }}
                 >
                   <i className="fa-solid fa-trash"></i>
                 </span>
@@ -173,7 +169,6 @@ function Input({ }) {
       },
     },
     {
-    
       headerName: "Leave ID",
       field: "LeaveId",
       editable: false,
@@ -214,7 +209,7 @@ function Input({ }) {
       // minWidth: 150,
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
-        values:  TypeGriddrop,
+        values: TypeGriddrop,
         maxLength: 10,
       },
     },
@@ -226,7 +221,7 @@ function Input({ }) {
       // minWidth: 150,
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
-        values:AccuralGriddrop,
+        values: AccuralGriddrop,
         maxLength: 10,
       },
     },
@@ -273,7 +268,7 @@ function Input({ }) {
       // maxWidth: 250,
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
-        values:LevReasonGriddrop,
+        values: LevReasonGriddrop,
         maxLength: 250,
       },
     },
@@ -283,7 +278,6 @@ function Input({ }) {
     pagination: true,
     paginationPageSize: 10,
   };
-  
 
   // const defaultColDef = {
   //   resizable: true,
@@ -300,11 +294,10 @@ function Input({ }) {
   //   setGridColumnApi(params.columnApi);
   // };
 
-
   const onCellValueChanged = (params) => {
     const updatedRowData = [...rowData];
     const rowIndex = updatedRowData.findIndex(
-      (row) => row.account_code === params.data.account_code // Use the unique identifier 
+      (row) => row.account_code === params.data.account_code, // Use the unique identifier
     );
     if (rowIndex !== -1) {
       updatedRowData[rowIndex][params.colDef.field] = params.newValue;
@@ -320,29 +313,27 @@ function Input({ }) {
     const selectedData = selectedNodes.map((node) => node.data);
     setSelectedRows(selectedData);
   };
-//search code
+  //search code
   const filterOptiontype = typedrop.map((option) => ({
-    value: option.attributedetails_name, 
+    value: option.attributedetails_name,
     label: option.attributedetails_name,
   }));
 
   const handletype = (selectedtype) => {
     setselectedtype(selectedtype);
-    settype(selectedtype ? selectedtype.value : '');
+    settype(selectedtype ? selectedtype.value : "");
   };
 
-
-  
   //
 
   const filterOptionType = TypeDrop.map((option) => ({
-    value: option.attributedetails_name, 
+    value: option.attributedetails_name,
     label: option.attributedetails_name,
   }));
 
   const handleType = (SelectedType) => {
     setSelectedType(SelectedType);
-    setType(SelectedType ? SelectedType.value : '');
+    setType(SelectedType ? SelectedType.value : "");
   };
 
   useEffect(() => {
@@ -350,49 +341,43 @@ function Input({ }) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-      company_code: sessionStorage.getItem("selectedCompanyCode"),
-
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
       }),
-  })
+    })
       .then((data) => data.json())
       .then((val) => {
-        setTypeDrop(val)
-        settypedrop(val)
-
+        setTypeDrop(val);
+        settypedrop(val);
       });
   }, []);
 
-  
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
-    
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+
     fetch(`${config.apiBaseUrl}/getType`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
-    })     
-     .then((response) => response.json())
+      body: JSON.stringify({ company_code }),
+    })
+      .then((response) => response.json())
       .then((data) => {
         // Extract city names from the fetched data
-        const TypesOption = data.map(option => option.attributedetails_name);
+        const TypesOption = data.map((option) => option.attributedetails_name);
         setTypeGriddrop(TypesOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-
-
-  
   const handleAccrual = (selectedAccrual) => {
     setSelectedAccrual(selectedAccrual);
-    setAccrual(selectedAccrual? selectedAccrual.value : '');
+    setAccrual(selectedAccrual ? selectedAccrual.value : "");
   };
 
   const handleaccrual = (selectedaccrual) => {
     setSelectedaccrual(selectedaccrual);
-    setaccrual(selectedaccrual? selectedaccrual.value : '');
+    setaccrual(selectedaccrual ? selectedaccrual.value : "");
   };
 
   useEffect(() => {
@@ -400,57 +385,55 @@ function Input({ }) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-      company_code: sessionStorage.getItem("selectedCompanyCode"),
-
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
       }),
-  })
-
+    })
       .then((data) => data.json())
-      .then((val) =>  {
+      .then((val) => {
         setAccrualDrop(val);
         setaccuraldrop(val);
       });
   }, []);
 
- 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
-    
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+
     fetch(`${config.apiBaseUrl}/getAccrual`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
-    })     
-     .then((response) => response.json())
+      body: JSON.stringify({ company_code }),
+    })
+      .then((response) => response.json())
       .then((data) => {
         // Extract city names from the fetched data
-        const AccuralOption = data.map(option => option.attributedetails_name);
+        const AccuralOption = data.map(
+          (option) => option.attributedetails_name,
+        );
         setAccuralGriddrop(AccuralOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-
-  const filterOptionAccrual =AccrualDrop.map((option) => ({
+  const filterOptionAccrual = AccrualDrop.map((option) => ({
     value: option.attributedetails_name,
     label: option.attributedetails_name,
   }));
 
-  const filterOptionaccrual =accrualDrop.map((option) => ({
+  const filterOptionaccrual = accrualDrop.map((option) => ({
     value: option.attributedetails_name,
     label: option.attributedetails_name,
   }));
 
-  const filterOptionExceedLeave =ExceedLeaveDrop.map((option) => ({
+  const filterOptionExceedLeave = ExceedLeaveDrop.map((option) => ({
     value: option.attributedetails_name,
     label: option.attributedetails_name,
   }));
 
   const handleExceedLeave = (selectedExceedLeave) => {
     setSelectedExceedLeave(selectedExceedLeave);
-    setAccrual(selectedExceedLeave?selectedExceedLeave.value : '');
+    setAccrual(selectedExceedLeave ? selectedExceedLeave.value : "");
   };
 
   useEffect(() => {
@@ -458,43 +441,39 @@ function Input({ }) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-      company_code: sessionStorage.getItem("selectedCompanyCode"),
-
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
       }),
-  })
-
+    })
       .then((data) => data.json())
       .then((val) => setExceedLeaveDrop(val));
   }, []);
 
-
-  
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
-    
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+
     fetch(`${config.apiBaseUrl}/getLeaveReason`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
-    })     
-     .then((response) => response.json())
+      body: JSON.stringify({ company_code }),
+    })
+      .then((response) => response.json())
       .then((data) => {
         // Extract city names from the fetched data
-        const LeaveOption = data.map(option => option.attributedetails_name);
+        const LeaveOption = data.map((option) => option.attributedetails_name);
         setLevReasonGriddrop(LeaveOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-  const filterOptionLeaveReason =LeaveReasonDrop.map((option) => ({
+  const filterOptionLeaveReason = LeaveReasonDrop.map((option) => ({
     value: option.attributedetails_name,
     label: option.attributedetails_name,
   }));
   const handleLeaveReason = (selectedLeaveReason) => {
     setSelectedLeaveReason(selectedLeaveReason);
-    setLeaveReason(selectedLeaveReason?selectedLeaveReason.value : '');
+    setLeaveReason(selectedLeaveReason ? selectedLeaveReason.value : "");
   };
 
   useEffect(() => {
@@ -502,11 +481,9 @@ function Input({ }) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-      company_code: sessionStorage.getItem("selectedCompanyCode"),
-
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
       }),
-  })
-
+    })
       .then((data) => data.json())
       .then((val) => setLeaveReasonDrop(val));
   }, []);
@@ -519,211 +496,228 @@ function Input({ }) {
       !Type ||
       !Accrual ||
       !TotalDaystoBeCredit ||
-      !Exceed_Leave||
+      !Exceed_Leave ||
       !LeaveReason
-
     ) {
-       setError(" ");
-                 toast.warning("Error: Missing required fields");
-                  return;
-          }
-          try {
-            const Header = {
-              LeaveId,
-              Description,
-              code,
-              Type,
-              Accrual,
-              TotalDaystoBeCredit,
-              carryForward,
-              Exceed_Leave,
-              LeaveReason,
-              company_code: sessionStorage.getItem('selectedCompanyCode'),
-              Location_Code: sessionStorage.getItem('selectedLocationCode'),
-              created_by: sessionStorage.getItem('selectedUserCode'),
-            };
-
-            const response = await fetch(`${config.apiBaseUrl}/addLeaveType`,{
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(Header),
-            });
-        
-            if (response.status === 200) {
-              console.log("Data inserted successfully");
-              setTimeout(() => {
-                toast.success("Data inserted successfully!", {
-                  onClose: () => window.location.reload(),
-                });
-              }, 1000);
-            } else {
-              const errorResponse = await response.json();
-              toast.warning(errorResponse.message || "Failed to insert EmployeeLeave data");
-              console.error(errorResponse.details || errorResponse.message);
-            }
-          } catch (error) {
-            console.error("Error inserting data:", error);
-            toast.error('Error inserting data: ' + error.message);
-          }
-        };
-
-
-        const saveEditedData = async () => {
-
-          try {
-            const company_code = sessionStorage.getItem('selectedCompanyCode');
-            const Location_Code = sessionStorage.getItem('selectedLocationCode');
-            const modified_by = sessionStorage.getItem('selectedUserCode');
-    
-            const dataToSend = { editedData: Array.isArray(rowData) ? rowData : [rowData] };
-    
-              const response = await fetch(`${config.apiBaseUrl}/UpdateLeaveType `, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  "company_code":company_code,
-                  "Location_Code":Location_Code,
-                  "modified_by":modified_by
-                },
-                body: JSON.stringify(dataToSend)
-              });
-    
-              if (response.ok) {
-                toast.success("Data updated successfully", {
-                  onClose: () => handleSearch(), // Runs handleSearch when toast closes
-                });
-              } else {
-                const errorResponse = await response.json();
-                toast.warning(errorResponse.message || "Failed to insert sales data");
-              }
-            } catch (error) {
-              console.error("Error deleting rows:", error);
-              toast.error('Error Deleting Data: ' + error.message);
-            }
-       };
-        
-       const deleteSelectedRows = async (rowData) => {
-        const LeaveIdDelete = { LeaveIdToDelete: Array.isArray(rowData) ? rowData : [rowData] };
-    
-        showConfirmationToast(
-          "Are you sure you want to delete the data in the selected rows?",
-          async () => {
-            try {
-              const response = await fetch(`${config.apiBaseUrl}/deleteLeave`, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json"
-                },
-                body: JSON.stringify(LeaveIdDelete),
-              });
-    
-              if (response.ok) {
-                setTimeout(() => {
-                  toast.success("Data deleted successfully");
-                  handleSearch();
-                }, 3000);
-              } else {
-                const errorResponse = await response.json();
-                toast.warning(errorResponse.message || "Failed to delete data");
-              }
-            } catch (error) {
-              console.error("Error deleting rows:", error);
-              toast.error("Error deleting data: " + error.message);
-            }
-          },
-          () => {
-            toast.info("Data delete cancelled.");
-          }
-        );
+      setError(" ");
+      toast.warning("Error: Missing required fields");
+      return;
+    }
+    try {
+      const Header = {
+        LeaveId,
+        Description,
+        code,
+        Type,
+        Accrual,
+        TotalDaystoBeCredit,
+        carryForward,
+        Exceed_Leave,
+        LeaveReason,
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
+        Location_Code: sessionStorage.getItem("selectedLocationCode"),
+        created_by: sessionStorage.getItem("selectedUserCode"),
       };
-        // const onRowSelected = (event) => {
-        //   if (event.node.isSelected()) {
-        //     handleRowClick(event.data);
-        //   }
-        // };
-        const reloadGridData = () => {
-          window.location.reload();
-        };
-        const reloadData = () => {
-          setrowData([])
-         };
+
+      const response = await fetch(`${config.apiBaseUrl}/addLeaveType`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(Header),
+      });
+
+      if (response.status === 200) {
+        console.log("Data inserted successfully");
+        setTimeout(() => {
+          toast.success("Data inserted successfully!", {
+            onClose: () => window.location.reload(),
+          });
+        }, 1000);
+      } else {
+        const errorResponse = await response.json();
+        toast.warning(
+          errorResponse.message || "Failed to insert EmployeeLeave data",
+        );
+        console.error(errorResponse.details || errorResponse.message);
+      }
+    } catch (error) {
+      console.error("Error inserting data:", error);
+      toast.error("Error inserting data: " + error.message);
+    }
+  };
+
+  const saveEditedData = async () => {
+    try {
+      const company_code = sessionStorage.getItem("selectedCompanyCode");
+      const Location_Code = sessionStorage.getItem("selectedLocationCode");
+      const modified_by = sessionStorage.getItem("selectedUserCode");
+
+      const dataToSend = {
+        editedData: Array.isArray(rowData) ? rowData : [rowData],
+      };
+
+      const response = await fetch(`${config.apiBaseUrl}/UpdateLeaveType `, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          company_code: company_code,
+          Location_Code: Location_Code,
+          modified_by: modified_by,
+        },
+        body: JSON.stringify(dataToSend),
+      });
+
+      if (response.ok) {
+        toast.success("Data updated successfully", {
+          onClose: () => handleSearch(), // Runs handleSearch when toast closes
+        });
+      } else {
+        const errorResponse = await response.json();
+        toast.warning(errorResponse.message || "Failed to insert sales data");
+      }
+    } catch (error) {
+      console.error("Error deleting rows:", error);
+      toast.error("Error Deleting Data: " + error.message);
+    }
+  };
+
+  const deleteSelectedRows = async (rowData) => {
+    const LeaveIdDelete = {
+      LeaveIdToDelete: Array.isArray(rowData) ? rowData : [rowData],
+    };
+
+    showConfirmationToast(
+      "Are you sure you want to delete the data in the selected rows?",
+      async () => {
+        try {
+          const response = await fetch(`${config.apiBaseUrl}/deleteLeave`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(LeaveIdDelete),
+          });
+
+          if (response.ok) {
+            setTimeout(() => {
+              toast.success("Data deleted successfully");
+              handleSearch();
+            }, 3000);
+          } else {
+            const errorResponse = await response.json();
+            toast.warning(errorResponse.message || "Failed to delete data");
+          }
+        } catch (error) {
+          console.error("Error deleting rows:", error);
+          toast.error("Error deleting data: " + error.message);
+        }
+      },
+      () => {
+        toast.info("Data delete cancelled.");
+      },
+    );
+  };
+  // const onRowSelected = (event) => {
+  //   if (event.node.isSelected()) {
+  //     handleRowClick(event.data);
+  //   }
+  // };
+  const reloadGridData = () => {
+    window.location.reload();
+  };
+  const reloadData = () => {
+    setrowData([]);
+  };
 
   return (
     <div class="container-fluid Topnav-screen ">
       <div className="">
         <div class="">
-          <ToastContainer position="top-right" className="toast-design" theme="colored" />
+          <ToastContainer
+            position="top-right"
+            className="toast-design"
+            theme="colored"
+          />
           <div className="shadow-lg p-0 bg-white rounded">
-            <div className="purbut mb-0 d-flex justify-content-between" >
-              <h1 align="left" class="purbut">Leave Type</h1>
-            
-            <div className="col-md-1 mt-3 me-5 purbut">
+            <div className="purbut mb-0 d-flex justify-content-between">
+              <h1 align="left" class="purbut">
+                Leave Type
+              </h1>
 
-<div class=" d-flex justify-content-end  me-3">
-  <div >
-    {/* <savebutton class=" text-dark"  onClick={handleNavigateToForm}
+              <div className="col-md-1 mt-3 me-5 purbut">
+                <div class=" d-flex justify-content-end  me-3">
+                  <div>
+                    {/* <savebutton class=" text-dark"  onClick={handleNavigateToForm}
 >
         
           <i class="fa-solid fa-user-plus"></i>
           {" "}
       
     </savebutton> */}
-  </div>
-  <div className="me-1 ">
-
-    {saveButtonVisible && (
-      <savebutton className="" onClick={handleSave}
-      
-        required title="save">
-        <i class="fa-regular fa-floppy-disk"></i> </savebutton>
-    )}
-
-
-  </div>
-  <div className="ms-1">
-    {/* <delbutton 
+                  </div>
+                  <div className="me-1 ">
+                    {saveButtonVisible && (
+                      <savebutton
+                        className=""
+                        onClick={handleSave}
+                        required
+                        title="save"
+                      >
+                        <i class="fa-regular fa-floppy-disk"></i>{" "}
+                      </savebutton>
+                    )}
+                  </div>
+                  <div className="ms-1">
+                    {/* <delbutton 
 // onClick={handleDelete} 
 title="Delete" onClick={handleDelete} >
 <i class="fa-solid fa-trash"></i>
 </delbutton> */}
-  </div>
-  <div className="col-md-1">
-    <div className="ms-1">
-      <reloadbutton
-        className="purbut"
-        onClick={reloadGridData}
-        title="Reload" style={{ cursor: "pointer" }}>
-        <i className="fa-solid fa-arrow-rotate-right"></i>
-      </reloadbutton>
-    </div>
-  </div>
-</div>
-</div></div>
-
+                  </div>
+                  <div className="col-md-1">
+                    <div className="ms-1">
+                      <reloadbutton
+                        className="purbut"
+                        onClick={reloadGridData}
+                        title="Reload"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <i className="fa-solid fa-arrow-rotate-right"></i>
+                      </reloadbutton>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-         
+
           <div class=" mb-4">
             <div className="shadow-lg p-3 mt-2 bg-white rounded-bottom rounded-top mb-2">
               <div class="row ms-2 me-2">
-              <div className="col-md-3 form-group mb-2">
+                <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label for="state"  className={`${error && !LeaveId ? 'red' : ''}`}>Leave ID{showAsterisk && <span className="text-danger">*</span>}</label>
-                    
+                        <label
+                          for="state"
+                          className={`${error && !LeaveId ? "red" : ""}`}
+                        >
+                          Leave ID
+                          {showAsterisk && (
+                            <span className="text-danger">*</span>
+                          )}
+                        </label>
                       </div>
-                      <div>
-                        {/* <span className="text-danger">*</span> */}
-                      </div>
+                      <div>{/* <span className="text-danger">*</span> */}</div>
                     </div>
                     <input
                       id="LeaveId"
                       className="exp-input-field form-control"
                       type="text"
                       placeholder=""
-                      required title="Please enter the Leave ID"
+                      required
+                      title="Please enter the Leave ID"
                       value={LeaveId}
                       onChange={(e) => setLeaveId(e.target.value)}
                       maxLength={150}
@@ -736,19 +730,26 @@ title="Delete" onClick={handleDelete} >
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label for="sname" className={`${error && !Description ? 'red' : ''}`}>Description
-                        {showAsterisk && <span className="text-danger">*</span>}</label>
-                    
-                         </div>
+                        <label
+                          for="sname"
+                          className={`${error && !Description ? "red" : ""}`}
+                        >
+                          Description
+                          {showAsterisk && (
+                            <span className="text-danger">*</span>
+                          )}
+                        </label>
+                      </div>
                     </div>
                     <input
                       id="Description"
                       class="exp-input-field form-control"
                       type="text"
                       placeholder=""
-                      required title="Please enter the Description"
+                      required
+                      title="Please enter the Description"
                       value={Description}
-                      onChange={(e) => setDescription	(e.target.value)}
+                      onChange={(e) => setDescription(e.target.value)}
                       maxLength={250}
                     />
                   </div>
@@ -756,9 +757,17 @@ title="Delete" onClick={handleDelete} >
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
-                      <div> <label for="add1"   className={`${error && !code ? 'red' : ''}`}>Code{showAsterisk && <span className="text-danger">*</span>}</label>
-                    
-                        
+                      <div>
+                        {" "}
+                        <label
+                          for="add1"
+                          className={`${error && !code ? "red" : ""}`}
+                        >
+                          Code
+                          {showAsterisk && (
+                            <span className="text-danger">*</span>
+                          )}
+                        </label>
                       </div>
                       {/* <div><span className="text-danger">*</span></div> */}
                     </div>
@@ -767,7 +776,8 @@ title="Delete" onClick={handleDelete} >
                       class="exp-input-field form-control"
                       type="text"
                       placeholder=""
-                      required title="Please enter the Code"
+                      required
+                      title="Please enter the Code"
                       value={code}
                       onChange={(e) => setcode(e.target.value)}
                       maxLength={250}
@@ -779,22 +789,31 @@ title="Delete" onClick={handleDelete} >
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label for="state"  className={`${error && !SelectedType ? 'red' : ''}`}>Type{showAsterisk && <span className="text-danger">*</span>}</label>
-                    
+                        <label
+                          for="state"
+                          className={`${error && !SelectedType ? "red" : ""}`}
+                        >
+                          Type
+                          {showAsterisk && (
+                            <span className="text-danger">*</span>
+                          )}
+                        </label>
                       </div>
-                      <div>
-                        {/* <span className="text-danger">*</span> */}
-                      </div>
+                      <div>{/* <span className="text-danger">*</span> */}</div>
                     </div>
                     <Select
                       id="Type"
                       className="exp-input-field "
                       type="text"
                       placeholder=""
-                      required title="Please Select the Type"
+                      required
+                      title="Please Select the Type"
                       value={SelectedType}
                       onChange={handleType}
                       options={filterOptionType}
+                      styles={{
+                        menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                      }}
                       // maxLength={150}
                     />
                     {/* {error && !LeaveId && <div className="text-danger">LeaveId should not be blank</div>} */}
@@ -803,20 +822,27 @@ title="Delete" onClick={handleDelete} >
 
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
-                    <label for="add3"  className={`${error && !SelectedAccrual ? 'red' : ''}`}>   
-                    Accrual	{showAsterisk && <span className="text-danger">*</span>}</label>
-                 
-                    
+                    <label
+                      for="add3"
+                      className={`${error && !SelectedAccrual ? "red" : ""}`}
+                    >
+                      Accrual{" "}
+                      {showAsterisk && <span className="text-danger">*</span>}
+                    </label>
+
                     <Select
                       id="Accrual	"
-                      required title="Please Select the Accrual"
+                      required
+                      title="Please Select the Accrual"
                       value={SelectedAccrual}
-
                       //  onChange={(e) => setAccrual(e.target.value)}
                       onChange={handleAccrual}
                       options={filterOptionAccrual}
                       className="exp-input-field"
                       maxLength={50}
+                      styles={{
+                        menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                      }}
                     />
                   </div>
                 </div>
@@ -824,8 +850,15 @@ title="Delete" onClick={handleDelete} >
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label For="city"  className={`${error && !TotalDaystoBeCredit ? 'red' : ''}`}>Total Days to be Credit{showAsterisk && <span className="text-danger">*</span>}</label>
-                    
+                        <label
+                          For="city"
+                          className={`${error && !TotalDaystoBeCredit ? "red" : ""}`}
+                        >
+                          Total Days to be Credit
+                          {showAsterisk && (
+                            <span className="text-danger">*</span>
+                          )}
+                        </label>
                       </div>
                       {/* <div><span className="text-danger">*</span></div> */}
                     </div>
@@ -834,7 +867,8 @@ title="Delete" onClick={handleDelete} >
                       class="exp-input-field form-control"
                       type="text"
                       placeholder=""
-                      required title="Please enter the Value for Total Days to be Credit "
+                      required
+                      title="Please enter the Value for Total Days to be Credit "
                       value={TotalDaystoBeCredit}
                       onChange={(e) => setTotalDaystoBeCredit(e.target.value)}
                     />
@@ -845,8 +879,15 @@ title="Delete" onClick={handleDelete} >
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label For="city"   className={`${error && !carryForward ? 'red' : ''}`}>Carry Forward{showAsterisk && <span className="text-danger">*</span>}</label>
-                    
+                        <label
+                          For="city"
+                          className={`${error && !carryForward ? "red" : ""}`}
+                        >
+                          Carry Forward
+                          {showAsterisk && (
+                            <span className="text-danger">*</span>
+                          )}
+                        </label>
                       </div>
                       {/* <div><span className="text-danger">*</span></div> */}
                     </div>
@@ -855,7 +896,8 @@ title="Delete" onClick={handleDelete} >
                       class="exp-input-field form-control"
                       type="text"
                       placeholder=""
-                      required title="Please enter the Value for CarryForward "
+                      required
+                      title="Please enter the Value for CarryForward "
                       value={carryForward}
                       onChange={(e) => setcarryForward(e.target.value)}
                     />
@@ -866,24 +908,30 @@ title="Delete" onClick={handleDelete} >
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label for="state"  className={`${error && !Exceed_Leave ? 'red' : ''}`}>Exceed Leave{showAsterisk && <span className="text-danger">*</span>}</label>
-                    
+                        <label
+                          for="state"
+                          className={`${error && !Exceed_Leave ? "red" : ""}`}
+                        >
+                          Exceed Leave
+                          {showAsterisk && (
+                            <span className="text-danger">*</span>
+                          )}
+                        </label>
                       </div>
-                      <div>
-                        {/* <span className="text-danger">*</span> */}
-                      </div>
+                      <div>{/* <span className="text-danger">*</span> */}</div>
                     </div>
                     <input
                       id="Exceed_Leave"
                       className="exp-input-field form-control"
                       type="text"
                       placeholder=""
-                      required title="Please enter the Value for Exceed Leave"
+                      required
+                      title="Please enter the Value for Exceed Leave"
                       value={Exceed_Leave}
                       onChange={(e) => setExceed_Leave(e.target.value)}
                       // value={SelectedExceedLeave}
                       // onChange={handleExceedLeave}
-                     
+
                       // options={filterOptionExceedLeave}
                       // maxLength={150}
                     />
@@ -894,178 +942,202 @@ title="Delete" onClick={handleDelete} >
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label for="state"  className={`${error && !SelectedLeaveReason ? 'red' : ''}`}>Leave Reason{showAsterisk && <span className="text-danger">*</span>}</label>
-                    
+                        <label
+                          for="state"
+                          className={`${error && !SelectedLeaveReason ? "red" : ""}`}
+                        >
+                          Leave Reason
+                          {showAsterisk && (
+                            <span className="text-danger">*</span>
+                          )}
+                        </label>
                       </div>
-                      <div>
-                        {/* <span className="text-danger">*</span> */}
-                      </div>
+                      <div>{/* <span className="text-danger">*</span> */}</div>
                     </div>
                     <Select
                       id="LeaveReason"
                       className="exp-input-field "
                       type="text"
                       placeholder=""
-                      required title="Please enter the Leav Reason"
+                      required
+                      title="Please enter the Leav Reason"
                       value={SelectedLeaveReason}
                       onChange={handleLeaveReason}
-                     
+                      styles={{
+                        menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                      }}
                       options={filterOptionLeaveReason}
                     />
                     {/* {error && !LeaveReason && <div className="text-danger">LeaveReason should not be blank</div>} */}
                   </div>
                 </div>
-                <div class="col-md-3 form-group d-flex justify-content-start mt-4 mb-4">
-                
-             
-               
-</div>
-            
-                <div> 
-              
-                
-                          </div>
-                          </div>
-                          </div>
+                <div class="col-md-3 form-group d-flex justify-content-start mt-4 mb-4"></div>
 
+                <div></div>
+              </div>
+            </div>
 
-
-                <div className="shadow-lg p-3 bg-light rounded-3 mb-2">
+            <div className="shadow-lg p-3 bg-light rounded-3 mb-2">
               <div class="row">
-              <h6 className="">Search Criteria:</h6>
+                <h6 className="">Search Criteria:</h6>
 
-              <div class="row ms-2 me-2">
-               <div className="col-md-3 form-group mb-2">
-               <div class="exp-form-floating">
-               <div><label for="cname" class="exp-form-labels">
-               Leave ID
-                      </label></div>
-        <input 
-        type="text"
-         className="exp-input-field form-control"
-          placeholder=""
-          required title="Please enter the Leave ID"
-          value={Leaveid}
-          onChange={(e) => setLeaveid(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
-        </div>
-        </div>
+                <div class="row ms-2 me-2">
+                  <div className="col-md-3 form-group mb-2">
+                    <div class="exp-form-floating">
+                      <div>
+                        <label for="cname" class="exp-form-labels">
+                          Leave ID
+                        </label>
+                      </div>
+                      <input
+                        type="text"
+                        className="exp-input-field form-control"
+                        placeholder=""
+                        required
+                        title="Please enter the Leave ID"
+                        value={Leaveid}
+                        onChange={(e) => setLeaveid(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                      />
+                    </div>
+                  </div>
 
-        <div className="col-md-3 form-group mb-2">
-        <div class="exp-form-floating">
-        <div><label for="cname" class="exp-form-labels">
-        Code
-                      </label></div>
-        <input type="text" 
-        className="exp-input-field form-control"
-        placeholder=""
-        required title="Please enter the Code"
-        value={filtercode}
-        onChange={(e) => setFilterCode(e.target.value)}
-        onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
-        </div>
-        </div>
+                  <div className="col-md-3 form-group mb-2">
+                    <div class="exp-form-floating">
+                      <div>
+                        <label for="cname" class="exp-form-labels">
+                          Code
+                        </label>
+                      </div>
+                      <input
+                        type="text"
+                        className="exp-input-field form-control"
+                        placeholder=""
+                        required
+                        title="Please enter the Code"
+                        value={filtercode}
+                        onChange={(e) => setFilterCode(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                      />
+                    </div>
+                  </div>
 
-        <div className="col-md-3 form-group mb-2">
-        <div class="exp-form-floating">
-        <div><label for="cname" class="exp-form-labels">
-       Type
-                      </label></div>
-        <Select type="text" 
-        className="exp-input-field "
-        required title="Please Select the Type"
-        value={selectedtype}
-        onChange={handletype}
-        options={filterOptiontype}
-        placeholder="" 
-        onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
-        </div>
-        </div>
+                  <div className="col-md-3 form-group mb-2">
+                    <div class="exp-form-floating">
+                      <div>
+                        <label for="cname" class="exp-form-labels">
+                          Type
+                        </label>
+                      </div>
+                      <Select
+                        type="text"
+                        className="exp-input-field "
+                        required
+                        title="Please Select the Type"
+                        value={selectedtype}
+                        onChange={handletype}
+                        styles={{
+                          menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                        }}
+                        options={filterOptiontype}
+                        placeholder=""
+                        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                      />
+                    </div>
+                  </div>
 
-        <div className="col-md-3 form-group mb-2">
-        <div class="exp-form-floating">
-        <div><label for="cname" class="exp-form-labels">
-        Accrual
-                      </label></div>
-        <Select type="text" 
-                required title="Please Select the Accrual"
-        className="exp-input-field "
-        placeholder=""
-        value={selectedaccrual}
-
-        //  onChange={(e) => setAccrual(e.target.value)}
-        onChange={handleaccrual}
-        options={filterOptionaccrual}
-        onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
-        </div>
-</div>
-        <div className="col-md-3 form-group mb-2">
-        <div class="exp-form-floating">
-         <label for="cname" class="exp-form-labels">
-        Exceed Leave
+                  <div className="col-md-3 form-group mb-2">
+                    <div class="exp-form-floating">
+                      <div>
+                        <label for="cname" class="exp-form-labels">
+                          Accrual
+                        </label>
+                      </div>
+                      <Select
+                        type="text"
+                        required
+                        title="Please Select the Accrual"
+                        className="exp-input-field "
+                        placeholder=""
+                        value={selectedaccrual}
+                        styles={{
+                          menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                        }}
+                        //  onChange={(e) => setAccrual(e.target.value)}
+                        onChange={handleaccrual}
+                        options={filterOptionaccrual}
+                        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-3 form-group mb-2">
+                    <div class="exp-form-floating">
+                      <label for="cname" class="exp-form-labels">
+                        Exceed Leave
                       </label>
-        <input type="text"
-         className="exp-input-field form-control"
-         required title="Please Select the Exceed Leave Value"
-         placeholder="" 
-         value={Exceedleave}
-         onChange={(e) => setExceedleave(e.target.value)}
-         onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
-      </div>  
-      </div>
+                      <input
+                        type="text"
+                        className="exp-input-field form-control"
+                        required
+                        title="Please Select the Exceed Leave Value"
+                        placeholder=""
+                        value={Exceedleave}
+                        onChange={(e) => setExceedleave(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                      />
+                    </div>
+                  </div>
 
-      
+                  <div className="col-md-2 form-group mt-3 mb-3">
+                    <div class="exp-form-floating">
+                      <div class=" d-flex justify-content-center ">
+                        <div class="">
+                          <icon
+                            className="popups-btn fs-6 p-3"
+                            onClick={handleSearch}
+                            required
+                            title="Search"
+                          >
+                            <i className="fas fa-search"></i>
+                          </icon>
+                        </div>
+                        <div>
+                          <icon
+                            className="popups-btn fs-6 p-3"
+                            required
+                            onClick={reloadData}
+                            title="Refresh"
+                          >
+                            <i class="fa-solid fa-rotate-right"></i>
+                          </icon>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-      <div className="col-md-2 form-group mt-3 mb-3">
-                      <div class="exp-form-floating">
-                        <div class=" d-flex justify-content-center ">
-                          <div class="">
-                            <icon
-                              className="popups-btn fs-6 p-3"
-                              onClick={handleSearch}
-                              required
-                              title="Search"
-                            >
-                              <i className="fas fa-search"></i>
-                            </icon>
-                          </div>
-                          <div>
-                            <icon
-                              className="popups-btn fs-6 p-3"
-                              required
-                              onClick={reloadData}
-                              title="Refresh"
-                            >
-                              <i class="fa-solid fa-rotate-right"></i>
-                            </icon>
-                          </div>
-                          </div>
-                          </div>
-                          </div>
-              </div> 
-
-                 <div class="ag-theme-alpine" style={{ height: 485, width: "100%" }}>
-                            <AgGridReact
-                              rowData={rowData}
-                              columnDefs={columnDefs}
-                              // defaultColDef={defaultColDef}
-                              // onCellValueChanged={onCellValueChanged}
-                              rowSelection="multiple"
-                              pagination={true}
-                              // onSelectionChanged={onSelectionChanged}
-                              paginationAutoPageSize={true}
-                            
-                            gridOptions={gridOptions}
-                            
-                            />
-                          </div>
+                <div
+                  class="ag-theme-alpine"
+                  style={{ height: 485, width: "100%" }}
+                >
+                  <AgGridReact
+                    rowData={rowData}
+                    columnDefs={columnDefs}
+                    // defaultColDef={defaultColDef}
+                    // onCellValueChanged={onCellValueChanged}
+                    rowSelection="multiple"
+                    pagination={true}
+                    // onSelectionChanged={onSelectionChanged}
+                    paginationAutoPageSize={true}
+                    gridOptions={gridOptions}
+                  />
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-
   );
 }
 export default Input;

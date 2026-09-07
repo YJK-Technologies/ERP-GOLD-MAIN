@@ -1398,6 +1398,8 @@ console.log(transaction_type)
                     placeholder=""
                     required
                     title="Please select a transaction type here"
+                    classNamePrefix="react-select"
+                    styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                   />
                 </div>
               </div>

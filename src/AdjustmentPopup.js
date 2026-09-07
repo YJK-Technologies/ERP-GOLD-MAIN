@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as React from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -10,6 +10,7 @@ import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { toast } from 'react-toastify';
 import { format } from 'date-fns';
 import LoadingScreen from './Loading';
+import Select from "react-select";
 
 const config = require('./Apiconfig');
 
@@ -70,6 +71,35 @@ export default function AdjustmentPopup({ open, handleClose, adjustmentData }) {
   const [transaction_type, settransaction_type] = useState("");
   const [loading, setLoading] = useState('');
 
+  // For Transaction Type Dropdown
+  const [selectedTransaction, setselectedTransaction] = useState("");
+  const [Transactiondrop, setTransactiondrop] = useState([]);
+
+  const filteredOptionTransaction = Transactiondrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  const handleChangetransaction = (selectedTransaction) => {
+    setselectedTransaction(selectedTransaction);
+    settransaction_type(selectedTransaction ? selectedTransaction.value : "");
+  };
+
+  useEffect(() => {
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+
+    fetch(`${config.apiBaseUrl}/Transaction`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ company_code }),
+    })
+      .then((data) => data.json())
+      .then((val) => setTransactiondrop(val))
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
+
   const handleSearchItem = async () => {
     setLoading(true);
     try {
@@ -110,6 +140,7 @@ export default function AdjustmentPopup({ open, handleClose, adjustmentData }) {
     settransaction_no("");
     settransaction_date("");
     settransaction_type("");
+    setselectedTransaction("");
   };
 
   const [selectedRows, setSelectedRows] = useState([]);
@@ -177,7 +208,7 @@ export default function AdjustmentPopup({ open, handleClose, adjustmentData }) {
                               type='Date'
                               id='Variant'
                               className='exp-input-field form-control'
-                              title='Enter the Transaction Date'
+                              title='Select the Transaction Date'
                               placeholder=' Transaction Date'
                               value={transaction_date}
                               maxLength={18}
@@ -186,20 +217,23 @@ export default function AdjustmentPopup({ open, handleClose, adjustmentData }) {
                               onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
                             />
                           </div>
+
                           <div className="col-sm mb-2">
-                            <input
-                              type='text'
-                              id='ItemName'
-                              className='exp-input-field form-control'
-                              title='Enter the Transaction Type'
-                              placeholder=' Transaction Type'
-                              maxLength={40}
-                              value={transaction_type}
-                              onChange={(e) => settransaction_type(e.target.value)}
-                              autoComplete="off"
-                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                            />
+                            <div class="exp-form-floating">
+                              <div title="Select the Transaction Type">
+                                <Select
+                                  id="transactionType"
+                                  value={selectedTransaction}
+                                  onChange={handleChangetransaction}
+                                  options={filteredOptionTransaction}
+                                  className="exp-input-field"
+                                  placeholder="Transaction Type"
+                                  title="Please select a transaction type here"
+                                />
+                              </div>
+                            </div>
                           </div>
+
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <icon className="icon popups-btn" title="Search" onClick={handleSearchItem}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
@@ -258,10 +292,12 @@ export default function AdjustmentPopup({ open, handleClose, adjustmentData }) {
                               id='ItemCode'
                               maxLength={18}
                               className='exp-input-field form-control'
-                              placeholder=' Transaction No'
+                              title='Enter the Transaction No'
+                              placeholder='Transaction No'
                               value={transaction_no}
                               onChange={(e) => settransaction_no(e.target.value)}
                               autoComplete="off"
+                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
                             />
                           </div>
                           <div className="col-sm mb-2">
@@ -269,24 +305,30 @@ export default function AdjustmentPopup({ open, handleClose, adjustmentData }) {
                               type='Date'
                               id='Variant'
                               className='exp-input-field form-control'
+                              title='Select the Transaction Date'
                               placeholder=' Transaction Date'
                               value={transaction_date}
                               maxLength={18}
                               onChange={(e) => settransaction_date(e.target.value)}
                               autoComplete="off"
+                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
                             />
                           </div>
+
                           <div className="col-sm mb-2">
-                            <input
-                              type='text'
-                              id='ItemName'
-                              className='exp-input-field form-control'
-                              placeholder=' Transaction Type'
-                              maxLength={40}
-                              value={transaction_type}
-                              onChange={(e) => settransaction_type(e.target.value)}
-                              autoComplete="off"
-                            />
+                            <div class="exp-form-floating">
+                              <div title="Select the Transaction Type">
+                                <Select
+                                  id="transactionType"
+                                  value={selectedTransaction}
+                                  onChange={handleChangetransaction}
+                                  options={filteredOptionTransaction}
+                                  className="exp-input-field"
+                                  placeholder="Transaction Type"
+                                  title="Please select a transaction type here"
+                                />
+                              </div>
+                            </div>
                           </div>
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <button className="" onClick={handleSearchItem}>

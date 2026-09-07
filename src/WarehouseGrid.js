@@ -4,17 +4,16 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import "ag-grid-enterprise";
 import "./apps.css";
-import Select from 'react-select';
+import Select from "react-select";
 import { useNavigate, useLocation } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import labels from "./Labels";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import LoadingScreen from './Loading'; 
-import { showConfirmationToast } from './ToastConfirmation';
-const config = require('./Apiconfig');
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import LoadingScreen from "./Loading";
+import { showConfirmationToast } from "./ToastConfirmation";
+const config = require("./Apiconfig");
 
 function WarehouseGrid() {
   const [rowData, setRowData] = useState([]);
@@ -33,7 +32,7 @@ function WarehouseGrid() {
   const [statusdrop, setStatusdrop] = useState([]);
   const [statusgriddrop, setStatusGriddrop] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState(null);
-  const [loading, setLoading] = useState(false);    
+  const [loading, setLoading] = useState(false);
   const [createdBy, setCreatedBy] = useState("");
   const [modifiedBy, setModifiedBy] = useState("");
   const [createdDate, setCreatedDate] = useState("");
@@ -42,10 +41,10 @@ function WarehouseGrid() {
   const location = useLocation();
 
   //code added by Harish purpose of set user permisssion
-  const permissions = JSON.parse(sessionStorage.getItem('permissions')) || {};
+  const permissions = JSON.parse(sessionStorage.getItem("permissions")) || {};
   const warehouseGridPermision = permissions
-    .filter(permission => permission.screen_type === 'Warehouse')
-    .map(permission => permission.permission_type.toLowerCase());
+    .filter((permission) => permission.screen_type === "Warehouse")
+    .map((permission) => permission.permission_type.toLowerCase());
 
   /*testing for search criteria
     const [showAddUserForm, setShowAddUserForm] = useState(false);
@@ -53,101 +52,108 @@ function WarehouseGrid() {
    const [startDate, setStartDate] = useState("");
    const [endDate, setEndDate] = useState("");*/
 
-   useEffect(() => {
-         if (location.state?.preservedRowData) {
-           setRowData(location.state.preservedRowData);
-         }
-       
-         if (location.state?.preservedInputs) {
-           setwarehouse_code(location.state.preservedInputs.warehouse_code || "");
-           setwarehouse_name(location.state.preservedInputs.warehouse_name || "");
-           setstatus(location.state.preservedInputs.status || "");
-           setlocation_no(location.state.preservedInputs.location_no || "");
-       
-           if (location.state.preservedInputs.status) {
-             setSelectedStatus({
-               label: location.state.preservedInputs.status,
-               value: location.state.preservedInputs.status,
-             });
-           }
-         }
-       }, [location.state]);
+  useEffect(() => {
+    if (location.state?.preservedRowData) {
+      setRowData(location.state.preservedRowData);
+    }
+
+    if (location.state?.preservedInputs) {
+      setwarehouse_code(location.state.preservedInputs.warehouse_code || "");
+      setwarehouse_name(location.state.preservedInputs.warehouse_name || "");
+      setstatus(location.state.preservedInputs.status || "");
+      setlocation_no(location.state.preservedInputs.location_no || "");
+
+      if (location.state.preservedInputs.status) {
+        setSelectedStatus({
+          label: location.state.preservedInputs.status,
+          value: location.state.preservedInputs.status,
+        });
+      }
+    }
+  }, [location.state]);
 
   useEffect(() => {
     fetch(`${config.apiBaseUrl}/locationno`)
       .then((response) => response.json())
       .then((data) => {
-        const LocationOption = data.map(option => option.location_no);
+        const LocationOption = data.map((option) => option.location_no);
         setLocationdrop(LocationOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
-    
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
-    })      .then((response) => response.json())
+      body: JSON.stringify({ company_code }),
+    })
+      .then((response) => response.json())
       .then((data) => {
         // Extract city names from the fetched data
-        const statusOption = data.map(option => option.attributedetails_name);
+        const statusOption = data.map((option) => option.attributedetails_name);
         setStatusGriddrop(statusOption);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-  
   useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
-    
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setStatusdrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-
-  const filteredOptionStatus = [{ value: 'All', label: 'All' }, ...statusdrop.map((option) => ({
-    value: option.attributedetails_name,
-    label: option.attributedetails_name,
-  }))];
+  const filteredOptionStatus = [
+    { value: "All", label: "All" },
+    ...statusdrop.map((option) => ({
+      value: option.attributedetails_name,
+      label: option.attributedetails_name,
+    })),
+  ];
 
   const handleChangeStatus = (selectedStatus) => {
     setSelectedStatus(selectedStatus);
-    setstatus(selectedStatus ? selectedStatus.value : '');
+    setstatus(selectedStatus ? selectedStatus.value : "");
   };
-
 
   const handleSearch = async () => {
     setLoading(true);
     try {
-      const company_code = sessionStorage.getItem('selectedCompanyCode');
+      const company_code = sessionStorage.getItem("selectedCompanyCode");
       const response = await fetch(`${config.apiBaseUrl}/onlywarehsearchdata`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "company_code": company_code
+          company_code: company_code,
         },
-        body: JSON.stringify({ company_code: company_code, warehouse_code, warehouse_name, status, location_no }) // Send company_no and company_name as search criteria
+        body: JSON.stringify({
+          company_code: company_code,
+          warehouse_code,
+          warehouse_name,
+          status,
+          location_no,
+        }), // Send company_no and company_name as search criteria
       });
       if (response.ok) {
         const searchData = await response.json();
         setRowData(searchData);
-        console.log("data fetched successfully")
+        console.log("data fetched successfully");
       } else if (response.status === 404) {
         console.log("Data not found");
-        toast.warning("Data not found")
+        toast.warning("Data not found");
         setRowData([]);
       } else {
         const errorResponse = await response.json();
@@ -156,30 +162,25 @@ function WarehouseGrid() {
     } catch (error) {
       console.error("Error saving data:", error);
       toast.error("Error updating data: " + error.message);
-    }finally {
+    } finally {
       setLoading(false);
     }
-
   };
-
 
   const reloadGridData = () => {
     window.location.reload();
   };
 
   const clearInputFields = () => {
-setwarehouse_code("");
-setwarehouse_name("");
-setstatus("");
-setlocation_no("");
-setSelectedStatus("");
-    setRowData([]);
-  };
-
+    setwarehouse_code("");
+    setwarehouse_name("");
+    setstatus("");
+    setlocation_no("");
+    setSelectedStatus("");
+    setRowData([]);
+  };
 
   const columnDefs = [
-
-
     {
       headerCheckboxSelection: true,
       checkboxSelection: true,
@@ -198,19 +199,14 @@ setSelectedStatus("");
         };
 
         return (
-          <span
-            style={{ cursor: "pointer" }}
-            onClick={handleClick}
-          >
+          <span style={{ cursor: "pointer" }} onClick={handleClick}>
             {params.value}
           </span>
         );
       },
       valueFormatter: (params) => {
-        return params.value ? params.value.toUpperCase() : '';
+        return params.value ? params.value.toUpperCase() : "";
       },
-
-
     },
     {
       headerName: "Warehouse Name",
@@ -224,11 +220,11 @@ setSelectedStatus("");
       valueFormatter: (params) =>
         params.value
           ? params.value
-            .toLowerCase()
-            .split(' ')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(' ')
-          : '',
+              .toLowerCase()
+              .split(" ")
+              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(" ")
+          : "",
     },
     {
       headerName: "Status",
@@ -239,9 +235,9 @@ setSelectedStatus("");
       // maxWidth: 150,
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
-        values: statusgriddrop
+        values: statusgriddrop,
       },
-      // valueFormatter: (params) => 
+      // valueFormatter: (params) =>
       //   params.value
       //     ? params.value
       //         .toLowerCase()
@@ -261,7 +257,7 @@ setSelectedStatus("");
         values: Locationdrop,
       },
       cellEditor: "agSelectCellEditor",
-      // valueFormatter: (params) => 
+      // valueFormatter: (params) =>
       //   params.value
       //     ? params.value
       //         .toLowerCase()
@@ -271,7 +267,6 @@ setSelectedStatus("");
       //     : '',
     },
   ];
-
 
   const defaultColDef = {
     resizable: true,
@@ -288,13 +283,12 @@ setSelectedStatus("");
     setGridColumnApi(params.columnApi);
   };
 
-
   const generateReport = () => {
     const selectedRows = gridApi.getSelectedRows();
     if (selectedRows.length === 0) {
       toast.warning("Please select at least one row to generate a report");
-      return
-    };
+      return;
+    }
     const reportData = selectedRows.map((row) => {
       return {
         /* Date: moment(row.expenses_date).format("YYYY-MM-DD"),
@@ -304,9 +298,8 @@ setSelectedStatus("");
         Remarks: row.remarks,*/
         "Warehouse Code": row.warehouse_code,
         "Warehouse Name": row.warehouse_name,
-        "Status": row.status,
+        Status: row.status,
         "Location No": row.location_no,
-
       };
     });
 
@@ -395,33 +388,32 @@ setSelectedStatus("");
     reportWindow.document.write("</tbody></table>");
 
     reportWindow.document.write(
-      '<button class="report-button" onclick="window.print()">Print</button>'
+      '<button class="report-button" onclick="window.print()">Print</button>',
     );
     reportWindow.document.write("</body></html>");
     reportWindow.document.close();
   };
 
-
   const handleNavigateToForm = () => {
     navigate("/AddWarehouse", { state: { mode: "create" } }); // Pass selectedRows as props to the Input component
   };
   const handleNavigateWithRowData = (selectedRow) => {
-  navigate("/AddWarehouse", {
-    state: {
-      mode: "update",
-      selectedRow,
+    navigate("/AddWarehouse", {
+      state: {
+        mode: "update",
+        selectedRow,
 
-      preservedRowData: rowData,
+        preservedRowData: rowData,
 
-      preservedInputs: {
-        warehouse_code,
-        warehouse_name,
-        status,
-        location_no,
+        preservedInputs: {
+          warehouse_code,
+          warehouse_name,
+          status,
+          location_no,
+        },
       },
-    },
-  });
-};
+    });
+  };
 
   const onSelectionChanged = () => {
     const selectedNodes = gridApi.getSelectedNodes();
@@ -432,18 +424,24 @@ setSelectedStatus("");
   const onCellValueChanged = (params) => {
     const updatedRowData = [...rowData];
     const rowIndex = updatedRowData.findIndex(
-      (row) => row.vendor_code === params.data.vendor_code && row.company_code === params.data.company_code && row.keyfield == params.data.keyfield
+      (row) =>
+        row.vendor_code === params.data.vendor_code &&
+        row.company_code === params.data.company_code &&
+        row.keyfield == params.data.keyfield,
     );
-  
+
     if (rowIndex !== -1) {
       updatedRowData[rowIndex][params.colDef.field] = params.newValue;
       setRowData(updatedRowData);
-  
+
       setEditedData((prevData) => {
         const existingIndex = prevData.findIndex(
-          (item) => item.vendor_code === params.data.vendor_code && item.company_code === params.data.company_code && item.keyfield == params.data.keyfield
+          (item) =>
+            item.vendor_code === params.data.vendor_code &&
+            item.company_code === params.data.company_code &&
+            item.keyfield == params.data.keyfield,
         );
-  
+
         if (existingIndex !== -1) {
           const updatedEdited = [...prevData];
           updatedEdited[existingIndex] = updatedRowData[rowIndex];
@@ -455,15 +453,19 @@ setSelectedStatus("");
     }
   };
 
-
   const saveEditedData = async () => {
-
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
-    const modified_by = sessionStorage.getItem('selectedUserCode');
-    const selectedRowsData = editedData.filter(row => selectedRows.some(selectedRow => selectedRow.warehouse_code === row.warehouse_code));
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+    const modified_by = sessionStorage.getItem("selectedUserCode");
+    const selectedRowsData = editedData.filter((row) =>
+      selectedRows.some(
+        (selectedRow) => selectedRow.warehouse_code === row.warehouse_code,
+      ),
+    );
 
     if (selectedRowsData.length === 0) {
-      toast.warning("Please select and modify at least one row to update its data");
+      toast.warning(
+        "Please select and modify at least one row to update its data",
+      );
       return;
     }
     showConfirmationToast(
@@ -475,17 +477,17 @@ setSelectedStatus("");
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "company_code": company_code,
-              "modified-by": modified_by
+              company_code: company_code,
+              "modified-by": modified_by,
             },
             body: JSON.stringify({ editedData: selectedRowsData }), // Send only the selected rows for saving
-            "company_code": company_code,
-            "modified-by": modified_by
+            company_code: company_code,
+            "modified-by": modified_by,
           });
 
           if (response.status === 200) {
             setTimeout(() => {
-              toast.success("Data Updated Successfully")
+              toast.success("Data Updated Successfully");
               handleSearch();
             }, 1000);
             return;
@@ -502,21 +504,23 @@ setSelectedStatus("");
       },
       () => {
         toast.info("Data updated cancelled.");
-      }
+      },
     );
   };
 
   const deleteSelectedRows = async () => {
     const selectedRows = gridApi.getSelectedRows();
     if (selectedRows.length === 0) {
-      toast.warning("Please select atleast One Row to Delete")
+      toast.warning("Please select atleast One Row to Delete");
       return;
     }
 
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
-    const modified_by = sessionStorage.getItem('selectedUserCode');
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+    const modified_by = sessionStorage.getItem("selectedUserCode");
 
-    const warehouse_codesToDelete = selectedRows.map((row) => row.warehouse_code);
+    const warehouse_codesToDelete = selectedRows.map(
+      (row) => row.warehouse_code,
+    );
     showConfirmationToast(
       "Are you sure you want to Delete the data in the selected rows?",
       async () => {
@@ -526,18 +530,17 @@ setSelectedStatus("");
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "company_code": company_code,
-              "Modified-By": modified_by
+              company_code: company_code,
+              "Modified-By": modified_by,
             },
             body: JSON.stringify({ warehouse_codes: warehouse_codesToDelete }),
-            "company_code": company_code,
-            "modified_by": modified_by
-
+            company_code: company_code,
+            modified_by: modified_by,
           });
 
           if (response.ok) {
             setTimeout(() => {
-              toast.success("Data Deleted Successfully")
+              toast.success("Data Deleted Successfully");
               handleSearch();
             }, 1000);
             return;
@@ -548,16 +551,15 @@ setSelectedStatus("");
         } catch (error) {
           console.error("Error saving data:", error);
           toast.error("Error Updating Data: " + error.message);
-        }finally {
+        } finally {
           setLoading(false);
         }
       },
       () => {
         toast.info("Data Delete cancelled.");
-      }
+      },
     );
   };
-
 
   const formatDate = (dateString) => {
     if (!dateString) return ""; // Return 'N/A' if the date is missing
@@ -587,26 +589,40 @@ setSelectedStatus("");
     }
   };
 
-
   return (
     <div className="container-fluid Topnav-screen">
       <div>
-      {loading && <LoadingScreen />}
-        <ToastContainer position="top-right" className="toast-design" theme="colored" />
+        {loading && <LoadingScreen />}
+        <ToastContainer
+          position="top-right"
+          className="toast-design"
+          theme="colored"
+        />
         <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
           <div className=" d-flex justify-content-between  ">
             <div class="d-flex justify-content-start">
               <h1 align="left" className="purbut">
                 Warehouse
-              </h1></div>
-
+              </h1>
+            </div>
 
             <div className="d-flex justify-content-end purbut me-3">
-              {['add', 'all permission'].some(permission => warehouseGridPermision.includes(permission)) && (
-                <addbutton className="purbut" onClick={handleNavigateToForm}
-                  required title="Add Warehouse"> <i class="fa-solid fa-user-plus"></i> </addbutton>
+              {["add", "all permission"].some((permission) =>
+                warehouseGridPermision.includes(permission),
+              ) && (
+                <addbutton
+                  className="purbut"
+                  onClick={handleNavigateToForm}
+                  required
+                  title="Add Warehouse"
+                >
+                  {" "}
+                  <i class="fa-solid fa-user-plus"></i>{" "}
+                </addbutton>
               )}
-              {['delete', 'all permission'].some(permission => warehouseGridPermision.includes(permission)) && (
+              {["delete", "all permission"].some((permission) =>
+                warehouseGridPermision.includes(permission),
+              ) && (
                 <delbutton
                   className="purbut"
                   onClick={deleteSelectedRows}
@@ -617,7 +633,9 @@ setSelectedStatus("");
                 </delbutton>
               )}
 
-              {['update', 'all permission'].some(permission => warehouseGridPermision.includes(permission)) && (
+              {["update", "all permission"].some((permission) =>
+                warehouseGridPermision.includes(permission),
+              ) && (
                 <savebutton
                   className="purbut"
                   onClick={saveEditedData}
@@ -633,7 +651,9 @@ setSelectedStatus("");
 
         
          */}
-              {['all permission', 'view'].some(permission => warehouseGridPermision.includes(permission)) && (
+              {["all permission", "view"].some((permission) =>
+                warehouseGridPermision.includes(permission),
+              ) && (
                 <printbutton
                   class="purbut"
                   onClick={generateReport}
@@ -648,53 +668,54 @@ setSelectedStatus("");
             <div class="mobileview">
               <div class="d-flex justify-content-between">
                 <div className="d-flex justify-content-start">
-                  <h1 align="left" className="h1"> Warehouse </h1>
+                  <h1 align="left" className="h1">
+                    {" "}
+                    Warehouse{" "}
+                  </h1>
                 </div>
-                <div class="dropdown mt-1 me-5" >
-                  <button class="btn btn-primary dropdown-toggle p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="dropdown mt-1 me-5">
+                  <button
+                    class="btn btn-primary dropdown-toggle p-1"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
                     <i class="fa-solid fa-list"></i>
                   </button>
 
                   <ul class="dropdown-menu menu">
                     <li class="iconbutton d-flex justify-content-center text-success">
-                      {['add', 'all permission'].some(permission => warehouseGridPermision.includes(permission)) && (
-                        <icon
-                          class="icon"
-                          onClick={handleNavigateToForm}
-                        >
-                          <i class="fa-solid fa-user-plus"></i>
-                          {" "}
+                      {["add", "all permission"].some((permission) =>
+                        warehouseGridPermision.includes(permission),
+                      ) && (
+                        <icon class="icon" onClick={handleNavigateToForm}>
+                          <i class="fa-solid fa-user-plus"></i>{" "}
                         </icon>
                       )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center text-danger">
-                      {['delete', 'all permission'].some(permission => warehouseGridPermision.includes(permission)) && (
-                        <icon
-                          class="icon"
-                          onClick={deleteSelectedRows}
-                        >
-
+                      {["delete", "all permission"].some((permission) =>
+                        warehouseGridPermision.includes(permission),
+                      ) && (
+                        <icon class="icon" onClick={deleteSelectedRows}>
                           <i class="fa-solid fa-user-minus"></i>
                         </icon>
                       )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center text-primary ">
-                      {['update', 'all permission'].some(permission => warehouseGridPermision.includes(permission)) && (
-                        <icon
-                          class="icon"
-                          onClick={saveEditedData}
-                        >
+                      {["update", "all permission"].some((permission) =>
+                        warehouseGridPermision.includes(permission),
+                      ) && (
+                        <icon class="icon" onClick={saveEditedData}>
                           <i class="fa-solid fa-floppy-disk"></i>
                         </icon>
                       )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center ">
-                      {['all permission', 'view'].some(permission => warehouseGridPermision.includes(permission)) && (
-                        <icon
-                          class="icon"
-                          onClick={generateReport}
-                        >
-
+                      {["all permission", "view"].some((permission) =>
+                        warehouseGridPermision.includes(permission),
+                      ) && (
+                        <icon class="icon" onClick={generateReport}>
                           <i class="fa-solid fa-print"></i>
                         </icon>
                       )}
@@ -704,9 +725,7 @@ setSelectedStatus("");
               </div>
             </div>
           </div>
-
         </div>
-
 
         <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
           <div className="row ms-4 mt-3 mb-3 me-4">
@@ -714,36 +733,38 @@ setSelectedStatus("");
               <div class="exp-form-floating">
                 <label for="wcode" class="exp-form-labels">
                   Warehouse Code
-                </label><input
+                </label>
+                <input
                   id="wcode"
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="please fill the warehouse code here"
+                  required
+                  title="please fill the warehouse code here"
                   value={warehouse_code}
                   onChange={(e) => setwarehouse_code(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={18}
                 />
-
               </div>
             </div>
             <div className="col-md-3 form-group">
               <div class="exp-form-floating">
                 <label for="wname" class="exp-form-labels">
                   Warehouse Name
-                </label><input
+                </label>
+                <input
                   id="wname"
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="please fill the warehouse name here"
+                  required
+                  title="please fill the warehouse name here"
                   value={warehouse_name}
                   onChange={(e) => setwarehouse_name(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={250}
                 />
-
               </div>
             </div>
             <div className="col-md-3 form-group mb-0">
@@ -751,59 +772,71 @@ setSelectedStatus("");
                 <label for="status" class="exp-form-labels">
                   Status
                 </label>
-            <div title="Select the Status">        
-                <Select
-                  id="status"
-                  value={selectedStatus}
-                  onChange={handleChangeStatus}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  options={filteredOptionStatus}
-                  className="exp-input-field"
-                  placeholder=""
-                />
-
-              </div>
+                <div title="Select the Status">
+                  <Select
+                    id="status"
+                    value={selectedStatus}
+                    onChange={handleChangeStatus}
+                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                    options={filteredOptionStatus}
+                    className="exp-input-field"
+                    placeholder=""
+                    classNamePrefix="react-select"
+                    styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                  />
+                </div>
               </div>
             </div>
             <div className="col-md-3 form-group">
               <div class="exp-form-floating">
                 <label for="wloc" class="exp-form-labels">
                   Location No
-                </label><input
+                </label>
+                <input
                   id="wloc"
                   className="exp-input-field form-control"
                   type="text"
                   placeholder=""
-                  required title="please fill the location number here"
+                  required
+                  title="please fill the location number here"
                   value={location_no}
                   onChange={(e) => setlocation_no(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   maxLength={18}
                 />
-
               </div>
             </div>
             <div className="col-md-3 form-group mt-4">
               <div class="exp-form-floating">
                 <div class=" d-flex  justify-content-center">
-
-                  <div class=''><icon className="popups-btn fs-6 p-3" onClick={handleSearch} required title="Search"><i className="fas fa-search"></i></icon></div>
-                  <div><icon className="popups-btn fs-6 p-3" onClick={clearInputFields} required title="Reload"><FontAwesomeIcon icon="fa-solid fa-arrow-rotate-right" /></icon></div>
-                </div> </div></div>
-
-
-
-
-
+                  <div class="">
+                    <icon
+                      className="popups-btn fs-6 p-3"
+                      onClick={handleSearch}
+                      required
+                      title="Search"
+                    >
+                      <i className="fas fa-search"></i>
+                    </icon>
+                  </div>
+                  <div>
+                    <icon
+                      className="popups-btn fs-6 p-3"
+                      onClick={clearInputFields}
+                      required
+                      title="Reload"
+                    >
+                      <FontAwesomeIcon icon="fa-solid fa-arrow-rotate-right" />
+                    </icon>
+                  </div>
+                </div>{" "}
+              </div>
+            </div>
           </div>
 
           {/* <p>Result Set</p>  */}
 
-
           <div class="ag-theme-alpine" style={{ height: 550, width: "100%" }}>
-
-
-
             <AgGridReact
               rowData={rowData}
               columnDefs={columnDefs}
@@ -816,16 +849,15 @@ setSelectedStatus("");
               paginationAutoPageSize={true}
               onRowSelected={onRowSelected}
             />
-
-
           </div>
-
         </div>
       </div>
       <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
         <div className="row ms-2">
           <div className="d-flex justify-content-start">
-            <p className="col-md-6">{labels.createdBy}: {createdBy}</p>
+            <p className="col-md-6">
+              {labels.createdBy}: {createdBy}
+            </p>
             <p className="col-md-">
               {labels.createdDate}: {createdDate}
             </p>
@@ -841,9 +873,6 @@ setSelectedStatus("");
         </div>
       </div>
     </div>
-
-
-
   );
 }
 

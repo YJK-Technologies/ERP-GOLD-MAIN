@@ -2051,6 +2051,7 @@ function PurchaseReturn() {
                     onChange={handleChangeStatus}
                     getOptionLabel={(option) => option.label || ""}
                     getOptionValue={(option) => option.value || ""}
+                    styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                   />
                 </div>
                 </div>
