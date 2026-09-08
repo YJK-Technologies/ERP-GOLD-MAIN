@@ -2506,8 +2506,58 @@ useEffect(() => {
   ];
 
   // Detail Sheets
-  const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
-  const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
+  // const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
+  // const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
+  // Detail Sheets
+
+// AG Grid field -> Excel Header Name
+const detailColumnMapping = [
+  { field: 'serialNumber', headerName: 'S.No' },
+  { field: 'itemCode', headerName: 'Item Code' },
+  { field: 'itemName', headerName: 'Item Name' },
+  { field: 'purchaseQty', headerName: 'Qty' },
+  { field: 'purchaseAmt', headerName: 'Unit Price' },
+  { field: 'TotalTaxAmount', headerName: 'Tax Amount' },
+  { field: 'TotalItemAmount', headerName: 'Total' },
+];
+
+// Convert detail data using AG Grid header names
+const excelRowData = filteredRowData.map(row => {
+  const newRow = {};
+
+  detailColumnMapping.forEach(({ field, headerName }) => {
+    newRow[headerName] = row[field];
+  });
+
+  return newRow;
+});
+
+
+// AG Grid field -> Excel Header Name for Tax Details
+const taxColumnMapping = [
+  { field: 'ItemSNO', headerName: 'S.No' },
+  { field: 'TaxSNO', headerName: 'Tax S.No' },
+  { field: 'Item_code', headerName: 'Item Code' },
+  { field: 'TaxType', headerName: 'Tax Type' },
+  { field: 'TaxPercentage', headerName: 'Tax %' },
+  { field: 'TaxAmount', headerName: 'Tax Amount' },
+];
+
+// Convert tax data using AG Grid header names
+const excelRowDataTax = filteredRowDataTax.map(row => {
+  const newRow = {};
+
+  taxColumnMapping.forEach(({ field, headerName }) => {
+    newRow[headerName] = row[field];
+  });
+
+  return newRow;
+});
+
+
+// Create Excel sheets
+const rowDataSheet = XLSX.utils.json_to_sheet(excelRowData);
+const rowDataTaxSheet = XLSX.utils.json_to_sheet(excelRowDataTax);
 
   // Auto Fit Function
   const autoFitColumns = (worksheet, data) => {

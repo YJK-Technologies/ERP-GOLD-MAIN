@@ -758,14 +758,16 @@ useEffect(() => {
   const handleReload = () => {
     window.location.reload();
   };
+  
   const transformRowData = (data) => {
-    return data.map(row => ({
-      "S.No": row.serialNumber,
-      "": row.delete.toString(),
-      "Item Code": row.itemCode.toString(),
-      "Item Name": row.itemName.toString(),
-    }));
-  };
+  return data.map(row => ({
+    "S.No": row.serialNumber ?? "",
+    // "": row.delete != null ? row.delete.toString() : "",
+    "Item Code": row.itemCode != null ? row.itemCode.toString() : "",
+    "Item Name": row.itemName != null ? row.itemName.toString() : "",
+    "Qty": row.billQty != null ? row.billQty.toString() : "",
+  }));
+};
 
   //  const handleExcelDownload = () => {
   //    const filteredRowData = rowData.filter(row => row.Qty > 0);
@@ -793,7 +795,7 @@ useEffect(() => {
   //  };
 
   const handleExcelDownload = () => {
-    const filteredRowData = rowData.filter(row => row.Qty > 0);
+    const filteredRowData = rowData.filter(row => row.billQty > 0);
 
     if (rowData.length === 0 || !transaction_no || !transaction_date) {
       toast.warning("No Data Available");
@@ -810,7 +812,7 @@ useEffect(() => {
     // Header Sheet
     const headerSheet = XLSX.utils.aoa_to_sheet([
       ["Opening Item"],
-      [`Company Namya : ${sessionStorage.getItem("selectedCompanyName")}`],
+      [`Company Name: ${sessionStorage.getItem("selectedCompanyName")}`],
       [],
     ]);
 
