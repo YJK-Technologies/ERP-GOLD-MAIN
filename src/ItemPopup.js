@@ -151,7 +151,7 @@ const defaultColDef = {
   // flex: 1
 };
 
-export default function SalesItemPopup({ open, handleClose, handleItem, type }) {
+export default function SalesItemPopup({ open, handleClose, handleItem, type, transactiontype }) {
 
   const [rowData, setRowData] = useState([]);
   const [Item_code, setItem_code] = useState("");
@@ -253,7 +253,7 @@ export default function SalesItemPopup({ open, handleClose, handleItem, type }) 
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), Item_code, Item_variant, Item_name, Item_short_name, Item_Our_Brand:ItemOurBrand, status, type })
+        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), Item_code, Item_variant, Item_name,transactiontype,Item_short_name, Item_Our_Brand:ItemOurBrand, status, type })
       });
       if (response.ok) {
         const searchData = await response.json();
