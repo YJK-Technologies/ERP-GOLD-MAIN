@@ -709,7 +709,7 @@ function AssertAllocation({ }) {
 
   // Header Data
   const headerData = [{
-    "Company Code": sessionStorage.getItem("selectedCompanyCode"),
+    //"Company Code": sessionStorage.getItem("selectedCompanyCode"),
     "Allocation No": Allocationno,
     "Allocation Date": allocationadate
   }];

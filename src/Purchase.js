@@ -2990,7 +2990,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
   // Header Sheet
   const headerSheet = XLSX.utils.aoa_to_sheet([
     ["Purchase"],
-    [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+    [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
     [],
   ]);
 

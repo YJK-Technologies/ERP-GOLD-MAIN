@@ -346,7 +346,6 @@ function Sales() {
   const handleChangeSalesMode = (selectedSalesMode) => {
     setSelectedSalesMode(selectedSalesMode);
     setSalesMode(selectedSalesMode ? selectedSalesMode.value : '');
-    setError(false);
   };
 
   const filteredOptionWarehouse = warehouseDrop.map((option) => ({
@@ -541,7 +540,7 @@ function Sales() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code, Item_code: params.data.itemCode, type: salesType })
+        body: JSON.stringify({ company_code, Item_code: params.data.itemCode, type:salesMode, transactiontype: salesType })
       });
 
       if (response.ok) {
@@ -4294,7 +4293,7 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
             </div>
           </div>
           <div>
-            <SalesItemPopup open={open} handleClose={handleClose} handleItem={handleItem} type={salesMode} />
+            <SalesItemPopup open={open} handleClose={handleClose} handleItem={handleItem} type={salesMode} transactiontype={salesType} />
             <SalesWarehousePopup open={open1} handleClose={handleClose} handleWarehouse={handleWarehouse} />
             <SalesVendorPopup open={open2} handleClose={handleClose} handleVendor={handleVendor} />
             <SalesHdrPopup open={open3} handleClose={handleClose} handleData={handleData} />
