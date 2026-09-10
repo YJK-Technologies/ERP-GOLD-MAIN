@@ -577,8 +577,7 @@ function Sales() {
       } else if (response.status === 404) {
         toast.warning('Data not found!', {
           onClose: () => {
-            setRowData(prevRowData =>
-              prevRowData.map(row => {
+            const updatedRowData = rowData.map(row => {
               if (row.itemCode === params.data.itemCode) {
                 return {
                   ...row,
@@ -594,8 +593,8 @@ function Sales() {
                 };
               }
               return row;
-            })
-            );
+            });
+            setRowData(updatedRowData);
           }
         });
         return false;
@@ -1730,7 +1729,6 @@ setLoading(true)
       setShowAsterisk(true);
       setupdated(true);
       setPrintButtonVisible(true)
-      setDeleteButtonVisible(true)
       setAuthorizeButton(true);
       const [{ BillNo, BillDate, SalesType, RoundOff, PaidAmount, ReturnAmount, SalesMode, DCNo, SaleAmount, TotalAmount, TotalTax, PayType, CustomerName, CustomerCode, OrderType, inventory_autono }] = data;
       console.table(data);
@@ -2308,7 +2306,6 @@ setLoading(true)
       setShowDropdown(true);
       setAuthorizeButton(true);
       setPrintButtonVisible(true)
-      setDeleteButtonVisible(true)
       setupdated(true);
       TransactionStatus(code)
       if (searchData.table1 && searchData.table1.length > 0) {
@@ -3153,7 +3150,7 @@ const convertGridDataToExcel = (data, columnDefs) => {
       row.salesQty > 0 &&
       row.TotalItemAmount > 0 &&
       row.purchaseAmt > 0
-  )
+  );
 
   const filteredRowDataTax = rowDataTax.filter(
     taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0
@@ -3299,13 +3296,10 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
     }
     setLoading(true)
     try {
-     const headerResponse =    await AuthorizedHeader();
-     const detailsResponse =   await AuthorizedDetails();
-     const taxDetailsResponse =await AuthorizedTaxDetails();
+      await AuthorizedHeader();
+      await AuthorizedDetails();
+      await AuthorizedTaxDetails();
       console.log("All functions executed successfully.");
-      if (headerResponse && detailsResponse && taxDetailsResponse) {
-              toast.success("Sales Status Updated Successfully");
-            }
     } catch (error) {
       console.error("Error executing handleAuthorizedButtonClick:", error);
     }finally {
@@ -3640,101 +3634,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
     }
   };
 
-//   const handleChangeItem = async (selectedOption, rowIndex) => {
-//     setSelectedItem(selectedOption);
-
-//     const selectedItemCode = selectedOption?.value;
-//     const company_code = sessionStorage.getItem("selectedCompanyCode");
-
-//     if (!selectedItemCode) return;
-
-//     try {
-//         const response = await fetch(
-//             `${config.apiBaseUrl}/getItemCodeSalesData`,
-//             {
-//                 method: "POST",
-//                 headers: {
-//                     "Content-Type": "application/json"
-//                 },
-//                 body: JSON.stringify({
-//                     company_code,
-//                     Item_code: selectedItemCode,
-//                     type: salesMode
-//                 })
-//             }
-//         );
-
-//         if (!response.ok) {
-//             toast.warning("Item not found.");
-//             return;
-//         }
-
-//         const searchData = await response.json();
-//         const matchedItem = searchData[0];
-
-//         if (!matchedItem) {
-//             toast.warning("No item data found.");
-//             return;
-//         }
-
-//         setRowData(prevRows => {
-
-//             // Update the EXACT row where the user entered the item
-//             if (rowIndex !== undefined && rowIndex < prevRows.length) {
-
-//                 const updatedRows = [...prevRows];
-
-//                 const currentRow = updatedRows[rowIndex];
-
-//                 updatedRows[rowIndex] = {
-//                     ...currentRow,
-//                     itemCode: matchedItem.Item_code,
-//                     itemName: matchedItem.Item_name,
-//                     unitWeight: matchedItem.Item_wigh,
-//                     discount: matchedItem.discount_Percentage,
-//                     purchaseAmt: matchedItem.Item_std_sales_price,
-//                     taxType: matchedItem.Item_sales_tax_type,
-//                     taxDetails: matchedItem.combined_tax_details,
-//                     taxPer: matchedItem.combined_tax_percent,
-//                     keyField: `${currentRow.serialNumber || ''}-${matchedItem.Item_code || ''}`,
-//                     warehouse: selectedWarehouse
-//                         ? selectedWarehouse.value
-//                         : '',
-//                 };
-
-//                 return updatedRows;
-//             }
-
-//             // Existing logic for adding a new row
-//             const newRow = {
-//                 serialNumber: prevRows.length + 1,
-//                 itemCode: matchedItem.Item_code,
-//                 itemName: matchedItem.Item_name,
-//                 unitWeight: matchedItem.Item_wigh,
-//                 discount: matchedItem.discount_Percentage,
-//                 purchaseAmt: matchedItem.Item_std_sales_price,
-//                 taxType: matchedItem.Item_sales_tax_type,
-//                 taxDetails: matchedItem.combined_tax_details,
-//                 taxPer: matchedItem.combined_tax_percent,
-//                 keyField: `${prevRows.length + 1}-${matchedItem.Item_code || ''}`,
-//                 warehouse: selectedWarehouse
-//                     ? selectedWarehouse.value
-//                     : '',
-//             };
-
-//             return [...prevRows, newRow];
-//         });
-
-//     } catch (error) {
-//         console.error(
-//             "Error fetching item data from dropdown:",
-//             error
-//         );
-
-//         toast.error("Error: " + error.message);
-//     }
-// };
-
   return (
     <div className="">
       {Screens === 'Add' ? (
@@ -3879,7 +3778,7 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
               <div className="row  ms-3 me-3">
                 {showDropdown && (
                   <div className="col-md-3 form-group mb-2">
-                  <label className={`${deleteError && !selectedStatus   ? 'red' : ''}`}>Status<span className="text-danger">*</span></label>
+     <label className={`${deleteError && !selectedStatus   ? 'red' : ''}`}>Status<span className="text-danger">*</span></label>
                     <div class="exp-form-floating">
                        <div title="Select the Status">
                       <Select
@@ -3906,7 +3805,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                         className="exp-input-field form-control justify-content-start"
                         type="text"
                         placeholder=""
-                        title="Enter the Bill No"
                         required
                         value={billNo}
                         onChange={handleChangeNo}
@@ -3923,7 +3821,7 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                   </div>
                 </div>
                 <div className="col-md-3 form-group mb-2">
-                  <label htmlFor="party_code" tittle="Enter the Customer Code" className={`${error && !customerCode ? 'red' : ''}`}>
+                  <label htmlFor="party_code" className={`${error && !customerCode ? 'red' : ''}`}>
                     Customer Code{!showAsterisk && <span className="text-danger">*</span>}
                   </label>
                   <div className="exp-form-floating">
@@ -3931,7 +3829,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                       <input
                         className="exp-input-field form-control justify-content-start"
                         id='customercode'
-                        title="Enter the Customer Code"
                         required
                         value={customerCode}
                         maxLength={18}
@@ -3955,7 +3852,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                       className="exp-input-field form-control"
                       id="customername"
                       required
-                      title="Auto generated - Appear once the Customer Code is selected"
                       value={customerName}
                       readOnly
                     />
@@ -4033,7 +3929,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                       className="exp-input-field form-control"
                       type="date"
                       placeholder=""
-                      title="Select the Bill Date"
                       required
                       value={billDate}
                       onChange={(e) => setBillDate(e.target.value)}
@@ -4052,7 +3947,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                       type="text"
                       className="exp-input-field form-control"
                       placeholder=""
-                      title="Enter the DC No"
                       required
                       value={delvychellanno}
                       maxLength={18}
@@ -4130,7 +4024,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                         <label htmlFor="returnAmount" className="">Return Amount</label>
                         <input
                           id="returnAmount"
-                          title='Enter the Return Amount'
                           type="number"
                           className="form-control exp-input-field"
                           value={returnAmount}
@@ -4146,7 +4039,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                         <label htmlFor="totalSaleAmount" className="">Total Sales Amount</label>
                         <input
                           id="totalSaleAmount"
-                          title='Auto generated'
                           type="text"
                           className="form-control exp-input-field"
                           value={Totalsales}
@@ -4159,7 +4051,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                         <label htmlFor="totalTaxAmount" className="">Total Tax</label>
                         <input
                           id="totalTaxAmount"
-                          title='Auto generated'
                           type="text"
                           className="form-control exp-input-field"
                           value={TotalTax}
@@ -4174,7 +4065,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                         <label htmlFor="roundOff" className="">Round Off</label>
                         <input
                           id="roundOff"
-                          title='Auto generated'
                           type="text"
                           className="form-control exp-input-field"
                           value={round_difference}
@@ -4187,7 +4077,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                         <label htmlFor="totalBillAmount" className="">Total Bill Amount</label>
                         <input
                           id="totalBillAmount"
-                          title='Auto generated'
                           type="text"
                           className="form-control exp-input-field"
                           value={TotalBill}
@@ -4198,21 +4087,19 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                   </div>
                   <div className="row">
                   <div className="col-md-6 mb-2">
-                    <label htmlFor="totalBillAmount" className="">Item Code</label>
                     <div className="exp-form-floating">
-                      <div title="Please select the Item Code">
+                      <label htmlFor="totalBillAmount" className="">Item Code</label>
                       <Select
                         id="salesMode"
                         className="exp-input-field"
                         placeholder=""
                         required
-                        title="Select the Item Code"
+                        title="Please select the item code"
                         value={selectedItem}
                         onChange={handleChangeItem}
                         options={filteredOptionItem}
                         styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                       />
-                      </div>
                     </div>
                   </div>
                   <div className="d-none">
@@ -4261,14 +4148,12 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                   <icon
                     type="button"
                     className="popups-btn"
-                    title="Add Row"
                     onClick={handleAddRow}>
                     <FontAwesomeIcon icon={faPlus} />
                   </icon>
                   <icon
                     type="button"
                     className="popups-btn"
-                    title="Remove Row"
                     onClick={handleRemoveRow}>
                     <FontAwesomeIcon icon={faMinus} />
                   </icon>
@@ -4319,9 +4204,8 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
               <div className="d-flex justify-content-start">
                 <h1 align="left" className="purbut me-5" >Deleted Sales</h1>
               </div>
-              <div className="col-md-1 form-group mb-2" >
+              <div className="col-md-1 form-group mb-2">
                 <div class="exp-form-floating">
-                  <div title="Select the Screen">
                   <Select
                     id="returnType"
                     className="exp-input-field"
@@ -4333,7 +4217,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                     data-tip="Please select a default warehouse"
                     styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                   />
-                </div>
                 </div>
               </div>
             </div>
@@ -4356,7 +4239,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                         className="exp-input-field form-control justify-content-start"
                         id='saleReferNo'
                         required
-                        title="Enter the Bill No"
                         value={refNo}
                         onChange={handleDeletedRerNo}
                         onKeyPress={handleKeyDelete}
@@ -4380,7 +4262,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                       <input
                         className="exp-input-field form-control"
                         id='customercode'
-                        title='Auto generated'
                         required
                         value={deleteCustomerCode}
                         autoComplete="off"
@@ -4396,7 +4277,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                       className="exp-input-field form-control"
                       id="customername"
                       required
-                      title='Auto generated'
                       value={deleteCustomerName}
                       readOnly
                     />
@@ -4411,7 +4291,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                       className="exp-input-field form-control"
                       placeholder=""
                       required
-                      title='Auto generated'
                       isDisabled={true}
                       autoComplete="off"
                     />
@@ -4425,7 +4304,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                       value={deleteSalesType}
                       className="exp-input-field form-control"
                       placeholder=""
-                      title='Auto generated'
                       required
                       isDisabled={true}
                       autoComplete="off"
@@ -4438,7 +4316,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                     <input
                       id="ordertype"
                       value={deleteOrderType}
-                      title='Auto generated'
                       className="exp-input-field form-control"
                       placeholder=""
                       required
@@ -4456,7 +4333,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                       className="exp-input-field form-control"
                       type="date"
                       placeholder=""
-                      title='Auto generated'
                       required
                       readOnly
                       value={deleteBillDate}
@@ -4474,7 +4350,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                       className="exp-input-field form-control"
                       placeholder=""
                       required
-                      title='Auto generated'
                       readOnly
                       value={deleteDelvychellanno}
                       autoComplete="off"
@@ -4489,7 +4364,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                       className="exp-input-field form-control"
                       placeholder=""
                       required
-                      title='Auto generated'
                       readOnly
                       value={deletedSalesMode}
                     />
@@ -4512,7 +4386,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                         className="exp-input-field form-control input"
                         placeholder=""
                         required
-                        title='Auto generated'
                         readOnly
                         value={deletedPaidAmount}
                         autoComplete="off"
@@ -4529,7 +4402,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                         className="exp-input-field form-control input"
                         placeholder=""
                         required
-                        title='Auto generated'
                         readOnly
                         value={deletedReturnAmount}
                         autoComplete="off"
@@ -4547,7 +4419,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                         type="text"
                         placeholder=""
                         required
-                        title='Auto generated'
                         value={deleteTotalsales}
                         readOnly
                         autoComplete="off"
@@ -4563,7 +4434,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                         text="text"
                         className="exp-input-field form-control"
                         placeholder=""
-                        title='Auto generated'
                         required
                         value={deleteTotalTax}
                         readOnly
@@ -4583,7 +4453,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                         className="exp-input-field form-control"
                         placeholder=""
                         required
-                        title='Auto generated'
                         value={deleteRoundedDifference}
                         readOnly
                         autoComplete="off"
@@ -4599,7 +4468,6 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
                         type="text"
                         className="exp-input-field form-control"
                         placeholder=""
-                        title='Auto generated'
                         required
                         value={deleteTotalBill}
                         readOnly
