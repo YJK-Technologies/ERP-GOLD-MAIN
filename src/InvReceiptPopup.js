@@ -225,6 +225,34 @@ export default function InvReceiptPopup({ open, handleClose, InvReceiptData }) {
     setRowData([]);
   }
 
+  const handleRowDoubleClick = (params) => {
+    const row = params.data;
+
+    if (!row) return;
+
+    const selectedData = [{
+      ReceiptID: row.ReceiptID,
+      DateReceived: row.DateReceived,
+      Receipt_Type: row.Receipt_Type,
+      Warehouse: row.Warehouse,
+      Supplier: row.Supplier,
+      PurchaseOrderID: row.PurchaseOrderID,
+      ItemSNo: row.ItemSNo,
+      ItemCode: row.ItemCode,
+      ItemName: row.ItemName,
+      QuantityReceived: row.QuantityReceived,
+      Condition: row.Condition,
+      ReceivedBy: row.ReceivedBy,
+      ApprovalStatus: row.ApprovalStatus,
+      Notes: row.Notes,
+    }];
+
+    InvReceiptData(selectedData);
+    handleClose();
+    clearInputs([]);
+    setRowData([]);
+  };
+
   return (
     <div>
       {open && (
@@ -318,6 +346,7 @@ export default function InvReceiptPopup({ open, handleClose, InvReceiptData }) {
                             rowSelection="single"
                             pagination='true'
                             onSelectionChanged={handleRowSelected}
+                            onRowDoubleClicked={handleRowDoubleClick}
                           />
                         </div>
                       </div>
@@ -410,6 +439,7 @@ export default function InvReceiptPopup({ open, handleClose, InvReceiptData }) {
                               rowSelection="single"
                               pagination='true'
                               onSelectionChanged={handleRowSelected}
+                              onRowDoubleClicked={handleRowDoubleClick}
                             />
                           </div>
                         </div>

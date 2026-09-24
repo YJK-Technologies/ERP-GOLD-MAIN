@@ -132,66 +132,66 @@ export default function ItemPopup({ open, handleClose, handleItem }) {
   const [loading, setLoading] = useState(false);
 
   // For Dropdown field
-    const [selected, setSelected] = useState(null);
-      const [purchasedrop, setPurchasedrop] = useState([]);
-    
-      const [selectedPay, setselectedPay] = useState('');
-      const [paydrop, setPaydrop] = useState([]);
-  
-    const handleChangePurchase = (selected) => {
-      setSelected(selected);
-      setpurchase_type(selected ? selected.value : '');
-    };
-  
-    const filteredOptionPurchase = purchasedrop.map((option) => ({
-      value: option.attributedetails_name,
-      label: option.attributedetails_name,
-    }));
-  
-    const handleChangePay = (selectedPay) => {
-      setselectedPay(selectedPay);
-      setpay_type(selectedPay ? selectedPay.value : '');
-    };
-  
-    const filteredOptionPay = paydrop.map((option) => ({
-      value: option.attributedetails_name,
-      label: option.attributedetails_name,
-    }));
-  
-    useEffect(() => {
-      const companyCode = sessionStorage.getItem('selectedCompanyCode');
-  
-      fetch(`${config.apiBaseUrl}/paytype`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          company_code: companyCode,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => setPaydrop(data))
-        .catch((error) => console.error("Error fetching payment types:", error));
-  
-      fetch(`${config.apiBaseUrl}/purchasetype`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          company_code: companyCode,
-        }),
-      })
-  
-        .then((response) => response.json())
-        .then((data) => setPurchasedrop(data))
-        .catch((error) => console.error("Error fetching purchase types:", error));
-  
-    }, []);
+  const [selected, setSelected] = useState(null);
+  const [purchasedrop, setPurchasedrop] = useState([]);
+
+  const [selectedPay, setselectedPay] = useState('');
+  const [paydrop, setPaydrop] = useState([]);
+
+  const handleChangePurchase = (selected) => {
+    setSelected(selected);
+    setpurchase_type(selected ? selected.value : '');
+  };
+
+  const filteredOptionPurchase = purchasedrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  const handleChangePay = (selectedPay) => {
+    setselectedPay(selectedPay);
+    setpay_type(selectedPay ? selectedPay.value : '');
+  };
+
+  const filteredOptionPay = paydrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  useEffect(() => {
+    const companyCode = sessionStorage.getItem('selectedCompanyCode');
+
+    fetch(`${config.apiBaseUrl}/paytype`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        company_code: companyCode,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setPaydrop(data))
+      .catch((error) => console.error("Error fetching payment types:", error));
+
+    fetch(`${config.apiBaseUrl}/purchasetype`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        company_code: companyCode,
+      }),
+    })
+
+      .then((response) => response.json())
+      .then((data) => setPurchasedrop(data))
+      .catch((error) => console.error("Error fetching purchase types:", error));
+
+  }, []);
 
   const handleSearch = async () => {
-        setLoading(true);
+    setLoading(true);
 
     try {
       const response = await fetch(`${config.apiBaseUrl}/getpursearchdata`, {
@@ -199,8 +199,10 @@ export default function ItemPopup({ open, handleClose, handleItem }) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code:sessionStorage.getItem("selectedCompanyCode"), 
-          transaction_no, transaction_date, vendor_code, vendor_name, purchase_type: purchase_type, pay_type: pay_type }) // Send company_no and company_name as search criteria
+        body: JSON.stringify({
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          transaction_no, transaction_date, vendor_code, vendor_name, purchase_type: purchase_type, pay_type: pay_type
+        }) // Send company_no and company_name as search criteria
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -213,11 +215,11 @@ export default function ItemPopup({ open, handleClose, handleItem }) {
         clearInputs([])
         console.log("Data not found");
       } else {
-        console.log("Bad request"); 
+        console.log("Bad request");
       }
     } catch (error) {
       console.error("Error fetching search data:", error);
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -266,12 +268,37 @@ export default function ItemPopup({ open, handleClose, handleItem }) {
     setSelectedRows([]);
   }
 
+  const handleRowDoubleClick = (params) => {
+    const row = params.data;
+
+    if (!row) return;
+
+    const selectedData = [{
+      TransactionNo: row.transaction_no,
+      TransactionDate: row.transaction_date,
+      PurchaseType: row.purchase_type,
+      PayType: row.pay_type,
+      TotalTax: row.tax_amount,
+      TotalAmount: row.total_amount,
+      VendorName: row.vendor_name,
+      Amount: row.purchase_amount,
+      Vendorcode: row.vendor_code,
+      Entrydate: row.Entry_date
+    }];
+
+    handleItem(selectedData);
+    handleClose();
+    clearInputs([]);
+    setRowData([]);
+    setSelectedRows([]);
+  };
+
   return (
     <div>
       {open && (
         <fieldset>
           <div>
-                    {loading && <LoadingScreen />}
+            {loading && <LoadingScreen />}
             <div className="purbut">
               <div className="modal mt-5 Topnav-screen popup popupadj" tabIndex="-1" role="dialog" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
                 <div className="modal-dialog modal-xl ps-5 p-1 pe-5" role="document">
@@ -282,7 +309,7 @@ export default function ItemPopup({ open, handleClose, handleItem }) {
                           <div className="purbut mb-0 d-flex justify-content-between" >
                             <h1 align="left" className="purbut">Purchase Help</h1>
                             <button onClick={handleClose} className="purbut btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
-                            <i class="fa-solid fa-xmark"></i>
+                              <i class="fa-solid fa-xmark"></i>
                             </button>
                           </div>
                           <div class="d-flex justify-content-between">
@@ -399,6 +426,7 @@ export default function ItemPopup({ open, handleClose, handleItem }) {
                             rowSelection="multiple"
                             pagination='true'
                             onSelectionChanged={handleRowSelected}
+                            onRowDoubleClicked={handleRowDoubleClick}
                           />
                         </div>
                       </div>
@@ -419,7 +447,7 @@ export default function ItemPopup({ open, handleClose, handleItem }) {
                           </div>
                           <div className="mb-0 d-flex justify-content-end" >
                             <button onClick={handleClose} className="closebtn2" required title="Close">
-                            <i class="fa-solid fa-xmark"></i>
+                              <i class="fa-solid fa-xmark"></i>
                             </button>
                           </div>
                         </div>
@@ -531,6 +559,7 @@ export default function ItemPopup({ open, handleClose, handleItem }) {
                               rowSelection="multiple"
                               pagination='true'
                               onSelectionChanged={handleRowSelected}
+                              onRowDoubleClicked={handleRowDoubleClick}
                             />
                           </div>
                         </div>

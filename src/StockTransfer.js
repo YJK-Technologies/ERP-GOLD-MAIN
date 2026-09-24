@@ -174,7 +174,7 @@ function StockTransfer() {
   };
 
 
-    
+
 
 
   //ITEM CODE TO SEARCH IN AG GRID
@@ -249,75 +249,45 @@ function StockTransfer() {
 
   // };
 
-const handleItemCode = async (params) => {
-  const company_code = sessionStorage.getItem("selectedCompanyCode");
+  const handleItemCode = async (params) => {
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
-  const enteredItemCode = params.data.itemCode?.trim();
-  const serialNumber = params.data.serialNumber;
+    const enteredItemCode = params.data.itemCode?.trim();
+    const serialNumber = params.data.serialNumber;
 
-  if (!enteredItemCode) {
-    return false;
-  }
+    if (!enteredItemCode) {
+      return false;
+    }
 
-  setLoading(true);
+    setLoading(true);
 
-  try {
-    const response = await fetch(
-      `${config.apiBaseUrl}/getitemcodepurdata`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          company_code,
-          Item_code: enteredItemCode
-        })
-      }
-    );
-
-    if (response.ok) {
-      const searchData = await response.json();
-
-      console.log("Item API Response:", searchData);
-
-      if (!searchData || searchData.length === 0) {
-        toast.warning("Data Not Found");
-
-        setRowData(prevRowData =>
-          prevRowData.map(row =>
-            row.serialNumber === serialNumber
-              ? {
-                  ...row,
-                  itemCode: "",
-                  itemName: "",
-                  unitWeight: 0,
-                  purchaseAmt: 0,
-                  taxType: "",
-                  taxDetails: "",
-                  taxPer: "",
-                  warehouse: ""
-                }
-              : row
-          )
-        );
-
-        return false;
-      }
-
-      const matchedItem = searchData.find(
-        item =>
-          item.Item_code?.trim().toLowerCase() ===
-          enteredItemCode.toLowerCase()
+    try {
+      const response = await fetch(
+        `${config.apiBaseUrl}/getitemcodepurdata`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            company_code,
+            Item_code: enteredItemCode
+          })
+        }
       );
 
-      if (!matchedItem) {
-        toast.warning("Item Code Not Found");
+      if (response.ok) {
+        const searchData = await response.json();
 
-        setRowData(prevRowData =>
-          prevRowData.map(row =>
-            row.serialNumber === serialNumber
-              ? {
+        console.log("Item API Response:", searchData);
+
+        if (!searchData || searchData.length === 0) {
+          toast.warning("Data Not Found");
+
+          setRowData(prevRowData =>
+            prevRowData.map(row =>
+              row.serialNumber === serialNumber
+                ? {
                   ...row,
                   itemCode: "",
                   itemName: "",
@@ -328,19 +298,49 @@ const handleItemCode = async (params) => {
                   taxPer: "",
                   warehouse: ""
                 }
-              : row
-          )
+                : row
+            )
+          );
+
+          return false;
+        }
+
+        const matchedItem = searchData.find(
+          item =>
+            item.Item_code?.trim().toLowerCase() ===
+            enteredItemCode.toLowerCase()
         );
 
-        return false;
-      }
+        if (!matchedItem) {
+          toast.warning("Item Code Not Found");
 
-      // IMPORTANT:
-      // Always use the latest rowData state
-      setRowData(prevRowData =>
-        prevRowData.map(row =>
-          row.serialNumber === serialNumber
-            ? {
+          setRowData(prevRowData =>
+            prevRowData.map(row =>
+              row.serialNumber === serialNumber
+                ? {
+                  ...row,
+                  itemCode: "",
+                  itemName: "",
+                  unitWeight: 0,
+                  purchaseAmt: 0,
+                  taxType: "",
+                  taxDetails: "",
+                  taxPer: "",
+                  warehouse: ""
+                }
+                : row
+            )
+          );
+
+          return false;
+        }
+
+        // IMPORTANT:
+        // Always use the latest rowData state
+        setRowData(prevRowData =>
+          prevRowData.map(row =>
+            row.serialNumber === serialNumber
+              ? {
                 ...row,
                 itemCode: matchedItem.Item_code,
                 itemName: matchedItem.Item_name,
@@ -351,25 +351,25 @@ const handleItemCode = async (params) => {
                 taxPer: matchedItem.combined_tax_percent,
                 warehouse: matchedItem.warehouse || ""
               }
-            : row
-        )
-      );
+              : row
+          )
+        );
 
-      console.log(
-        "Item fetched successfully:",
-        matchedItem
-      );
+        console.log(
+          "Item fetched successfully:",
+          matchedItem
+        );
 
-      return true;
-    }
+        return true;
+      }
 
-    if (response.status === 404) {
-      toast.warning("Data Not Found");
+      if (response.status === 404) {
+        toast.warning("Data Not Found");
 
-      setRowData(prevRowData =>
-        prevRowData.map(row =>
-          row.serialNumber === serialNumber
-            ? {
+        setRowData(prevRowData =>
+          prevRowData.map(row =>
+            row.serialNumber === serialNumber
+              ? {
                 ...row,
                 itemCode: "",
                 itemName: "",
@@ -380,30 +380,30 @@ const handleItemCode = async (params) => {
                 taxPer: "",
                 warehouse: ""
               }
-            : row
-        )
+              : row
+          )
+        );
+
+        return false;
+      }
+
+      toast.error("There was an issue fetching the item.");
+
+      return false;
+
+    } catch (error) {
+      console.error("Error fetching item data:", error);
+
+      toast.error(
+        "An error occurred while fetching the item data."
       );
 
       return false;
+
+    } finally {
+      setLoading(false);
     }
-
-    toast.error("There was an issue fetching the item.");
-
-    return false;
-
-  } catch (error) {
-    console.error("Error fetching item data:", error);
-
-    toast.error(
-      "An error occurred while fetching the item data."
-    );
-
-    return false;
-
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
 
   const handleWarehouseCodeFrom = async (params) => {
@@ -414,7 +414,7 @@ const handleItemCode = async (params) => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ warehouse_code: params.data.warehouse, company_code: sessionStorage.getItem('selectedCompanyCode')})
+        body: JSON.stringify({ warehouse_code: params.data.warehouse, company_code: sessionStorage.getItem('selectedCompanyCode') })
       });
 
       if (response.ok) {
@@ -451,19 +451,19 @@ const handleItemCode = async (params) => {
         console.log(updatedRowData);
       } else if (response.status === 404) {
         toast.warning('Data not found!', {
-                  onClose: () => {
-          // Remove text from the field
-          const updatedRowData = rowData.map(row => {
-            if (row.itemCode === params.data.itemCode) {
-              return {
-                ...row,
-                warehouse: ''
-              };
-            }
-            return row;
-          });
-          setRowData(updatedRowData);
-        }
+          onClose: () => {
+            // Remove text from the field
+            const updatedRowData = rowData.map(row => {
+              if (row.itemCode === params.data.itemCode) {
+                return {
+                  ...row,
+                  warehouse: ''
+                };
+              }
+              return row;
+            });
+            setRowData(updatedRowData);
+          }
         });
       } else {
         console.log("Bad request");
@@ -524,19 +524,19 @@ const handleItemCode = async (params) => {
         console.log(updatedRowData);
       } else if (response.status === 404) {
         toast.warning('Data not found!', {
-                  onClose: () => {
-          // Remove text from the field
-          const updatedRowData = rowData.map(row => {
-            if (row.itemCode === params.data.itemCode) {
-              return {
-                ...row,
-                warehouseTo: ''
-              };
-            }
-            return row;
-          });
-          setRowData(updatedRowData);
-        }
+          onClose: () => {
+            // Remove text from the field
+            const updatedRowData = rowData.map(row => {
+              if (row.itemCode === params.data.itemCode) {
+                return {
+                  ...row,
+                  warehouseTo: ''
+                };
+              }
+              return row;
+            });
+            setRowData(updatedRowData);
+          }
         });
       } else {
         console.log("Bad request");
@@ -2088,65 +2088,65 @@ const handleItemCode = async (params) => {
     }
   };
 
-useEffect(() => {
-        const handleKeyDown = (e) => {
-          // 1. Ensure keys only trigger on F-keys
-          if (!['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F8'].includes(e.key)) {
-            return;
-          }
-    
-          // 2. Prevent default browser shortcut actions (e.g., F1 Help, F5 Refresh)
-          e.preventDefault();
-          e.stopPropagation();
-    
-          // 3. Prevent execution if screen is currently loading
-          if (loading) return;
-    
-          switch (e.key) {
-            case 'F1':
-              // Open Item Search Popup
-              setOpen(true); 
-              break;
-    
-            case 'F3':
-              // New / Reset Sales Invoice Form
-              if (window.confirm("Start a new adjustment? Unsaved changes will be lost.")) {
-                handleReload(); 
-              }
-              break;  
-    
-            case 'F4':
-              // Save / Complete Invoice (Same logic as Save Button)
-              handleSaveButtonClick(); 
-              break;
-    
-            case 'F5':
-              // Search Existing Invoices to Edit
-              setOpen1(true); 
-              break;
-    
-            case 'F6':
-              // Delete selected line item in AG Grid
-              if ( transaction_no) {
-                handleDeleteButtonClick();
-              } else {
-                alert("Please save the invoice before deleting.");
-              }
-              break;
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // 1. Ensure keys only trigger on F-keys
+      if (!['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F8'].includes(e.key)) {
+        return;
+      }
 
-            default:
-              break;
+      // 2. Prevent default browser shortcut actions (e.g., F1 Help, F5 Refresh)
+      e.preventDefault();
+      e.stopPropagation();
+
+      // 3. Prevent execution if screen is currently loading
+      if (loading) return;
+
+      switch (e.key) {
+        case 'F1':
+          // Open Item Search Popup
+          setOpen(true);
+          break;
+
+        case 'F3':
+          // New / Reset Sales Invoice Form
+          if (window.confirm("Start a new adjustment? Unsaved changes will be lost.")) {
+            handleReload();
           }
-        };
-    
-        // Attach listener
-        window.addEventListener('keydown', handleKeyDown);
-    
-        // Clean up listener on unmount
-        return () => {
-          window.removeEventListener('keydown', handleKeyDown);
-        };
-      }, [loading,transaction_no, rowData]);
+          break;
+
+        case 'F4':
+          // Save / Complete Invoice (Same logic as Save Button)
+          handleSaveButtonClick();
+          break;
+
+        case 'F5':
+          // Search Existing Invoices to Edit
+          setOpen1(true);
+          break;
+
+        case 'F6':
+          // Delete selected line item in AG Grid
+          if (transaction_no) {
+            handleDeleteButtonClick();
+          } else {
+            alert("Please save the invoice before deleting.");
+          }
+          break;
+
+        default:
+          break;
+      }
+    };
+
+    // Attach listener
+    window.addEventListener('keydown', handleKeyDown);
+
+    // Clean up listener on unmount
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [loading, transaction_no, rowData]);
   return (
     <div className="container-fluid Topnav-screen">
       <div>
@@ -2358,34 +2358,34 @@ useEffect(() => {
               onRowSelected={onRowSelected}
             /> */}
             <AgGridReact
-  columnDefs={activeTable === 'myTable' ? columnDefs : columnDefsTax}
-  rowData={activeTable === 'myTable' ? rowData : rowDataTax}
-  defaultColDef={{
-    editable: true,
-    resizable: true
-  }}
+              columnDefs={activeTable === 'myTable' ? columnDefs : columnDefsTax}
+              rowData={activeTable === 'myTable' ? rowData : rowDataTax}
+              defaultColDef={{
+                editable: true,
+                resizable: true
+              }}
 
-  onCellValueChanged={async (event) => {
+              onCellValueChanged={async (event) => {
 
-    // When Item Code changes
-    if (event.colDef.field === "itemCode") {
-      await handleItemCode(event);
-      return;
-    }
+                // When Item Code changes
+                if (event.colDef.field === "itemCode") {
+                  await handleItemCode(event);
+                  return;
+                }
 
-    // For Qty and other fields
-    await ItemAmountCalculation(event);
+                // For Qty and other fields
+                await ItemAmountCalculation(event);
 
-    handleCellValueChanged(event);
-  }}
+                handleCellValueChanged(event);
+              }}
 
-  onGridReady={onGridReady}
-  onRowClicked={handleRowClicked}
-  onColumnMoved={onColumnMoved}
-  RowData={gridData}
-  onRowSelected={onRowSelected}
-  
-/>
+              onGridReady={onGridReady}
+              onRowClicked={handleRowClicked}
+              onColumnMoved={onColumnMoved}
+              RowData={gridData}
+              onRowSelected={onRowSelected}
+
+            />
           </div>
         </div>
         <div>

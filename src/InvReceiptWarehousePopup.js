@@ -7,7 +7,7 @@ import "ag-grid-enterprise";
 import 'ag-grid-autocomplete-editor/dist/main.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
-import { ToastContainer,toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import LoadingScreen from './Loading';
 import Select from "react-select";
 
@@ -73,14 +73,14 @@ export default function InventoryReceiptWarehousePopup({ open, handleClose, hand
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({  company_code : sessionStorage.getItem('selectedCompanyCode'),warehouse_code, warehouse_name, status, location_no }) // Send company_no and company_name as search criteria
+        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), warehouse_code, warehouse_name, status, location_no }) // Send company_no and company_name as search criteria
       });
       if (response.ok) {
         const searchData = await response.json();
         setRowData(searchData);
         console.log("data fetched successfully")
       } else if (response.status === 404) {
-     
+
         toast.error("Data not found!").then(() => {
           setRowData([]);
           clearInputs([])
@@ -96,13 +96,13 @@ export default function InventoryReceiptWarehousePopup({ open, handleClose, hand
     }
   };
 
-    useEffect(() => {
+  useEffect(() => {
     fetch(`${config.apiBaseUrl}/locationno`)
       .then((data) => data.json())
       .then((val) => setLocationdrop(val));
   }, []);
 
-    const handleChangeLocation = (selectedLocation) => {
+  const handleChangeLocation = (selectedLocation) => {
     setSelectedLocation(selectedLocation);
     setlocation_no(selectedLocation ? selectedLocation.value : '');
 
@@ -123,17 +123,17 @@ export default function InventoryReceiptWarehousePopup({ open, handleClose, hand
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-    const filteredOptionStatus = statusdropDown.map((option) => ({
+  const filteredOptionStatus = statusdropDown.map((option) => ({
     value: option.attributedetails_name,
     label: option.attributedetails_name,
   }));
 
-    const filteredOptionLocation = locationnodrop.map((option) => ({
+  const filteredOptionLocation = locationnodrop.map((option) => ({
     value: option.location_no,
     label: option.location_no,
   }));
 
-    const handleChangeStatus = (selectedStatus) => {
+  const handleChangeStatus = (selectedStatus) => {
     setSelectedStatus(selectedStatus);
     setstatus(selectedStatus ? selectedStatus.value : "");
   };
@@ -155,29 +155,50 @@ export default function InventoryReceiptWarehousePopup({ open, handleClose, hand
   // }
 
   const handleConfirm1 = () => {
-  
+
     // Check whether a warehouse row is selected
     if (selectedRows.length === 0) {
       toast.warning("Please select a warehouse.");
       return;
     }
-  
+
     // Get the selected warehouse row
     const selectedWarehouse = selectedRows[0];
-  
+
     // Validate warehouse status
     if (selectedWarehouse.status?.toLowerCase() !== "active") {
       toast.warning("The selected warehouse is not active.");
       return;
     }
-  
+
     // Only active warehouse will reach here
     const selectedData1 = selectedRows.map(row => ({
       warehouse: row.warehouse_code
     }));
-  
+
     handleWarehouse(selectedData1);
-  
+
+    handleClose();
+    clearInputs();
+    setRowData([]);
+    setSelectedRows([]);
+  };
+
+  const handleRowDoubleClick = (params) => {
+    const row = params.data;
+    if (!row) return;
+
+    if (String(row.status ?? "").trim().toLowerCase() !== "active") {
+      toast.warning("The selected item is not active.");
+      return;
+    }
+
+    const selectedData = [{
+      warehouse: row.warehouse_code
+    }];
+
+    console.log('Selected Data (Double Click):', selectedData);
+    handleWarehouse(selectedData);
     handleClose();
     clearInputs();
     setRowData([]);
@@ -214,7 +235,7 @@ export default function InventoryReceiptWarehousePopup({ open, handleClose, hand
                           <div className="purbut mb-0 d-flex justify-content-between" >
                             <h1 align="left" className="purbut">Warehouse Help</h1>
                             <button onClick={handleClose} className="purbut btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
-                            <i class="fa-solid fa-xmark"></i>
+                              <i class="fa-solid fa-xmark"></i>
                             </button>
                           </div>
                           <div class="d-flex justify-content-between">
@@ -265,31 +286,31 @@ export default function InventoryReceiptWarehousePopup({ open, handleClose, hand
                             />
                           </div> */}
                           <div className="col-sm mb-2">
-                              <div title="Select the Status ">
-                                <Select
-                                  id="ahsts"
-                                  value={selectedStatus}
-                                  onChange={handleChangeStatus}
-                                  options={filteredOptionStatus}
-                                  className="exp-input-field"
-                                  placeholder="Status"
-                                  isClearable
-                                />
-                              </div>
-                          </div>                          
+                            <div title="Select the Status ">
+                              <Select
+                                id="ahsts"
+                                value={selectedStatus}
+                                onChange={handleChangeStatus}
+                                options={filteredOptionStatus}
+                                className="exp-input-field"
+                                placeholder="Status"
+                                isClearable
+                              />
+                            </div>
+                          </div>
                           <div className="col-sm mb-2">
-                              <div title="Select the Location ">
-                                <Select
-                                  id="ahsts"
-                                  value={selectedLocation}
-                                  onChange={handleChangeLocation}
-                                  options={filteredOptionLocation}
-                                  className="exp-input-field"
-                                  placeholder="Location No"
-                                  isClearable
-                                />
-                              </div>
-                          </div>                          
+                            <div title="Select the Location ">
+                              <Select
+                                id="ahsts"
+                                value={selectedLocation}
+                                onChange={handleChangeLocation}
+                                options={filteredOptionLocation}
+                                className="exp-input-field"
+                                placeholder="Location No"
+                                isClearable
+                              />
+                            </div>
+                          </div>
                           {/* <div className="col-sm mb-2">
                             <input
                               type='text'
@@ -323,6 +344,7 @@ export default function InventoryReceiptWarehousePopup({ open, handleClose, hand
                             rowSelection="single"
                             pagination
                             onSelectionChanged={handleRowSelected}
+                            onRowDoubleClicked={handleRowDoubleClick}
                           />
                         </div>
                       </div>
@@ -344,7 +366,7 @@ export default function InventoryReceiptWarehousePopup({ open, handleClose, hand
                           </div>
                           <div className="mb-0 d-flex justify-content-end" >
                             <button onClick={handleClose} className="closebtn2" required title="Close">
-                            <i class="fa-solid fa-xmark"></i>
+                              <i class="fa-solid fa-xmark"></i>
                             </button>
                           </div>
                         </div>
@@ -392,31 +414,31 @@ export default function InventoryReceiptWarehousePopup({ open, handleClose, hand
                             />
                           </div> */}
                           <div className="col-sm mb-2">
-                              <div title="Select the Status ">
-                                <Select
-                                  id="ahsts"
-                                  value={selectedStatus}
-                                  onChange={handleChangeStatus}
-                                  options={filteredOptionStatus}
-                                  className="exp-input-field"
-                                  placeholder="Status"
-                                  isClearable
-                                />
-                              </div>
+                            <div title="Select the Status ">
+                              <Select
+                                id="ahsts"
+                                value={selectedStatus}
+                                onChange={handleChangeStatus}
+                                options={filteredOptionStatus}
+                                className="exp-input-field"
+                                placeholder="Status"
+                                isClearable
+                              />
+                            </div>
                           </div>
                           <div className="col-sm mb-2">
-                              <div title="Select the Location ">
-                                <Select
-                                  id="ahsts"
-                                  value={selectedLocation}
-                                  onChange={handleChangeLocation}
-                                  options={filteredOptionLocation}
-                                  className="exp-input-field"
-                                  placeholder="Location No"
-                                  isClearable
-                                />
-                              </div>
-                          </div>                            
+                            <div title="Select the Location ">
+                              <Select
+                                id="ahsts"
+                                value={selectedLocation}
+                                onChange={handleChangeLocation}
+                                options={filteredOptionLocation}
+                                className="exp-input-field"
+                                placeholder="Location No"
+                                isClearable
+                              />
+                            </div>
+                          </div>
                           {/* <div className="col-sm mb-2">
                             <input
                               type='text'
@@ -448,6 +470,7 @@ export default function InventoryReceiptWarehousePopup({ open, handleClose, hand
                               rowSelection="single"
                               pagination
                               onSelectionChanged={handleRowSelected}
+                              onRowDoubleClicked={handleRowDoubleClick}
                             />
                           </div>
                         </div>

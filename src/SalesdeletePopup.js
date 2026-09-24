@@ -160,7 +160,7 @@ export default function SalesDeletedPopup({ open, handleClose, handleDeletedData
   const [order_type, setorder_type] = useState("");
   const [loading, setLoading] = useState(false);
   const handleSearchItem = async () => {
-        setLoading(true);
+    setLoading(true);
     try {
       const response = await fetch(`${config.apiBaseUrl}/getsalesdelsearchdata`, {
         method: "POST",
@@ -174,16 +174,16 @@ export default function SalesDeletedPopup({ open, handleClose, handleDeletedData
         setRowData(searchData);
         console.log("data fetched successfully")
       } else if (response.status === 404) {
-          toast.warning("Data not found")
-                  setRowData([]);
-                  clearInputs([])
+        toast.warning("Data not found")
+        setRowData([]);
+        clearInputs([])
         console.log("Data not found"); // Log the message for 404 Not Found
       } else {
         console.log("Bad request"); // Log the message for other errors
       }
     } catch (error) {
       console.error("Error fetching search data:", error);
-    }finally {
+    } finally {
       setLoading(false);
     }
 
@@ -239,6 +239,36 @@ export default function SalesDeletedPopup({ open, handleClose, handleDeletedData
     setSelectedRows([]);
   }
 
+  const handleRowDoubleClick = (params) => {
+    const row = params.data;
+
+    if (!row) return;
+
+    const selectedData = [{
+      BillNo: row.bill_no,
+      BillDate: row.bill_date,
+      SalesType: row.sales_type,
+      PayType: row.pay_type,
+      TotalTax: row.tax_amount,
+      TotalAmount: row.bill_amt,
+      CustomerName: row.customer_name,
+      SaleAmount: row.sale_amt,
+      CustomerCode: row.customer_code,
+      RoundOff: row.roff_amt,
+      OrderType: row.order_type,
+      DCNo: row.dely_chlno,
+      PaidAmount: row.paid_amount,
+      ReturnAmount: row.return_amount,
+      SalesMode: row.sales_mode,
+    }];
+
+    handleDeletedData(selectedData);
+    handleClose();
+    clearInputs([]);
+    setRowData([]);
+    setSelectedRows([]);
+  };
+
 
   return (
     <div>
@@ -256,7 +286,7 @@ export default function SalesDeletedPopup({ open, handleClose, handleDeletedData
                           <div className="purbut mb-0 d-flex justify-content-between" >
                             <h1 align="left" className="purbut">Deleted Sales Help</h1>
                             <button onClick={handleClose} className="purbut btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
-                            <i class="fa-solid fa-xmark"></i>
+                              <i class="fa-solid fa-xmark"></i>
                             </button>
                           </div>
                           <div class="d-flex justify-content-between">
@@ -385,6 +415,7 @@ export default function SalesDeletedPopup({ open, handleClose, handleDeletedData
                             rowSelection="single"
                             pagination
                             onSelectionChanged={handleRowSelected}
+                            onRowDoubleClicked={handleRowDoubleClick}
                           />
                         </div>
                       </div>
@@ -405,7 +436,7 @@ export default function SalesDeletedPopup({ open, handleClose, handleDeletedData
                           </div>
                           <div className="mb-0 d-flex justify-content-end" >
                             <button onClick={handleClose} className="closebtn2" required title="Close">
-                            <i class="fa-solid fa-xmark"></i>
+                              <i class="fa-solid fa-xmark"></i>
                             </button>
                           </div>
                         </div>
@@ -533,6 +564,7 @@ export default function SalesDeletedPopup({ open, handleClose, handleDeletedData
                               rowSelection="single"
                               pagination
                               onSelectionChanged={handleRowSelected}
+                              onRowDoubleClicked={handleRowDoubleClick}
                             />
                           </div>
                         </div>
