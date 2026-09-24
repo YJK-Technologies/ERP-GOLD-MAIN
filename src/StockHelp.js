@@ -134,7 +134,7 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
         setRowData(searchData);
         console.log(searchData)
         console.log("data fetched successfully")
-       } 
+      }
       // else if (response.status === 404) {
       //   Swal.fire({
       //     icon: 'error',
@@ -145,17 +145,17 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
       //     clearInputs([])
       //   });
       else if (response.status === 404) {
-              console.log("Data not found");
-              toast.warning("Data not found");
-              setRowData([]);
-              clearInputs([])
+        console.log("Data not found");
+        toast.warning("Data not found");
+        setRowData([]);
+        clearInputs([])
         console.log("Data not found"); // Log the message for 404 Not Found
       } else {
         console.log("Bad request"); // Log the message for other errors
       }
     } catch (error) {
       console.error("Error fetching search data:", error);
-    }finally {
+    } finally {
       setLoading(false);
     }
 
@@ -194,13 +194,30 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
     setRowData([])
   }
 
+  const handleRowDoubleClick = (params) => {
+    const row = params.data;
+
+    if (!row) return;
+
+    const selectedData = [{
+      TransactionNo: row.transaction_no,
+      TransactionDate: row.transaction_date,
+      itemCode: row.item_code,
+    }];
+
+    handlePurchaseData(selectedData);
+    handleClose();
+    clearInputs([])
+    setRowData([])
+  };
+
   return (
     <div>
       {open && (
         <fieldset>
           <div>
             <div className="purbut">
-                    {loading && <LoadingScreen />}
+              {loading && <LoadingScreen />}
               <div className="modal mt-5 Topnav-screen popup popupadj" tabIndex="-1" role="dialog" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
                 <div className="modal-dialog modal-xl ps-5 p-1 pe-5" role="document">
                   <div className="modal-content">
@@ -210,7 +227,7 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
                           <div className="purbut mb-0 d-flex justify-content-between" >
                             <h1 align="left" className="purbut">Stock Help</h1>
                             <button onClick={handleClose} className="purbut btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
-                            <i class="fa-solid fa-xmark"></i>
+                              <i class="fa-solid fa-xmark"></i>
                             </button>
                           </div>
                           <div class="d-flex justify-content-between">
@@ -320,6 +337,7 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
                             rowSelection="single"
                             pagination='true'
                             onSelectionChanged={handleRowSelected}
+                            onRowDoubleClicked={handleRowDoubleClick}
                           />
                         </div>
                       </div>
@@ -340,7 +358,7 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
                           </div>
                           <div className="mb-0 d-flex justify-content-end" >
                             <button onClick={handleClose} className="closebtn2" required title="Close">
-                            <i class="fa-solid fa-xmark"></i>
+                              <i class="fa-solid fa-xmark"></i>
                             </button>
                           </div>
                         </div>
@@ -441,6 +459,7 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
                               rowSelection="single"
                               pagination='true'
                               onSelectionChanged={handleRowSelected}
+                              onRowDoubleClicked={handleRowDoubleClick}
                             />
                           </div>
                         </div>

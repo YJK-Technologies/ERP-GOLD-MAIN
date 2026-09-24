@@ -14,19 +14,19 @@ import LoadingScreen from './Loading';
 const config = require('./Apiconfig');
 
 
-  // Function to convert binary data to base64 string
-  const arrayBufferToBase64 = (buffer) => {
-    let binary = '';
-    const bytes = new Uint8Array(buffer);
-    const len = bytes.byteLength;
-    for (let i = 0; i < len; i++) {
-      binary += String.fromCharCode(bytes[i]);
-    }
-    return window.btoa(binary);
-  };
+// Function to convert binary data to base64 string
+const arrayBufferToBase64 = (buffer) => {
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  const len = bytes.byteLength;
+  for (let i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return window.btoa(binary);
+};
 
 
-  const columnDefs = [
+const columnDefs = [
   {
     headerCheckbox: true,
     checkboxSelection: true,
@@ -174,7 +174,7 @@ export default function EmployeeInfoPopup({ open, handleClose, EmployeeInfo }) {
   const [DOB, setDOB] = useState("");
   const [loading, setLoading] = useState('');
 
-  
+
   const handleSearch = async () => {
     setLoading(true);
     try {
@@ -183,9 +183,10 @@ export default function EmployeeInfoPopup({ open, handleClose, EmployeeInfo }) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({EmployeeId, Last_Name, First_Name, DOB,company_code: sessionStorage.getItem('selectedCompanyCode'),
+        body: JSON.stringify({
+          EmployeeId, Last_Name, First_Name, DOB, company_code: sessionStorage.getItem('selectedCompanyCode'),
           Location_Code: sessionStorage.getItem('selectedLocationCode')
-         })
+        })
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -222,11 +223,11 @@ export default function EmployeeInfoPopup({ open, handleClose, EmployeeInfo }) {
         setRowData(updatedData);
         console.log("data fetched successfully")
       } else if (response.status === 404) {
-       toast.error("Data Not found")
-       .then(() => {
-          setRowData([]);
-          clearInputs([])
-        });
+        toast.error("Data Not found")
+          .then(() => {
+            setRowData([]);
+            clearInputs([])
+          });
         console.log("Data not found"); // Log the message for 404 Not Found
       } else {
         console.log("Bad request"); // Log the message for other errors
@@ -280,8 +281,8 @@ export default function EmployeeInfoPopup({ open, handleClose, EmployeeInfo }) {
       Pan_No: row.Pan_No,
       Aadhar_no: row.Aadhar_no,
       Kids: row.Kids,
-      Photos:row.Photos
-     
+      Photos: row.Photos
+
     }));
 
     EmployeeInfo(selectedData);
@@ -289,6 +290,43 @@ export default function EmployeeInfoPopup({ open, handleClose, EmployeeInfo }) {
     clearInputs([]);
     setRowData([]);
   }
+
+  const handleRowDoubleClick = (params) => {
+    const row = params.data;
+
+    if (!row) return;
+
+    const selectedData = [{
+      EmployeeId: row.EmployeeId,
+      DOB: row.DOB,
+      First_Name: row.First_Name,
+      Middle_Name: row.Middle_Name,
+      Last_Name: row.Last_Name,
+      Father_Name: row.father_name,
+      Mother_Name: row.mother_name,
+      Gender: row.Gender,
+      Email: row.email,
+      grade_id: row.Grade_id,
+      phone1: row.phone1,
+      phone2: row.phone2,
+      Address1: row.address1,
+      Address2: row.address2,
+      Address3: row.address3,
+      PermanantAddress: row.PermanantAddress,
+      Reference_Name: row.Reference_name,
+      Reference_Phone: row.Reference_Phone,
+      Marital_Status: row.marital_status,
+      Pan_No: row.Pan_No,
+      Aadhar_no: row.Aadhar_no,
+      Kids: row.Kids,
+      Photos: row.Photos
+    }];
+
+    EmployeeInfo(selectedData);
+    handleClose();
+    clearInputs([]);
+    setRowData([]);
+  };
 
   return (
     <div>
@@ -306,7 +344,7 @@ export default function EmployeeInfoPopup({ open, handleClose, EmployeeInfo }) {
                           <div className="purbut mb-0 d-flex justify-content-between" >
                             <h1 align="left" className="purbut">Employee Info Help</h1>
                             <button onClick={handleClose} className="purbut btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
-                            <i class="fa-solid fa-xmark"></i>
+                              <i class="fa-solid fa-xmark"></i>
                             </button>
                           </div>
                           <div class="d-flex justify-content-between">
@@ -368,7 +406,7 @@ export default function EmployeeInfoPopup({ open, handleClose, EmployeeInfo }) {
                               maxLength={75}
                             />
                           </div>
-                        
+
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <icon className="icon popups-btn" onClick={handleSearch} title="Search">
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
@@ -390,6 +428,7 @@ export default function EmployeeInfoPopup({ open, handleClose, EmployeeInfo }) {
                             paginationAutoPageSize={true}
                             gridOptions={gridOptions}
                             onSelectionChanged={handleRowSelected}
+                            onRowDoubleClicked={handleRowDoubleClick}
                           />
                         </div>
                       </div>
@@ -411,7 +450,7 @@ export default function EmployeeInfoPopup({ open, handleClose, EmployeeInfo }) {
                           </div>
                           <div className="mb-0 d-flex justify-content-end" >
                             <button onClick={handleClose} className="closebtn2" required title="Close">
-                            <i class="fa-solid fa-xmark"></i>
+                              <i class="fa-solid fa-xmark"></i>
                             </button>
                           </div>
                         </div>
@@ -473,14 +512,15 @@ export default function EmployeeInfoPopup({ open, handleClose, EmployeeInfo }) {
                             </button>
                           </div>
                           <div className="ag-theme-alpine" style={{ height: '400px', width: '100%' }}>
-                          <AgGridReact
-                            rowData={rowData}
-                            columnDefs={columnDefs}
-                            rowSelection="single"
-                            paginationAutoPageSize={true}
-                            gridOptions={gridOptions}
-                            onSelectionChanged={handleRowSelected}
-                          />
+                            <AgGridReact
+                              rowData={rowData}
+                              columnDefs={columnDefs}
+                              rowSelection="single"
+                              paginationAutoPageSize={true}
+                              gridOptions={gridOptions}
+                              onSelectionChanged={handleRowSelected}
+                              onRowDoubleClicked={handleRowDoubleClick}
+                            />
                           </div>
                         </div>
                       </div>

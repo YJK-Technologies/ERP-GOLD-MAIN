@@ -224,6 +224,36 @@ export default function InvReturnPopup({ open, handleClose, InvReturnData }) {
     setRowData([]);
   }
 
+  const handleRowDoubleClick = (params) => {
+    const row = params.data;
+
+    if (!row) return;
+
+    const selectedData = [{
+      ReturnID: row.ReturnID,
+      DateReturned: row.DateReturned,
+      Return_Type: row.Return_Type,
+      Warehouse: row.Warehouse,
+      Supplier: row.Supplier,
+      ItemSNo: row.ItemSNo,
+      ItemCode: row.ItemCode,
+      ItemName: row.ItemName,
+      QuantityReturned: row.QuantityReturned,
+      ReasonForReturn: row.ReasonForReturn,
+      Condition: row.Condition,
+      ProcessedBy: row.ProcessedBy,
+      ApprovalStatus: row.ApprovalStatus,
+      ActionTaken: row.ActionTaken,
+      Notes: row.Notes,
+      Serial_no: row.Serial_no
+    }];
+
+    InvReturnData(selectedData);
+    handleClose();
+    clearInputs([]);
+    setRowData([]);
+  };
+
   return (
     <div>
       {open && (
@@ -329,6 +359,7 @@ export default function InvReturnPopup({ open, handleClose, InvReturnData }) {
                             rowSelection="single"
                             pagination='true'
                             onSelectionChanged={handleRowSelected}
+                            onRowDoubleClicked={handleRowDoubleClick}
                           />
                         </div>
                       </div>
@@ -416,6 +447,7 @@ export default function InvReturnPopup({ open, handleClose, InvReturnData }) {
                               rowSelection="single"
                               pagination='true'
                               onSelectionChanged={handleRowSelected}
+                              onRowDoubleClicked={handleRowDoubleClick}
                             />
                           </div>
                         </div>

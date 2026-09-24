@@ -228,6 +228,39 @@ export default function QuotationPopup({ open, handleClose, handleDeletedQuotati
     setRowData([]);
   }
 
+  const handleRowDoubleClick = (params) => {
+    const row = params.data;
+
+    if (!row) return;
+
+    const selectedData = [{
+      TransactionNo: row.transaction_no,
+      EntryDate: row.Entry_date,
+      CustomerCode: row.customer_code,
+      CustomerName: row.customer_name,
+      CustomerAddr1: row.customer_addr_1,
+      CustomerAddr2: row.customer_addr_2,
+      CustomerAddr3: row.customer_addr_3,
+      CustomerAddr4: row.customer_addr_4,
+      CustomerState: row.customer_state,
+      CustomerCountry: row.customer_country,
+      ContactPerson: row.contact_person,
+      ContactMobileNo: row.customer_mobile_no,
+      PurchaseAmount: row.purchase_amount,
+      RoundOff: row.rounded_off,
+      TotalAmount: row.total_amount,
+      TaxAmount: row.tax_amount,
+      GSTNo: row.customer_gst_no,
+      KIND_attention: row.kind_attention,
+      Quotation_validity: row.quotation_validity,
+    }];
+
+    handleDeletedQuotationData(selectedData);
+    handleClose();
+    clearInputs([]);
+    setRowData([]);
+  };
+
   return (
     <div>
       {open && (
@@ -323,6 +356,7 @@ export default function QuotationPopup({ open, handleClose, handleDeletedQuotati
                             rowSelection="single"
                             pagination='true'
                             onSelectionChanged={handleRowSelected}
+                            onRowDoubleClicked={handleRowDoubleClick}
                           />
                         </div>
                       </div>
@@ -422,6 +456,7 @@ export default function QuotationPopup({ open, handleClose, handleDeletedQuotati
                               rowSelection="single"
                               pagination='true'
                               onSelectionChanged={handleRowSelected}
+                              onRowDoubleClicked={handleRowDoubleClick}
                             />
                           </div>
                         </div>

@@ -323,18 +323,66 @@ export default function ItemPopup({ open, handleClose, handleDeletedDcData }) {
       TotalAmount: row.total_amount,
       SalesType: row.sales_type,
       PayType: row.pay_type,
-      GSTNo:row.customer_gst_no,
-      destination:row.Destination,
-      Note_not_for_sale:row.note_not_for_sale,
-      Dispatched_through:row.dispatched_through,
-      Delivery_note:row.delivery_note,
-      ShipTo_GSTNo:row.ShipTocustomer_gst_no,
+      GSTNo: row.customer_gst_no,
+      destination: row.Destination,
+      Note_not_for_sale: row.note_not_for_sale,
+      Dispatched_through: row.dispatched_through,
+      Delivery_note: row.delivery_note,
+      ShipTo_GSTNo: row.ShipTocustomer_gst_no,
     }));
     handleDeletedDcData(selectedData);
     handleClose();
     clearInputs([]);
     setRowData([]);
   }
+
+  const handleRowDoubleClick = (params) => {
+    const row = params.data;
+
+    if (!row) return;
+
+    const selectedData = [{
+      TransactionNo: row.transaction_no,
+      TransactionDate: row.transaction_date,
+      CustomerName: row.customer_name,
+      bill_to_customer_code: row.bill_to_customer_code,
+      CustomerAddr1: row.customer_addr_1,
+      CustomerAddr2: row.customer_addr_2,
+      CustomerAddr3: row.customer_addr_3,
+      CustomerAddr4: row.customer_addr_4,
+      CustomerState: row.customer_state,
+      CustomerCountry: row.customer_country,
+      ContactPerson: row.contact_person,
+      ContactMobileNo: row.customer_mobile_no,
+      ShipToCustomerName: row.ShipTo_customer_name,
+      Ship_to_customer_code: row.Ship_to_customer_code,
+      ShipToCustomerAddr1: row.ShipTo_customer_addr_1,
+      ShipToCustomerAddr2: row.ShipTocustomer_addr_2,
+      ShipToCustomerAddr3: row.customer_addr_3,
+      ShipToCustomerAddr4: row.customer_addr_4,
+      ShipToCustomerState: row.ShipTocustomer_state,
+      ShipToCustomerCountry: row.ShipTocustomer_country,
+      ShipToContactPerson: row.ShipTocontact_person,
+      ShipToContactMobileNo: row.ShipTocustomer_mobile_no,
+      PurchaseAmount: row.purchase_amount,
+      RoundOff: row.rounded_off,
+      Transport_charges: row.transport_charges,
+      TotalAmount: row.total_amount,
+      SalesType: row.sales_type,
+      PayType: row.pay_type,
+      GSTNo: row.customer_gst_no,
+      destination: row.Destination,
+      Note_not_for_sale: row.note_not_for_sale,
+      Dispatched_through: row.dispatched_through,
+      Delivery_note: row.delivery_note,
+      ShipTo_GSTNo: row.ShipTocustomer_gst_no,
+    }];
+
+    handleDeletedDcData(selectedData);
+    handleClose();
+    clearInputs([]);
+    setRowData([]);
+  };
 
   return (
     <div>
@@ -435,6 +483,7 @@ export default function ItemPopup({ open, handleClose, handleDeletedDcData }) {
                             rowSelection="single"
                             pagination='true'
                             onSelectionChanged={handleRowSelected}
+                            onRowDoubleClicked={handleRowDoubleClick}
                           />
                         </div>
                       </div>
@@ -534,6 +583,7 @@ export default function ItemPopup({ open, handleClose, handleDeletedDcData }) {
                               rowSelection="single"
                               pagination='true'
                               onSelectionChanged={handleRowSelected}
+                              onRowDoubleClicked={handleRowDoubleClick}
                             />
                           </div>
                         </div>

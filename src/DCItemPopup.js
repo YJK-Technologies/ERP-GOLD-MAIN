@@ -230,14 +230,14 @@ export default function DCItemPopup({ open, handleClose, handleItem }) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ Item_code, Item_variant, Item_name, Item_short_name, Item_Our_Brand, status,company_code:sessionStorage.getItem("selectedCompanyCode") }) // Send company_no and company_name as search criteria
+        body: JSON.stringify({ Item_code, Item_variant, Item_name, Item_short_name, Item_Our_Brand, status, company_code: sessionStorage.getItem("selectedCompanyCode") }) // Send company_no and company_name as search criteria
       });
       if (response.ok) {
         const searchData = await response.json();
         setRowData(searchData);
         console.log("data fetched successfully")
       } else if (response.status === 404) {
-       
+
         toast.error("Data not found!").then(() => {
           setRowData([]);
           clearInputs([])
@@ -292,6 +292,35 @@ export default function DCItemPopup({ open, handleClose, handleItem }) {
     setSelectedRows([]);
   }
 
+  const handleRowDoubleClick = (params) => {
+    const row = params.data;
+    if (!row) return;
+
+    if (String(row.status ?? "").trim().toLowerCase() !== "active") {
+      toast.warning("The selected item is not active.");
+      return;
+    }
+
+    const selectedData = [{
+      itemCode: row.Item_code,
+      itemName: row.Item_name,
+      unitWeight: row.Item_wigh,
+      purchaseAmt: row.Item_std_purch_price,
+      taxType: row.Item_purch_tax_type,
+      taxDetails: row.combined_tax_details,
+      taxPer: row.combined_tax_percent,
+      Hsn: row.hsn,
+      baseuom: row.Item_BaseUOM,
+    }];
+
+    console.log('Selected Data (Double Click):', selectedData);
+    handleItem(selectedData);
+    handleClose();
+    clearInputs([]);
+    setRowData([]);
+    setSelectedRows([]);
+  };
+
   return (
     <div>
       {open && (
@@ -308,7 +337,7 @@ export default function DCItemPopup({ open, handleClose, handleItem }) {
                           <div className="purbut mb-0 d-flex justify-content-between" >
                             <h1 align="left" className="purbut">Item Help</h1>
                             <button onClick={handleClose} className="purbut btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
-                            <i class="fa-solid fa-xmark"></i>
+                              <i class="fa-solid fa-xmark"></i>
                             </button>
                           </div>
                           <div class="d-flex justify-content-between">
@@ -413,7 +442,7 @@ export default function DCItemPopup({ open, handleClose, handleItem }) {
                                 />
                               </div>
                             </div>
-                          </div>                          
+                          </div>
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <icon className="icon popups-btn" onClick={handleSearchItem}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
@@ -434,6 +463,7 @@ export default function DCItemPopup({ open, handleClose, handleItem }) {
                             rowSelection="multiple"
                             pagination
                             onSelectionChanged={handleRowSelected}
+                            onRowDoubleClicked={handleRowDoubleClick}
                           />
                         </div>
                       </div>
@@ -455,7 +485,7 @@ export default function DCItemPopup({ open, handleClose, handleItem }) {
                           </div>
                           <div className="mb-0 d-flex justify-content-end" >
                             <button onClick={handleClose} className="closebtn2" required title="Close">
-                            <i class="fa-solid fa-xmark"></i>
+                              <i class="fa-solid fa-xmark"></i>
                             </button>
                           </div>
                         </div>
@@ -554,7 +584,7 @@ export default function DCItemPopup({ open, handleClose, handleItem }) {
                                 />
                               </div>
                             </div>
-                          </div>                             
+                          </div>
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <button className="" onClick={handleSearchItem}>
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
@@ -574,6 +604,7 @@ export default function DCItemPopup({ open, handleClose, handleItem }) {
                               rowSelection="multiple"
                               pagination
                               onSelectionChanged={handleRowSelected}
+                              onRowDoubleClicked={handleRowDoubleClick}
                             />
                           </div>
                         </div>

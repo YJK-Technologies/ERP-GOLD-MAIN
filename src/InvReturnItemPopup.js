@@ -165,16 +165,16 @@ export default function InventoryReturnItemPopup({ open, handleClose, handleItem
   const [loading, setLoading] = useState(false);
 
   // For Dropdown
-    const [selectedBrand, setSelectedBrand] = useState("");
-    const [ourbranddrop, setourbranddrop] = useState([]);
-    const ourbrand = useRef(null);
-    const Status = useRef(null);
-  
-    const [selectedStatus, setSelectedStatus] = useState("");
-    const [statusDrop, setStatusDrop] = useState("");
-    const [statusdropDown, setStatusdropDown] = useState([]);
+  const [selectedBrand, setSelectedBrand] = useState("");
+  const [ourbranddrop, setourbranddrop] = useState([]);
+  const ourbrand = useRef(null);
+  const Status = useRef(null);
 
-    const handleChangeBrand = (selectedBrand) => {
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [statusDrop, setStatusDrop] = useState("");
+  const [statusdropDown, setStatusdropDown] = useState([]);
+
+  const handleChangeBrand = (selectedBrand) => {
     setSelectedBrand(selectedBrand);
     setItem_Our_Brand(selectedBrand ? selectedBrand.value : "");
   };
@@ -232,14 +232,14 @@ export default function InventoryReturnItemPopup({ open, handleClose, handleItem
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({  company_code : sessionStorage.getItem('selectedCompanyCode'),Item_code, Item_variant, Item_name, Item_short_name, Item_Our_Brand, status }) // Send company_no and company_name as search criteria
+        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), Item_code, Item_variant, Item_name, Item_short_name, Item_Our_Brand, status }) // Send company_no and company_name as search criteria
       });
       if (response.ok) {
         const searchData = await response.json();
         setRowData(searchData);
         console.log("data fetched successfully")
       } else if (response.status === 404) {
-      
+
         toast.error("DataNot Found").then(() => {
           setRowData([]);
           clearInputs([])
@@ -295,7 +295,7 @@ export default function InventoryReturnItemPopup({ open, handleClose, handleItem
       return;
     }
     // Only active item will reach here    
-    
+
     const selectedData = selectedRows.map(row => ({
       itemCode: row.Item_code,
       itemName: row.Item_name,
@@ -313,8 +313,35 @@ export default function InventoryReturnItemPopup({ open, handleClose, handleItem
     setSelectedRows([]);
   }
 
+  const handleRowDoubleClick = (params) => {
+    const row = params.data;
+    if (!row) return;
+
+    if (String(row.status ?? "").trim().toLowerCase() !== "active") {
+      toast.warning("The selected item is not active.");
+      return;
+    }
+
+    const selectedData = [{
+      itemCode: row.Item_code,
+      itemName: row.Item_name,
+      unitWeight: row.Item_wigh,
+      purchaseAmt: row.Item_std_purch_price,
+      taxType: row.Item_purch_tax_type,
+      taxDetails: row.combined_tax_details,
+      taxPer: row.combined_tax_percent,
+    }];
+
+    console.log('Selected Data (Double Click):', selectedData);
+    handleItem(selectedData);
+    handleClose();
+    clearInputs([]);
+    setRowData([]);
+    setSelectedRows([]);
+  };
+
   return (
-    <div>      
+    <div>
       {open && (
         <fieldset>
           <div>
@@ -329,7 +356,7 @@ export default function InventoryReturnItemPopup({ open, handleClose, handleItem
                           <div className="purbut mb-0 d-flex justify-content-between" >
                             <h1 align="left" className="purbut">Item Help</h1>
                             <button onClick={handleClose} className="purbut btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
-                            <i class="fa-solid fa-xmark"></i>
+                              <i class="fa-solid fa-xmark"></i>
                             </button>
                           </div>
                           <div class="d-flex justify-content-between">
@@ -394,32 +421,32 @@ export default function InventoryReturnItemPopup({ open, handleClose, handleItem
                           </div>
 
                           <div className="col-sm mb-2">
-                              <div title="Select the Our Brand ">
-                                <Select
-                                  id="ahsts"
-                                  value={selectedBrand}
-                                  onChange={handleChangeBrand}
-                                  options={filteredOptionBrand}
-                                  className="exp-input-field"
-                                  placeholder="Our Brand"
-                                  isClearable
-                                  ref={ourbrand}
-                                />
-                              </div>
+                            <div title="Select the Our Brand ">
+                              <Select
+                                id="ahsts"
+                                value={selectedBrand}
+                                onChange={handleChangeBrand}
+                                options={filteredOptionBrand}
+                                className="exp-input-field"
+                                placeholder="Our Brand"
+                                isClearable
+                                ref={ourbrand}
+                              />
+                            </div>
                           </div>
 
                           <div className="col-sm mb-2">
-                              <div title="Select the Status ">
-                                <Select
-                                  id="ahsts"
-                                  value={selectedStatus}
-                                  onChange={handleChangeStatus}
-                                  options={filteredOptionStatus}
-                                  className="exp-input-field"
-                                  placeholder="Status"
-                                  isClearable
-                                />
-                              </div>
+                            <div title="Select the Status ">
+                              <Select
+                                id="ahsts"
+                                value={selectedStatus}
+                                onChange={handleChangeStatus}
+                                options={filteredOptionStatus}
+                                className="exp-input-field"
+                                placeholder="Status"
+                                isClearable
+                              />
+                            </div>
                           </div>
 
                           <div className="mb-3 mt-3 d-flex justify-content-end">
@@ -442,6 +469,7 @@ export default function InventoryReturnItemPopup({ open, handleClose, handleItem
                             rowSelection="multiple"
                             pagination
                             onSelectionChanged={handleRowSelected}
+                            onRowDoubleClicked={handleRowDoubleClick}
                           />
                         </div>
                       </div>
@@ -463,7 +491,7 @@ export default function InventoryReturnItemPopup({ open, handleClose, handleItem
                           </div>
                           <div className="mb-0 d-flex justify-content-end" >
                             <button onClick={handleClose} className="closebtn2" required title="Close">
-                            <i class="fa-solid fa-xmark"></i>
+                              <i class="fa-solid fa-xmark"></i>
                             </button>
                           </div>
                         </div>
@@ -524,32 +552,32 @@ export default function InventoryReturnItemPopup({ open, handleClose, handleItem
                           </div>
 
                           <div className="col-sm mb-2">
-                              <div title="Select the Our Brand ">
-                                <Select
-                                  id="ahsts"
-                                  value={selectedBrand}
-                                  onChange={handleChangeBrand}
-                                  options={filteredOptionBrand}
-                                  className="exp-input-field"
-                                  placeholder="Our Brand"
-                                  isClearable
-                                  ref={ourbrand}
-                                />
-                              </div>
+                            <div title="Select the Our Brand ">
+                              <Select
+                                id="ahsts"
+                                value={selectedBrand}
+                                onChange={handleChangeBrand}
+                                options={filteredOptionBrand}
+                                className="exp-input-field"
+                                placeholder="Our Brand"
+                                isClearable
+                                ref={ourbrand}
+                              />
+                            </div>
                           </div>
 
                           <div className="col-sm mb-2">
-                              <div title="Select the Status ">
-                                <Select
-                                  id="ahsts"
-                                  value={selectedStatus}
-                                  onChange={handleChangeStatus}
-                                  options={filteredOptionStatus}
-                                  className="exp-input-field"
-                                  placeholder="Status"
-                                  isClearable
-                                />
-                              </div>
+                            <div title="Select the Status ">
+                              <Select
+                                id="ahsts"
+                                value={selectedStatus}
+                                onChange={handleChangeStatus}
+                                options={filteredOptionStatus}
+                                className="exp-input-field"
+                                placeholder="Status"
+                                isClearable
+                              />
+                            </div>
                           </div>
 
                           <div className="mb-3 mt-3 d-flex justify-content-end">
@@ -571,6 +599,7 @@ export default function InventoryReturnItemPopup({ open, handleClose, handleItem
                               rowSelection="multiple"
                               pagination
                               onSelectionChanged={handleRowSelected}
+                              onRowDoubleClicked={handleRowDoubleClick}
                             />
                           </div>
                         </div>

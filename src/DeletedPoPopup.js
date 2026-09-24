@@ -221,7 +221,7 @@ export default function DeletedPurchaseOrderPopup({ open, handleClose, handleDel
   const [loading, setLoading] = useState(false);
 
   const handleSearch = async () => {
-        setLoading(true);
+    setLoading(true);
 
     try {
       const response = await fetch(`${config.apiBaseUrl}/getDeletedPoSearchData`, {
@@ -250,7 +250,7 @@ export default function DeletedPurchaseOrderPopup({ open, handleClose, handleDel
       }
     } catch (error) {
       console.error("Error fetching search data:", error);
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -313,14 +313,59 @@ export default function DeletedPurchaseOrderPopup({ open, handleClose, handleDel
     setRowData([]);
   }
 
+  const handleRowDoubleClick = (params) => {
+    const row = params.data;
+
+    if (!row) return;
+
+    const selectedData = [{
+      TransactionNo: row.transaction_no,
+      EntryDate: row.Entry_date,
+      VendorName: row.vendor_name,
+      VendorAddr1: row.vendor_addr_1,
+      VendorAddr2: row.vendor_addr_2,
+      VendorAddr3: row.vendor_addr_3,
+      VendorAddr4: row.vendor_addr_4,
+      VendorState: row.state,
+      VendorCountry: row.country,
+      ContactPerson: row.contact_person,
+      ContactMobileNo: row.contact_number,
+      ShipToCustomerName: row.ShipTo_customer_name,
+      ShipToCustomerAddr1: row.ShipTo_customer_addr_1,
+      ShipToCustomerAddr2: row.ShipTo_customer_addr_2,
+      ShipToCustomerAddr3: row.ShipTo_customer_addr_3,
+      ShipToCustomerAddr4: row.ShipTo_customer_addr_4,
+      ShipToCustomerState: row.ship_to_state,
+      ShipToCustomerCountry: row.ship_to_country,
+      ShipToContactPerson: row.ship_to_contact_person,
+      ShipToContactMobileNo: row.ship_to_contact_number,
+      PurchaseAmount: row.purchase_amount,
+      RoundOff: row.rounded_off,
+      TotalAmount: row.total_amount,
+      TaxAmount: row.tax_amount,
+      VendorCode: row.vendor_code,
+      ShipToCustomerCode: row.ShipTo_customer_code,
+      GSTNo: row.vendor_gst_no,
+      ShipToGSTNo: row.ShipTo_vendor_gst_no,
+      deliveryDate: row.delivery_date,
+      credit: row.credit,
+      remarks: row.remarks,
+    }];
+
+    handleDeletedPoData(selectedData);
+    handleClose();
+    clearInputs([]);
+    setRowData([]);
+  };
+
   return (
     <div>
       {open && (
         <fieldset>
           <div>
             <div className="purbut">
-                      {loading && <LoadingScreen />}
-              
+              {loading && <LoadingScreen />}
+
               <div className="modal mt-5 Topnav-screen popup popupadj" tabIndex="-1" role="dialog" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
                 <div className="modal-dialog modal-xl ps-5 p-1 pe-5" role="document">
                   <div className="modal-content">
@@ -409,6 +454,7 @@ export default function DeletedPurchaseOrderPopup({ open, handleClose, handleDel
                             rowSelection="single"
                             pagination='true'
                             onSelectionChanged={handleRowSelected}
+                            onRowDoubleClicked={handleRowDoubleClick}
                           />
                         </div>
                       </div>
@@ -508,6 +554,7 @@ export default function DeletedPurchaseOrderPopup({ open, handleClose, handleDel
                               rowSelection="single"
                               pagination='true'
                               onSelectionChanged={handleRowSelected}
+                              onRowDoubleClicked={handleRowDoubleClick}
                             />
                           </div>
                         </div>

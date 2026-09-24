@@ -162,7 +162,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
       .then((data) => setOrderdrop(data))
       .catch((error) => console.error("Error fetching Order type:", error));
   }, []);
-  
+
   const handleChangePay = (selectedOption) => {
     setSelectedPay(selectedOption);
     setPayType(selectedOption ? selectedOption.value : '');
@@ -213,7 +213,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ bill_date, bill_no, dely_chlno, sales_type:salesType, customer_code, customer_name, pay_type:payType, order_type:orderType, company_code: sessionStorage.getItem("selectedCompanyCode") })
+        body: JSON.stringify({ bill_date, bill_no, dely_chlno, sales_type: salesType, customer_code, customer_name, pay_type: payType, order_type: orderType, company_code: sessionStorage.getItem("selectedCompanyCode") })
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -280,6 +280,32 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
     setRowData([]);
     setSelectedRows([]);
   }
+
+  const handleRowDoubleClick = (params) => {
+    const row = params.data;
+
+    if (!row) return;
+
+    const selectedData = [{
+      BillNo: row.bill_no,
+      BillDate: row.bill_date,
+      SalesType: row.sales_type,
+      PayType: row.pay_type,
+      InventoryAutoNo: row.inventry_autono,
+      TotalTax: row.tax_amount,
+      TotalAmount: row.bill_amt,
+      CustomerName: row.customer_name,
+      SaleAmount: row.sale_amt,
+      CustomerCode: row.customer_code,
+      RoundOff: row.roff_amt
+    }];
+
+    handleData(selectedData);
+    handleClose();
+    clearInputs([]);
+    setRowData([]);
+    setSelectedRows([]);
+  };
 
 
   return (
@@ -365,7 +391,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                             />
                           </div>
                         </div>
-                          <div className="row mb-3 ms-4 me-4">
+                        <div className="row mb-3 ms-4 me-4">
                           <div className="col-sm mb-2">
                             <div title="Select the Sales type">
                               <Select
@@ -378,7 +404,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                                 isClearable
                               />
                             </div>
-                          </div>                        
+                          </div>
                           <div className="col-sm mb-2">
                             <div title="Select the Pay type">
                               <Select
@@ -391,7 +417,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                                 isClearable
                               />
                             </div>
-                          </div>                        
+                          </div>
                           <div className="col-sm mb-2">
                             <div title="Select the Order Type">
                               <Select
@@ -404,7 +430,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                                 isClearable
                               />
                             </div>
-                          </div>                        
+                          </div>
                           <div className="col-sm mb-2">
                             <input
                               type="text"
@@ -439,6 +465,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                             rowSelection="multiple"
                             pagination
                             onSelectionChanged={handleRowSelected}
+                            onRowDoubleClicked={handleRowDoubleClick}
                           />
                         </div>
                       </div>
@@ -540,7 +567,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                                 isClearable
                               />
                             </div>
-                          </div>                        
+                          </div>
                           <div className="col-sm mb-2">
                             <div title="Select the Pay type">
                               <Select
@@ -553,7 +580,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                                 isClearable
                               />
                             </div>
-                          </div>                        
+                          </div>
                           <div className="col-sm mb-2">
                             <div title="Select the Order Type">
                               <Select
@@ -566,7 +593,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                                 isClearable
                               />
                             </div>
-                          </div> 
+                          </div>
                           <div className="col-sm mb-2">
                             <input
                               type="text"
@@ -600,6 +627,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                               rowSelection="multiple"
                               pagination
                               onSelectionChanged={handleRowSelected}
+                              onRowDoubleClicked={handleRowDoubleClick}
                             />
                           </div>
                         </div>

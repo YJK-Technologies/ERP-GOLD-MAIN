@@ -15,6 +15,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import Swal from 'sweetalert2';
 import LoadingScreen from './Loading';
+import { toast } from 'react-toastify';
 const config = require('./Apiconfig');
 
 
@@ -198,8 +199,8 @@ const defaultColDef = {
   sortable: true,
   editable: true,
   flex: 1,
-  
-  
+
+
 };
 export default function InventoryIssuedItemPopup({ open, handleClose, handleItem }) {
 
@@ -221,7 +222,7 @@ export default function InventoryIssuedItemPopup({ open, handleClose, handleItem
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code:sessionStorage.getItem("selectedCompanyCode"),Item_code, Item_variant, Item_name, Item_short_name, Item_Our_Brand, status }) // Send company_no and company_name as search criteria
+        body: JSON.stringify({ company_code: sessionStorage.getItem("selectedCompanyCode"), Item_code, Item_variant, Item_name, Item_short_name, Item_Our_Brand, status }) // Send company_no and company_name as search criteria
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -285,267 +286,296 @@ export default function InventoryIssuedItemPopup({ open, handleClose, handleItem
     setSelectedRows([]);
   }
 
+  const handleRowDoubleClick = (params) => {
+    const row = params.data;
+    if (!row) return;
+
+    if (String(row.status ?? "").trim().toLowerCase() !== "active") {
+      toast.warning("The selected item is not active.");
+      return;
+    }
+
+    const selectedData = [{
+      itemCode: row.Item_code,
+      itemName: row.Item_name,
+      unitWeight: row.Item_wigh,
+      purchaseAmt: row.Item_std_purch_price,
+      taxType: row.Item_purch_tax_type,
+      taxDetails: row.combined_tax_details,
+      taxPer: row.combined_tax_percent,
+    }];
+
+    console.log('Selected Data (Double Click):', selectedData);
+    handleItem(selectedData);
+    handleClose();
+    clearInputs([]);
+    setRowData([]);
+    setSelectedRows([]);
+  };
+
   return (
     <div>
       {open && (
-      <div >
-      <div  className="purbut">
-        <div className="modal mt-5 Topnav-screen popup "  tabIndex="-1" role="dialog" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-        {loading && <LoadingScreen />}
+        <div >
+          <div className="purbut">
+            <div className="modal mt-5 Topnav-screen popup " tabIndex="-1" role="dialog" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+              {loading && <LoadingScreen />}
 
-          <div className="modal-dialog modal-xl" role="document">
-            <div className="modal-content">
-            <div className="p-0 bg-body-tertiary">
-                          <div className="purbut mb-0 d-flex justify-content-between" >
-                            <h1 align="left" className="purbut">Item Help</h1>
-                            <button onClick={handleClose} className="purbut btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
-                              <i class="fa-solid fa-circle-xmark"></i>
+              <div className="modal-dialog modal-xl" role="document">
+                <div className="modal-content">
+                  <div className="p-0 bg-body-tertiary">
+                    <div className="purbut mb-0 d-flex justify-content-between" >
+                      <h1 align="left" className="purbut">Item Help</h1>
+                      <button onClick={handleClose} className="purbut btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                      </button>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                      <div className="d-flex justify-content-start">
+                      </div>
+                    </div>
+                  </div>
+                  <div className="modal-body">
+                    <div className="container">
+                      <div className="row mb-3 ms-4">
+                        <div className="col-sm mb-2">
+                          <input
+                            type="text"
+                            id="ItemCode"
+                            className="exp-input-field form-control"
+                            placeholder="Item Code"
+                            value={Item_code}
+                            onChange={(e) => setItem_code(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
+                            autoComplete="off"
+                          />
+                        </div>
+                        <div className="col-sm mb-2">
+                          <input
+                            type="text"
+                            id="Variant"
+                            className="exp-input-field form-control"
+                            placeholder="Variant"
+                            value={Item_variant}
+                            onChange={(e) => setItem_variant(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
+                            autoComplete="off"
+                          />
+                        </div>
+                        <div className="col-sm mb-2">
+                          <input
+                            type="text"
+                            id="ItemName"
+                            className="exp-input-field form-control"
+                            placeholder="Item Name"
+                            value={Item_name}
+                            onChange={(e) => setItem_name(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
+                            autoComplete="off"
+                          />
+                        </div>
+                        <div className="col-sm mb-2">
+                          <input
+                            type="text"
+                            id="ShortName"
+                            className="exp-input-field form-control"
+                            placeholder="Short Name"
+                            value={Item_short_name}
+                            onChange={(e) => setItem_short_name(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
+                            autoComplete="off"
+                          />
+                        </div>
+                        <div className="col-sm mb-2">
+                          <input
+                            type="text"
+                            id="OurBrand"
+                            className="exp-input-field form-control"
+                            placeholder="Our Brand"
+                            value={Item_Our_Brand}
+                            onChange={(e) => setItem_Our_Brand(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
+                            autoComplete="off"
+                          />
+                        </div>
+                        <div className="col-sm mb-2">
+                          <input
+                            type="text"
+                            id="Status"
+                            className="exp-input-field form-control"
+                            placeholder="Status"
+                            value={status}
+                            onChange={(e) => setstatus(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
+                            autoComplete="off"
+                          />
+                        </div>
+                        <div className="col-auto mb-2">
+                          <button className="pt-1 pb-1" onClick={handleSearchItem}>
+                            <FontAwesomeIcon icon={faMagnifyingGlass} />
+                          </button>
+                          <button className="pt-1 pb-1" onClick={handleReload}>
+                            <i class="fa-solid fa-arrow-rotate-right"></i>
+                          </button>
+                          <button className="pt-1 pb-1 me-4" onClick={handleConfirm}>
+                            <FontAwesomeIcon icon="fa-solid fa-check" />
+                          </button>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col">
+                          <div className="ag-theme-alpine" style={{ height: '400px', width: '100%' }}>
+                            <AgGridReact
+                              rowData={rowData}
+                              columnDefs={columnDefs}
+                              defaultColDef={defaultColDef}
+                              rowSelection="multiple"
+                              pagination
+                              onSelectionChanged={handleRowSelected}
+                              onRowDoubleClicked={handleRowDoubleClick}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mobileview">
+            <div className="modal mt-5 Topnav-screen" tabIndex="-1" role="dialog" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+
+              <div className="modal-dialog modal-xl ps-4 pe-4 p-1" role="document">
+                <div className="modal-content">
+                  <div class="row justify-content-center">
+                    <div class="col-md-12 text-center">
+                      <div class="mb-0 rounded-0 d-flex justify-content-between">
+                        <div className="mb-0 d-flex justify-content-start">
+                          <h1 className="h1">Assets Help</h1>
+                        </div>
+                        <div className="mb-0 d-flex justify-content-end ">
+                          <button onClick={handleClose} className="closebtn2" required title="Close">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="d-flex justify-content-between">
+                        <div className="d-flex justify-content-start">
+                        </div>
+                      </div>
+                    </div>
+                    <div className="modal-body">
+                      <div className="container">
+                        <div className="row mb-3 ms-4">
+                          <div className="col-sm mb-2">
+                            <input
+                              type="text"
+                              id="ItemCode"
+                              className="exp-input-field form-control"
+                              placeholder="Item Code"
+                              value={Item_code}
+                              onChange={(e) => setItem_code(e.target.value)}
+                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
+                              autoComplete="off"
+                            />
+                          </div>
+                          <div className="col-sm mb-2">
+                            <input
+                              type="text"
+                              id="Variant"
+                              className="exp-input-field form-control"
+                              placeholder="Variant"
+                              value={Item_variant}
+                              onChange={(e) => setItem_variant(e.target.value)}
+                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
+                              autoComplete="off"
+                            />
+                          </div>
+                          <div className="col-sm mb-2">
+                            <input
+                              type="text"
+                              id="ItemName"
+                              className="exp-input-field form-control"
+                              placeholder="Item Name"
+                              value={Item_name}
+                              onChange={(e) => setItem_name(e.target.value)}
+                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
+                              autoComplete="off"
+                            />
+                          </div>
+                          <div className="col-sm mb-2">
+                            <input
+                              type="text"
+                              id="ShortName"
+                              className="exp-input-field form-control"
+                              placeholder="Short Name"
+                              value={Item_short_name}
+                              onChange={(e) => setItem_short_name(e.target.value)}
+                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
+                              autoComplete="off"
+                            />
+                          </div>
+                          <div className="col-sm mb-2">
+                            <input
+                              type="text"
+                              id="OurBrand"
+                              className="exp-input-field form-control"
+                              placeholder="Our Brand"
+                              value={Item_Our_Brand}
+                              onChange={(e) => setItem_Our_Brand(e.target.value)}
+                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
+                              autoComplete="off"
+                            />
+                          </div>
+                          <div className="col-sm mb-2">
+                            <input
+                              type="text"
+                              id="Status"
+                              className="exp-input-field form-control"
+                              placeholder="Status"
+                              value={status}
+                              onChange={(e) => setstatus(e.target.value)}
+                              onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
+                              autoComplete="off"
+                            />
+                          </div>
+                          <div className="col-auto mb-2">
+                            <button className="pt-1 pb-1" onClick={handleSearchItem}>
+                              <FontAwesomeIcon icon={faMagnifyingGlass} />
+                            </button>
+                            <button className="pt-1 pb-1" onClick={handleReload}>
+                              <i class="fa-solid fa-arrow-rotate-right"></i>
+                            </button>
+                            <button className="pt-1 pb-1 me-4" onClick={handleConfirm}>
+                              <FontAwesomeIcon icon="fa-solid fa-check" />
                             </button>
                           </div>
-                          <div class="d-flex justify-content-between">
-                            <div className="d-flex justify-content-start">
+                        </div>
+                        <div className="row">
+                          <div className="col">
+                            <div className="ag-theme-alpine" style={{ height: '400px', width: '100%' }}>
+                              <AgGridReact
+                                rowData={rowData}
+                                columnDefs={columnDefs}
+                                defaultColDef={defaultColDef}
+                                rowSelection="multiple"
+                                pagination
+                                onSelectionChanged={handleRowSelected}
+                                onRowDoubleClicked={handleRowDoubleClick}
+                              />
                             </div>
                           </div>
                         </div>
-              <div className="modal-body">
-                <div className="container">
-                  <div className="row mb-3 ms-4">
-                    <div className="col-sm mb-2">
-                      <input
-                        type="text"
-                        id="ItemCode"
-                        className="exp-input-field form-control"
-                        placeholder="Item Code"
-                        value={Item_code}
-                        onChange={(e) => setItem_code(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                        autoComplete="off"
-                      />
-                    </div>
-                    <div className="col-sm mb-2">
-                      <input
-                        type="text"
-                        id="Variant"
-                        className="exp-input-field form-control"
-                        placeholder="Variant"
-                        value={Item_variant}
-                        onChange={(e) => setItem_variant(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                        autoComplete="off"
-                      />
-                    </div>
-                    <div className="col-sm mb-2">
-                      <input
-                        type="text"
-                        id="ItemName"
-                        className="exp-input-field form-control"
-                        placeholder="Item Name"
-                        value={Item_name}
-                        onChange={(e) => setItem_name(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                        autoComplete="off"
-                      />
-                    </div>
-                    <div className="col-sm mb-2">
-                      <input
-                        type="text"
-                        id="ShortName"
-                        className="exp-input-field form-control"
-                        placeholder="Short Name"
-                        value={Item_short_name}
-                        onChange={(e) => setItem_short_name(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                        autoComplete="off"
-                      />
-                    </div>
-                    <div className="col-sm mb-2">
-                      <input
-                        type="text"
-                        id="OurBrand"
-                        className="exp-input-field form-control"
-                        placeholder="Our Brand"
-                        value={Item_Our_Brand}
-                        onChange={(e) => setItem_Our_Brand(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                        autoComplete="off"
-                      />
-                    </div>
-                    <div className="col-sm mb-2">
-                      <input
-                        type="text"
-                        id="Status"
-                        className="exp-input-field form-control"
-                        placeholder="Status"
-                        value={status}
-                        onChange={(e) => setstatus(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                        autoComplete="off"
-                      />
-                    </div>
-                    <div className="col-auto mb-2">
-                      <button className="pt-1 pb-1" onClick={handleSearchItem}>
-                        <FontAwesomeIcon icon={faMagnifyingGlass} />
-                      </button>
-                      <button className="pt-1 pb-1" onClick={handleReload}>
-                        <i class="fa-solid fa-arrow-rotate-right"></i>
-                      </button>
-                      <button className="pt-1 pb-1 me-4" onClick={handleConfirm}>
-                        <FontAwesomeIcon icon="fa-solid fa-check" />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col">
-                      <div className="ag-theme-alpine" style={{ height: '400px', width: '100%' }}>
-                        <AgGridReact
-                          rowData={rowData}
-                          columnDefs={columnDefs}
-                          defaultColDef={defaultColDef}
-                          rowSelection="multiple"
-                          pagination
-                          onSelectionChanged={handleRowSelected}
-                        />
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>     
+              </div>
             </div>
           </div>
         </div>
-        </div>
-
-        <div  className="mobileview">
-        <div className="modal mt-5 Topnav-screen"  tabIndex="-1" role="dialog" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-     
-          <div className="modal-dialog modal-xl ps-4 pe-4 p-1" role="document">
-            <div className="modal-content">
-            <div class="row justify-content-center">
-            <div class="col-md-12 text-center">
-                          <div class="mb-0 rounded-0 d-flex justify-content-between">
-                            <div className="mb-0 d-flex justify-content-start">
-                              <h1 className="h1">Assets Help</h1>
-                            </div>
-                            <div className="mb-0 d-flex justify-content-end ">
-                              <button onClick={handleClose} className="closebtn2" required title="Close">
-                                <i class="fa-solid fa-circle-xmark"></i>
-                              </button>
-                            </div>
-                          </div>
-                          <div class="d-flex justify-content-between">
-                            <div className="d-flex justify-content-start">
-                            </div>
-                          </div>
-                        </div>
-              <div className="modal-body">
-                <div className="container">
-                  <div className="row mb-3 ms-4">
-                    <div className="col-sm mb-2">
-                      <input
-                        type="text"
-                        id="ItemCode"
-                        className="exp-input-field form-control"
-                        placeholder="Item Code"
-                        value={Item_code}
-                        onChange={(e) => setItem_code(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                        autoComplete="off"
-                      />
-                    </div>
-                    <div className="col-sm mb-2">
-                      <input
-                        type="text"
-                        id="Variant"
-                        className="exp-input-field form-control"
-                        placeholder="Variant"
-                        value={Item_variant}
-                        onChange={(e) => setItem_variant(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                        autoComplete="off"
-                      />
-                    </div>
-                    <div className="col-sm mb-2">
-                      <input
-                        type="text"
-                        id="ItemName"
-                        className="exp-input-field form-control"
-                        placeholder="Item Name"
-                        value={Item_name}
-                        onChange={(e) => setItem_name(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                        autoComplete="off"
-                      />
-                    </div>
-                    <div className="col-sm mb-2">
-                      <input
-                        type="text"
-                        id="ShortName"
-                        className="exp-input-field form-control"
-                        placeholder="Short Name"
-                        value={Item_short_name}
-                        onChange={(e) => setItem_short_name(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                        autoComplete="off"
-                      />
-                    </div>
-                    <div className="col-sm mb-2">
-                      <input
-                        type="text"
-                        id="OurBrand"
-                        className="exp-input-field form-control"
-                        placeholder="Our Brand"
-                        value={Item_Our_Brand}
-                        onChange={(e) => setItem_Our_Brand(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                        autoComplete="off"
-                      />
-                    </div>
-                    <div className="col-sm mb-2">
-                      <input
-                        type="text"
-                        id="Status"
-                        className="exp-input-field form-control"
-                        placeholder="Status"
-                        value={status}
-                        onChange={(e) => setstatus(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
-                        autoComplete="off"
-                      />
-                    </div>
-                    <div className="col-auto mb-2">
-                      <button className="pt-1 pb-1" onClick={handleSearchItem}>
-                        <FontAwesomeIcon icon={faMagnifyingGlass} />
-                      </button>
-                      <button className="pt-1 pb-1" onClick={handleReload}>
-                        <i class="fa-solid fa-arrow-rotate-right"></i>
-                      </button>
-                      <button className="pt-1 pb-1 me-4" onClick={handleConfirm}>
-                        <FontAwesomeIcon icon="fa-solid fa-check" />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col">
-                      <div className="ag-theme-alpine" style={{ height: '400px', width: '100%' }}>
-                        <AgGridReact
-                          rowData={rowData}
-                          columnDefs={columnDefs}
-                          defaultColDef={defaultColDef}
-                          rowSelection="multiple"
-                          pagination
-                          onSelectionChanged={handleRowSelected}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>     
-            </div>
-          </div>
-        </div>
-        </div>
-        </div>
-     </div>
       )}
     </div>
   );

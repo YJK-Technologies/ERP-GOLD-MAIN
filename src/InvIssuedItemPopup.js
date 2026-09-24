@@ -319,6 +319,33 @@ export default function InventoryIssuedItemPopup({ open, handleClose, handleItem
     setSelectedRows([]);
   }
 
+  const handleRowDoubleClick = (params) => {
+    const row = params.data;
+    if (!row) return;
+
+    if (String(row.status ?? "").trim().toLowerCase() !== "active") {
+      toast.warning("The selected item is not active.");
+      return;
+    }
+
+    const selectedData = [{
+      itemCode: row.Item_code,
+      itemName: row.Item_name,
+      unitWeight: row.Item_wigh,
+      purchaseAmt: row.Item_std_purch_price,
+      taxType: row.Item_purch_tax_type,
+      taxDetails: row.combined_tax_details,
+      taxPer: row.combined_tax_percent,
+    }];
+
+    console.log('Selected Data (Double Click):', selectedData);
+    handleItem(selectedData);
+    handleClose();
+    clearInputs([]);
+    setRowData([]);
+    setSelectedRows([]);
+  };
+
   return (
     <div>
       {open && (
@@ -474,6 +501,7 @@ export default function InventoryIssuedItemPopup({ open, handleClose, handleItem
                             rowSelection="multiple"
                             pagination
                             onSelectionChanged={handleRowSelected}
+                            onRowDoubleClicked={handleRowDoubleClick}
                           />
                         </div>
                       </div>
@@ -602,6 +630,7 @@ export default function InventoryIssuedItemPopup({ open, handleClose, handleItem
                               rowSelection="multiple"
                               pagination
                               onSelectionChanged={handleRowSelected}
+                              onRowDoubleClicked={handleRowDoubleClick}
                             />
                           </div>
                         </div>

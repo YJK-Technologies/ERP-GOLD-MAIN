@@ -264,6 +264,33 @@ export default function ItemPopup({ open, handleClose, handlePurchaseData }) {
     setSelectedRows([]);
   }
 
+  const handleRowDoubleClick = (params) => {
+    const row = params.data;
+
+    if (!row) return;
+
+    const selectedData = [{
+      TransactionNo: row.transaction_no,
+      TransactionDate: row.transaction_date,
+      PurchaseType: row.purchase_type,
+      PayType: row.pay_type,
+      TotalTax: row.tax_amount,
+      TotalAmount: row.total_amount,
+      VendorName: row.vendor_name,
+      Amount: row.purchase_amount,
+      Vendorcode: row.vendor_code,
+      Entrydate: row.Entry_date,
+      RoundOff: row.rounded_off
+    }];
+
+    handlePurchaseData(selectedData);
+    handleClose();
+    clearInputs([]);
+    setRowData([]);
+    setSelectedRows([]);
+  };
+
+
   return (
     <div>
       {open && (
@@ -398,6 +425,7 @@ export default function ItemPopup({ open, handleClose, handlePurchaseData }) {
                             rowSelection="single"
                             pagination='true'
                             onSelectionChanged={handleRowSelected}
+                            onRowDoubleClicked={handleRowDoubleClick}
                           />
                         </div>
                       </div>
@@ -535,6 +563,7 @@ export default function ItemPopup({ open, handleClose, handlePurchaseData }) {
                               rowSelection="single"
                               pagination='true'
                               onSelectionChanged={handleRowSelected}
+                              onRowDoubleClicked={handleRowDoubleClick}
                             />
                           </div>
                         </div>

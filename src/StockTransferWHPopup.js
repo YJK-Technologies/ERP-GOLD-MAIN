@@ -200,6 +200,28 @@ export default function StockTransferWarehousePopup({
     setSelectedRows([]);
   };
 
+  const handleRowDoubleClick = (params) => {
+    const row = params.data;
+    if (!row) return;
+
+    if (String(row.status ?? "").trim().toLowerCase() !== "active") {
+      toast.warning("The selected item is not active.");
+      return;
+    }
+
+    const selectedData = [{
+      warehouse: row.warehouse_code,
+    }];
+
+    console.log('Selected Data (Double Click):', selectedData);
+    handleWarehouse(selectedData);
+    handleClose();
+    clearInputs();
+    setRowData([]);
+    setSelectedRows([]);
+  };
+
+
   const handleReload = () => {
     clearInputs([]);
     setRowData([]);
@@ -339,6 +361,7 @@ export default function StockTransferWarehousePopup({
                             rowSelection="single"
                             pagination
                             onSelectionChanged={handleRowSelected}
+                            onRowDoubleClicked={handleRowDoubleClick}
                           />
                         </div>
                       </div>
@@ -469,6 +492,7 @@ export default function StockTransferWarehousePopup({
                               rowSelection="single"
                               pagination
                               onSelectionChanged={handleRowSelected}
+                              onRowDoubleClicked={handleRowDoubleClick}
                             />
                           </div>
                         </div>

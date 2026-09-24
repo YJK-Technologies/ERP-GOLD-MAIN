@@ -201,17 +201,17 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
       .then((val) => setStatusdrop(val))
       .catch((error) => console.error('Error fetching data:', error));
   }, []);
-    const handleChangeItemOurBrand = (selectedItemOurBrand) => {
+  const handleChangeItemOurBrand = (selectedItemOurBrand) => {
     setselectedItemOurBrand(selectedItemOurBrand);
     setItemOurBrand(selectedItemOurBrand ? selectedItemOurBrand.value : '');
   };
 
-    const filteredOptionItemOurBrand = ItemOurBranddrop.map((option) => ({
+  const filteredOptionItemOurBrand = ItemOurBranddrop.map((option) => ({
     value: option.attributedetails_name,
     label: option.attributedetails_name,
   }));
 
-    const handleStatusChange = (selectedStatus) => {
+  const handleStatusChange = (selectedStatus) => {
     setSelectedStatus(selectedStatus);
     setStatus(selectedStatus ? selectedStatus.value : '');
   };
@@ -230,7 +230,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code, Item_code, Item_variant, Item_name, Item_short_name, Item_Our_Brand:ItemOurBrand, status }) // Send company_no and company_name as search criteria
+        body: JSON.stringify({ company_code, Item_code, Item_variant, Item_name, Item_short_name, Item_Our_Brand: ItemOurBrand, status }) // Send company_no and company_name as search criteria
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -278,43 +278,70 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
 
   const handleConfirm = () => {
 
-  // Check whether an item is selected
-  if (selectedRows.length === 0) {
-    toast.warning("Please select an item.");
-    return;
-  }
+    // Check whether an item is selected
+    if (selectedRows.length === 0) {
+      toast.warning("Please select an item.");
+      return;
+    }
 
-  // Get the selected item
-  const selectedItem = selectedRows[0];
+    // Get the selected item
+    const selectedItem = selectedRows[0];
 
-  // Debug - check the actual data
-  console.log("Selected Item:", selectedItem);
-  console.log("Item Status:", selectedItem.status);
+    // Debug - check the actual data
+    console.log("Selected Item:", selectedItem);
+    console.log("Item Status:", selectedItem.status);
 
-  // Validate item status
-  if (String(selectedItem.status ?? "").trim().toLowerCase() !== "active") {
-    toast.warning("The selected item is not active.");
-    return;
-  }
+    // Validate item status
+    if (String(selectedItem.status ?? "").trim().toLowerCase() !== "active") {
+      toast.warning("The selected item is not active.");
+      return;
+    }
 
-  // Only active item will reach here
-  const selectedData = selectedRows.map(row => ({
-    itemCode: row.Item_code,
-    itemName: row.Item_name,
-    unitWeight: row.Item_wigh,
-    purchaseAmt: row.Item_std_purch_price,
-    taxType: row.Item_purch_tax_type,
-    taxDetails: row.combined_tax_details,
-    taxPer: row.combined_tax_percent,
-  }));
+    // Only active item will reach here
+    const selectedData = selectedRows.map(row => ({
+      itemCode: row.Item_code,
+      itemName: row.Item_name,
+      unitWeight: row.Item_wigh,
+      purchaseAmt: row.Item_std_purch_price,
+      taxType: row.Item_purch_tax_type,
+      taxDetails: row.combined_tax_details,
+      taxPer: row.combined_tax_percent,
+    }));
 
-  handleItem(selectedData);
+    handleItem(selectedData);
 
-  handleClose();
-  clearInputs([]);
-  setRowData([]);
-  setSelectedRows([]);
-};
+    handleClose();
+    clearInputs([]);
+    setRowData([]);
+    setSelectedRows([]);
+  };
+
+  const handleRowDoubleClick = (params) => {
+    const row = params.data;
+    if (!row) return;
+
+    if (String(row.status ?? "").trim().toLowerCase() !== "active") {
+      toast.warning("The selected item is not active.");
+      return;
+    }
+
+    const selectedData = [{
+      itemCode: row.Item_code,
+      itemName: row.Item_name,
+      unitWeight: row.Item_wigh,
+      purchaseAmt: row.Item_std_purch_price,
+      taxType: row.Item_purch_tax_type,
+      taxDetails: row.combined_tax_details,
+      taxPer: row.combined_tax_percent,
+    }];
+
+    console.log('Selected Data (Double Click):', selectedData);
+    handleItem(selectedData);
+    handleClose();
+    clearInputs([]);
+    setRowData([]);
+    setSelectedRows([]);
+  };
 
   return (
     <div>
@@ -397,28 +424,28 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                           </div>
                           <div className="col-sm mb-2">
                             <div title="Select a Our Brand">
-                            <Select
-                              id="OurBrand"
-                              type="text"
-                              placeholder='Our Brand'
-                              value={selectedItemOurBrand}
-                              onChange={handleChangeItemOurBrand}
-                              options={filteredOptionItemOurBrand}
-                            />
+                              <Select
+                                id="OurBrand"
+                                type="text"
+                                placeholder='Our Brand'
+                                value={selectedItemOurBrand}
+                                onChange={handleChangeItemOurBrand}
+                                options={filteredOptionItemOurBrand}
+                              />
                             </div>
                           </div>
                           <div className="col-sm mb-2">
                             <div title="Select a Our Brand">
-                            <Select
-                              id="status"
-                              type="text"
-                              placeholder='status'
-                              value={selectedStatus}
-                              onChange={handleStatusChange}
-                              options={filteredOptionStatus}
-                            />
+                              <Select
+                                id="status"
+                                type="text"
+                                placeholder='status'
+                                value={selectedStatus}
+                                onChange={handleStatusChange}
+                                options={filteredOptionStatus}
+                              />
                             </div>
-                          </div>                          
+                          </div>
                           {/* <div className="col-sm mb-2">
                             <input
                               type="text"
@@ -463,6 +490,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                             rowSelection="multiple"
                             pagination
                             onSelectionChanged={handleRowSelected}
+                            onRowDoubleClicked={handleRowDoubleClick}
                           />
                         </div>
                       </div>
@@ -606,6 +634,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                               rowSelection="multiple"
                               pagination
                               onSelectionChanged={handleRowSelected}
+                              onRowDoubleClicked={handleRowDoubleClick}
                             />
                           </div>
                         </div>

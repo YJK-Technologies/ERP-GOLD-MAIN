@@ -62,70 +62,70 @@ export default function SalesWarehousePopup({ open, handleClose, handleWarehouse
   const [loading, setLoading] = useState(false);
 
   // For dropdown field
-    const [selectedStatus, setSelectedStatus] = useState("");
-    const [statusdrop, setStatusdrop] = useState([]);
-  
-    const [selectedLocation, setSelectedLocation] = useState('');
-    const [locationnodrop, setLocationdrop] = useState([]);
-  
-    const handleChangeStatus = (selectedStatus) => {
-      setSelectedStatus(selectedStatus);
-      setstatus(selectedStatus ? selectedStatus.value : "");
-    };
-  
-    const filteredOptionStatus = statusdrop.map((option) => ({
-      value: option.attributedetails_name,
-      label: option.attributedetails_name,
-    }));
-  
-    const handleChangeLocation = (selectedLocation) => {
-      setSelectedLocation(selectedLocation);
-      setlocation_no(selectedLocation ? selectedLocation.value : '');
-  
-    };
-  
-    const filteredOptionLocation = locationnodrop.map((option) => ({
-      value: option.location_no,
-      label: option.location_no,
-    }));
-  
-    useEffect(() => {
-      const company_code = sessionStorage.getItem("selectedCompanyCode");
-  
-      fetch(`${config.apiBaseUrl}/status`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ company_code }),
-      })
-        .then((data) => data.json())
-        .then((val) => setStatusdrop(val))
-        .catch((error) => console.error("Error fetching data:", error));
-    }, []);
-  
-    useEffect(() => {
-      fetch(`${config.apiBaseUrl}/locationno`)
-        .then((data) => data.json())
-        .then((val) => setLocationdrop(val));
-    }, []);
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [statusdrop, setStatusdrop] = useState([]);
+
+  const [selectedLocation, setSelectedLocation] = useState('');
+  const [locationnodrop, setLocationdrop] = useState([]);
+
+  const handleChangeStatus = (selectedStatus) => {
+    setSelectedStatus(selectedStatus);
+    setstatus(selectedStatus ? selectedStatus.value : "");
+  };
+
+  const filteredOptionStatus = statusdrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  const handleChangeLocation = (selectedLocation) => {
+    setSelectedLocation(selectedLocation);
+    setlocation_no(selectedLocation ? selectedLocation.value : '');
+
+  };
+
+  const filteredOptionLocation = locationnodrop.map((option) => ({
+    value: option.location_no,
+    label: option.location_no,
+  }));
+
+  useEffect(() => {
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+
+    fetch(`${config.apiBaseUrl}/status`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ company_code }),
+    })
+      .then((data) => data.json())
+      .then((val) => setStatusdrop(val))
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
+
+  useEffect(() => {
+    fetch(`${config.apiBaseUrl}/locationno`)
+      .then((data) => data.json())
+      .then((val) => setLocationdrop(val));
+  }, []);
 
   const handlewarehouseSearch = async () => {
-        setLoading(true);
+    setLoading(true);
     try {
       const response = await fetch(`${config.apiBaseUrl}/warehouseSearchdata`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code : sessionStorage.getItem('selectedCompanyCode'),warehouse_code, warehouse_name, status, location_no }) // Send company_no and company_name as search criteria
+        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), warehouse_code, warehouse_name, status, location_no }) // Send company_no and company_name as search criteria
       });
       if (response.ok) {
         const searchData = await response.json();
         setRowData(searchData);
         console.log("data fetched successfully")
       } else if (response.status === 404) {
-       toast.warning("Data Not Found").then(() => {
+        toast.warning("Data Not Found").then(() => {
           setRowData([]);
           clearInputs([])
         });
@@ -135,7 +135,7 @@ export default function SalesWarehousePopup({ open, handleClose, handleWarehouse
       }
     } catch (error) {
       console.error("Error fetching search data:", error);
-    }finally {
+    } finally {
       setLoading(false);
     }
 
@@ -160,29 +160,50 @@ export default function SalesWarehousePopup({ open, handleClose, handleWarehouse
   // }
 
   const handleConfirm1 = () => {
-  
+
     // Check whether a warehouse row is selected
     if (selectedRows.length === 0) {
       toast.warning("Please select a warehouse.");
       return;
     }
-  
+
     // Get the selected warehouse row
     const selectedWarehouse = selectedRows[0];
-  
+
     // Validate warehouse status
     if (selectedWarehouse.status?.toLowerCase() !== "active") {
       toast.warning("The selected warehouse is not active.");
       return;
     }
-  
+
     // Only active warehouse will reach here
     const selectedData1 = selectedRows.map(row => ({
       warehouse: row.warehouse_code
     }));
-  
+
     handleWarehouse(selectedData1);
-  
+
+    handleClose();
+    clearInputs();
+    setRowData([]);
+    setSelectedRows([]);
+  };
+
+  const handleRowDoubleClick = (params) => {
+    const row = params.data;
+    if (!row) return;
+
+    if (String(row.status ?? "").trim().toLowerCase() !== "active") {
+      toast.warning("The selected item is not active.");
+      return;
+    }
+
+    const selectedData = [{
+      warehouse: row.warehouse_code
+    }];
+
+    console.log('Selected Data (Double Click):', selectedData);
+    handleWarehouse(selectedData);
     handleClose();
     clearInputs();
     setRowData([]);
@@ -209,7 +230,7 @@ export default function SalesWarehousePopup({ open, handleClose, handleWarehouse
         <fieldset>
           <div>
             <div className="purbut">
-               {loading && <LoadingScreen />}
+              {loading && <LoadingScreen />}
               <div className="modal mt-5 Topnav-screen popup popupadj" tabIndex="-1" role="dialog" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
                 <div className="modal-dialog modal-xl ps-5 p-1 pe-5" role="document">
                   <div className="modal-content">
@@ -219,7 +240,7 @@ export default function SalesWarehousePopup({ open, handleClose, handleWarehouse
                           <div className="purbut mb-0 d-flex justify-content-between" >
                             <h1 align="left" className="purbut">Warehouse Help</h1>
                             <button onClick={handleClose} className="purbut btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
-                            <i class="fa-solid fa-xmark"></i>
+                              <i class="fa-solid fa-xmark"></i>
                             </button>
                           </div>
                           <div class="d-flex justify-content-between">
@@ -315,6 +336,7 @@ export default function SalesWarehousePopup({ open, handleClose, handleWarehouse
                             rowSelection="single"
                             pagination='true'
                             onSelectionChanged={handleRowSelected}
+                            onRowDoubleClicked={handleRowDoubleClick}
                           />
                         </div>
                       </div>
@@ -335,7 +357,7 @@ export default function SalesWarehousePopup({ open, handleClose, handleWarehouse
                           </div>
                           <div className="mb-0 d-flex justify-content-end" >
                             <button onClick={handleClose} className="closebtn2" required title="Close">
-                            <i class="fa-solid fa-xmark"></i>
+                              <i class="fa-solid fa-xmark"></i>
                             </button>
                           </div>
                         </div>
@@ -427,6 +449,7 @@ export default function SalesWarehousePopup({ open, handleClose, handleWarehouse
                             rowSelection="single"
                             pagination='true'
                             onSelectionChanged={handleRowSelected}
+                            onRowDoubleClicked={handleRowDoubleClick}
                           />
                         </div>
                       </div>

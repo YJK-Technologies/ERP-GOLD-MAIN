@@ -1734,8 +1734,6 @@ function TaxInvoice() {
             });
 
             if (response.ok) {
-
-
                 await saveTaxInvoiceDetails(new_running_no);
                 await SaveTaxDetails(new_running_no);
                 await saveTIDetailsTerms(new_running_no);
@@ -1743,7 +1741,7 @@ function TaxInvoice() {
                 setDelButtonVisible(true);
                 setPrintButtonVisible(true);
                 setButtonsVisible(false);
-                toast.success("Tax Invoice Data updated Successfully")
+                toast.success("Data updated Successfully")
 
             } else {
                 const errorResponse = await response.json();
