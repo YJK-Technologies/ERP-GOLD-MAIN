@@ -219,6 +219,35 @@ export default function InvIssuedPopup({ open, handleClose, InvIssuedData }) {
     setRowData([]);
   }
 
+  const handleRowDoubleClick = (params) => {
+    const row = params.data;
+
+    if (!row) return;
+
+    const selectedData = [{
+      IssuanceID: row.IssuanceID,
+      DateIssued: row.DateIssued,
+      Issued_Type: row.Issued_Type,
+      Warehouse: row.Warehouse,
+      Department: row.Department,
+      ItemSNo: row.ItemSNo,
+      ItemCode: row.ItemCode,
+      ItemName: row.ItemName,
+      QuantityIssued: row.QuantityIssued,
+      ReasonForIssuance: row.ReasonForIssuance,
+      IssuedBy: row.IssuedBy,
+      ApprovalStatus: row.ApprovalStatus,
+      ActionTaken: row.ActionTaken,
+      Notes: row.Notes,
+      Serial_No: row.Serial_No,
+    }];
+
+    InvIssuedData(selectedData);
+    handleClose();
+    clearInputs([]);
+    setRowData([]);
+  };
+
   return (
     <div>
       {open && (
@@ -325,6 +354,7 @@ export default function InvIssuedPopup({ open, handleClose, InvIssuedData }) {
                             rowSelection="single"
                             pagination='true'
                             onSelectionChanged={handleRowSelected}
+                            onRowDoubleClicked={handleRowDoubleClick}
                           />
                         </div>
                       </div>
@@ -417,6 +447,7 @@ export default function InvIssuedPopup({ open, handleClose, InvIssuedData }) {
                               rowSelection="single"
                               pagination='true'
                               onSelectionChanged={handleRowSelected}
+                              onRowDoubleClicked={handleRowDoubleClick}
                             />
                           </div>
                         </div>

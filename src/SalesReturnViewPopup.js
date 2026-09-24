@@ -259,6 +259,35 @@ export default function SalesRetrunView({ open, handleClose, handleDataView }) {
     setRowData([])
   }
 
+    const handleRowDoubleClick = (params) => {
+    const row = params.data;
+
+    if (!row) return;
+
+    const selectedData = [{
+      BillNo: row.bill_no,
+      Retper: row.return_person,
+      RetReason: row.return_reason,
+      BillDate: row.bill_date,
+      SalesType: row.sales_type,
+      PayType: row.pay_type,
+      TotalTax: row.tax_amount,
+      TotalAmount: row.bill_amt,
+      CustomerName: row.customer_name,
+      SaleAmount: row.sale_amt,
+      CustomerCode: row.customer_code,
+      RoundOff: row.roff_amt,
+      TotalSales: row.sale_amt,
+      ReturnNo: row.return_no,
+      ReturnDate: row.return_date,
+    }];
+
+    handleDataView(selectedData);
+    handleClose();
+    clearInputs([])
+    setRowData([])
+  };
+
 
   return (
     <div>
@@ -403,6 +432,7 @@ export default function SalesRetrunView({ open, handleClose, handleDataView }) {
                           rowSelection="multiple"
                           pagination
                           onSelectionChanged={handleRowSelected}
+                          onRowDoubleClicked={handleRowDoubleClick}
                         />
                       </div>
                     </div>
@@ -547,6 +577,7 @@ export default function SalesRetrunView({ open, handleClose, handleDataView }) {
                           rowSelection="multiple"
                           pagination
                           onSelectionChanged={handleRowSelected}
+                          onRowDoubleClicked={handleRowDoubleClick}
                         />
                       </div>
                     </div>

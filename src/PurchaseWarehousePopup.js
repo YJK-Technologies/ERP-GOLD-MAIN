@@ -163,34 +163,56 @@ export default function PurchaseWarehousePopup({ open, handleClose, handleWareho
   // }
 
   const handleConfirm1 = () => {
-  
+
     // Check whether a warehouse row is selected
     if (selectedRows.length === 0) {
       toast.warning("Please select a warehouse.");
       return;
     }
-  
+
     // Get the selected warehouse row
     const selectedWarehouse = selectedRows[0];
-  
+
     // Validate warehouse status
     if (selectedWarehouse.status?.toLowerCase() !== "active") {
       toast.warning("The selected warehouse is not active.");
       return;
     }
-  
+
     // Only active warehouse will reach here
     const selectedData1 = selectedRows.map(row => ({
       warehouse: row.warehouse_code
     }));
-  
+
     handleWarehouse(selectedData1);
-  
+
     handleClose();
     clearInputs();
     setRowData([]);
     setSelectedRows([]);
   };
+
+  const handleRowDoubleClick = (params) => {
+    const row = params.data;
+    if (!row) return;
+
+    if (String(row.status ?? "").trim().toLowerCase() !== "active") {
+      toast.warning("The selected item is not active.");
+      return;
+    }
+
+    const selectedData = [{
+      warehouse: row.warehouse_code
+    }];
+
+    console.log('Selected Data (Double Click):', selectedData);
+    handleWarehouse(selectedData);
+    handleClose();
+    clearInputs();
+    setRowData([]);
+    setSelectedRows([]);
+  };
+
 
   const handleReload = () => {
     clearInputs([])
@@ -315,6 +337,7 @@ export default function PurchaseWarehousePopup({ open, handleClose, handleWareho
                             rowSelection="single"
                             pagination
                             onSelectionChanged={handleRowSelected}
+                            onRowDoubleClicked={handleRowDoubleClick}
                           />
                         </div>
                       </div>
@@ -426,6 +449,7 @@ export default function PurchaseWarehousePopup({ open, handleClose, handleWareho
                               rowSelection="single"
                               pagination
                               onSelectionChanged={handleRowSelected}
+                              onRowDoubleClicked={handleRowDoubleClick}
                             />
                           </div>
                         </div>

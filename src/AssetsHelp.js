@@ -138,6 +138,22 @@ export default function AssetsHelp({ open, handleClose, handleAssetsHelp }) {
     setSelectedRows([]);
   }
 
+  const handleRowDoubleClick = (params) => {
+    const row = params.data;
+
+    if (!row) return;
+
+    const selectedData = [{
+      AllocationNO: row.allocation_no,
+      AllocationDate: row.allocation_date,
+    }];
+    handleAssetsHelp(selectedData);
+    handleClose();
+    clearInputs([]);
+    setRowData([]);
+    setSelectedRows([]);
+  };
+
   return (
     <div className="">
       {open && (
@@ -235,6 +251,7 @@ export default function AssetsHelp({ open, handleClose, handleAssetsHelp }) {
                             columnDefs={columnDefs}
                             defaultColDef={defaultColDef}
                             onSelectionChanged={handleRowSelected}
+                            onRowDoubleClicked={handleRowDoubleClick}
                           />
                         </div>
                       </div>
@@ -334,6 +351,7 @@ export default function AssetsHelp({ open, handleClose, handleAssetsHelp }) {
                               rowSelection="multiple"
                               pagination
                               onSelectionChanged={handleRowSelected}
+                              onRowDoubleClicked={handleRowDoubleClick}
                             />
                           </div>
                         </div>

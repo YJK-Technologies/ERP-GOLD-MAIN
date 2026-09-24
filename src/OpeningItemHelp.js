@@ -133,6 +133,23 @@ export default function OIPopup({ open, handleClose, handleOb }) {
     setSelectedRows([]);
   }
 
+    const handleRowDoubleClick = (params) => {
+    const row = params.data;
+
+    if (!row) return;
+
+    const selectedData = [{
+      transactionNo: row.transaction_no,
+      transactionDate: row.transaction_date,
+    }];
+
+    handleOb(selectedData);
+    handleClose();
+    clearInputs([]);
+    setRowData([]);
+    setSelectedRows([]);
+  };
+
   return (
     <div>
       {open && (
@@ -232,6 +249,7 @@ export default function OIPopup({ open, handleClose, handleOb }) {
                             rowSelection="multiple"
                             pagination
                             onSelectionChanged={handleRowSelected}
+                            onRowDoubleClicked={handleRowDoubleClick}
                           />
                         </div>
                       </div>
@@ -335,6 +353,7 @@ export default function OIPopup({ open, handleClose, handleOb }) {
                               rowSelection="multiple"
                               pagination
                               onSelectionChanged={handleRowSelected}
+                              onRowDoubleClicked={handleRowDoubleClick}
                             />
                           </div>
                         </div>

@@ -217,7 +217,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
       .then((data) => data.json())
       .then((val) => setStatusdropDown(val))
       .catch((error) => console.error("Error fetching data:", error));
-  }, []);  
+  }, []);
 
   const handleChangeBrand = (selectedBrand) => {
     setSelectedBrand(selectedBrand);
@@ -245,7 +245,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
   }, []);
 
   const handleSearchItem = async () => {
-        setLoading(true);
+    setLoading(true);
 
     try {
       const response = await fetch(`${config.apiBaseUrl}/itempursearchdata`, {
@@ -273,7 +273,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
       }
     } catch (error) {
       console.error("Error fetching search data:", error);
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -336,13 +336,41 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
     setSelectedRows([]);
   }
 
+  const handleRowDoubleClick = (params) => {
+    const row = params.data;
+    if (!row) return;
+
+    if (String(row.status ?? "").trim().toLowerCase() !== "active") {
+      toast.warning("The selected item is not active.");
+      return;
+    }
+
+    const selectedData = [{
+      itemCode: row.Item_code,
+      itemName: row.Item_name,
+      unitWeight: row.Item_wigh,
+      purchaseAmt: row.Item_std_purch_price,
+      taxType: row.Item_purch_tax_type,
+      taxDetails: row.combined_tax_details,
+      taxPer: row.combined_tax_percent,
+    }];
+
+    console.log('Selected Data (Double Click):', selectedData);
+    handleItem(selectedData);
+    handleClose();
+    clearInputs([]);
+    setRowData([]);
+    setSelectedRows([]);
+  };
+
+
   return (
     <div>
       {open && (
         <fieldset>
           <div>
             <div className="purbut">
-                      {loading && <LoadingScreen />}
+              {loading && <LoadingScreen />}
 
               <div className="modal mt-5 Topnav-screen popup popupadj" tabIndex="-1" role="dialog" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
                 <div className="modal-dialog modal-xl ps-5 p-1 pe-5" role="document">
@@ -462,6 +490,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                             rowSelection="multiple"
                             pagination
                             onSelectionChanged={handleRowSelected}
+                            onRowDoubleClicked={handleRowDoubleClick}
                           />
                         </div>
                       </div>
@@ -588,6 +617,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                             rowSelection="multiple"
                             pagination
                             onSelectionChanged={handleRowSelected}
+                            onRowDoubleClicked={handleRowDoubleClick}
                           />
                         </div>
                       </div>

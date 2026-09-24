@@ -95,7 +95,7 @@ const defaultColDef = {
     resizable: true,
     wrapText: true,
     sortable: true,
-    editable: true, 
+    editable: true,
 };
 
 export default function AssetsHelp({ open, handleClose, AssetReturnHelp }) {
@@ -173,6 +173,27 @@ export default function AssetsHelp({ open, handleClose, AssetReturnHelp }) {
         setRowData([]);
         setSelectedRows([]);
     }
+
+    const handleRowDoubleClick = (params) => {
+        const row = params.data;
+
+        if (!row) return;
+
+        const selectedData = [{
+            AllocationNO: row.allocation_no,
+            AllocationDate: row.allocation_date,
+            ReturnNo: row.return_no,
+            ReturnDate: row.return_date,
+            ReturnPerson: row.return_person,
+            ReturnReason: row.return_reason,
+        }];
+
+        AssetReturnHelp(selectedData);
+        handleClose();
+        clearInputs([]);
+        setRowData([]);
+        setSelectedRows([]);
+    };
 
     return (
         <div className="">
@@ -267,6 +288,7 @@ export default function AssetsHelp({ open, handleClose, AssetReturnHelp }) {
                                                         columnDefs={columnDefs}
                                                         defaultColDef={defaultColDef}
                                                         onSelectionChanged={handleRowSelected}
+                                                        onRowDoubleClicked={handleRowDoubleClick}
                                                     />
                                                 </div>
                                             </div>
@@ -366,6 +388,7 @@ export default function AssetsHelp({ open, handleClose, AssetReturnHelp }) {
                                                             rowSelection="multiple"
                                                             pagination
                                                             onSelectionChanged={handleRowSelected}
+                                                            onRowDoubleClicked={handleRowDoubleClick}
                                                         />
                                                     </div>
                                                 </div>
