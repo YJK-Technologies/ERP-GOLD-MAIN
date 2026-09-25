@@ -570,7 +570,7 @@ useEffect(() => {
 
     setLoading(true)
     try {
-      const response = await fetch(`${config.apiBaseUrl}/getitemcodepurdataPurchase`, {
+      const response = await fetch(`${config.apiBaseUrl}/getitemcodepurdata`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -1901,6 +1901,7 @@ useEffect(() => {
       setShowDropdown(true);
       setAuthButtonVisible(true);
       setPrintButtonVisible(true);
+      setDelButtonVisible(true);
       setSaveButtonVisible(false);
 
       if (searchData.table1 && searchData.table1.length > 0) {
@@ -2241,6 +2242,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
 
     if (response.ok) {
       const searchData = await response.json();
+      setDelButtonVisible(true);
 
       if (searchData.length === 0) {
         setRowData([
