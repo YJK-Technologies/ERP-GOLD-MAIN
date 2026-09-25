@@ -356,6 +356,7 @@ function IntermediaryDetailInput({}) {
       !intermediary_email_id
     ) {
       setError(" ");
+      toast.warning("Error: Missing required fields");
       return;
     }
     setLoading(true);
@@ -453,7 +454,7 @@ function IntermediaryDetailInput({}) {
                         <label
                           for="state"
                           class="exp-form-labels"
-                          className={`${error && !Code ? "text-danger" : ""}`}
+                          className={`${error && !selectedHeader ? "text-danger" : ""}`}
                         >
                           Code<span className="text-danger">*</span>
                         </label>
@@ -624,7 +625,7 @@ function IntermediaryDetailInput({}) {
                       <label
                         for="state"
                         class="exp-form-labels"
-                        className={`${error && !intermediary_area_code ? "text-danger" : ""}`}
+                        className={`${error && !selectedCity ? "text-danger" : ""}`}
                       >
                         City<span className="text-danger">*</span>
                       </label>
@@ -650,7 +651,7 @@ function IntermediaryDetailInput({}) {
                         <label
                           for="state"
                           class="exp-form-labels"
-                          className={`${error && !intermediary_stat_code ? "text-danger" : ""}`}
+                          className={`${error && !selectedState ? "text-danger" : ""}`}
                         >
                           State<span className="text-danger">*</span>
                         </label>
@@ -677,7 +678,7 @@ function IntermediaryDetailInput({}) {
                         <label
                           for="state"
                           class="exp-form-labels"
-                          className={`${error && !intermediary_cnty_code ? "text-danger" : ""}`}
+                          className={`${error && !selectedCountry ? "text-danger" : ""}`}
                         >
                           Country<span className="text-danger">*</span>
                         </label>

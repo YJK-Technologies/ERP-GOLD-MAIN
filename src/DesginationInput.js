@@ -10,7 +10,7 @@ import LoadingScreen from "./Loading";
 
 const config = require("./Apiconfig");
 
-function DesginationInput({}) {
+function DesginationInput({ }) {
   const [dept_id, setdept_id] = useState("");
   const [desgination_id, setdesgination_id] = useState("");
   const [desgination, setdesgination] = useState("");
@@ -170,8 +170,19 @@ function DesginationInput({}) {
   }, [mode, selectedRow, isUpdated]);
 
   const handleUpdate = async () => {
-    if (!selecteddept || !desgination || !desgination_id || !selectedStatus) {
-      setError(" ");
+    // if (!selecteddept || !desgination || !desgination_id || !selectedStatus) {
+    //   setError(" ");
+    //   return;
+    // }
+    // Validate required fields individually
+    if (
+      !selecteddept?.value ||
+      !desgination_id?.trim() ||
+      !desgination?.trim() ||
+      !selectedStatus?.value
+    ) {
+      setError(true);
+      toast.warning("Error: Missing required fields");
       return;
     }
     setLoading(true);
@@ -289,9 +300,9 @@ function DesginationInput({}) {
                     <div class="d-flex justify-content-start">
                       <div>
                         <label
-                          for="rid"
-                          class="exp-form-labels"
-                          className={`${error && !dept_id ? "text-danger" : ""}`}
+                          htmlFor="rid"
+                          className={`exp-form-labels ${error && !selecteddept?.value ? "text-danger" : ""
+                            }`}
                         >
                           Department ID<span className="text-danger">*</span>
                         </label>
@@ -321,9 +332,9 @@ function DesginationInput({}) {
                     <div class="d-flex justify-content-start">
                       <div>
                         <label
-                          for="rid"
-                          class="exp-form-labels"
-                          className={`${error && !desgination_id ? "text-danger" : ""}`}
+                          htmlFor="rid"
+                          className={`exp-form-labels ${error && !desgination_id?.trim() ? "text-danger" : ""
+                            }`}
                         >
                           Designation ID<span className="text-danger">*</span>
                         </label>
@@ -351,9 +362,9 @@ function DesginationInput({}) {
                     <div class="d-flex justify-content-start">
                       <div>
                         <label
-                          for="rid"
-                          class="exp-form-labels"
-                          className={`${error && !desgination ? "text-danger" : ""}`}
+                          htmlFor="rid"
+                          className={`exp-form-labels ${error && !desgination?.trim() ? "text-danger" : ""
+                            }`}
                         >
                           Designation<span className="text-danger">*</span>
                         </label>
@@ -379,9 +390,9 @@ function DesginationInput({}) {
                     <div class="d-flex justify-content-start">
                       <div>
                         <label
-                          for="rid"
-                          class="exp-form-labels"
-                          className={`${error && !status ? "text-danger" : ""}`}
+                          htmlFor="rid"
+                          className={`exp-form-labels ${error && !selectedStatus?.value ? "text-danger" : ""
+                            }`}
                         >
                           Status<span className="text-danger">*</span>
                         </label>
