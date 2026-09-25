@@ -178,13 +178,13 @@ function TaxDetInput({ }) {
     navigate("/AddTaxHeader", { selectedRows }); // Pass selectedRows as props to the Input component
   };
   const handleNavigate = () => {
-  navigate("/Tax", {
-    state: {
-      preservedRowData: location.state?.preservedRowData,
-      preservedInputs: location.state?.preservedInputs
-    }
-  });
-};
+    navigate("/Tax", {
+      state: {
+        preservedRowData: location.state?.preservedRowData,
+        preservedInputs: location.state?.preservedInputs
+      }
+    });
+  };
 
   const handleInsert = async () => {
     if (
@@ -242,10 +242,17 @@ function TaxDetInput({ }) {
 
         });
       } else {
-        console.error("Failed to insert data");
-        toast.error('Failed to insert data', {
+        const errorResponse = await response.json();
 
-        });
+        console.error("Failed to insert data:", errorResponse.message);
+
+        toast.warning(
+          errorResponse.message || "Failed to insert data",
+          {
+            position: "top-right",
+            autoClose: 4000,
+          }
+        );
       }
     } catch (error) {
       console.error("Error inserting data:", error);
@@ -381,7 +388,7 @@ function TaxDetInput({ }) {
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label for="rid" class="exp-form-labels">
+                        <label for="rid" className={`${error && !tax_type_header ? "text-danger" : ""}`}>
                           Tax Type Header
                         </label></div>
                       <div> <span className="text-danger">*</span></div>
@@ -402,7 +409,7 @@ function TaxDetInput({ }) {
                       />
                       {mode !== "update" && (<button onClick={handleClickOpen} class="taxhdrcode position-absolute pt-2 me-5" required title="Add Header"><i class="fa-solid fa-plus"></i></button>)}
                     </div>
-                    {error && !tax_type_header && <div className="text-danger">Tax Type should not be blank</div>}
+                    {/* {error && !tax_type_header && <div className="text-danger">Tax Type should not be blank</div>} */}
 
 
 
@@ -414,7 +421,7 @@ function TaxDetInput({ }) {
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
-                      <div><label for="rid" class="exp-form-labels">
+                      <div><label for="rid" className={`${error && !tax_name_details ? "text-danger" : ""}`}>
                         Tax Name Detail
                       </label></div>
                       <div> <span className="text-danger">*</span></div>
@@ -430,7 +437,8 @@ function TaxDetInput({ }) {
                       ref={taxnamedet}
                       readOnly={mode === "update"}
                       onKeyDown={(e) => handleKeyDown(e, taxper, taxnamedet)}
-                    />            {error && !tax_name_details && <div className="text-danger">Tax Name should not be blank</div>}
+                    />
+                    {/* {error && !tax_name_details && <div className="text-danger">Tax Name should not be blank</div>} */}
 
 
                   </div>
@@ -438,7 +446,7 @@ function TaxDetInput({ }) {
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
-                      <div><label for="rid" class="exp-form-labels">
+                      <div><label for="rid" className={`${error && !tax_percentage ? "text-danger" : ""}`}>
                         Tax Percentage
                       </label></div>
                       <div> <span className="text-danger">*</span></div>
@@ -453,7 +461,8 @@ function TaxDetInput({ }) {
                       maxLength={50}
                       ref={taxper}
                       onKeyDown={(e) => handleKeyDown(e, shortname, taxper)}
-                    />            {error && !tax_percentage && <div className="text-danger">Tax Percentage should not be blank</div>}
+                    />
+                    {/* {error && !tax_percentage && <div className="text-danger">Tax Percentage should not be blank</div>} */}
 
 
                   </div>
@@ -480,8 +489,8 @@ function TaxDetInput({ }) {
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
-                      <div><label for="rid" class="exp-form-labels">
-                        Tax Account Code
+                      <div><label for="rid" className={`${error && !tax_accountcode ? "text-danger" : ""}`}>
+                        Tax Account Code<span className="text-danger">*</span>
                       </label></div>
                     </div><input
                       id="taxcode"
@@ -503,57 +512,57 @@ function TaxDetInput({ }) {
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
-                      <div><label for="rid" class="exp-form-labels">
+                      <div><label for="rid" className={`${error && !transaction_type ? "text-danger" : ""}`}>
                         Transaction Type
                       </label></div>
                       <div> <span className="text-danger">*</span></div>
                     </div>
-                      <div title="Select the Transaction Type">
-                    <Select
-                      id="transtype"
-                      value={selectedTransaction}
-                      onChange={handleChangeTransaction}
-                      options={filteredOptionTransaction}
-                      className="exp-input-field"
-                      placeholder=""
-                      maxLength={250}
-                      ref={transactiontype}
-                      onKeyDown={(e) => handleKeyDown(e, StatuS, transactiontype)}
-                    />
-                    {error && !transaction_type && <div className="text-danger">Tax Transaction Type should not be blank</div>}
-</div>
+                    <div title="Select the Transaction Type">
+                      <Select
+                        id="transtype"
+                        value={selectedTransaction}
+                        onChange={handleChangeTransaction}
+                        options={filteredOptionTransaction}
+                        className="exp-input-field"
+                        placeholder=""
+                        maxLength={250}
+                        ref={transactiontype}
+                        onKeyDown={(e) => handleKeyDown(e, StatuS, transactiontype)}
+                      />
+                      {/* {error && !transaction_type && <div className="text-danger">Tax Transaction Type should not be blank</div>} */}
+                    </div>
                   </div>
                 </div>
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
-                      <div><label for="rid" class="exp-form-labels">
+                      <div><label for="rid" className={`${error && !status ? "text-danger" : ""}`}>
                         Status
                       </label></div>
                       <div> <span className="text-danger">*</span></div>
                     </div>
-                     <div title="Select the Status">
-                    <Select
-                      id="status"
-                      value={selectedStatus}
-                      onChange={handleChangeStatus}
-                      options={filteredOptionStatus}
-                      className="exp-input-field"
-                      placeholder=""
-                      maxLength={18}
-                      ref={StatuS}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          if (mode === "create") {
-                            handleInsert();
-                          } else {
-                            handleUpdate();
+                    <div title="Select the Status">
+                      <Select
+                        id="status"
+                        value={selectedStatus}
+                        onChange={handleChangeStatus}
+                        options={filteredOptionStatus}
+                        className="exp-input-field"
+                        placeholder=""
+                        maxLength={18}
+                        ref={StatuS}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            if (mode === "create") {
+                              handleInsert();
+                            } else {
+                              handleUpdate();
+                            }
                           }
-                        }
-                      }}
-                    />
-                    {error && !status && <div className="text-danger">Status should not be blank</div>}
-</div>
+                        }}
+                      />
+                      {/* {error && !status && <div className="text-danger">Status should not be blank</div>} */}
+                    </div>
 
                   </div>
                 </div>
