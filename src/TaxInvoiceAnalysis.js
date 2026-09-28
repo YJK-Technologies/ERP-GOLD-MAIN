@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
@@ -10,8 +10,11 @@ import config from './Apiconfig';
 import { ToastContainer, toast } from "react-toastify";
 import LoadingScreen from './Loading';
 import LZString from "lz-string";
+import { useNavigate } from 'react-router-dom';
 
 const TaxInvoiceanalysis = () => {
+  const navigate = useNavigate();
+
   const formatDate = (isoDateString) => {
     const date = new Date(isoDateString);
     const year = date.getFullYear();
@@ -19,107 +22,6 @@ const TaxInvoiceanalysis = () => {
     const day = String(date.getDate()).padStart(2, '0');
     return `${day}-${month}-${year}`;
   };
-
-  const [columnDefs] = useState([
-    {
-      headerCheckboxSelection: true,
-      checkboxSelection: true,
-      headerName: "Transaction Date",
-      field: "bill_date",
-    },
-    {
-      headerName: "Transaction No",
-      field: "bill_no",
-    },
-    {
-      headerName: "Bill to Customer Name",
-      field: "billTo_customer_name",
-    },
-    {
-      headerName: "Bill to Address 1",
-      field: "billTo_customer_addr_1",
-    },
-    {
-      headerName: "Bill to Address 2",
-      field: "billTo_customer_addr_2",
-    },
-    {
-      headerName: "Bill to Address 3",
-      field: "billTo_customer_addr_3",
-    },
-    {
-      headerName: "Bill to Address 4",
-      field: "billTo_customer_addr_4",
-    },
-    {
-      headerName: "Bill to Contact Person",
-      field: "billTo_contact_person",
-    },
-    {
-      headerName: "Bill to Customer State",
-      field: "billTo_customer_state",
-    },
-    {
-      headerName: "Bill to Customer Country",
-      field: "billTo_customer_country",
-    },
-    {
-      headerName: "Bill to Customer Mobile No",
-      field: "billTo_customer_mobile_no",
-    },
-    {
-      headerName: "Ship to Customer Name",
-      field: "shipTo_customer_name",
-    },
-    {
-      headerName: "Ship to Address 1",
-      field: "shipTo_customer_addr_1",
-    },
-    {
-      headerName: "Ship to Address 2",
-      field: "shipTo_customer_addr_2",
-    },
-    {
-      headerName: "Ship to Address 3",
-      field: "shipTo_customer_addr_3",
-    },
-    {
-      headerName: "Ship to Address 4",
-      field: "shipTo_customer_addr_4",
-    },
-    {
-      headerName: "Ship to Contact Person",
-      field: "shipTo_contact_person",
-    },
-    {
-      headerName: "Ship to Customer State",
-      field: "shipTo_customer_state",
-    },
-    {
-      headerName: "Ship to Customer Country",
-      field: "shipTo_customer_country",
-    },
-    {
-      headerName: "Ship to Customer Mobile No",
-      field: "shipTo_customer_mobile_no",
-    },
-    {
-      headerName: "Total",
-      field: "sale_amt",
-    },
-    {
-      headerName: "Total Tax",
-      field: "tax_amount",
-    },
-    {
-      headerName: "Round Off",
-      field: "roff_amt",
-    },
-    {
-      headerName: "Grand Total",
-      field: "bill_amt",
-    },
-  ]);
 
   const [rowData, setRowData] = useState([]);
   const [gridApi, setGridApi] = useState(null);
@@ -210,6 +112,18 @@ const TaxInvoiceanalysis = () => {
     setInvoiceType(selectedOption ? selectedOption.value : '');
   };
 
+const handleTransactionClick = (transactionNo) => {
+  const invoiceType = selectedInvoice?.value || invoicetype;
+
+  console.log("Analysis Invoice Type:", invoiceType);
+
+  navigate("/TaxInvoice", {
+    state: {
+      transactionNo: transactionNo,
+      invoiceType: invoiceType
+    }
+  });
+};
 
   useEffect(() => {
     if (selectedPeriod?.label === "Custom Date") {
@@ -220,6 +134,123 @@ const TaxInvoiceanalysis = () => {
       fetchDCData();
     }
   }, []);
+
+  const columnDefs = useMemo(() => [
+    {
+      headerCheckboxSelection: true,
+      checkboxSelection: true,
+      headerName: "Transaction Date",
+      field: "bill_date",
+    },
+    {
+      headerName: "Transaction No",
+      field: "bill_no",
+      cellRenderer: (params) => {
+        if (!params.value) return "";
+        return (
+          <span
+            style={{
+              color: "#1890ff",
+              cursor: "pointer",
+              textDecoration: "underline",
+              fontWeight: "500"
+            }}
+            onClick={() => handleTransactionClick(params.value)}
+          >
+            {params.value}
+          </span>
+        );
+      }
+    },
+    {
+      headerName: "Bill to Customer Name",
+      field: "billTo_customer_name",
+    },
+    {
+      headerName: "Bill to Address 1",
+      field: "billTo_customer_addr_1",
+    },
+    {
+      headerName: "Bill to Address 2",
+      field: "billTo_customer_addr_2",
+    },
+    {
+      headerName: "Bill to Address 3",
+      field: "billTo_customer_addr_3",
+    },
+    {
+      headerName: "Bill to Address 4",
+      field: "billTo_customer_addr_4",
+    },
+    {
+      headerName: "Bill to Contact Person",
+      field: "billTo_contact_person",
+    },
+    {
+      headerName: "Bill to Customer State",
+      field: "billTo_customer_state",
+    },
+    {
+      headerName: "Bill to Customer Country",
+      field: "billTo_customer_country",
+    },
+    {
+      headerName: "Bill to Customer Mobile No",
+      field: "billTo_customer_mobile_no",
+    },
+    {
+      headerName: "Ship to Customer Name",
+      field: "shipTo_customer_name",
+    },
+    {
+      headerName: "Ship to Address 1",
+      field: "shipTo_customer_addr_1",
+    },
+    {
+      headerName: "Ship to Address 2",
+      field: "shipTo_customer_addr_2",
+    },
+    {
+      headerName: "Ship to Address 3",
+      field: "shipTo_customer_addr_3",
+    },
+    {
+      headerName: "Ship to Address 4",
+      field: "shipTo_customer_addr_4",
+    },
+    {
+      headerName: "Ship to Contact Person",
+      field: "shipTo_contact_person",
+    },
+    {
+      headerName: "Ship to Customer State",
+      field: "shipTo_customer_state",
+    },
+    {
+      headerName: "Ship to Customer Country",
+      field: "shipTo_customer_country",
+    },
+    {
+      headerName: "Ship to Customer Mobile No",
+      field: "shipTo_customer_mobile_no",
+    },
+    {
+      headerName: "Total",
+      field: "sale_amt",
+    },
+    {
+      headerName: "Total Tax",
+      field: "tax_amount",
+    },
+    {
+      headerName: "Round Off",
+      field: "roff_amt",
+    },
+    {
+      headerName: "Grand Total",
+      field: "bill_amt",
+    },
+  ], [selectedInvoice]);
 
   const fetchDCData = async () => {
     setLoading(true);
@@ -278,7 +309,7 @@ const TaxInvoiceanalysis = () => {
           roff_amt: matchedItem.roff_amt,
           bill_amt: matchedItem.bill_amt,
         }));
-        
+
         const totalAmount = newRows.reduce((sum, row) => sum + row.bill_amt, 0);
         const totalSales = newRows.reduce((sum, row) => sum + row.sale_amt, 0);
         const totalTax = newRows.reduce((sum, row) => sum + row.tax_amount, 0);
@@ -399,25 +430,25 @@ const TaxInvoiceanalysis = () => {
 
   const openPrintWindow = (url, headerKey, detailKey, taxKey) => {
     const openWindow = (targetUrl) => {
-        const printWindow = window.open(targetUrl, '_blank');
-        if (printWindow) {
-            printWindow.addEventListener("beforeunload", () => {
-                sessionStorage.removeItem(headerKey);
-                sessionStorage.removeItem(detailKey);
-                sessionStorage.removeItem(taxKey);
-                console.log("Session storage cleared after print window closed.");
-            });
-        }
+      const printWindow = window.open(targetUrl, '_blank');
+      if (printWindow) {
+        printWindow.addEventListener("beforeunload", () => {
+          sessionStorage.removeItem(headerKey);
+          sessionStorage.removeItem(detailKey);
+          sessionStorage.removeItem(taxKey);
+          console.log("Session storage cleared after print window closed.");
+        });
+      }
     };
 
     if (url === '/TaxInvoicePrint') {
-        for (let i = 1; i <= 3; i++) {
-            openWindow(`${url}?page=${i}`);
-        }
+      for (let i = 1; i <= 3; i++) {
+        openWindow(`${url}?page=${i}`);
+      }
     } else {
-        openWindow(url);
+      openWindow(url);
     }
-};
+  };
 
   const handlePrint = async () => {
     const selectedRows = gridApi.getSelectedRows();
@@ -429,7 +460,7 @@ const TaxInvoiceanalysis = () => {
     const transactionNo = selectedRows[0].bill_no;
     setLoading(true);
 
-    if (invoicetype === "Tax Invoice"){
+    if (invoicetype === "Tax Invoice") {
       setLoading(true);
       try {
         const headerData = await PrintHeaderData(transactionNo);
@@ -458,7 +489,7 @@ const TaxInvoiceanalysis = () => {
         setLoading(false);
       }
     }
-    else if (invoicetype === "Performa Invoice"){
+    else if (invoicetype === "Performa Invoice") {
       setLoading(true);
       try {
         const headerData = await PrintHeaderData(transactionNo);
@@ -744,17 +775,17 @@ const TaxInvoiceanalysis = () => {
           <div className="col-md-3 form-group">
             <label className="form-label">Select Period</label>
             <div title='Please Enter the Select Period'>
-            <Select
-              id="wcode"
-              value={selectedPeriod}
-              onChange={handleChangePeriod}
-              options={filteredOptionPeriod}
-              className="border-secondary"
-              placeholder=""
-              required title="Please select a item code"
-              maxLength={18}
-              styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
-            />
+              <Select
+                id="wcode"
+                value={selectedPeriod}
+                onChange={handleChangePeriod}
+                options={filteredOptionPeriod}
+                className="border-secondary"
+                placeholder=""
+                required title="Please select a item code"
+                maxLength={18}
+                styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+              />
             </div>
           </div>
           {selectedPeriod.label === "Custom Date" && (
@@ -835,30 +866,30 @@ const TaxInvoiceanalysis = () => {
           <div className="col-12 col-md-3 mt-2">
             <label className="form-label">Invoice Type</label>
             <div title='Please Enter Invoice Type'>
-            <Select
-              id="InvoiceType"
-              className="exp-input-field"
-              placeholder="Select a Invoice Type  "
-              options={filteredOptionInvoice}
-              value={selectedInvoice}
-              onKeyDown={(e) => e.key === "Enter" && fetchDCData()}
-              onChange={handleChangeInvoice}
-              styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
-            />
+              <Select
+                id="InvoiceType"
+                className="exp-input-field"
+                placeholder="Select a Invoice Type  "
+                options={filteredOptionInvoice}
+                value={selectedInvoice}
+                onKeyDown={(e) => e.key === "Enter" && fetchDCData()}
+                onChange={handleChangeInvoice}
+                styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+              />
             </div>
           </div>
           <div className="col-md-1">
-              <div class="exp-form-floating">
-                <div class=" d-flex justify-content-center mt-5">
-                    <icon className="popups-btn fs-6 p-3" onClick={fetchDCData} required title="Search">
-                      <i className="fas fa-search"></i>
-                    </icon>
-                    {/* <icon className="popups-btn fs-6 p-3" required title="Refresh">
+            <div class="exp-form-floating">
+              <div class=" d-flex justify-content-center mt-5">
+                <icon className="popups-btn fs-6 p-3" onClick={fetchDCData} required title="Search">
+                  <i className="fas fa-search"></i>
+                </icon>
+                {/* <icon className="popups-btn fs-6 p-3" required title="Refresh">
                       <FontAwesomeIcon icon="fa-solid fa-arrow-rotate-right" />
                     </icon> */}
-                </div>
               </div>
             </div>
+          </div>
         </div>
         <div className="ag-theme-alpine mb-4" style={{ height: 455, width: '100%' }}>
           <AgGridReact

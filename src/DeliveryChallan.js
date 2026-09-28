@@ -73,6 +73,7 @@ function DeliveryChallan() {
     const [Screens, setScreens] = useState('');
     const [selectedscreens, setSelectedscreens] = useState(null);
     const [loading, setLoading] = useState(false);
+    const redirectLoadedRef = useRef(false);
 
     const location = useLocation();
     const savedPath = sessionStorage.getItem('currentPath');
@@ -81,83 +82,92 @@ function DeliveryChallan() {
     const DcPermission = permissions
         .filter(permission => permission.screen_type === 'DeliveryChallan')
         .map(permission => permission.permission_type.toLowerCase());
-    const [transaction_no, settransaction_no] = useState("");
-        
+
+    useEffect(() => {
+        const redirectDCNo = location.state?.transactionNo;
+
+        if (redirectDCNo && !redirectLoadedRef.current) {
+            redirectLoadedRef.current = true;
+
+            setNew_running_no(redirectDCNo);
+            handleRefNo(redirectDCNo);
+        }
+    }, [location.state]);
 
     //code added by Ramya  purpose of keyboard shortcut functionality
-            useEffect(() => {
-                const handleKeyDown = (e) => {
-                  // 1. Ensure keys only trigger on F-keys
-                  if (!['F2', 'F3', 'F4', 'F5', 'F6', 'F8'].includes(e.key)) {
-                    return;
-                  }
-            
-                  // 2. Prevent default browser shortcut actions (e.g., F1 Help, F5 Refresh)
-                  e.preventDefault();
-                  e.stopPropagation();
-            
-                  // 3. Prevent execution if screen is currently loading
-                  if (loading) return;
-            
-                  switch (e.key) {
-                    // case 'F1':
-                    //   // Open Item Search Popup
-                    //   setOpen(true); 
-                    //   break;
-            
-                    case 'F2':
-                      // Open Customer Search Popup
-                      setOpen2(true); 
-                      break;
-            
-                    case 'F3':
-                      // New / Reset Sales Invoice Form
-                      if (window.confirm("Start a new adjustment? Unsaved changes will be lost.")) {
-                        handleReload(); 
-                      }
-                      break;  
-            
-                    case 'F4':
-                      // Save / Complete Invoice (Same logic as Save Button)
-                      handleSaveButtonClick(); 
-                      break;
-            
-                    case 'F5':
-                      // Search Existing Invoices to Edit
-                      setOpen1(true); 
-                      break;
-            
-                    case 'F6':
-                      // Delete selected line item in AG Grid
-                      if ( new_running_no) {
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            // 1. Ensure keys only trigger on F-keys
+            if (!['F2', 'F3', 'F4', 'F5', 'F6', 'F8'].includes(e.key)) {
+                return;
+            }
+
+            // 2. Prevent default browser shortcut actions (e.g., F1 Help, F5 Refresh)
+            e.preventDefault();
+            e.stopPropagation();
+
+            // 3. Prevent execution if screen is currently loading
+            if (loading) return;
+
+            switch (e.key) {
+                // case 'F1':
+                //   // Open Item Search Popup
+                //   setOpen(true); 
+                //   break;
+
+                case 'F2':
+                    // Open Customer Search Popup
+                    setOpen2(true);
+                    break;
+
+                case 'F3':
+                    // New / Reset Sales Invoice Form
+                    if (window.confirm("Start a new adjustment? Unsaved changes will be lost.")) {
+                        handleReload();
+                    }
+                    break;
+
+                case 'F4':
+                    // Save / Complete Invoice (Same logic as Save Button)
+                    handleSaveButtonClick();
+                    break;
+
+                case 'F5':
+                    // Search Existing Invoices to Edit
+                    setOpen1(true);
+                    break;
+
+                case 'F6':
+                    // Delete selected line item in AG Grid
+                    if (new_running_no) {
                         handleDeleteButtonClick();
-                      } else {
+                    } else {
                         alert("Please save the invoice before deleting.");
-                      }
-                      break;
-            
-                    case 'F8':
-                      // Print Invoice
-                      if (showExcelButton && new_running_no) {
+                    }
+                    break;
+
+                case 'F8':
+                    // Print Invoice
+                    if (showExcelButton && new_running_no) {
                         generateReport();
-                      } else {
+                    } else {
                         alert("Please save the invoice before printing.");
-                      }
-                      break;
-            
-                    default:
-                      break;
-                  }
-                };
-            
-                // Attach listener
-                window.addEventListener('keydown', handleKeyDown);
-            
-                // Clean up listener on unmount
-                return () => {
-                  window.removeEventListener('keydown', handleKeyDown);
-                };
-              }, [loading, showExcelButton, new_running_no, rowData]);
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        };
+
+        // Attach listener
+        window.addEventListener('keydown', handleKeyDown);
+
+        // Clean up listener on unmount
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [loading, showExcelButton, new_running_no, rowData]);
     //code ended by Ramya  purpose of keyboard shortcut functionality
 
 
@@ -201,6 +211,21 @@ function DeliveryChallan() {
         setScreens(screenValue);
         sessionStorage.setItem('DeliveryChallanScreenSelection', screenValue);
     };
+
+    const filteredOptionPay = paydrop.map((option) => ({
+        value: option.attributedetails_name,
+        label: option.attributedetails_name,
+    }));
+
+    const filteredOptionSales = salesdrop.map((option) => ({
+        value: option.attributedetails_name,
+        label: option.attributedetails_name,
+    }));
+
+    const filteredOptionProduct = productDrop.map((option) => ({
+        value: option.attributedetails_name,
+        label: option.attributedetails_name,
+    }));
 
     const filteredOptionScreens = screensDrop.map((option) => ({
         value: option.attributedetails_name,
@@ -1191,8 +1216,8 @@ function DeliveryChallan() {
 
     //CODE TO SAVE PURCHASE HEADER 
     const handleSaveButtonClick = async () => {
-        
-        if ( !transactionDate  ||!payType ||!salesType ) {
+
+        if (!transactionDate || !payType || !salesType) {
             setError(" ");
             toast.warning('Error: Missing required fields');
             return;
@@ -1604,13 +1629,29 @@ function DeliveryChallan() {
                     setTransactionDate(formatDate(item.transaction_date));
                     setTotalPurchase(parseFloat(item.purchase_amount).toFixed(2));
 
-                    const selectedPayType = filteredOptionPay.find(option => option.value === item.pay_type);
-                    setSelectedPay(selectedPayType);
-                    setPayType(selectedPayType.value);
+                    const selectedPayType = filteredOptionPay.find(
+                        option => option.value === item.pay_type
+                    );
 
-                    const selectedSalesType = filteredOptionSales.find(option => option.value === item.sales_type);
-                    setSelectedSales(selectedSalesType);
-                    setSalesType(selectedSalesType.value);
+                    if (selectedPayType) {
+                        setSelectedPay(selectedPayType);
+                        setPayType(selectedPayType.value);
+                    } else {
+                        setSelectedPay(null);
+                        setPayType("");
+                    }
+
+                    const selectedSalesType = filteredOptionSales.find(
+                        option => option.value === item.sales_type
+                    );
+
+                    if (selectedSalesType) {
+                        setSelectedSales(selectedSalesType);
+                        setSalesType(selectedSalesType.value);
+                    } else {
+                        setSelectedSales(null);
+                        setSalesType("");
+                    }
 
                     setHeaderRowData([
                         { fieldName: 'Customer Code', billTo: item.bill_to_customer_code, shipTo: item.Ship_to_customer_code },
@@ -1846,105 +1887,105 @@ function DeliveryChallan() {
     }, []);
 
 
-const handleExcelDownload = () => {
-    const filteredRowData = rowData.filter(
-        row => row.purchaseQty > 0 &&
-               row.TotalItemAmount > 0 &&
-               row.unitPrice > 0
-    );
+    const handleExcelDownload = () => {
+        const filteredRowData = rowData.filter(
+            row => row.purchaseQty > 0 &&
+                row.TotalItemAmount > 0 &&
+                row.unitPrice > 0
+        );
 
-    // TotalItemAmount varaikum mattum map panna (hide: true irukku columns Skip aagum)
-    const mappedDetailData = filteredRowData.map(row => {
-        const rowObj = {};
-        columnDefs.forEach(col => {
-            // hide: true irukkura columns and delete column exclude aagum
-            if (col.headerName && col.field && col.field !== 'delete' && !col.hide) {
-                rowObj[col.headerName] = row[col.field] ?? '';
-            }
-        });
-        return rowObj;
-    });
-
-    const headerData = [{
-        "Bill to customer code": headerRowData[0]?.billTo,
-        "Bill to customer name": headerRowData[1]?.billTo,
-        "Bill to customer address 1": headerRowData[2]?.billTo,
-        "Bill to customer address 2": headerRowData[3]?.billTo,
-        "Bill to customer address 3": headerRowData[4]?.billTo,
-        "Bill to customer address 4": headerRowData[5]?.billTo,
-        "Bill to customer state": headerRowData[6]?.billTo,
-        "Bill to customer country": headerRowData[7]?.billTo,
-        "Bill to customer mobile no": headerRowData[8]?.billTo,
-        "Bill to customer GST No": headerRowData[9]?.billTo,
-        "Bill to customer contact person": headerRowData[10]?.billTo,
-
-        "Ship to customer code": headerRowData[0]?.shipTo,
-        "Ship to customer name": headerRowData[1]?.shipTo,
-        "Ship to customer address 1": headerRowData[2]?.shipTo,
-        "Ship to customer address 2": headerRowData[3]?.shipTo,
-        "Ship to customer address 3": headerRowData[4]?.shipTo,
-        "Ship to customer address 4": headerRowData[5]?.shipTo,
-        "Ship to customer state": headerRowData[6]?.shipTo,
-        "Ship to customer country": headerRowData[7]?.shipTo,
-        "Ship to customer mobile no": headerRowData[8]?.shipTo,
-        "Ship to customer GST No": headerRowData[9]?.shipTo,
-        "Ship to customer contact person": headerRowData[10]?.shipTo,
-
-        "Transaction No": new_running_no,
-        "Transaction Date": transactionDate,
-        "Purchase Amount": TotalPurchase,
-        "Transport Charges": Totaltransport,
-        "Total Amount": TotalBill,
-        "Rounded Off": round_difference,
-    }];
-
-    // Header sheet with title
-    const headerSheet = XLSX.utils.aoa_to_sheet([
-        ["Delivery Challan"],
-        [`Company Name : ${sessionStorage.getItem("selectedCompanyName") || ''}`],
-        [],
-    ]);
-
-    XLSX.utils.sheet_add_json(headerSheet, headerData, { origin: "A4" });
-
-    headerSheet["!merges"] = [
-        { s: { r: 0, c: 0 }, e: { r: 0, c: 7 } },
-    ];
-
-    // Detail Sheet
-    const rowDataSheet = XLSX.utils.json_to_sheet(mappedDetailData);
-
-    // Auto adjust column width
-    const autoFitColumns = (worksheet, data) => {
-        if (!data || data.length === 0) return;
-        const cols = [];
-
-        data.forEach(row => {
-            Object.keys(row).forEach((key, i) => {
-                const value = row[key] == null ? "" : row[key].toString();
-                cols[i] = Math.max(
-                    cols[i] || key.length,
-                    key.length,
-                    value.length
-                );
+        // TotalItemAmount varaikum mattum map panna (hide: true irukku columns Skip aagum)
+        const mappedDetailData = filteredRowData.map(row => {
+            const rowObj = {};
+            columnDefs.forEach(col => {
+                // hide: true irukkura columns and delete column exclude aagum
+                if (col.headerName && col.field && col.field !== 'delete' && !col.hide) {
+                    rowObj[col.headerName] = row[col.field] ?? '';
+                }
             });
+            return rowObj;
         });
 
-        worksheet["!cols"] = cols.map(width => ({
-            wch: width + 5
-        }));
+        const headerData = [{
+            "Bill to customer code": headerRowData[0]?.billTo,
+            "Bill to customer name": headerRowData[1]?.billTo,
+            "Bill to customer address 1": headerRowData[2]?.billTo,
+            "Bill to customer address 2": headerRowData[3]?.billTo,
+            "Bill to customer address 3": headerRowData[4]?.billTo,
+            "Bill to customer address 4": headerRowData[5]?.billTo,
+            "Bill to customer state": headerRowData[6]?.billTo,
+            "Bill to customer country": headerRowData[7]?.billTo,
+            "Bill to customer mobile no": headerRowData[8]?.billTo,
+            "Bill to customer GST No": headerRowData[9]?.billTo,
+            "Bill to customer contact person": headerRowData[10]?.billTo,
+
+            "Ship to customer code": headerRowData[0]?.shipTo,
+            "Ship to customer name": headerRowData[1]?.shipTo,
+            "Ship to customer address 1": headerRowData[2]?.shipTo,
+            "Ship to customer address 2": headerRowData[3]?.shipTo,
+            "Ship to customer address 3": headerRowData[4]?.shipTo,
+            "Ship to customer address 4": headerRowData[5]?.shipTo,
+            "Ship to customer state": headerRowData[6]?.shipTo,
+            "Ship to customer country": headerRowData[7]?.shipTo,
+            "Ship to customer mobile no": headerRowData[8]?.shipTo,
+            "Ship to customer GST No": headerRowData[9]?.shipTo,
+            "Ship to customer contact person": headerRowData[10]?.shipTo,
+
+            "Transaction No": new_running_no,
+            "Transaction Date": transactionDate,
+            "Purchase Amount": TotalPurchase,
+            "Transport Charges": Totaltransport,
+            "Total Amount": TotalBill,
+            "Rounded Off": round_difference,
+        }];
+
+        // Header sheet with title
+        const headerSheet = XLSX.utils.aoa_to_sheet([
+            ["Delivery Challan"],
+            [`Company Name : ${sessionStorage.getItem("selectedCompanyName") || ''}`],
+            [],
+        ]);
+
+        XLSX.utils.sheet_add_json(headerSheet, headerData, { origin: "A4" });
+
+        headerSheet["!merges"] = [
+            { s: { r: 0, c: 0 }, e: { r: 0, c: 7 } },
+        ];
+
+        // Detail Sheet
+        const rowDataSheet = XLSX.utils.json_to_sheet(mappedDetailData);
+
+        // Auto adjust column width
+        const autoFitColumns = (worksheet, data) => {
+            if (!data || data.length === 0) return;
+            const cols = [];
+
+            data.forEach(row => {
+                Object.keys(row).forEach((key, i) => {
+                    const value = row[key] == null ? "" : row[key].toString();
+                    cols[i] = Math.max(
+                        cols[i] || key.length,
+                        key.length,
+                        value.length
+                    );
+                });
+            });
+
+            worksheet["!cols"] = cols.map(width => ({
+                wch: width + 5
+            }));
+        };
+
+        // Apply Auto Width
+        autoFitColumns(headerSheet, headerData);
+        autoFitColumns(rowDataSheet, mappedDetailData);
+
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+        XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Delivery Challan Details");
+
+        XLSX.writeFile(workbook, "Delivery_Challan.xlsx");
     };
-
-    // Apply Auto Width
-    autoFitColumns(headerSheet, headerData);
-    autoFitColumns(rowDataSheet, mappedDetailData);
-
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
-    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Delivery Challan Details");
-
-    XLSX.writeFile(workbook, "Delivery_Challan.xlsx");
-};
     const handleDcData = async (data) => {
         if (data && data.length > 0) {
             setButtonsVisible(false);
@@ -2044,7 +2085,7 @@ const handleExcelDownload = () => {
             setrowdatapatch([
                 { fieldName: 'Delivery Note', Notes: Delivery_note },
                 { fieldName: 'Dispatched Through', Notes: destination },
-                { fieldName: 'Destination', Notes: Dispatched_through},
+                { fieldName: 'Destination', Notes: Dispatched_through },
                 { fieldName: 'Note For Sale', Notes: Note_not_for_sale }
 
             ]);
@@ -2146,43 +2187,43 @@ const handleExcelDownload = () => {
     };
 
     const BalanceAmountCalculation = async () => {
-    try {
-        const transportAmount = parseFloat(Totaltransport) || 0;
-        const purchaseAmount = parseFloat(TotalPurchase) || 0;
+        try {
+            const transportAmount = parseFloat(Totaltransport) || 0;
+            const purchaseAmount = parseFloat(TotalPurchase) || 0;
 
-        const response = await fetch(
-            `${config.apiBaseUrl}/taxInvoiceBalanceAmountCalculation`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    TotalAmount: purchaseAmount,
-                    AdvanceAmount: transportAmount,
-                }),
-            }
-        );
-
-        if (response.ok) {
-            const data = await response.json();
-            const [{ Balance_Amount }] = data;
-
-            setTotalBill(formatToTwoDecimalPoints(Balance_Amount));
-        } else {
-            const errorMessage = await response.text();
-            console.error(
-                `Server responded with error: ${errorMessage}`
+            const response = await fetch(
+                `${config.apiBaseUrl}/taxInvoiceBalanceAmountCalculation`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        TotalAmount: purchaseAmount,
+                        AdvanceAmount: transportAmount,
+                    }),
+                }
             );
+
+            if (response.ok) {
+                const data = await response.json();
+                const [{ Balance_Amount }] = data;
+
+                setTotalBill(formatToTwoDecimalPoints(Balance_Amount));
+            } else {
+                const errorMessage = await response.text();
+                console.error(
+                    `Server responded with error: ${errorMessage}`
+                );
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
         }
-    } catch (error) {
-        console.error("Error fetching data:", error);
-    }
-};
+    };
 
     useEffect(() => {
-    BalanceAmountCalculation();
-}, [TotalPurchase, Totaltransport]);
+        BalanceAmountCalculation();
+    }, [TotalPurchase, Totaltransport]);
 
     useEffect(() => {
         const company_code = sessionStorage.getItem('selectedCompanyCode');
@@ -2255,21 +2296,6 @@ const handleExcelDownload = () => {
             })
             .catch((error) => console.error("Error fetching item types:", error));
     }, []);
-
-    const filteredOptionPay = paydrop.map((option) => ({
-        value: option.attributedetails_name,
-        label: option.attributedetails_name,
-    }));
-
-    const filteredOptionSales = salesdrop.map((option) => ({
-        value: option.attributedetails_name,
-        label: option.attributedetails_name,
-    }));
-
-    const filteredOptionProduct = productDrop.map((option) => ({
-        value: option.attributedetails_name,
-        label: option.attributedetails_name,
-    }));
 
     const handleChangePay = (selectedOption) => {
         setSelectedPay(selectedOption);
@@ -2538,7 +2564,7 @@ const handleExcelDownload = () => {
             maxHeight: 50,
             sortable: false,
             editable: false,
-            flex:true
+            flex: true
         },
     ];
 
@@ -2877,7 +2903,7 @@ const handleExcelDownload = () => {
                                             options={filteredOptionScreens}
                                             data-tip="Please select a default warehouse"
                                             classNamePrefix="react-select"
-                                            styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                                            styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                                         />
                                     </div>
                                     {buttonsVisible && ['add', 'all permission'].some(permission => DcPermission.includes(permission)) && (
@@ -3018,40 +3044,40 @@ const handleExcelDownload = () => {
                                             <label htmlFor="" className={`${error && !payType ? 'red' : ''}`}>Pay Type</label>
                                             {!showAsterisk && <span className="text-danger">*</span>}
                                             <div title='Select a Pay Type'>
-                                            <Select
-                                                id="payType"
-                                                value={selectedPay}
-                                                onChange={handleChangePay}
-                                                options={filteredOptionPay}
-                                                className="exp-input-field"
-                                                placeholder=""
-                                                required
-                                                data-tip="Please select a payment type"
-                                                autoComplete="off"
-                                                ref={payTypeRef}
-                                                styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
-                                            />
-                                        </div>
+                                                <Select
+                                                    id="payType"
+                                                    value={selectedPay}
+                                                    onChange={handleChangePay}
+                                                    options={filteredOptionPay}
+                                                    className="exp-input-field"
+                                                    placeholder=""
+                                                    required
+                                                    data-tip="Please select a payment type"
+                                                    autoComplete="off"
+                                                    ref={payTypeRef}
+                                                    styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="col-md-12 form-group mb-2">
                                         <div className="exp-form-floating">
                                             <label htmlFor="" className={`${error && !salesType ? 'red' : ''}`}>Sales Type{!showAsterisk && <span className="text-danger">*</span>}</label>
                                             <div title='Select a Sales Type'>
-                                            <Select
-                                                id="salesType"
-                                                value={selectedSales}
-                                                onChange={handleChangeSales}
-                                                options={filteredOptionSales}
-                                                className="exp-input-field"
-                                                placeholder=""
-                                                required
-                                                data-tip="Please select a sales type"
-                                                autoComplete="off"
-                                                ref={salesTypeRef}
-                                                styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
-                                            />
-                                        </div>
+                                                <Select
+                                                    id="salesType"
+                                                    value={selectedSales}
+                                                    onChange={handleChangeSales}
+                                                    options={filteredOptionSales}
+                                                    className="exp-input-field"
+                                                    placeholder=""
+                                                    required
+                                                    data-tip="Please select a sales type"
+                                                    autoComplete="off"
+                                                    ref={salesTypeRef}
+                                                    styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -3191,18 +3217,18 @@ const handleExcelDownload = () => {
                                     <label htmlFor="party_code">Product/Items Filter</label>
                                     <div className="exp-form-floating">
                                         <div title='Select a Product/Items Filter'>
-                                        <div class="d-flex justify-content-between">
-                                            <Select
-                                                id="Product"
-                                                value={selectedProduct}
-                                                onChange={handleChangecode}
-                                                options={filteredOptionProduct}
-                                                className="exp-input-field"
-                                                placeholder=""
-                                                required
-                                                styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
-                                            />
-                                        </div>
+                                            <div class="d-flex justify-content-between">
+                                                <Select
+                                                    id="Product"
+                                                    value={selectedProduct}
+                                                    onChange={handleChangecode}
+                                                    options={filteredOptionProduct}
+                                                    className="exp-input-field"
+                                                    placeholder=""
+                                                    required
+                                                    styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -3210,19 +3236,19 @@ const handleExcelDownload = () => {
                                     <label htmlFor="party_code">Product/Items Name</label>
                                     <div className="exp-form-floating">
                                         <div title='Select a Product/Items Name'>
-                                        <div class="d-flex justify-content-between">
-                                            <Select
-                                                className="exp-input-field"
-                                                id='itemCode'
-                                                required
-                                                placeholder=""
-                                                maxLength={18}
-                                                autoComplete='off'
-                                                options={dynamicOptions}
-                                                onChange={handleItemCode}
-                                                styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
-                                            />
-                                        </div>
+                                            <div class="d-flex justify-content-between">
+                                                <Select
+                                                    className="exp-input-field"
+                                                    id='itemCode'
+                                                    required
+                                                    placeholder=""
+                                                    maxLength={18}
+                                                    autoComplete='off'
+                                                    options={dynamicOptions}
+                                                    onChange={handleItemCode}
+                                                    styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -3293,7 +3319,7 @@ const handleExcelDownload = () => {
                                             onChange={handleChangeScreens}
                                             options={filteredOptionScreens}
                                             data-tip="Please select a default warehouse"
-                                            styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                                            styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                                         />
                                     </div>
                                 </div>
@@ -3357,35 +3383,35 @@ const handleExcelDownload = () => {
                                         <div className="exp-form-floating">
                                             <label htmlFor="">Pay Type</label>
                                             <div title="Please select a paytype">
-                                            <input
-                                                id="PayType"
-                                                value={PayType}
-                                                onChange={(e) => setPaytype(e.target.value)}
-                                                className="exp-input-field form-control"
-                                                title="Enter the Pay Type"
-                                                placeholder=""
-                                                required
-                                                data-tip="Please select a payment type"
-                                                autoComplete="off"
-                                            />
-                                        </div>
+                                                <input
+                                                    id="PayType"
+                                                    value={PayType}
+                                                    onChange={(e) => setPaytype(e.target.value)}
+                                                    className="exp-input-field form-control"
+                                                    title="Enter the Pay Type"
+                                                    placeholder=""
+                                                    required
+                                                    data-tip="Please select a payment type"
+                                                    autoComplete="off"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="col-md-12 form-group mb-2">
                                         <div className="exp-form-floating">
                                             <label htmlFor="">Sales Type </label>
                                             <div title="Please select a sales type">
-                                            <input
-                                                id="SalesType"
-                                                value={SalesType}
-                                                onChange={(e) => setSalestype(e.target.value)}
-                                                className="exp-input-field  form-control"
-                                                title="Enter the Sales Type"
-                                                placeholder=""
-                                                required
-                                                data-tip="Please select a sales type"
-                                                autoComplete="off"
-                                            /></div>
+                                                <input
+                                                    id="SalesType"
+                                                    value={SalesType}
+                                                    onChange={(e) => setSalestype(e.target.value)}
+                                                    className="exp-input-field  form-control"
+                                                    title="Enter the Sales Type"
+                                                    placeholder=""
+                                                    required
+                                                    data-tip="Please select a sales type"
+                                                    autoComplete="off"
+                                                /></div>
                                         </div>
                                     </div>
                                 </div>

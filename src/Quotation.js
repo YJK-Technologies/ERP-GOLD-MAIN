@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
@@ -65,6 +65,7 @@ function Quotation() {
   const [screensDrop, setScreensDrop] = useState([]);
   const [Screens, setScreens] = useState("");
   const [selectedscreens, setSelectedscreens] = useState(null);
+  const redirectLoadedRef = useRef(false);
 
   const location = useLocation();
   const savedPath = sessionStorage.getItem("currentPath");
@@ -152,6 +153,17 @@ function Quotation() {
   const quotationPermission = permissions
     .filter((permission) => permission.screen_type === "Quotation")
     .map((permission) => permission.permission_type.toLowerCase());
+
+  useEffect(() => {
+    const redirectDCNo = location.state?.transactionNo;
+
+    if (redirectDCNo && !redirectLoadedRef.current) {
+      redirectLoadedRef.current = true;
+
+      setTransactionNo(redirectDCNo);
+      handleRefNo(redirectDCNo);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     const currentPath = location.pathname;
@@ -3605,7 +3617,7 @@ function Quotation() {
                       onChange={handleChangeScreens}
                       options={filteredOptionScreens}
                       data-tip="Please select a default warehouse"
-                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                      styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                     />
                   </div>
                   {buttonsVisible &&
@@ -3637,25 +3649,25 @@ function Quotation() {
                   {["delete", "all permission"].some((permission) =>
                     quotationPermission.includes(permission),
                   ) && (
-                    <delbutton
-                      className="purbut"
-                      onClick={handleDeleteButtonClick}
-                      title="Delete"
-                    >
-                      <i class="fa-solid fa-trash"></i>
-                    </delbutton>
-                  )}
+                      <delbutton
+                        className="purbut"
+                        onClick={handleDeleteButtonClick}
+                        title="Delete"
+                      >
+                        <i class="fa-solid fa-trash"></i>
+                      </delbutton>
+                    )}
                   {["all permission", "view"].some((permission) =>
                     quotationPermission.includes(permission),
                   ) && (
-                    <printbutton
-                      className="purbut"
-                      title="Print"
-                      onClick={generateReport}
-                    >
-                      <i class="fa-solid fa-file-pdf"></i>
-                    </printbutton>
-                  )}
+                      <printbutton
+                        className="purbut"
+                        title="Print"
+                        onClick={generateReport}
+                      >
+                        <i class="fa-solid fa-file-pdf"></i>
+                      </printbutton>
+                    )}
                   {showExcelButton && (
                     <printbutton
                       className="purbut"
@@ -3696,29 +3708,29 @@ function Quotation() {
                           {["add", "all permission"].some((permission) =>
                             quotationPermission.includes(permission),
                           ) && (
-                            <icon class="icon" onClick={handleSaveButtonClick}>
-                              <i class="fa-regular fa-floppy-disk"></i>
-                            </icon>
-                          )}
+                              <icon class="icon" onClick={handleSaveButtonClick}>
+                                <i class="fa-regular fa-floppy-disk"></i>
+                              </icon>
+                            )}
                         </li>
                       )}
                       <li class="iconbutton  d-flex justify-content-center text-danger">
                         {["delete", "all permission"].some((permission) =>
                           quotationPermission.includes(permission),
                         ) && (
-                          <icon class="icon" onClick={handleDeleteButtonClick}>
-                            <i class="fa-solid fa-trash"></i>
-                          </icon>
-                        )}
+                            <icon class="icon" onClick={handleDeleteButtonClick}>
+                              <i class="fa-solid fa-trash"></i>
+                            </icon>
+                          )}
                       </li>
                       <li class="iconbutton  d-flex justify-content-center text-warning">
                         {["all permission", "view"].some((permission) =>
                           quotationPermission.includes(permission),
                         ) && (
-                          <icon class="icon" onClick={generateReport}>
-                            <i class="fa-solid fa-file-pdf"></i>
-                          </icon>
-                        )}
+                            <icon class="icon" onClick={generateReport}>
+                              <i class="fa-solid fa-file-pdf"></i>
+                            </icon>
+                          )}
                       </li>
                       {showExcelButton && (
                         <li class="iconbutton  d-flex justify-content-center">
@@ -3940,7 +3952,7 @@ function Quotation() {
                           placeholder=""
                           required
                           title="Please select the product/items filter"
-                          styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                          styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                         />
                       </div>
                     </div>
@@ -3964,7 +3976,7 @@ function Quotation() {
                           options={dynamicOptions}
                           onChange={handleChangeDynamicOption}
                           title="Please select the product/items name"
-                          styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                          styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                         />
                       </div>
                     </div>
@@ -4106,7 +4118,7 @@ function Quotation() {
                       onChange={handleChangeScreens}
                       options={filteredOptionScreens}
                       data-tip="Please select a default warehouse"
-                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                      styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                     />
                   </div>
                 </div>

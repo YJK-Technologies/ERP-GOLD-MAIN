@@ -1,4 +1,4 @@
-import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
@@ -91,9 +91,40 @@ function TaxInvoice() {
         .filter(permission => permission.screen_type === 'TaxInvoice')
         .map(permission => permission.permission_type.toLowerCase());
 
+    const redirectLoadedRef = useRef(false);
+
+    useEffect(() => {
+        const redirectTransactionNo = location.state?.transactionNo;
+        const redirectInvoiceType = location.state?.invoiceType;
+        console.log("Route Invoice Type:", redirectInvoiceType);
+
+        if (redirectInvoiceType) {
+            setInvoiceType(redirectInvoiceType);
+
+            setselectedInvoice({
+                value: redirectInvoiceType,
+                label: redirectInvoiceType
+            });
+        }
+
+        if (!redirectTransactionNo || redirectLoadedRef.current) {
+            return;
+        }
+
+        redirectLoadedRef.current = true;
+
+        setNew_running_no(redirectTransactionNo);
+
+        handleRefNo(
+            redirectTransactionNo,
+            redirectInvoiceType
+        );
+
+    }, [location.state]);
+
     useEffect(() => {
         const currentPath = location.pathname;
-        console.log(`Current path: ${currentPath}`);
+        // console.log(`Current path: ${currentPath}`);
         if (savedPath !== '/TaxInvoice') {
             sessionStorage.getItem('TaxInvoiceScreenSelection');
         }
@@ -761,15 +792,16 @@ function TaxInvoice() {
             .then((response) => response.json())
             .then((data) => {
                 setInvoicedrop(data);
-                const defaultInvoice = data.find((item) => item.attributedetails_name === "Tax Invoice") || data[0];
-                if (defaultInvoice) {
-                    setselectedInvoice({
-                        value: defaultInvoice.attributedetails_name,
-                        label: defaultInvoice.attributedetails_name,
-                    });
-                    setInvoiceType(defaultInvoice.attributedetails_name);
-                    setType(defaultInvoice.attributedetails_name);
+                const redirectInvoiceType = location.state?.invoiceType;
+
+                let invoiceToSelect;
+                if (redirectInvoiceType) { 
+                    invoiceToSelect = data.find( (item) => item.attributedetails_name === redirectInvoiceType ); 
                 }
+
+                if (!invoiceToSelect) { invoiceToSelect = data.find( (item) => item.attributedetails_name === "Tax Invoice" ) || data[0]; }
+
+                if (invoiceToSelect) { const invoiceTypeValue = invoiceToSelect.attributedetails_name; setselectedInvoice({ value: invoiceTypeValue, label: invoiceTypeValue, }); setInvoiceType(invoiceTypeValue); setType(invoiceTypeValue); }
             })
             .catch((error) => console.error("Error fetching invoice types:", error));
 
@@ -1945,7 +1977,7 @@ function TaxInvoice() {
             openWindow(url);
         }
     };
-    
+
 
     const generateReport = async () => {
         if (!new_running_no) {
@@ -2093,10 +2125,10 @@ function TaxInvoice() {
         }
     };
 
-    const handleRefNo = async (code) => {
+    const handleRefNo = async (code, invoiceTypeOverride = null) => {
         setLoading(true)
         try {
-            const tempstr1Value = isChecked ? "Proforma Invoice" : invoicetype;
+            const tempstr1Value = isChecked ? "Proforma Invoice" : (invoiceTypeOverride || invoicetype);
             const response = await fetch(`${config.apiBaseUrl}/getTaxInvoiceNo`, {
                 method: "POST",
                 headers: {
@@ -2128,13 +2160,25 @@ function TaxInvoice() {
                     setBalanceAmount(item.bal_amt)
                     setbill_date(formatDate(item.bill_date));
 
+                    // Sales Type
                     const selectedOption = filteredOptionSales.find(option => option.value === item.sales_type);
-                    setSelectedSales(selectedOption);
-                    setSalesType(selectedOption.value)
+                    if (selectedOption) {
+                        setSelectedSales(selectedOption);
+                        setSalesType(selectedOption.value);
+                    } else {
+                        setSelectedSales(null);
+                        setSalesType("");
+                    }
 
+                    // Pay Type
                     const selected = filteredOptionPay.find(option => option.value === item.pay_type);
-                    setSelectedPay(selected);
-                    setPayType(selected.value)
+                    if (selected) {
+                        setSelectedPay(selected);
+                        setPayType(selected.value);
+                    } else {
+                        setSelectedPay(null);
+                        setPayType("");
+                    }
 
                     setHeaderRowData([
                         { fieldName: 'Customer Code', billTo: item.customer_code, shipTo: item.shipTo_customer_code },
@@ -2843,142 +2887,142 @@ function TaxInvoice() {
     // };
 
     //Deleted Screen
-    
+
     const handleExcelDownload = () => {
 
-    // Header Data
-    const headerData = [{
-        "Bill Date": bill_date,
-        "Bill No": new_running_no,
-
-        "BillTo Customer Code": headerRowData[0].billTo,
-        "BillTo Customer Name": headerRowData[1].billTo,
-        "BillTo Customer Addr 1": headerRowData[2].billTo,
-        "BillTo Customer Addr 2": headerRowData[3].billTo,
-        "BillTo Customer Addr 3": headerRowData[4].billTo,
-        "BillTo Customer Addr 4": headerRowData[5].billTo,
-        "BillTo Customer State": headerRowData[6].billTo,
-        "BillTo Customer Country": headerRowData[7].billTo,
-        "BillTo Customer Mobile No": headerRowData[8].billTo,
-        "BillTo Customer GST No": headerRowData[9].billTo,
-        "BillTo Contact Person": headerRowData[10].billTo,
-
-        "ShipTo Customer Code": headerRowData[0].shipTo,
-        "ShipTo Customer Name": headerRowData[1].shipTo,
-        "ShipTo Customer Addr 1": headerRowData[2].shipTo,
-        "ShipTo Customer Addr 2": headerRowData[3].shipTo,
-        "ShipTo Customer Addr 3": headerRowData[4].shipTo,
-        "ShipTo Customer Addr 4": headerRowData[5].shipTo,
-        "ShipTo Customer State": headerRowData[6].shipTo,
-        "ShipTo Customer Country": headerRowData[7].shipTo,
-        "ShipTo Customer Mobile No": headerRowData[8].shipTo,
-        "ShipTo Customer GST No": headerRowData[9].shipTo,
-        "ShipTo Contact Person": headerRowData[10].shipTo,
-
-        "Tax Amount": TotalTax,
-        "Rounded Off": round_difference,
-        "Total Amount": TotalBill,
-    }];
-
-    // Item Details
-    const itemData = rowData
-        .filter(row => row.productItemCode && row.productItemName && row.qty > 0)
-        .map(row => ({
+        // Header Data
+        const headerData = [{
             "Bill Date": bill_date,
             "Bill No": new_running_no,
-            "Customer Name": headerRowData[1].billTo,
-            "S.No": row.serialNumber,
-            "Product / Item Code": row.productItemCode,
-            "Product / Item Name": row.productItemName,
-            "Product Description": row.productDescription,
-            "HSN Code": row.HSNCode,
-            "Qty": row.qty,
-            "Unit Price": row.unitPrice,
-            "Total": row.totalAmount,
-        }));
 
-    // Tax Details
-    const taxDetailsData = rowDataTax.map(taxRow => {
-        const matchedItem = rowData.find(
-            row => Number(row.serialNumber) === Number(taxRow.ItemSNO)
-        );
+            "BillTo Customer Code": headerRowData[0].billTo,
+            "BillTo Customer Name": headerRowData[1].billTo,
+            "BillTo Customer Addr 1": headerRowData[2].billTo,
+            "BillTo Customer Addr 2": headerRowData[3].billTo,
+            "BillTo Customer Addr 3": headerRowData[4].billTo,
+            "BillTo Customer Addr 4": headerRowData[5].billTo,
+            "BillTo Customer State": headerRowData[6].billTo,
+            "BillTo Customer Country": headerRowData[7].billTo,
+            "BillTo Customer Mobile No": headerRowData[8].billTo,
+            "BillTo Customer GST No": headerRowData[9].billTo,
+            "BillTo Contact Person": headerRowData[10].billTo,
 
-        return {
-            "Transaction No": new_running_no.toString(),
-            "Entry Date": bill_date,
-            "Item SNo": taxRow.ItemSNO,
-            "Tax SNo": taxRow.TaxSNO,
-            "Item Code": matchedItem ? matchedItem.productItemCode : "",
-            "Item Name": matchedItem ? matchedItem.productItemName : "",
-            "Tax Type": taxRow.taxDetail,
-            "Tax Amount": taxRow.TaxAmount,
-            "Tax Percentage": taxRow.TaxPercentage,
-        };
-    });
+            "ShipTo Customer Code": headerRowData[0].shipTo,
+            "ShipTo Customer Name": headerRowData[1].shipTo,
+            "ShipTo Customer Addr 1": headerRowData[2].shipTo,
+            "ShipTo Customer Addr 2": headerRowData[3].shipTo,
+            "ShipTo Customer Addr 3": headerRowData[4].shipTo,
+            "ShipTo Customer Addr 4": headerRowData[5].shipTo,
+            "ShipTo Customer State": headerRowData[6].shipTo,
+            "ShipTo Customer Country": headerRowData[7].shipTo,
+            "ShipTo Customer Mobile No": headerRowData[8].shipTo,
+            "ShipTo Customer GST No": headerRowData[9].shipTo,
+            "ShipTo Contact Person": headerRowData[10].shipTo,
 
-    // Header Sheet
-    const headerWorksheet = XLSX.utils.aoa_to_sheet([
-        ["Invoice"],
-        [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
-        [],
-    ]);
+            "Tax Amount": TotalTax,
+            "Rounded Off": round_difference,
+            "Total Amount": TotalBill,
+        }];
 
-    XLSX.utils.sheet_add_json(headerWorksheet, headerData, {
-        origin: "A4",
-    });
+        // Item Details
+        const itemData = rowData
+            .filter(row => row.productItemCode && row.productItemName && row.qty > 0)
+            .map(row => ({
+                "Bill Date": bill_date,
+                "Bill No": new_running_no,
+                "Customer Name": headerRowData[1].billTo,
+                "S.No": row.serialNumber,
+                "Product / Item Code": row.productItemCode,
+                "Product / Item Name": row.productItemName,
+                "Product Description": row.productDescription,
+                "HSN Code": row.HSNCode,
+                "Qty": row.qty,
+                "Unit Price": row.unitPrice,
+                "Total": row.totalAmount,
+            }));
 
-    // Merge Heading
-    headerWorksheet["!merges"] = [
-        {
-            s: { r: 0, c: 0 },
-            e: { r: 0, c: 9 },
-        },
-        {
-            s: { r: 1, c: 0 },
-            e: { r: 1, c: 9 },
-        },
-    ];
+        // Tax Details
+        const taxDetailsData = rowDataTax.map(taxRow => {
+            const matchedItem = rowData.find(
+                row => Number(row.serialNumber) === Number(taxRow.ItemSNO)
+            );
 
-    // Detail Sheets
-    const itemWorksheet = XLSX.utils.json_to_sheet(itemData);
-    const taxDetailsWorksheet = XLSX.utils.json_to_sheet(taxDetailsData);
-
-    // Auto Fit
-    const autoFitColumns = (worksheet, data) => {
-        if (!data || data.length === 0) return;
-
-        const cols = [];
-
-        data.forEach(row => {
-            Object.keys(row).forEach((key, i) => {
-                const value = row[key] == null ? "" : row[key].toString();
-
-                cols[i] = Math.max(
-                    cols[i] || key.length,
-                    key.length,
-                    value.length
-                );
-            });
+            return {
+                "Transaction No": new_running_no.toString(),
+                "Entry Date": bill_date,
+                "Item SNo": taxRow.ItemSNO,
+                "Tax SNo": taxRow.TaxSNO,
+                "Item Code": matchedItem ? matchedItem.productItemCode : "",
+                "Item Name": matchedItem ? matchedItem.productItemName : "",
+                "Tax Type": taxRow.taxDetail,
+                "Tax Amount": taxRow.TaxAmount,
+                "Tax Percentage": taxRow.TaxPercentage,
+            };
         });
 
-        worksheet["!cols"] = cols.map(width => ({
-            wch: width + 5,
-        }));
-    };
+        // Header Sheet
+        const headerWorksheet = XLSX.utils.aoa_to_sheet([
+            ["Invoice"],
+            [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
+            [],
+        ]);
 
-    // Apply Auto Width
-    autoFitColumns(headerWorksheet, headerData);
-    autoFitColumns(itemWorksheet, itemData);
-    autoFitColumns(taxDetailsWorksheet, taxDetailsData);
+        XLSX.utils.sheet_add_json(headerWorksheet, headerData, {
+            origin: "A4",
+        });
 
-    // Workbook
-    const workbook = XLSX.utils.book_new();
+        // Merge Heading
+        headerWorksheet["!merges"] = [
+            {
+                s: { r: 0, c: 0 },
+                e: { r: 0, c: 9 },
+            },
+            {
+                s: { r: 1, c: 0 },
+                e: { r: 1, c: 9 },
+            },
+        ];
 
-    XLSX.utils.book_append_sheet(workbook, headerWorksheet, "Header Data");
-    XLSX.utils.book_append_sheet(workbook, itemWorksheet, "Invoice Details");
-    XLSX.utils.book_append_sheet(workbook, taxDetailsWorksheet, "Tax Details");
+        // Detail Sheets
+        const itemWorksheet = XLSX.utils.json_to_sheet(itemData);
+        const taxDetailsWorksheet = XLSX.utils.json_to_sheet(taxDetailsData);
 
-    XLSX.writeFile(workbook, "Invoice.xlsx");
+        // Auto Fit
+        const autoFitColumns = (worksheet, data) => {
+            if (!data || data.length === 0) return;
+
+            const cols = [];
+
+            data.forEach(row => {
+                Object.keys(row).forEach((key, i) => {
+                    const value = row[key] == null ? "" : row[key].toString();
+
+                    cols[i] = Math.max(
+                        cols[i] || key.length,
+                        key.length,
+                        value.length
+                    );
+                });
+            });
+
+            worksheet["!cols"] = cols.map(width => ({
+                wch: width + 5,
+            }));
+        };
+
+        // Apply Auto Width
+        autoFitColumns(headerWorksheet, headerData);
+        autoFitColumns(itemWorksheet, itemData);
+        autoFitColumns(taxDetailsWorksheet, taxDetailsData);
+
+        // Workbook
+        const workbook = XLSX.utils.book_new();
+
+        XLSX.utils.book_append_sheet(workbook, headerWorksheet, "Header Data");
+        XLSX.utils.book_append_sheet(workbook, itemWorksheet, "Invoice Details");
+        XLSX.utils.book_append_sheet(workbook, taxDetailsWorksheet, "Tax Details");
+
+        XLSX.writeFile(workbook, "Invoice.xlsx");
     };
     const [deletedRowData, setDeletedRowData] = useState([]);
     const [deletedRowDataTerms, setDeletedRowDataTerms] = useState([]);
@@ -3375,7 +3419,7 @@ function TaxInvoice() {
                 BillTo_customer_addr_2, BillTo_customer_addr_3, BillTo_customer_addr_4, ShipTo_customer_addr_1, ShipTo_customer_addr_2, ShipTo_customer_addr_3, billdate, ShipTo_customer_addr_4, BillTo_customer_state,
                 ShipTo_customer_state, BillTo_customer_country, ShipTo_customer_country, BillTo_customer_mobile_no, ShipTo_customer_mobile_no, BillTo_contact_person, ShipTo_contact_person,
                 po_no, po_date, document_type, delivery_note, dispatched_through, Destination, delivered_through,
-            supplier_ref, Eway_bill_no }] = data;
+                supplier_ref, Eway_bill_no }] = data;
 
             // const AdAmount = document.getElementById('adAmount');
             // if (AdAmount) {
@@ -3722,80 +3766,80 @@ function TaxInvoice() {
         }
     };
 
-     useEffect(() => {
-            const handleKeyDown = (e) => {
-              // 1. Ensure keys only trigger on F-keys
-              if (!['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F8'].includes(e.key)) {
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            // 1. Ensure keys only trigger on F-keys
+            if (!['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F8'].includes(e.key)) {
                 return;
-              }
-        
-              // 2. Prevent default browser shortcut actions (e.g., F1 Help, F5 Refresh)
-              e.preventDefault();
-              e.stopPropagation();
-        
-              // 3. Prevent execution if screen is currently loading
-              if (loading) return;
-        
-              switch (e.key) {
+            }
+
+            // 2. Prevent default browser shortcut actions (e.g., F1 Help, F5 Refresh)
+            e.preventDefault();
+            e.stopPropagation();
+
+            // 3. Prevent execution if screen is currently loading
+            if (loading) return;
+
+            switch (e.key) {
                 case 'F1':
-                  // Open Item Search Popup
-                  setOpen(true); 
-                  break;
-        
+                    // Open Item Search Popup
+                    setOpen(true);
+                    break;
+
                 // case 'F2':
                 //   // Open Customer Search Popup
                 //   setOpen2(true); 
                 //   break;
-        
+
                 case 'F3':
-                  // New / Reset Sales Invoice Form
-                  if (window.confirm("Start a new adjustment? Unsaved changes will be lost.")) {
-                    handleReload(); 
-                  }
-                  break;  
-        
+                    // New / Reset Sales Invoice Form
+                    if (window.confirm("Start a new adjustment? Unsaved changes will be lost.")) {
+                        handleReload();
+                    }
+                    break;
+
                 case 'F4':
-                  // Save / Complete Invoice (Same logic as Save Button)
-                  handleSaveButtonClick(); 
-                  break;
-        
+                    // Save / Complete Invoice (Same logic as Save Button)
+                    handleSaveButtonClick();
+                    break;
+
                 case 'F5':
-                  // Search Existing Invoices to Edit
-                  setOpen1(true); 
-                  break;
-        
+                    // Search Existing Invoices to Edit
+                    setOpen1(true);
+                    break;
+
                 case 'F6':
-                  // Delete selected line item in AG Grid
-                  if ( transaction_no) {
-                    handleDeleteButtonClick();
-                  } else {
-                    alert("Please save the invoice before deleting.");
-                  }
-                  break;
-        
+                    // Delete selected line item in AG Grid
+                    if (transaction_no) {
+                        handleDeleteButtonClick();
+                    } else {
+                        alert("Please save the invoice before deleting.");
+                    }
+                    break;
+
                 case 'F8':
-                  // Print Invoice
-                  if (showExcelButton && transaction_no) {
-                    generateReport();
-                  } else {
-                    alert("Please save the invoice before printing.");
-                  }
-                  break;
-        
+                    // Print Invoice
+                    if (showExcelButton && transaction_no) {
+                        generateReport();
+                    } else {
+                        alert("Please save the invoice before printing.");
+                    }
+                    break;
+
                 default:
-                  break;
-              }
-            };
-        
-            // Attach listener
-            window.addEventListener('keydown', handleKeyDown);
-        
-            // Clean up listener on unmount
-            return () => {
-              window.removeEventListener('keydown', handleKeyDown);
-            };
-          }, [loading, showExcelButton, transaction_no, rowData]);
-        
+                    break;
+            }
+        };
+
+        // Attach listener
+        window.addEventListener('keydown', handleKeyDown);
+
+        // Clean up listener on unmount
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [loading, showExcelButton, transaction_no, rowData]);
+
 
     return (
         <div className="">
@@ -3820,7 +3864,7 @@ function TaxInvoice() {
                                             onChange={handleChangeStatus}
                                             options={filteredOptionStatus}
                                             data-tip="Please select a default warehouse"
-                                            styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                                            styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                                         />
                                     </div>
                                     <div class="exp-form-floating">
@@ -3833,7 +3877,7 @@ function TaxInvoice() {
                                             onChange={handleChangeScreens}
                                             options={filteredOptionScreens}
                                             data-tip="Please select a default warehouse"
-                                            styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                                            styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                                         />
                                     </div>
                                     <div class="exp-form-floating mt-2 me-4">
@@ -3844,7 +3888,7 @@ function TaxInvoice() {
                                             options={filteredOptionInvoice}
                                             value={selectedInvoice}
                                             onChange={handleChangeInvoice}
-                                            styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                                            styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                                         />
                                     </div>
                                     {buttonsVisible && ['add', 'all permission'].some(permission => purchasePermission.includes(permission)) && (
@@ -3999,7 +4043,7 @@ function TaxInvoice() {
                                             required
                                             data-tip="Please select a payment type"
                                             autoComplete="off"
-                                            styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                                            styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                                         />
                                     </div>
                                 </div>
@@ -4017,7 +4061,7 @@ function TaxInvoice() {
                                             required
                                             data-tip="Please select a sales type"
                                             autoComplete="off"
-                                            styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                                            styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                                         />
                                     </div>
                                 </div>
@@ -4165,7 +4209,7 @@ function TaxInvoice() {
                                                 className="exp-input-field"
                                                 placeholder=""
                                                 required
-                                                styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                                                styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                                             />
                                         </div>
                                     </div>
@@ -4183,7 +4227,7 @@ function TaxInvoice() {
                                                 autoComplete='off'
                                                 options={dynamicOptions}
                                                 onChange={handleItemCode}
-                                                styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                                                styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                                             />
                                         </div>
                                     </div>
@@ -4336,7 +4380,7 @@ function TaxInvoice() {
                                             onChange={handleChangeScreens}
                                             options={filteredOptionScreens}
                                             data-tip="Please select a default warehouse"
-                                            styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                                            styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                                         />
                                     </div>
                                     <div class="exp-form-floating mt-2 me-4">
@@ -4347,7 +4391,7 @@ function TaxInvoice() {
                                             options={filteredOptionInvoice}
                                             value={selectedInvoice}
                                             onChange={handleChangeInvoice}
-                                            styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                                            styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                                         />
                                     </div>
                                 </div>
@@ -4407,7 +4451,7 @@ function TaxInvoice() {
 
                                     <div className="col-md-12 form-group mb-2">
                                         <div className="exp-form-floating">
-                                            <label htmlFor="">Pay Type</label>                                    
+                                            <label htmlFor="">Pay Type</label>
                                             <input
                                                 id="PayType"
                                                 value={PayType}

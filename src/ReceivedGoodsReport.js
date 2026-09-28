@@ -11,10 +11,20 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import "./test.css"
 import LoadingScreen from './Loading';
+import { useNavigate } from 'react-router-dom';
 const config = require('./Apiconfig');
 
 
 function ReceivedGoodsRt() {
+    const navigate = useNavigate();
+
+    const handleTransactionClick = (transactionNo) => {
+        // SessionStorage illama Direct React Router State pass panroam
+        navigate("/ReceivedGoods", {
+            state: { transactionNo: transactionNo }
+        });
+    };
+
     const [rowData, setRowData] = useState([]);
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
@@ -154,73 +164,54 @@ function ReceivedGoodsRt() {
         {
             headerName: 'Transaction No',
             field: 'bill_no',
-            editable: true,
-            filter: true,
-            sortable: false,
-            editable: false
+            cellRenderer: (params) => {
+                if (!params.value) return "";
+                return (
+                    <span
+                        style={{
+                            color: "#1890ff",
+                            cursor: "pointer",
+                            textDecoration: "underline",
+                            fontWeight: "500"
+                        }}
+                        onClick={() => handleTransactionClick(params.value)}
+                    >
+                        {params.value}
+                    </span>
+                );
+            }
         },
         {
             headerName: 'Item S.No',
             field: 'item_sno',
-            editable: true,
-            filter: true,
-            sortable: false,
-            editable: false
         },
         {
             headerName: 'Item Code',
             field: 'item_code',
-            editable: true,
-            filter: true,
-            sortable: false,
-            editable: false
         },
         {
             headerName: 'Item Name',
             field: 'item_name',
-            editable: true,
-            filter: true,
-            sortable: false,
-            editable: false
         },
         {
             headerName: 'Bill Qty',
             field: 'bill_qty',
-            editable: true,
-            filter: true,
-            sortable: false,
-            editable: false
         },
         {
             headerName: 'Received Qty',
             field: 'rec_qty',
-            editable: true,
-            filter: true,
-            sortable: false
         },
         {
             headerName: 'Balance Qty',
             field: 'bal_qty',
-            editable: true,
-            filter: true,
-            sortable: false,
-            editable: false
         },
         {
             headerName: 'Pending',
             field: 'pending',
-            editable: true,
-            filter: true,
-            sortable: false,
-            editable: false
         },
         {
             headerName: 'Description',
             field: 'description',
-            editable: true,
-            filter: true,
-            sortable: false,
-            editable: false
         }
 
     ];
@@ -228,7 +219,6 @@ function ReceivedGoodsRt() {
     const defaultColDef = {
         resizable: true,
         wrapText: true,
-        flex: 1,
     };
 
     const onGridReady = (params) => {
@@ -635,17 +625,17 @@ function ReceivedGoodsRt() {
                     </div>
                     <div className="col-md-3 form-group">
                         <label for="city" className="form-label">Item Code</label>
-                        <div title ='Please Enter the Item Code'>
-                        <Select
-                            id="status"
-                            value={selectedItem}
-                            onChange={handleChangeItem}
-                            options={filteredOptionItem}
-                            className="exp-input-field"
-                            placeholder=""
-                            onKeyDown={(e) => e.key === 'Enter' && fetchreceivedgoodsreport()}
-                            styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
-                        />
+                        <div title='Please Enter the Item Code'>
+                            <Select
+                                id="status"
+                                value={selectedItem}
+                                onChange={handleChangeItem}
+                                options={filteredOptionItem}
+                                className="exp-input-field"
+                                placeholder=""
+                                onKeyDown={(e) => e.key === 'Enter' && fetchreceivedgoodsreport()}
+                                styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                            />
                         </div>
                     </div>
                     <div className="col-md-3 form-group mb-2 ">
@@ -663,21 +653,21 @@ function ReceivedGoodsRt() {
                     <div className="col-md-3 form-group">
                         <label className="form-label">Pending Status </label>
                         <div title='Please Enter the Pending Status'>
-                        <Select
-                            id="returnType"
-                            className=" exp-input-field"
-                            placeholder=""
-                            required
-                            value={selectedPendingStatus}
-                            onChange={handleChangeStatus}
-                            options={filteredOptionStatus}
-                            onKeyDown={(e) => e.key === 'Enter' && fetchreceivedgoodsreport()}
-                            data-tip="Please select a default warehouse"
-                            styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
-                        />
+                            <Select
+                                id="returnType"
+                                className=" exp-input-field"
+                                placeholder=""
+                                required
+                                value={selectedPendingStatus}
+                                onChange={handleChangeStatus}
+                                options={filteredOptionStatus}
+                                onKeyDown={(e) => e.key === 'Enter' && fetchreceivedgoodsreport()}
+                                data-tip="Please select a default warehouse"
+                                styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                            />
+                        </div>
                     </div>
-                </div>
-                <div className="col-md-1">
+                    <div className="col-md-1">
                         <div class="exp-form-floating">
                             <div class=" d-flex justify-content-center mt-4">
                                 <icon className="popups-btn fs-6 p-3" onClick={fetchreceivedgoodsreport} required title="Search">
@@ -689,20 +679,20 @@ function ReceivedGoodsRt() {
                             </div>
                         </div>
                     </div>
-                <div class="ag-theme-alpine" style={{ height: 455, width: "100%" }}>
-                    <AgGridReact
-                        rowData={rowData}
-                        columnDefs={columnDefs}
-                        defaultColDef={defaultColDef}
-                        onGridReady={onGridReady}
-                        onCellValueChanged={onCellValueChanged}
-                        onSelectionChanged={onSelectionChanged}
-                        pagination={true}
-                        paginationAutoPageSize={true}
-                    />
+                    <div class="ag-theme-alpine" style={{ height: 455, width: "100%" }}>
+                        <AgGridReact
+                            rowData={rowData}
+                            columnDefs={columnDefs}
+                            defaultColDef={defaultColDef}
+                            onGridReady={onGridReady}
+                            onCellValueChanged={onCellValueChanged}
+                            onSelectionChanged={onSelectionChanged}
+                            pagination={true}
+                            paginationAutoPageSize={true}
+                        />
+                    </div>
                 </div>
             </div>
-        </div>
         </div>
     );
 }
