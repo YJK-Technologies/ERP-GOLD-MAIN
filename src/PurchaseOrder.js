@@ -1,4 +1,4 @@
-import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
@@ -75,56 +75,58 @@ function PurchaseOrder() {
   const [screensDrop, setScreensDrop] = useState([]);
   const [Screens, setScreens] = useState('');
   const [selectedscreens, setSelectedscreens] = useState(null);
+  const redirectLoadedRef = useRef(false);
 
   const location = useLocation();
   const savedPath = sessionStorage.getItem('currentPath');
-useEffect(() => {
-  const handleKeyDown = (e) => {
-    if (!["F1", "F3", "F4", "F5", "F6", "F8"].includes(e.key)) {
-      return;
-    }
 
-    e.preventDefault();
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!["F1", "F3", "F4", "F5", "F6", "F8"].includes(e.key)) {
+        return;
+      }
 
-    if (loading) return;
+      e.preventDefault();
 
-    switch (e.key) {
-      case "F1":
-        setOpen(true);
-        break;
+      if (loading) return;
 
-      case "F3":
-        handleReload();
-        break;
+      switch (e.key) {
+        case "F1":
+          setOpen(true);
+          break;
 
-      case "F4":
-        handleSaveButtonClick();
-        break;
+        case "F3":
+          handleReload();
+          break;
 
-      case "F5":
-        setOpen1(true);
-        break;
+        case "F4":
+          handleSaveButtonClick();
+          break;
 
-      case "F6":
-        if (transaction_no) {
-          handleDeleteButtonClick();
-        } else {
-          alert("Please save the opening item before deleting.");
-        }
-        break;
+        case "F5":
+          setOpen1(true);
+          break;
+
+        case "F6":
+          if (transaction_no) {
+            handleDeleteButtonClick();
+          } else {
+            alert("Please save the opening item before deleting.");
+          }
+          break;
 
 
-      default:
-        break;
-    }
-  };
+        default:
+          break;
+      }
+    };
 
-  window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
 
-  return () => {
-    window.removeEventListener("keydown", handleKeyDown);
-  };
-}, [loading, transaction_no]);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [loading, transaction_no]);
 
   //code added by Pavun purpose of set user permisssion
   const permissions = JSON.parse(sessionStorage.getItem('permissions')) || {};
@@ -132,6 +134,16 @@ useEffect(() => {
     .filter(permission => permission.screen_type === 'PurchaseOrder')
     .map(permission => permission.permission_type.toLowerCase());
 
+    useEffect(() => {
+        const redirectDCNo = location.state?.transactionNo;
+
+        if (redirectDCNo && !redirectLoadedRef.current) {
+            redirectLoadedRef.current = true;
+
+            setTransactionNo(redirectDCNo);
+            handleRefNo(redirectDCNo);
+        }
+    }, [location.state]);
 
   useEffect(() => {
     fetch(`${config.apiBaseUrl}/getDefaultoptions`, {
@@ -2423,181 +2435,181 @@ useEffect(() => {
 
   const handleExcelDownload = () => {
 
-  const filteredRowData = rowData.filter(
-    row => row.purchaseQty > 0 &&
-           row.TotalItemAmount > 0 &&
-           row.purchaseAmt > 0
-  )
-   .map(({ taxType, taxPer, taxDetails, keyField, ...row }) => row);
+    const filteredRowData = rowData.filter(
+      row => row.purchaseQty > 0 &&
+        row.TotalItemAmount > 0 &&
+        row.purchaseAmt > 0
+    )
+      .map(({ taxType, taxPer, taxDetails, keyField, ...row }) => row);
 
-  const filteredRowDataTax = rowDataTax.filter(
-    taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0
-  )
-  .map(({ TaxName, keyfield, ...taxRow }) => taxRow);
+    const filteredRowDataTax = rowDataTax.filter(
+      taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0
+    )
+      .map(({ TaxName, keyfield, ...taxRow }) => taxRow);
 
-  const headerData = [{
-    "Transaction No": transactionNo,
-    "Vendor / Customer Code": headerRowData[0].billTo,
-    "Vendor / Customer Name": headerRowData[1].billTo,
-    "Address 1": headerRowData[2].billTo,
-    "Address 2": headerRowData[3].billTo,
-    "Address 3": headerRowData[4].billTo,
-    "Address 4": headerRowData[5].billTo,
-    "State": headerRowData[6].billTo,
-    "Country": headerRowData[7].billTo,
-    "Mobile No": headerRowData[8].billTo,
-    "GST No": headerRowData[9].billTo,
-    "Contact Person": headerRowData[10].billTo,
-    "Purchase Amount": TotalPurchase,
-    "Tax Amount": TotalTax,
-    "Rounded Off": round_difference,
-    "Total Amount": TotalBill,
-  }];
+    const headerData = [{
+      "Transaction No": transactionNo,
+      "Vendor / Customer Code": headerRowData[0].billTo,
+      "Vendor / Customer Name": headerRowData[1].billTo,
+      "Address 1": headerRowData[2].billTo,
+      "Address 2": headerRowData[3].billTo,
+      "Address 3": headerRowData[4].billTo,
+      "Address 4": headerRowData[5].billTo,
+      "State": headerRowData[6].billTo,
+      "Country": headerRowData[7].billTo,
+      "Mobile No": headerRowData[8].billTo,
+      "GST No": headerRowData[9].billTo,
+      "Contact Person": headerRowData[10].billTo,
+      "Purchase Amount": TotalPurchase,
+      "Tax Amount": TotalTax,
+      "Rounded Off": round_difference,
+      "Total Amount": TotalBill,
+    }];
 
-  const shipToData = [{
-    "Transaction No": transactionNo,
-    "Vendor / Customer Code": headerRowData[0].shipTo,
-    "Vendor / Customer Name": headerRowData[1].shipTo,
-    "Address 1": headerRowData[2].shipTo,
-    "Address 2": headerRowData[3].shipTo,
-    "Address 3": headerRowData[4].shipTo,
-    "Address 4": headerRowData[5].shipTo,
-    "State": headerRowData[6].shipTo,
-    "Country": headerRowData[7].shipTo,
-    "Mobile No": headerRowData[8].shipTo,
-    "GST No": headerRowData[9].shipTo,
-    "Contact Person": headerRowData[10].shipTo,
-    "Purchase Amount": TotalPurchase,
-    "Tax Amount": TotalTax,
-    "Rounded Off": round_difference,
-    "Total Amount": TotalBill,
-  }];
+    const shipToData = [{
+      "Transaction No": transactionNo,
+      "Vendor / Customer Code": headerRowData[0].shipTo,
+      "Vendor / Customer Name": headerRowData[1].shipTo,
+      "Address 1": headerRowData[2].shipTo,
+      "Address 2": headerRowData[3].shipTo,
+      "Address 3": headerRowData[4].shipTo,
+      "Address 4": headerRowData[5].shipTo,
+      "State": headerRowData[6].shipTo,
+      "Country": headerRowData[7].shipTo,
+      "Mobile No": headerRowData[8].shipTo,
+      "GST No": headerRowData[9].shipTo,
+      "Contact Person": headerRowData[10].shipTo,
+      "Purchase Amount": TotalPurchase,
+      "Tax Amount": TotalTax,
+      "Rounded Off": round_difference,
+      "Total Amount": TotalBill,
+    }];
 
-  // Header Sheets
-  const billToSheet = XLSX.utils.aoa_to_sheet([
-    ["Purchase Order - Bill To"],
-    [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
-    [],
-  ]);
+    // Header Sheets
+    const billToSheet = XLSX.utils.aoa_to_sheet([
+      ["Purchase Order - Bill To"],
+      [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
+      [],
+    ]);
 
-  XLSX.utils.sheet_add_json(billToSheet, headerData, {
-    origin: "A4",
-  });
-
-  const shipToSheet = XLSX.utils.aoa_to_sheet([
-    ["Purchase Order - Ship To"],
-    [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
-    [],
-  ]);
-
-  XLSX.utils.sheet_add_json(shipToSheet, shipToData, {
-    origin: "A4",
-  });
-
-  // Merge Heading
-  billToSheet["!merges"] = [
-    { s: { r: 0, c: 0 }, e: { r: 0, c: 9 } },
-    { s: { r: 1, c: 0 }, e: { r: 1, c: 9 } },
-  ];
-
-  shipToSheet["!merges"] = [
-    { s: { r: 0, c: 0 }, e: { r: 0, c: 9 } },
-    { s: { r: 1, c: 0 }, e: { r: 1, c: 9 } },
-  ];
-
-  // Detail Sheets
-  // const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
-  // const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
-  // Detail Sheets
-
-// AG Grid field -> Excel Header Name
-const detailColumnMapping = [
-  { field: 'serialNumber', headerName: 'S.No' },
-  { field: 'itemCode', headerName: 'Item Code' },
-  { field: 'itemName', headerName: 'Item Name' },
-  { field: 'purchaseQty', headerName: 'Qty' },
-  { field: 'purchaseAmt', headerName: 'Unit Price' },
-  { field: 'TotalTaxAmount', headerName: 'Tax Amount' },
-  { field: 'TotalItemAmount', headerName: 'Total' },
-];
-
-// Convert detail data using AG Grid header names
-const excelRowData = filteredRowData.map(row => {
-  const newRow = {};
-
-  detailColumnMapping.forEach(({ field, headerName }) => {
-    newRow[headerName] = row[field];
-  });
-
-  return newRow;
-});
-
-
-// AG Grid field -> Excel Header Name for Tax Details
-const taxColumnMapping = [
-  { field: 'ItemSNO', headerName: 'S.No' },
-  { field: 'TaxSNO', headerName: 'Tax S.No' },
-  { field: 'Item_code', headerName: 'Item Code' },
-  { field: 'TaxType', headerName: 'Tax Type' },
-  { field: 'TaxPercentage', headerName: 'Tax %' },
-  { field: 'TaxAmount', headerName: 'Tax Amount' },
-];
-
-// Convert tax data using AG Grid header names
-const excelRowDataTax = filteredRowDataTax.map(row => {
-  const newRow = {};
-
-  taxColumnMapping.forEach(({ field, headerName }) => {
-    newRow[headerName] = row[field];
-  });
-
-  return newRow;
-});
-
-
-// Create Excel sheets
-const rowDataSheet = XLSX.utils.json_to_sheet(excelRowData);
-const rowDataTaxSheet = XLSX.utils.json_to_sheet(excelRowDataTax);
-
-  // Auto Fit Function
-  const autoFitColumns = (worksheet, data) => {
-    if (!data || data.length === 0) return;
-
-    const cols = [];
-
-    data.forEach(row => {
-      Object.keys(row).forEach((key, i) => {
-        const value = row[key] == null ? "" : row[key].toString();
-
-        cols[i] = Math.max(
-          cols[i] || key.length,
-          key.length,
-          value.length
-        );
-      });
+    XLSX.utils.sheet_add_json(billToSheet, headerData, {
+      origin: "A4",
     });
 
-    worksheet["!cols"] = cols.map(width => ({
-      wch: width + 5,
-    }));
+    const shipToSheet = XLSX.utils.aoa_to_sheet([
+      ["Purchase Order - Ship To"],
+      [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
+      [],
+    ]);
+
+    XLSX.utils.sheet_add_json(shipToSheet, shipToData, {
+      origin: "A4",
+    });
+
+    // Merge Heading
+    billToSheet["!merges"] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 9 } },
+      { s: { r: 1, c: 0 }, e: { r: 1, c: 9 } },
+    ];
+
+    shipToSheet["!merges"] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 9 } },
+      { s: { r: 1, c: 0 }, e: { r: 1, c: 9 } },
+    ];
+
+    // Detail Sheets
+    // const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
+    // const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
+    // Detail Sheets
+
+    // AG Grid field -> Excel Header Name
+    const detailColumnMapping = [
+      { field: 'serialNumber', headerName: 'S.No' },
+      { field: 'itemCode', headerName: 'Item Code' },
+      { field: 'itemName', headerName: 'Item Name' },
+      { field: 'purchaseQty', headerName: 'Qty' },
+      { field: 'purchaseAmt', headerName: 'Unit Price' },
+      { field: 'TotalTaxAmount', headerName: 'Tax Amount' },
+      { field: 'TotalItemAmount', headerName: 'Total' },
+    ];
+
+    // Convert detail data using AG Grid header names
+    const excelRowData = filteredRowData.map(row => {
+      const newRow = {};
+
+      detailColumnMapping.forEach(({ field, headerName }) => {
+        newRow[headerName] = row[field];
+      });
+
+      return newRow;
+    });
+
+
+    // AG Grid field -> Excel Header Name for Tax Details
+    const taxColumnMapping = [
+      { field: 'ItemSNO', headerName: 'S.No' },
+      { field: 'TaxSNO', headerName: 'Tax S.No' },
+      { field: 'Item_code', headerName: 'Item Code' },
+      { field: 'TaxType', headerName: 'Tax Type' },
+      { field: 'TaxPercentage', headerName: 'Tax %' },
+      { field: 'TaxAmount', headerName: 'Tax Amount' },
+    ];
+
+    // Convert tax data using AG Grid header names
+    const excelRowDataTax = filteredRowDataTax.map(row => {
+      const newRow = {};
+
+      taxColumnMapping.forEach(({ field, headerName }) => {
+        newRow[headerName] = row[field];
+      });
+
+      return newRow;
+    });
+
+
+    // Create Excel sheets
+    const rowDataSheet = XLSX.utils.json_to_sheet(excelRowData);
+    const rowDataTaxSheet = XLSX.utils.json_to_sheet(excelRowDataTax);
+
+    // Auto Fit Function
+    const autoFitColumns = (worksheet, data) => {
+      if (!data || data.length === 0) return;
+
+      const cols = [];
+
+      data.forEach(row => {
+        Object.keys(row).forEach((key, i) => {
+          const value = row[key] == null ? "" : row[key].toString();
+
+          cols[i] = Math.max(
+            cols[i] || key.length,
+            key.length,
+            value.length
+          );
+        });
+      });
+
+      worksheet["!cols"] = cols.map(width => ({
+        wch: width + 5,
+      }));
+    };
+
+    // Apply Auto Width
+    autoFitColumns(billToSheet, headerData);
+    autoFitColumns(shipToSheet, shipToData);
+    autoFitColumns(rowDataSheet, filteredRowData);
+    autoFitColumns(rowDataTaxSheet, filteredRowDataTax);
+
+    // Workbook
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, billToSheet, "Bill To Header");
+    XLSX.utils.book_append_sheet(workbook, shipToSheet, "Ship To Header");
+    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Purchase Order Details");
+    XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Purchase Order Tax Details");
+
+    XLSX.writeFile(workbook, "Purchase_Order_Data.xlsx");
   };
 
-  // Apply Auto Width
-  autoFitColumns(billToSheet, headerData);
-  autoFitColumns(shipToSheet, shipToData);
-  autoFitColumns(rowDataSheet, filteredRowData);
-  autoFitColumns(rowDataTaxSheet, filteredRowDataTax);
-
-  // Workbook
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, billToSheet, "Bill To Header");
-  XLSX.utils.book_append_sheet(workbook, shipToSheet, "Ship To Header");
-  XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Purchase Order Details");
-  XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Purchase Order Tax Details");
-
-  XLSX.writeFile(workbook, "Purchase_Order_Data.xlsx");
-  };
-  
   const handlePoData = async (data) => {
     if (data && data.length > 0) {
       setButtonsVisible(false);
@@ -3461,7 +3473,7 @@ const rowDataTaxSheet = XLSX.utils.json_to_sheet(excelRowDataTax);
                       onChange={handleChangeScreens}
                       options={filteredOptionScreens}
                       data-tip="Please select a default warehouse"
-                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                      styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                     />
                   </div>
                   {buttonsVisible && ['add', 'all permission'].some(permission => purchaseOrderPermission.includes(permission)) && (
@@ -3494,18 +3506,18 @@ const rowDataTaxSheet = XLSX.utils.json_to_sheet(excelRowDataTax);
                     <i className="fa-solid fa-cog"></i>
                   </button> */}
                   <a className='border-none text-dark p-1 mt-2' title='Setting' onClick={navigateToSettings} style={{ cursor: "pointer" }}>
-                      <svg xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="feather feather-settings">
-                        <circle cx="12" cy="12" r="3"></circle>
-                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="feather feather-settings">
+                      <circle cx="12" cy="12" r="3"></circle>
+                      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 
            1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 
            1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 
            1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 
@@ -3517,8 +3529,8 @@ const rowDataTaxSheet = XLSX.utils.json_to_sheet(excelRowDataTax);
            1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.09a1.65 
            1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 
            0-1.51 1z"/>
-                      </svg>
-                    </a>
+                    </svg>
+                  </a>
                 </div>
               </div>
               <div class="mobileview">
@@ -3631,7 +3643,7 @@ const rowDataTaxSheet = XLSX.utils.json_to_sheet(excelRowDataTax);
                           className="exp-input-field"
                           placeholder=""
                           classNamePrefix="react-select"
-                          styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                          styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                         />
                       </div>
                     </div>
@@ -3832,7 +3844,7 @@ const rowDataTaxSheet = XLSX.utils.json_to_sheet(excelRowDataTax);
                       onChange={handleChangeScreens}
                       options={filteredOptionScreens}
                       data-tip="Please select a default warehouse"
-                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                      styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                     />
                   </div>
                 </div>
