@@ -6,18 +6,32 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ReceivedGoodsPopup from "./ReceivedGoodsHelp";
 import * as XLSX from "xlsx";
+import { useLocation } from 'react-router-dom';
 const config = require("../Apiconfig");
 
-function AssetsReturn({}) {
+function AssetsReturn({ }) {
   const [rowData, setRowData] = useState([]);
   const [transactionDate, setTransactionDate] = useState("");
   const [transactionNo, setTransactionNo] = useState("");
   const [gridApi, setGridApi] = useState(null);
+  const redirectLoadedRef = useRef(false);
+  const location = useLocation();
 
   const permissions = JSON.parse(sessionStorage.getItem("permissions")) || {};
   const purchasePermission = permissions
     .filter((permission) => permission.screen_type === "ReceivedGoods")
     .map((permission) => permission.permission_type.toLowerCase());
+
+  useEffect(() => {
+    const redirectDCNo = location.state?.transactionNo;
+
+    if (redirectDCNo && !redirectLoadedRef.current) {
+      redirectLoadedRef.current = true;
+
+      setTransactionNo(redirectDCNo);
+      fetchReceivedGoodsData(redirectDCNo);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -433,14 +447,14 @@ function AssetsReturn({}) {
             {["add", "all permission"].some((permission) =>
               purchasePermission.includes(permission),
             ) && (
-              <savebutton
-                className="purbut"
-                title="save"
-                onClick={updateSelectedRows}
-              >
-                <i class="fa-regular fa-floppy-disk"></i>
-              </savebutton>
-            )}
+                <savebutton
+                  className="purbut"
+                  title="save"
+                  onClick={updateSelectedRows}
+                >
+                  <i class="fa-regular fa-floppy-disk"></i>
+                </savebutton>
+              )}
             <printbutton
               className="purbut"
               title="excel"
@@ -476,10 +490,10 @@ function AssetsReturn({}) {
                       {["update", "all permission"].some((permission) =>
                         purchasePermission.includes(permission),
                       ) && (
-                        <icon class="icon" onClick={updateSelectedRows}>
-                          <i class="fa-regular fa-floppy-disk"></i>
-                        </icon>
-                      )}
+                          <icon class="icon" onClick={updateSelectedRows}>
+                            <i class="fa-regular fa-floppy-disk"></i>
+                          </icon>
+                        )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center text-info">
                       <icon class="icon" onClick={handleExcelDownload}>

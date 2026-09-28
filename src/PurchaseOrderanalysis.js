@@ -10,8 +10,18 @@ import Select from 'react-select';
 import { ToastContainer, toast } from "react-toastify";
 import LoadingScreen from './Loading';
 import LZString from "lz-string";
+import { useNavigate } from 'react-router-dom';
 
 const PurchaseOrderAnalysis = () => {
+  const navigate = useNavigate();
+
+  const handleTransactionClick = (transactionNo) => {
+    // SessionStorage illama Direct React Router State pass panroam
+    navigate("/PurchaseOrder", { 
+      state: { transactionNo: transactionNo } 
+    });
+  };
+
   const formatDate = (isoDateString) => {
     const date = new Date(isoDateString);
     const year = date.getFullYear();
@@ -30,6 +40,22 @@ const PurchaseOrderAnalysis = () => {
     {
       headerName: "Transaction No",
       field: "transaction_no",
+      cellRenderer: (params) => {
+        if (!params.value) return "";
+        return (
+          <span
+            style={{
+              color: "#1890ff",
+              cursor: "pointer",
+              textDecoration: "underline",
+              fontWeight: "500"
+            }}
+            onClick={() => handleTransactionClick(params.value)}
+          >
+            {params.value}
+          </span>
+        );
+      }
     },
     {
       headerName: "Bill to Vendor Name",
