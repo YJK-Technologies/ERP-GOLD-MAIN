@@ -7,6 +7,8 @@ import {
   Briefcase,
   BuildingFill,
   CardText,
+  Calendar3,
+  Calendar2Range,
   Book,
 } from "react-bootstrap-icons";
 import "./SideBar.css";
@@ -877,6 +879,26 @@ setCRMCollapsed(false);  };
                 <div class="menu-item">
                   <BuildingFill size={18} className="me-3" />
                   <span className={collapsed ? "hidden" : ""}> Warehouse</span>
+                </div>
+              </Link>
+            )}
+          </div>
+          <div className=" ms-3">
+            {screenType.includes("FinancialYears") && (
+              <Link to="/FinancialYears" className="nav-link" title="Financial Year">
+                <div class="menu-item">
+                  <Calendar3 size={18} className="me-3" />
+                  <span className={collapsed ? "hidden" : ""}>Financial Year</span>
+                </div>
+              </Link>
+            )}
+          </div>
+          <div className=" ms-3">
+            {screenType.includes("FinancialPeriod") && (
+              <Link to="/FinancialPeriod" className="nav-link" title="Financial Period">
+                <div class="menu-item">
+                  <Calendar2Range size={18} className="me-3" />
+                  <span className={collapsed ? "hidden" : ""}>Financial Period</span>
                 </div>
               </Link>
             )}

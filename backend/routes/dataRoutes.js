@@ -969,6 +969,12 @@ router.post("/Financial_YearInsert", dataController.Financial_YearInsert)
 router.post("/Financial_YearUpdate", dataController.Financial_YearUpdate)
 router.post("/Financial_YearLoopUpdate", dataController.Financial_YearLoopUpdate)
 router.post("/Financial_YearLoopDelete", dataController.Financial_YearLoopDelete)
+router.post("/AddFinancialPeriod", dataController.Financial_PeriodInsert)
+router.post("/FinancialPeriodUpdate", dataController.Financial_PeriodUpdate)
+router.post("/Financial_PeriodLoopUpdate", dataController.Financial_PeriodLoopUpdate)
+router.post("/Financial_PeriodLoopDelete", dataController.Financial_PeriodLoopDelete)
+router.post("/getFinancialYears", dataController.getFinancialYears)
+router.post("/FinancialPeriodSearchData", dataController.FinancialPeriodSearchData)
 
 
 module.exports = router;
