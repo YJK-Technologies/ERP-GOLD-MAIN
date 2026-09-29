@@ -29330,6 +29330,118 @@ const getSettings = async (req, res) => {
 };
 //Code Ended By Pavun on 10-08-2026
 
+//Code added By sakthi on 28-09-2026
+
+const Financial_YearInsert = async (req, res) => {
+  const { Financial_Year_ID, Financial_Year_Code, Financial_Year_Name, Start_Date, End_Date, Status, Keyfield, company_code, location_code, created_by, created_date } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("mode", sql.NVarChar, "I")
+      .input("Financial_Year_ID", sql.Int, Financial_Year_ID)
+      .input("Financial_Year_Code", sql.NVarChar, Financial_Year_Code)
+      .input("Financial_Year_Name", sql.NVarChar, Financial_Year_Name)
+      .input("Start_Date", sql.Date, Start_Date)
+      .input("End_Date", sql.Date, End_Date)
+      .input("Status", sql.NVarChar, Status)
+      .input("Keyfield", sql.NVarChar, Keyfield)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("created_by", sql.NVarChar, created_by)
+      .input("created_date", sql.DateTime, created_date)
+      .query(`EXEC sp_Financial_Year @mode, @Financial_Year_ID, @Financial_Year_Code, @Financial_Year_Name, @Start_Date, @End_Date, @Status, @Keyfield, @company_code, @location_code, @created_by, @created_date, '', ''`);
+
+    res.status(200).json({ success: true, message: "Financial Year inserted successfully" });
+  } catch (err) {
+    console.error("Error during Financial Year insert:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const Financial_YearUpdate = async (req, res) => {
+  const { Financial_Year_ID, Financial_Year_Code, Financial_Year_Name, Start_Date, End_Date, Status, Keyfield, company_code, location_code, modified_by, modified_date } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("mode", sql.NVarChar, "U")
+      .input("Financial_Year_ID", sql.Int, Financial_Year_ID)
+      .input("Financial_Year_Code", sql.NVarChar, Financial_Year_Code)
+      .input("Financial_Year_Name", sql.NVarChar, Financial_Year_Name)
+      .input("Start_Date", sql.Date, Start_Date)
+      .input("End_Date", sql.Date, End_Date)
+      .input("Status", sql.NVarChar, Status)
+      .input("Keyfield", sql.NVarChar, Keyfield)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("modified_by", sql.NVarChar, modified_by)
+      .input("modified_date", sql.DateTime, modified_date)
+      .query(`EXEC sp_Financial_Year @mode, @Financial_Year_ID, @Financial_Year_Code, @Financial_Year_Name, @Start_Date, @End_Date, @Status, @Keyfield, @company_code, @location_code, '', '', @modified_by, @modified_date`);
+
+    res.status(200).json({ success: true, message: "Financial Year updated successfully" });
+  } catch (err) {
+    console.error("Error during Financial Year update:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const Financial_YearLoopUpdate = async (req, res) => {
+  const Financial_YearData = req.body.Financial_YearData;
+  if (!Financial_YearData || !Financial_YearData.length) {
+    return res.status(400).json("Invalid or empty Financial_YearData array.");
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    for (const item of Financial_YearData) {
+      await pool.request()
+        .input("mode", sql.NVarChar, "U")
+        .input("Financial_Year_ID", sql.Int, item.Financial_Year_ID)
+        .input("Financial_Year_Code", sql.NVarChar, item.Financial_Year_Code)
+        .input("Financial_Year_Name", sql.NVarChar, item.Financial_Year_Name)
+        .input("Start_Date", sql.Date, item.Start_Date)
+        .input("End_Date", sql.Date, item.End_Date)
+        .input("Status", sql.NVarChar, item.Status)
+        .input("Keyfield", sql.NVarChar, item.Keyfield)
+        .input("company_code", sql.NVarChar, item.company_code)
+        .input("location_code", sql.NVarChar, item.location_code)
+        .input("modified_by", sql.NVarChar, item.modified_by)
+        .input("modified_date", sql.DateTime, item.modified_date)
+        .query(`EXEC sp_Financial_Year @mode, @Financial_Year_ID, @Financial_Year_Code, @Financial_Year_Name, @Start_Date, @End_Date, @Status, @Keyfield, @company_code, @location_code, '', '', @modified_by, @modified_date`);
+    }
+    res.status(200).json("Financial_Year data updated successfully");
+  } catch (err) {
+    console.error("Error in Financial_YearLoopUpdate:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+const Financial_YearLoopDelete = async (req, res) => {
+  const Financial_YearData = req.body.Financial_YearData;
+  if (!Financial_YearData || !Financial_YearData.length) {
+    return res.status(400).json("Invalid or empty Financial_YearData array.");
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    for (const item of Financial_YearData) {
+      await pool.request()
+        .input("mode", sql.NVarChar, "D")
+        .input("Keyfield", sql.NVarChar, item.Keyfield)
+        .input("company_code", sql.NVarChar, item.company_code)
+        .input("location_code", sql.NVarChar, item.location_code)
+        .query(`EXEC sp_Financial_Year @mode, 0, '', '', '', '', '', @Keyfield, @company_code, @location_code, '', '', '', ''`);
+    }
+    res.status(200).json("Financial_Year data deleted successfully");
+  } catch (err) {
+    console.error("Error in Financial_YearLoopDelete:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+
+//Code ended By sakthi on 28-09-2026
+
 module.exports = {
   login,
   forgetPassword,
@@ -30273,6 +30385,10 @@ module.exports = {
   getBillFormat,
   getUserData,
   insertSettings,
-  getSettings
+  getSettings,
+  Financial_YearInsert,
+  Financial_YearUpdate,
+  Financial_YearLoopUpdate,
+  Financial_YearLoopDelete,
 
 };

@@ -196,6 +196,8 @@ import RChart from "./CRMcomponents/Reports/CRMChart.js";
 import Rpivot from "./CRMcomponents/Reports/Pivot.js";
 import CRMSettings from "./CRMcomponents/Configurations/Settings.js";
 import CRMSalesTeam from './CRMcomponents/Configurations/SalesTeam.js'
+import AddFinancialYear from './FinancialYear/AddFinancialYear.js'
+import FinancialYears from './FinancialYear/FinancialYears.js'
 
 function Main() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -434,6 +436,8 @@ function Main() {
      { path: "/Rpivot", component: <Rpivot /> },
      { path: "/CRMSettings", component: <CRMSettings /> },
      { path: "/CRMSalesTeam", component: <CRMSalesTeam /> },
+     { path: "/AddFinancialYear", component: <AddFinancialYear /> },
+     { path: "/FinancialYears", component: <FinancialYears /> },
 
     
 
