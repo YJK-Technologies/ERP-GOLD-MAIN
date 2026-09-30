@@ -26,7 +26,11 @@ function Financial_YearScreen() {
   const [financialYearCode, setFinancialYearCode] = useState("");
   const [financialYearName, setFinancialYearName] = useState("");
   const [startDate, setStartDate] = useState("");
+  const [From_Start_Date, setFrom_Start_Date] = useState("");
+  const [To_Start_Date, setTo_Start_Date] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [From_End_Date, setFrom_End_Date] = useState("");
+  const [To_End_Date, setTo_End_Date] = useState("");
   const [status, setStatus] = useState("");
   const [selectedStatus, setSelectedStatus] = useState(null);
   const StatusRef = useRef(null);
@@ -98,7 +102,6 @@ function Financial_YearScreen() {
   }, []);
 
   const filteredOptionStatus = [
-    { value: "All", label: "All" },
     ...statusdrop.map((option) => ({
       value: option.attributedetails_name,
       label: option.attributedetails_name,
@@ -130,11 +133,15 @@ function Financial_YearScreen() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            financial_year_code: financialYearCode,
-            financial_year_name: financialYearName,
-            start_date: startDate,
-            end_date: endDate,
-            status: status === "All" ? "" : status,
+            Financial_Year_Code: financialYearCode,
+            Financial_Year_Name: financialYearName,
+            // start_date: startDate,
+            From_Start_Date: From_Start_Date,
+            To_Start_Date: To_Start_Date,
+            // end_date: endDate,
+            From_End_Date: From_End_Date,
+            To_End_Date: To_End_Date,
+            Status: status,
             company_code,
             location_code
           }),
@@ -163,7 +170,11 @@ function Financial_YearScreen() {
     setFinancialYearCode("");
     setFinancialYearName("");
     setStartDate("");
+    setFrom_Start_Date("");
+    setTo_Start_Date("");
     setEndDate("");
+    setFrom_End_Date("");
+    setTo_End_Date("");
     setStatus("");
     setSelectedStatus(null);
     setRowData([]);
@@ -670,14 +681,14 @@ const deleteSelectedRows = async () => {
 
             <div className="col-md-3 form-group">
               <div className="exp-form-floating">
-                <label className="exp-form-labels">Start Date</label>
+                <label className="exp-form-labels">From Start Date</label>
                 <input
                   id="startDate"
                   type="date"
                   className="exp-input-field form-control"
-                  title="Select the Start Date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
+                  title="Select the From Start Date"
+                  value={From_Start_Date}
+                  onChange={(e) => setFrom_Start_Date(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 />
               </div>
@@ -685,14 +696,44 @@ const deleteSelectedRows = async () => {
 
             <div className="col-md-3 form-group">
               <div className="exp-form-floating">
-                <label className="exp-form-labels">End Date</label>
+                <label className="exp-form-labels">To Start Date</label>
+                <input
+                  id="startDate"
+                  type="date"
+                  className="exp-input-field form-control"
+                  title="Select the To Start Date"
+                  value={To_Start_Date}
+                  onChange={(e) => setTo_Start_Date(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                />
+              </div>
+            </div>
+
+            <div className="col-md-3 form-group mt-3">
+              <div className="exp-form-floating">
+                <label className="exp-form-labels">From End Date</label>
                 <input
                   id="endDate"
                   type="date"
                   className="exp-input-field form-control"
                   title="Select the End Date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
+                  value={From_End_Date}
+                  onChange={(e) => setFrom_End_Date(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                />
+              </div>
+            </div>
+
+            <div className="col-md-3 form-group mt-3">
+              <div className="exp-form-floating">
+                <label className="exp-form-labels">To End Date</label>
+                <input
+                  id="endDate"
+                  type="date"
+                  className="exp-input-field form-control"
+                  title="Select the End Date"
+                  value={To_End_Date}
+                  onChange={(e) => setTo_End_Date(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 />
               </div>
@@ -708,6 +749,7 @@ const deleteSelectedRows = async () => {
                     onChange={handleChangeStatus}
                     options={filteredOptionStatus}
                     className="exp-input-field"
+                    isClearable
                     placeholder=""
                     onKeyDown={handleKeyDownStatus}
                     ref={StatusRef}
