@@ -388,6 +388,7 @@ function AddFinancial_YearScreen() {
                       className="exp-input-field"
                       placeholder=""
                       required
+                      isClearable
                       ref={statusRef}
                       classNamePrefix="react-select"
                       styles={{

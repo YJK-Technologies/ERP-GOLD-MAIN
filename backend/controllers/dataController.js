@@ -29440,8 +29440,8 @@ const Financial_YearLoopDelete = async (req, res) => {
 };
 
 const Financial_YearSearch = async (req, res) => {
-  const { Financial_Year_Code, financial_year_code, Financial_Year_Name, financial_year_name, From_Start_Date, start_date, To_Start_Date,
-    From_End_Date, To_End_Date, end_date, Status, status, company_code, location_code, } = req.body;
+  const { Financial_Year_Code, Financial_Year_Name, From_Start_Date, To_Start_Date,
+    From_End_Date, To_End_Date, Start_Date, Status, End_Date, company_code, location_code, } = req.body;
 
   try {
     // Connect to the database
@@ -29455,10 +29455,10 @@ const Financial_YearSearch = async (req, res) => {
       .input("Status", sql.NVarChar, Status)
       .input("company_code", sql.NVarChar, company_code)
       .input("location_code", sql.NVarChar, location_code)
-      .input("From_Start_Date", sql.Date, From_Start_Date)
-      .input("To_Start_Date", sql.Date, To_Start_Date)
-      .input("From_End_Date", sql.Date, From_End_Date)
-      .input("To_End_Date", sql.Date, To_End_Date)
+      .input("From_Start_Date", sql.NVarChar, From_Start_Date)
+      .input("To_Start_Date", sql.NVarChar, To_Start_Date)
+      .input("From_End_Date", sql.NVarChar, From_End_Date)
+      .input("To_End_Date", sql.NVarChar, To_End_Date)
       .query(`EXEC sp_Financial_Year @mode, 0, @Financial_Year_Code, @Financial_Year_Name, '', '', @Status, '', @company_code, @location_code, @From_Start_Date, @To_Start_Date, @From_End_Date, @To_End_Date, '', '', '', ''`);
 
     // Send response
@@ -30585,7 +30585,8 @@ module.exports = {
   Financial_YearUpdate,
   Financial_YearLoopUpdate,
   Financial_YearLoopDelete,
-  Financial_YearSearch  Financial_PeriodInsert,
+  Financial_YearSearch,
+  Financial_PeriodInsert,
   Financial_PeriodUpdate,
   Financial_PeriodLoopUpdate,
   Financial_PeriodLoopDelete,
