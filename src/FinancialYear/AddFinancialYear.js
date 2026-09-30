@@ -177,7 +177,11 @@ function AddFinancial_YearScreen() {
       });
 
       if (response.status === 200 || response.ok) {
-        toast.success("Financial Year inserted successfully!");
+        setTimeout(() => {
+          toast.success("Financial Year Data inserted successfully!", {
+            onClose: () => window.location.reload(),
+          });
+        }, 1000);
       } else {
         const errorResponse = await response.json();
         toast.warning(errorResponse.message || "Failed to insert Financial Year");
