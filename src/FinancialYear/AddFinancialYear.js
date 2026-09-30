@@ -57,7 +57,12 @@ function AddFinancial_YearScreen() {
 
   // Navigate back preserving Grid state
   const handleNavigate = () => {
-    navigate(-1);
+      navigate("/FinancialYears", {
+    state: {
+      preservedRowData: location.state?.preservedRowData,
+      preservedInputs: location.state?.preservedInputs
+    }
+  });
   };
 
   // Fetch Status Options from API
