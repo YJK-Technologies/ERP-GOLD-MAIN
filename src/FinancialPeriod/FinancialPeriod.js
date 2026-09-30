@@ -178,6 +178,7 @@ const FinancialPeriodScreen = () => {
 
     const clearInputFields = () => {
         setFinancialYearId("");
+        setSelectedFinancialYearId("");
         setPeriodCode("");
         setPeriodName("");
         setStartDate("");
