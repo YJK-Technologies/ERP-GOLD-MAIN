@@ -121,7 +121,7 @@ const FinancialPeriodScreen = () => {
     const filteredOptionFinancialYear = Array.isArray(financialYearIdDrop)
         ? financialYearIdDrop.map((option) => ({
             value: option.Keyfield,
-            label: option.Keyfield,
+            label: `${option.Keyfield} - ${option.Financial_Year_Code}`
         }))
         : [];
 
