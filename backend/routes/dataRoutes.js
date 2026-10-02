@@ -976,6 +976,11 @@ router.post("/Financial_PeriodLoopUpdate", dataController.Financial_PeriodLoopUp
 router.post("/Financial_PeriodLoopDelete", dataController.Financial_PeriodLoopDelete)
 router.post("/getFinancialYears", dataController.getFinancialYears)
 router.post("/FinancialPeriodSearchData", dataController.FinancialPeriodSearchData)
+router.post("/getNoteType", dataController.getNoteType)
+router.post("/getPartyName", dataController.getPartyName)
+router.post("/getDebiteNote", dataController.getDebiteNote)
+router.post("/getCreditNote", dataController.getCreditNote)
+router.post("/getReferenceType", dataController.getReferenceType)
 
 
 module.exports = router;
