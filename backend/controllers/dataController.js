@@ -29638,6 +29638,617 @@ const FinancialPeriodSearchData = async (req, res) => {
 };
 //Code endded by pavun on 29-09-2026
 
+//Code added by Dinesh Gokul on 01-10-2026
+const Debit_Credit_NoteInsert = async (req, res) => {
+  const { Note_Type, Note_No, Note_Date, Party_Type, Party_ID, Reference_Type, Reference_ID, Reference_Invoice_No, Reference_Invoice_Date, Reason_ID, Reference_No, Sub_Total, Tax_Amount, Total_Amount, Narration, Status, GL_Status, Keyfield, company_code, location_code, created_by } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("mode", sql.NVarChar, "I")
+      .input("Note_Type", sql.NVarChar, Note_Type)
+      .input("Note_No", sql.NVarChar, Note_No)
+      .input("Note_Date", sql.Date, Note_Date)
+      .input("Party_Type", sql.NVarChar, Party_Type)
+      .input("Party_ID", sql.NVarChar, Party_ID)
+      .input("Reference_Type", sql.NVarChar, Reference_Type)
+      .input("Reference_ID", sql.NVarChar, Reference_ID)
+      .input("Reference_Invoice_No", sql.NVarChar, Reference_Invoice_No)
+      .input("Reference_Invoice_Date", sql.Date, Reference_Invoice_Date)
+      .input("Reason_ID", sql.NVarChar, Reason_ID)
+      .input("Reference_No", sql.NVarChar, Reference_No)
+      .input("Sub_Total", sql.Decimal(18, 2), Sub_Total)
+      .input("Tax_Amount", sql.Decimal(18, 2), Tax_Amount)
+      .input("Total_Amount", sql.NVarChar, Total_Amount)
+      .input("Narration", sql.NVarChar, Narration)
+      .input("Status", sql.NVarChar, Status)
+      .input("GL_Status", sql.NVarChar, GL_Status)
+      .input("Keyfield", sql.NVarChar, Keyfield)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("created_by", sql.NVarChar, created_by)
+      .query(`EXEC sp_Debit_Credit_Note @mode, @Note_Type, @Note_No, @Note_Date, @Party_Type, @Party_ID, @Reference_Type, @Reference_ID, @Reference_Invoice_No, @Reference_Invoice_Date, @Reason_ID, @Reference_No, @Sub_Total, @Tax_Amount, @Total_Amount, @Narration, @Status, @GL_Status, @Keyfield, @company_code, @location_code, @created_by, '', '', ''`);
+
+    res.status(200).json({ success: true, message: "Debit Credit Note inserted successfully" });
+  } catch (err) {
+    console.error("Error during Debit Credit Note insert:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const Debit_Credit_NoteUpdate = async (req, res) => {
+  const { Note_Type, Note_No, Note_Date, Party_Type, Party_ID, Reference_Type, Reference_ID, Reference_Invoice_No, Reference_Invoice_Date, Reason_ID, Reference_No, Sub_Total, Tax_Amount, Total_Amount, Narration, Status, GL_Status, Keyfield, company_code, location_code, modified_by } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("mode", sql.NVarChar, "U")
+      .input("Note_Type", sql.NVarChar, Note_Type)
+      .input("Note_No", sql.NVarChar, Note_No)
+      .input("Note_Date", sql.Date, Note_Date)
+      .input("Party_Type", sql.NVarChar, Party_Type)
+      .input("Party_ID", sql.NVarChar, Party_ID)
+      .input("Reference_Type", sql.NVarChar, Reference_Type)
+      .input("Reference_ID", sql.NVarChar, Reference_ID)
+      .input("Reference_Invoice_No", sql.NVarChar, Reference_Invoice_No)
+      .input("Reference_Invoice_Date", sql.Date, Reference_Invoice_Date)
+      .input("Reason_ID", sql.NVarChar, Reason_ID)
+      .input("Reference_No", sql.NVarChar, Reference_No)
+      .input("Sub_Total", sql.Decimal(18, 2), Sub_Total)
+      .input("Tax_Amount", sql.Decimal(18, 2), Tax_Amount)
+      .input("Total_Amount", sql.NVarChar, Total_Amount)
+      .input("Narration", sql.NVarChar, Narration)
+      .input("Status", sql.NVarChar, Status)
+      .input("GL_Status", sql.NVarChar, GL_Status)
+      .input("Keyfield", sql.NVarChar, Keyfield)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("modified_by", sql.NVarChar, modified_by)
+      .query(`EXEC sp_Debit_Credit_Note @mode, @Note_Type, @Note_No, @Note_Date, @Party_Type, @Party_ID, @Reference_Type, @Reference_ID, @Reference_Invoice_No, @Reference_Invoice_Date, @Reason_ID, @Reference_No, @Sub_Total, @Tax_Amount, @Total_Amount, @Narration, @Status, @GL_Status, @Keyfield, @company_code, @location_code, '', '', @modified_by, ''`);
+
+    res.status(200).json({ success: true, message: "Debit Credit Note updated successfully" });
+  } catch (err) {
+    console.error("Error during Debit Credit Note update:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const Debit_Credit_NoteDelete = async (req, res) => {
+  const { Note_No, company_code, location_code } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("mode", sql.NVarChar, "D")
+      .input("Note_No", sql.NVarChar, Note_No)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .query(`EXEC sp_Debit_Credit_Note @mode, '', @Note_No, '', '', '', '', '', '', '', '', '', 0, 0, '', '', '', '', '', @company_code, @location_code, '', '', '', ''`);
+
+    res.status(200).json({ success: true, message: "Debit Credit Note deleted successfully" });
+  } catch (err) {
+    console.error("Error during Debit Credit Note delete:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const Debit_Credit_NoteLoopInsert = async (req, res) => {
+  const Debit_Credit_NoteData = req.body.Debit_Credit_NoteData;
+  if (!Debit_Credit_NoteData || !Debit_Credit_NoteData.length) {
+    return res.status(400).json("Invalid or empty Debit_Credit_NoteData array.");
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    for (const item of Debit_Credit_NoteData) {
+      await pool.request()
+        .input("mode", sql.NVarChar, "I")
+        .input("Note_Type", sql.NVarChar, item.Note_Type)
+        .input("Note_No", sql.NVarChar, item.Note_No)
+        .input("Note_Date", sql.Date, item.Note_Date)
+        .input("Party_Type", sql.NVarChar, item.Party_Type)
+        .input("Party_ID", sql.NVarChar, item.Party_ID)
+        .input("Reference_Type", sql.NVarChar, item.Reference_Type)
+        .input("Reference_ID", sql.NVarChar, item.Reference_ID)
+        .input("Reference_Invoice_No", sql.NVarChar, item.Reference_Invoice_No)
+        .input("Reference_Invoice_Date", sql.Date, item.Reference_Invoice_Date)
+        .input("Reason_ID", sql.NVarChar, item.Reason_ID)
+        .input("Reference_No", sql.NVarChar, item.Reference_No)
+        .input("Sub_Total", sql.Decimal(18, 2), item.Sub_Total)
+        .input("Tax_Amount", sql.Decimal(18, 2), item.Tax_Amount)
+        .input("Total_Amount", sql.NVarChar, item.Total_Amount)
+        .input("Narration", sql.NVarChar, item.Narration)
+        .input("Status", sql.NVarChar, item.Status)
+        .input("GL_Status", sql.NVarChar, item.GL_Status)
+        .input("Keyfield", sql.NVarChar, item.Keyfield)
+        .input("company_code", sql.NVarChar, item.company_code)
+        .input("location_code", sql.NVarChar, item.location_code)
+        .input("created_by", sql.NVarChar, item.created_by)
+        .input("created_date", sql.DateTime, item.created_date)
+        .query(`EXEC sp_Debit_Credit_Note @mode, @Note_Type, @Note_No, @Note_Date, @Party_Type, @Party_ID, @Reference_Type, @Reference_ID, @Reference_Invoice_No, @Reference_Invoice_Date, @Reason_ID, @Reference_No, @Sub_Total, @Tax_Amount, @Total_Amount, @Narration, @Status, @GL_Status, @Keyfield, @company_code, @location_code, @created_by, @created_date, '', ''`);
+    }
+    res.status(200).json("Debit_Credit_Note data inserted successfully");
+  } catch (err) {
+    console.error("Error in Debit_Credit_NoteLoopInsert:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const Debit_Credit_NoteLoopUpdate = async (req, res) => {
+  const Debit_Credit_NoteData = req.body.Debit_Credit_NoteData;
+  if (!Debit_Credit_NoteData || !Debit_Credit_NoteData.length) {
+    return res.status(400).json("Invalid or empty Debit_Credit_NoteData array.");
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    for (const item of Debit_Credit_NoteData) {
+      await pool.request()
+        .input("mode", sql.NVarChar, "U")
+        .input("Note_Type", sql.NVarChar, item.Note_Type)
+        .input("Note_No", sql.NVarChar, item.Note_No)
+        .input("Note_Date", sql.Date, item.Note_Date)
+        .input("Party_Type", sql.NVarChar, item.Party_Type)
+        .input("Party_ID", sql.NVarChar, item.Party_ID)
+        .input("Reference_Type", sql.NVarChar, item.Reference_Type)
+        .input("Reference_ID", sql.NVarChar, item.Reference_ID)
+        .input("Reference_Invoice_No", sql.NVarChar, item.Reference_Invoice_No)
+        .input("Reference_Invoice_Date", sql.Date, item.Reference_Invoice_Date)
+        .input("Reason_ID", sql.NVarChar, item.Reason_ID)
+        .input("Reference_No", sql.NVarChar, item.Reference_No)
+        .input("Sub_Total", sql.Decimal(18, 2), item.Sub_Total)
+        .input("Tax_Amount", sql.Decimal(18, 2), item.Tax_Amount)
+        .input("Total_Amount", sql.NVarChar, item.Total_Amount)
+        .input("Narration", sql.NVarChar, item.Narration)
+        .input("Status", sql.NVarChar, item.Status)
+        .input("GL_Status", sql.NVarChar, item.GL_Status)
+        .input("Keyfield", sql.NVarChar, item.Keyfield)
+        .input("company_code", sql.NVarChar, item.company_code)
+        .input("location_code", sql.NVarChar, item.location_code)
+        .input("modified_by", sql.NVarChar, item.modified_by)
+        .input("modified_date", sql.DateTime, item.modified_date)
+        .query(`EXEC sp_Debit_Credit_Note @mode, @Note_Type, @Note_No, @Note_Date, @Party_Type, @Party_ID, @Reference_Type, @Reference_ID, @Reference_Invoice_No, @Reference_Invoice_Date, @Reason_ID, @Reference_No, @Sub_Total, @Tax_Amount, @Total_Amount, @Narration, @Status, @GL_Status, @Keyfield, @company_code, @location_code, '', '', @modified_by, @modified_date`);
+    }
+    res.status(200).json("Debit_Credit_Note data updated successfully");
+  } catch (err) {
+    console.error("Error in Debit_Credit_NoteLoopUpdate:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const Debit_Credit_NoteLoopDelete = async (req, res) => {
+  const Debit_Credit_NoteData = req.body.Debit_Credit_NoteData;
+  if (!Debit_Credit_NoteData || !Debit_Credit_NoteData.length) {
+    return res.status(400).json("Invalid or empty Debit_Credit_NoteData array.");
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    for (const item of Debit_Credit_NoteData) {
+      await pool.request()
+        .input("mode", sql.NVarChar, "D")
+        .input("Keyfield", sql.NVarChar, item.Keyfield)
+        .input("company_code", sql.NVarChar, item.company_code)
+        .input("location_code", sql.NVarChar, item.location_code)
+        .query(`EXEC sp_Debit_Credit_Note @mode, '', '', '', '', '', '', '', '', '', '', '', 0, 0, '', '', '', '', @Keyfield, @company_code, @location_code, '', '', '', ''`);
+    }
+    res.status(200).json("Debit_Credit_Note data deleted successfully");
+  } catch (err) {
+    console.error("Error in Debit_Credit_NoteLoopDelete:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const Debit_Credit_Note_DetailInsert = async (req, res) => {
+  const { Note_ID, Item_ID, Item_Code, Item_Name, UOM_ID, Qty, Rate, Amount, Total_Amount, Warehouse_ID, Keyfield_header,  Keyfield, company_code, location_code, created_by } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("mode", sql.NVarChar, "I")
+      .input("Note_ID", sql.NVarChar, Note_ID)
+      .input("Item_ID", sql.Int, Item_ID)
+      .input("Item_Code", sql.NVarChar, Item_Code)
+      .input("Item_Name", sql.NVarChar, Item_Name)
+      .input("UOM_ID", sql.Int, UOM_ID)
+      .input("Qty", sql.Decimal(18, 3), Qty)
+      .input("Rate", sql.Decimal(18, 2), Rate)
+      .input("Amount", sql.Decimal(18, 2), Amount)
+      .input("Total_Amount", sql.Decimal(18, 2), Total_Amount)
+      .input("Warehouse_ID", sql.NVarChar, Warehouse_ID)
+      .input("Keyfield_header", sql.NVarChar, Keyfield_header)
+      .input("Keyfield", sql.NVarChar, Keyfield)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("created_by", sql.NVarChar, created_by)
+      .query(`EXEC sp_Debit_Credit_Note_Detail @mode, @Note_ID, @Item_ID, @Item_Code, @Item_Name, @UOM_ID, @Qty, @Rate, @Amount, @Total_Amount, @Warehouse_ID, @Keyfield_header, 0, @Keyfield, @company_code, @location_code, @created_by, '', '', ''`);
+
+    res.status(200).json({ success: true, message: "Debit Credit Note Detail inserted successfully" });
+  } catch (err) {
+    console.error("Error during Debit Credit Note Detail insert:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const Debit_Credit_Note_DetailUpdate = async (req, res) => {
+  const { Note_ID, Item_ID, Item_Code, Item_Name, UOM_ID, Qty, Rate, Amount, Total_Amount, Warehouse_ID, Keyfield_header, SNo, Keyfield, company_code, location_code, modified_by } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("mode", sql.NVarChar, "U")
+      .input("Note_ID", sql.NVarChar, Note_ID)
+      .input("Item_ID", sql.Int, Item_ID)
+      .input("Item_Code", sql.NVarChar, Item_Code)
+      .input("Item_Name", sql.NVarChar, Item_Name)
+      .input("UOM_ID", sql.Int, UOM_ID)
+      .input("Qty", sql.Decimal(18, 3), Qty)
+      .input("Rate", sql.Decimal(18, 2), Rate)
+      .input("Amount", sql.Decimal(18, 2), Amount)
+      .input("Total_Amount", sql.Decimal(18, 2), Total_Amount)
+      .input("Warehouse_ID", sql.NVarChar, Warehouse_ID)
+      .input("Keyfield_header", sql.NVarChar, Keyfield_header)
+      .input("SNo", sql.Int, SNo)
+      .input("Keyfield", sql.NVarChar, Keyfield)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("modified_by", sql.NVarChar, modified_by)
+      .query(`EXEC sp_Debit_Credit_Note_Detail @mode, @Note_ID, @Item_ID, @Item_Code, @Item_Name, @UOM_ID, @Qty, @Rate, @Amount, @Total_Amount, @Warehouse_ID, @Keyfield_header, @SNo, @Keyfield, @company_code, @location_code, '', '', @modified_by, ''`);
+
+    res.status(200).json({ success: true, message: "Debit Credit Note Detail updated successfully" });
+  } catch (err) {
+    console.error("Error during Debit Credit Note Detail update:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const Debit_Credit_Note_DetailDelete = async (req, res) => {
+  const { Keyfield_header, SNo, Keyfield, company_code, location_code } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("mode", sql.NVarChar, "D")
+      .input("Keyfield_header", sql.NVarChar, Keyfield_header)
+      .input("SNo", sql.Int, SNo)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("Keyfield", sql.NVarChar, Keyfield)
+      .input("location_code", sql.NVarChar, location_code)
+      .query(`EXEC sp_Debit_Credit_Note_Detail @mode, '', 0, '', '', 0, 0, 0, 0, 0, '', @Keyfield_header, @SNo, @Keyfield, @company_code, @location_code, '', '', '', ''`);
+
+    res.status(200).json({ success: true, message: "Debit Credit Note Detail deleted successfully" });
+  } catch (err) {
+    console.error("Error during Debit Credit Note Detail delete:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const Debit_Credit_Note_DetailLoopInsert = async (req, res) => {
+  const Debit_Credit_Note_DetailData = req.body.Debit_Credit_Note_DetailData;
+  if (!Debit_Credit_Note_DetailData || !Debit_Credit_Note_DetailData.length) {
+    return res.status(400).json("Invalid or empty Debit_Credit_Note_DetailData array.");
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    for (const item of Debit_Credit_Note_DetailData) {
+      await pool.request()
+        .input("mode", sql.NVarChar, "I")
+        .input("Note_ID", sql.NVarChar, item.Note_ID)
+        .input("Item_ID", sql.Int, item.Item_ID)
+        .input("Item_Code", sql.NVarChar, item.Item_Code)
+        .input("Item_Name", sql.NVarChar, item.Item_Name)
+        .input("UOM_ID", sql.Int, item.UOM_ID)
+        .input("Qty", sql.Decimal(18, 3), item.Qty)
+        .input("Rate", sql.Decimal(18, 2), item.Rate)
+        .input("Amount", sql.Decimal(18, 2), item.Amount)
+        .input("Total_Amount", sql.Decimal(18, 2), item.Total_Amount)
+        .input("Warehouse_ID", sql.NVarChar, item.Warehouse_ID)
+        .input("Keyfield_header", sql.NVarChar, item.Keyfield_header)
+        .input("Keyfield", sql.NVarChar, item.Keyfield)
+        .input("company_code", sql.NVarChar, item.company_code)
+        .input("location_code", sql.NVarChar, item.location_code)
+        .input("created_by", sql.NVarChar, item.created_by)
+        .input("created_date", sql.DateTime, item.created_date)
+        .query(`EXEC sp_Debit_Credit_Note_Detail @mode, @Note_ID, @Item_ID, @Item_Code, @Item_Name, @UOM_ID, @Qty, @Rate, @Amount, @Total_Amount, @Warehouse_ID, @Keyfield_header, 0, @Keyfield, @company_code, @location_code, @created_by, @created_date, '', ''`);
+    }
+    res.status(200).json("Debit_Credit_Note_Detail data inserted successfully");
+  } catch (err) {
+    console.error("Error in Debit_Credit_Note_DetailLoopInsert:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const Debit_Credit_Note_DetailLoopUpdate = async (req, res) => {
+  const Debit_Credit_Note_DetailData = req.body.Debit_Credit_Note_DetailData;
+  if (!Debit_Credit_Note_DetailData || !Debit_Credit_Note_DetailData.length) {
+    return res.status(400).json("Invalid or empty Debit_Credit_Note_DetailData array.");
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    for (const item of Debit_Credit_Note_DetailData) {
+      await pool.request()
+        .input("mode", sql.NVarChar, "U")
+        .input("Note_ID", sql.NVarChar, item.Note_ID)
+        .input("Item_ID", sql.Int, item.Item_ID)
+        .input("Item_Code", sql.NVarChar, item.Item_Code)
+        .input("Item_Name", sql.NVarChar, item.Item_Name)
+        .input("UOM_ID", sql.Int, item.UOM_ID)
+        .input("Qty", sql.Decimal(18, 3), item.Qty)
+        .input("Rate", sql.Decimal(18, 2), item.Rate)
+        .input("Amount", sql.Decimal(18, 2), item.Amount)
+        .input("Total_Amount", sql.Decimal(18, 2), item.Total_Amount)
+        .input("Warehouse_ID", sql.NVarChar, item.Warehouse_ID)
+        .input("Keyfield_header", sql.NVarChar, item.Keyfield_header)
+        .input("SNo", sql.Int, item.SNo)
+        .input("Keyfield", sql.NVarChar, item.Keyfield)
+        .input("company_code", sql.NVarChar, item.company_code)
+        .input("location_code", sql.NVarChar, item.location_code)
+        .input("modified_by", sql.NVarChar, item.modified_by)
+        .input("modified_date", sql.DateTime, item.modified_date)
+        .query(`EXEC sp_Debit_Credit_Note_Detail @mode, @Note_ID, @Item_ID, @Item_Code, @Item_Name, @UOM_ID, @Qty, @Rate, @Amount, @Total_Amount, @Warehouse_ID, @Keyfield_header, @SNo, @Keyfield, @company_code, @location_code, '', '', @modified_by, @modified_date`);
+    }
+    res.status(200).json("Debit_Credit_Note_Detail data updated successfully");
+  } catch (err) {
+    console.error("Error in Debit_Credit_Note_DetailLoopUpdate:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const Debit_Credit_Note_DetailLoopDelete = async (req, res) => {
+  const Debit_Credit_Note_DetailData = req.body.Debit_Credit_Note_DetailData;
+  if (!Debit_Credit_Note_DetailData || !Debit_Credit_Note_DetailData.length) {
+    return res.status(400).json("Invalid or empty Debit_Credit_Note_DetailData array.");
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    for (const item of Debit_Credit_Note_DetailData) {
+      await pool.request()
+        .input("mode", sql.NVarChar, "D")
+        .input("Keyfield_header", sql.NVarChar, item.Keyfield_header)
+        .input("SNo", sql.Int, item.SNo)
+        .input("company_code", sql.NVarChar, item.company_code)
+        .input("Keyfield", sql.NVarChar, item.Keyfield)
+        .input("location_code", sql.NVarChar, item.location_code)
+        .query(`EXEC sp_Debit_Credit_Note_Detail @mode, '', 0, '', '', 0, 0, 0, 0, 0, '', @Keyfield_header, @SNo, @Keyfield, @company_code, @location_code, '', '', '', ''`);
+    }
+    res.status(200).json("Debit_Credit_Note_Detail data deleted successfully");
+  } catch (err) {
+    console.error("Error in Debit_Credit_Note_DetailLoopDelete:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const TaxDetailsTableInsert = async (req, res) => {
+  const { Note_ID, Item_code, Tax_code, Tax_percentage, Tax_amount, Keyfield_header, company_code, location_code, created_by } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("mode", sql.NVarChar, "I")
+      .input("Note_ID", sql.NVarChar, Note_ID)
+      .input("Item_code", sql.NVarChar, Item_code)
+      .input("Tax_code", sql.NVarChar, Tax_code)
+      .input("Tax_percentage", sql.Decimal(5, 2), Tax_percentage)
+      .input("Tax_amount", sql.Decimal(18, 2), Tax_amount)
+      .input("Keyfield_header", sql.NVarChar, Keyfield_header)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("created_by", sql.NVarChar, created_by)
+      .query(`EXEC sp_TaxDetailsTable @mode, @Note_ID, @Item_code, @Tax_code, @Tax_percentage, @Tax_amount, @Keyfield_header, 0, '', @company_code, @location_code, @created_by, '', '', ''`);
+
+    res.status(200).json({ success: true, message: "TaxDetailsTable inserted successfully" });
+  } catch (err) {
+    console.error("Error during TaxDetailsTable insert:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const TaxDetailsTableUpdate = async (req, res) => {
+  const { Note_ID, Item_code, Tax_code, Tax_percentage, Tax_amount, Keyfield_header, SNo, Keyfield, company_code, location_code, modified_by } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("mode", sql.NVarChar, "U")
+      .input("Note_ID", sql.NVarChar, Note_ID)
+      .input("Item_code", sql.NVarChar, Item_code)
+      .input("Tax_code", sql.NVarChar, Tax_code)
+      .input("Tax_percentage", sql.Decimal(5, 2), Tax_percentage)
+      .input("Tax_amount", sql.Decimal(18, 2), Tax_amount)
+      .input("Keyfield_header", sql.NVarChar, Keyfield_header)
+      .input("SNo", sql.Int, SNo)
+      .input("Keyfield", sql.NVarChar, Keyfield)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("modified_by", sql.NVarChar, modified_by)
+      .query(`EXEC sp_TaxDetailsTable @mode, @Note_ID, @Item_code, @Tax_code, @Tax_percentage, @Tax_amount, @Keyfield_header, @SNo, @Keyfield, @company_code, @location_code, '', '', @modified_by, ''`);
+
+    res.status(200).json({ success: true, message: "TaxDetailsTable updated successfully" });
+  } catch (err) {
+    console.error("Error during TaxDetailsTable update:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const TaxDetailsTableDelete = async (req, res) => {
+  const { Keyfield_header, SNo, Keyfield, company_code, location_code } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("mode", sql.NVarChar, "D")
+      .input("Keyfield_header", sql.NVarChar, Keyfield_header)
+      .input("SNo", sql.Int, SNo)
+      .input("Keyfield", sql.NVarChar, Keyfield)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .query(`EXEC sp_TaxDetailsTable @mode, '', '', '', 0, 0, @Keyfield_header, @SNo, @Keyfield,@company_code, @location_code, '', '', '', ''`);
+
+    res.status(200).json({ success: true, message: "TaxDetailsTable deleted successfully" });
+  } catch (err) {
+    console.error("Error during TaxDetailsTable delete:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const TaxDetailsTableLoopInsert = async (req, res) => {
+  const TaxDetailsTableData = req.body.TaxDetailsTableData;
+  if (!TaxDetailsTableData || !TaxDetailsTableData.length) {
+    return res.status(400).json("Invalid or empty TaxDetailsTableData array.");
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    for (const item of TaxDetailsTableData) {
+      await pool.request()
+        .input("mode", sql.NVarChar, "I")
+        .input("Note_ID", sql.NVarChar, item.Note_ID)
+        .input("Item_code", sql.NVarChar, item.Item_code)
+        .input("Tax_code", sql.NVarChar, item.Tax_code)
+        .input("Tax_percentage", sql.Decimal(5, 2), item.Tax_percentage)
+        .input("Tax_amount", sql.Decimal(18, 2), item.Tax_amount)
+        .input("Keyfield_header", sql.NVarChar, item.Keyfield_header)
+        .input("SNo", sql.Int, item.SNo)
+        .input("Keyfield", sql.NVarChar, item.Keyfield)
+        .input("company_code", sql.NVarChar, item.company_code)
+        .input("location_code", sql.NVarChar, item.location_code)
+        .input("created_by", sql.NVarChar, item.created_by)
+        .input("created_date", sql.DateTime, item.created_date)
+        .query(`EXEC sp_TaxDetailsTable @mode, @Note_ID, @Item_code, @Tax_code, @Tax_percentage, @Tax_amount, @Keyfield_header, @SNo, @Keyfield, @company_code, @location_code, @created_by, @created_date, '', ''`);
+    }
+    res.status(200).json("TaxDetailsTable data inserted successfully");
+  } catch (err) {
+    console.error("Error in TaxDetailsTableLoopInsert:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const TaxDetailsTableLoopUpdate = async (req, res) => {
+  const TaxDetailsTableData = req.body.TaxDetailsTableData;
+  if (!TaxDetailsTableData || !TaxDetailsTableData.length) {
+    return res.status(400).json("Invalid or empty TaxDetailsTableData array.");
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    for (const item of TaxDetailsTableData) {
+      await pool.request()
+        .input("mode", sql.NVarChar, "U")
+        .input("Note_ID", sql.NVarChar, item.Note_ID)
+        .input("Item_code", sql.NVarChar, item.Item_code)
+        .input("Tax_code", sql.NVarChar, item.Tax_code)
+        .input("Tax_percentage", sql.Decimal(5, 2), item.Tax_percentage)
+        .input("Tax_amount", sql.Decimal(18, 2), item.Tax_amount)
+        .input("Keyfield_header", sql.NVarChar, item.Keyfield_header)
+        .input("SNo", sql.Int, item.SNo)
+        .input("Keyfield", sql.NVarChar, item.Keyfield)
+        .input("company_code", sql.NVarChar, item.company_code)
+        .input("location_code", sql.NVarChar, item.location_code)
+        .input("modified_by", sql.NVarChar, item.modified_by)
+        .input("modified_date", sql.DateTime, item.modified_date)
+        .query(`EXEC sp_TaxDetailsTable @mode, @Note_ID, @Item_code, @Tax_code, @Tax_percentage, @Tax_amount, @Keyfield_header, @SNo, @Keyfield, @company_code, @location_code, '', '', @modified_by, @modified_date`);
+    }
+    res.status(200).json("TaxDetailsTable data updated successfully");
+  } catch (err) {
+    console.error("Error in TaxDetailsTableLoopUpdate:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const TaxDetailsTableLoopDelete = async (req, res) => {
+  const TaxDetailsTableData = req.body.TaxDetailsTableData;
+  if (!TaxDetailsTableData || !TaxDetailsTableData.length) {
+    return res.status(400).json("Invalid or empty TaxDetailsTableData array.");
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    for (const item of TaxDetailsTableData) {
+      await pool.request()
+        .input("mode", sql.NVarChar, "D")
+        .input("Keyfield_header", sql.NVarChar, item.Keyfield_header)
+        .input("SNo", sql.Int, item.SNo)
+        .input("Keyfield", sql.Int, item.Keyfield)
+        .input("company_code", sql.NVarChar, item.company_code)
+        .input("location_code", sql.NVarChar, item.location_code)
+        .query(`EXEC sp_TaxDetailsTable @mode, '', '', '', 0, 0, @Keyfield_header, @SNo, @Keyfield, @company_code, @location_code, '', '', '', ''`);
+    }
+    res.status(200).json("TaxDetailsTable data deleted successfully");
+  } catch (err) {
+    console.error("Error in TaxDetailsTableLoopDelete:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const getDCNItemAmountCalculation = async (req, res) => {
+  const { Item_SNO, Item_code, bill_qty, purchaser_amt, tax_type_header, tax_name_details, tax_percentage, UnitWeight, keyfield } = req.body;
+
+  try {
+    // Connect to the database
+    const pool = await connection.connectToDatabase();
+
+    // Execute the query
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "IAC")
+      .input("Item_SNO", sql.BigInt, Item_SNO)
+      .input("Item_code", sql.NVarChar, Item_code)
+      .input("bill_qty", sql.Decimal(10, 2), bill_qty)
+      .input("purchaser_amt", sql.Decimal(10, 2), purchaser_amt)
+      .input("tax_type_header", sql.NVarChar, tax_type_header)
+      .input("tax_name_details", sql.NVarChar, tax_name_details)
+      .input("tax_percentage", sql.NVarChar, tax_percentage)
+      .input("UnitWeight", sql.Decimal(8, 3), UnitWeight)
+      .input("keyfield", sql.NVarChar, keyfield)
+      .query(`EXEC sp_DCN_ItemAmountCalculation @mode,'' , @Item_SNO ,@Item_code, @bill_qty, @purchaser_amt	,@tax_type_header, @tax_name_details, @tax_percentage, @UnitWeight, @keyfield,
+                                NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+
+    // Send response
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset); // 200 OK if data is found
+    } else {
+      res.status(404).json("Data not found"); // 404 Not Found if no data is found
+    }
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const getDCNTotalAmountCalculation = async (req, res) => {
+  const { Tax_amount, company_code, Putchase_amount } = req.body;
+
+  try {
+    // Connect to the database
+    const pool = await connection.connectToDatabase();
+
+    // Execute the query
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "TOT")
+      .input("Tax_amount", sql.NVarChar, Tax_amount)
+      .input("Putchase_amount", sql.NVarChar, Putchase_amount)
+      .input("company_code", sql.NVarChar, company_code)
+      .query(`EXEC [sp_DCN_ItemAmountCalculation] 'TOT',@company_code,0,'',0,0,'','','',0,'', @Tax_amount, @Putchase_amount,
+            NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+
+    // Send response
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset); // 200 OK if data is found
+    } else {
+      res.status(404).json("Data not found"); // 404 Not Found if no data is found
+    }
+  } catch (err) {
+    console.error("Error", err.message);
+    return res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+//Code ended by Dinesh Gokul on 01-10-2026
+
+
 //Code added by pavun on 30-09-2026
 const getNoteType = async (req, res) => {
   const { company_code } = req.body;
@@ -30672,6 +31283,26 @@ module.exports = {
   getNoteType,
   getDebiteNote,
   getCreditNote,
-  getReferenceType
+  getReferenceType,
+  Debit_Credit_NoteInsert, 
+  Debit_Credit_NoteUpdate, 
+  Debit_Credit_NoteDelete,
+  Debit_Credit_NoteLoopInsert, 
+  Debit_Credit_NoteLoopUpdate, 
+  Debit_Credit_NoteLoopDelete,
+  Debit_Credit_Note_DetailInsert, 
+  Debit_Credit_Note_DetailUpdate, 
+  Debit_Credit_Note_DetailDelete,
+  Debit_Credit_Note_DetailLoopInsert, 
+  Debit_Credit_Note_DetailLoopUpdate, 
+  Debit_Credit_Note_DetailLoopDelete,
+  TaxDetailsTableInsert, 
+  TaxDetailsTableUpdate, 
+  TaxDetailsTableDelete,
+  TaxDetailsTableLoopInsert, 
+  TaxDetailsTableLoopUpdate, 
+  TaxDetailsTableLoopDelete,
+  getDCNItemAmountCalculation,
+  getDCNTotalAmountCalculation
 
 };
