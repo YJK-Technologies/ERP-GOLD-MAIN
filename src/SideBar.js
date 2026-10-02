@@ -21,6 +21,7 @@ const Sidebar = () => {
   const [TransactionsCollapsed, setTransactionsCollapsed] = useState(false);
   const [purchaseCollapsed, setPurchaseCollapsed] = useState(false);
   const [salesCollapsed, setSalesCollapsed] = useState(false);
+  const [acTransactionCollapsed, setAcTransactionCollapsed] = useState(false);
   const [unplannedCollapsed, setUnplannedCollapsed] = useState(false);
   const [reportCollapsed, setReportCollapsed] = useState(false);
   const [ESSCollapsed, setESSCollapsed] = useState(false);
@@ -46,10 +47,11 @@ const Sidebar = () => {
     setTransactionsCollapsed(false);
     setPurchaseCollapsed(false);
     setSalesCollapsed(false);
+    setAcTransactionCollapsed(false);
     setUnplannedCollapsed(false);
     setReportCollapsed(false);
     setPMSTransactions(false);
-    
+
   };
 
   const togglePMSTransactions = () => {
@@ -62,6 +64,7 @@ const Sidebar = () => {
     setTransactionsCollapsed(false);
     setPurchaseCollapsed(false);
     setSalesCollapsed(false);
+    setAcTransactionCollapsed(false);
     setUnplannedCollapsed(false);
     setReportCollapsed(false);
     setCRMCollapsed(false);
@@ -76,10 +79,12 @@ const Sidebar = () => {
     setTransactionsCollapsed(false);
     setPurchaseCollapsed(false);
     setSalesCollapsed(false);
+    setAcTransactionCollapsed(false);
     setUnplannedCollapsed(false);
     setReportCollapsed(false);
     setPMSTransactions(false);
-setCRMCollapsed(false);  };
+    setCRMCollapsed(false);
+  };
 
   const toggleAdminCollapse = () => {
     setESSCollapsed(false);
@@ -89,10 +94,12 @@ setCRMCollapsed(false);  };
     setTransactionsCollapsed(false);
     setPurchaseCollapsed(false);
     setSalesCollapsed(false);
+    setAcTransactionCollapsed(false);
     setUnplannedCollapsed(false);
     setReportCollapsed(false);
     setPMSTransactions(false);
-setCRMCollapsed(false);  };
+    setCRMCollapsed(false);
+  };
 
   const toggleMastersCollapse = () => {
     setESSCollapsed(false);
@@ -102,10 +109,12 @@ setCRMCollapsed(false);  };
     setTransactionsCollapsed(false);
     setPurchaseCollapsed(false);
     setSalesCollapsed(false);
+    setAcTransactionCollapsed(false);
     setUnplannedCollapsed(false);
     setReportCollapsed(false);
     setPMSTransactions(false);
-setCRMCollapsed(false);  };
+    setCRMCollapsed(false);
+  };
 
   const toggleAccountCollapse = () => {
     setESSCollapsed(false);
@@ -115,10 +124,12 @@ setCRMCollapsed(false);  };
     setTransactionsCollapsed(false);
     setPurchaseCollapsed(false);
     setSalesCollapsed(false);
+    setAcTransactionCollapsed(false);
     setUnplannedCollapsed(false);
     setReportCollapsed(false);
     setPMSTransactions(false);
-setCRMCollapsed(false);  };
+    setCRMCollapsed(false);
+  };
 
   const toggleTransactionsCollapse = () => {
     setESSCollapsed(false);
@@ -128,10 +139,12 @@ setCRMCollapsed(false);  };
     setAccountCollapsed(false);
     setPurchaseCollapsed(true);
     setSalesCollapsed(true);
+    setAcTransactionCollapsed(true);
     setUnplannedCollapsed(true);
     setReportCollapsed(false);
     setPMSTransactions(false);
-setCRMCollapsed(false);  };
+    setCRMCollapsed(false);
+  };
 
   const togglePurchaseCollapse = () => {
     setESSCollapsed(false);
@@ -141,14 +154,17 @@ setCRMCollapsed(false);  };
     setAccountCollapsed(false);
     setTransactionsCollapsed(false);
     setSalesCollapsed(false);
+    setAcTransactionCollapsed(false);
     setUnplannedCollapsed(false);
     setReportCollapsed(false);
     setPMSTransactions(false);
-setCRMCollapsed(false);  };
+    setCRMCollapsed(false);
+  };
 
   const toggleSalesCollapse = () => {
     setESSCollapsed(false);
     setSalesCollapsed(!salesCollapsed);
+    setAcTransactionCollapsed(false);
     setAdminCollapsed(false);
     setMastersCollapsed(false);
     setAccountCollapsed(false);
@@ -157,7 +173,8 @@ setCRMCollapsed(false);  };
     setUnplannedCollapsed(false);
     setReportCollapsed(false);
     setPMSTransactions(false);
-setCRMCollapsed(false);  };
+    setCRMCollapsed(false);
+  };
 
   const toggleUnplannedCollapse = () => {
     setESSCollapsed(false);
@@ -168,9 +185,11 @@ setCRMCollapsed(false);  };
     setTransactionsCollapsed(false);
     setPurchaseCollapsed(false);
     setSalesCollapsed(false);
+    setAcTransactionCollapsed(false);
     setReportCollapsed(false);
     setPMSTransactions(false);
-setCRMCollapsed(false);  };
+    setCRMCollapsed(false);
+  };
 
   const toggleReportCollapse = () => {
     setESSCollapsed(false);
@@ -181,9 +200,11 @@ setCRMCollapsed(false);  };
     setTransactionsCollapsed(false);
     setPurchaseCollapsed(false);
     setSalesCollapsed(false);
+    setAcTransactionCollapsed(false);
     setUnplannedCollapsed(false);
     setPMSTransactions(false);
-setCRMCollapsed(false);  };
+    setCRMCollapsed(false);
+  };
 
   const togglePayslipCollapse = () => {
     // setESSCollapsed(false);
@@ -194,11 +215,13 @@ setCRMCollapsed(false);  };
     setTransactionsCollapsed(false);
     setPurchaseCollapsed(false);
     setSalesCollapsed(false);
+    setAcTransactionCollapsed(false);
     setUnplannedCollapsed(false);
     setPMSTransactions(false);
-setCRMCollapsed(false);  };
+    setCRMCollapsed(false);
+  };
 
-   const toggleCRM = () => {
+  const toggleCRM = () => {
     // setESSCollapsed(false);
     setpayslipCollapsed(false);
     setAdminCollapsed(false);
@@ -207,6 +230,7 @@ setCRMCollapsed(false);  };
     setTransactionsCollapsed(false);
     setPurchaseCollapsed(false);
     setSalesCollapsed(false);
+    setAcTransactionCollapsed(false);
     setUnplannedCollapsed(false);
     setPMSTransactions(false);
     setCRMCollapsed(!CRMCollapsed);
@@ -492,20 +516,20 @@ setCRMCollapsed(false);  };
               </Link>
             )}
           </div>
-       <div className="ms-3">
-  {screenType.includes("TemplateDesign") && (
-    <Link to="/TemplateDesign" className="nav-link" title="PrintTemplate">
-      <div className="menu-item">
-        <Printer size={18} className="me-3" />
-        <span className={collapsed ? "hidden" : ""}>
-          {" "}
-          Print Templates
-        </span>
-      </div>
-    </Link>
-  )}
-</div>
-           <div className=" ms-3">
+          <div className="ms-3">
+            {screenType.includes("TemplateDesign") && (
+              <Link to="/TemplateDesign" className="nav-link" title="PrintTemplate">
+                <div className="menu-item">
+                  <Printer size={18} className="me-3" />
+                  <span className={collapsed ? "hidden" : ""}>
+                    {" "}
+                    Print Templates
+                  </span>
+                </div>
+              </Link>
+            )}
+          </div>
+          <div className=" ms-3">
             {screenType.includes("BankAccount") && (
               <Link to="/BankAccount" className="nav-link" title="Bank Account">
                 <div class="menu-item">
@@ -1317,6 +1341,40 @@ setCRMCollapsed(false);  };
               </Link>
             )}
           </div>
+          <div className="menu-item" onClick={toggleSalesCollapse} title="Sales">
+            <span className={collapsed ? "hidden" : ""}>A/C Transaction</span>
+            <div class="sales-arrow">
+              {acTransactionCollapsed ? <BsChevronDown /> : <BsChevronRight />}
+            </div>
+          </div>
+          <div className={`collapse ${acTransactionCollapsed ? "show" : ""}`}>
+            <div className=" ms-3">
+              {screenType.includes("DebitCreditNote") && (
+                <Link
+                  to="/DebitCreditNote"
+                  className="nav-link"
+                  title="Sales Entry"
+                  onClick={() => handleLinkClick("DebitCreditNote")}
+                >
+                  <div class="menu-item">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      fill="currentColor"
+                      class="bi bi-bar-chart-line-fill me-3"
+                      viewBox="0 0 16 16"
+                    >
+                      <path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1z" />
+                    </svg>
+                    <span className={collapsed ? "hidden" : ""} class="ms-1">
+                      Debit / Credit Note
+                    </span>
+                  </div>
+                </Link>
+              )}
+            </div>
+          </div>
           <div className="menu-item" onClick={togglePurchaseCollapse} title="Purchase">
             <span className={collapsed ? "hidden" : ""}>Purchase</span>
             <div class="purchase-arrow">
@@ -1880,7 +1938,7 @@ setCRMCollapsed(false);  };
             )}
           </div>
 
-       
+
           <div className="ms-3">
             {screenType.includes("AddEmployeeInfo") && (
               <Link to="/AddEmployeeInfo" className="nav-link" title="Employee Info">
@@ -1959,139 +2017,139 @@ setCRMCollapsed(false);  };
             </div>
           </div>
           <div className={`collapse ${ESSCollapsed ? "show" : ""}`}>
-          <div className="ms-3">
-            {screenType.includes("EmployeeGrade") && (
-              <Link to="/EmployeeGrade" className="nav-link" title="Grade">
-                <div class="menu-item">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    fill="currentColor"
-                    class="bi bi-alphabet-uppercase me-3"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M1.226 10.88H0l2.056-6.26h1.42l2.047 6.26h-1.29l-.48-1.61H1.707l-.48 1.61ZM2.76 5.818h-.054l-.75 2.532H3.51zm3.217 5.062V4.62h2.56c1.09 0 1.808.582 1.808 1.54 0 .762-.444 1.22-1.05 1.372v.055c.736.074 1.365.587 1.365 1.528 0 1.119-.89 1.766-2.133 1.766zM7.18 5.55v1.675h.8c.812 0 1.171-.308 1.171-.853 0-.51-.328-.822-.898-.822zm0 2.537V9.95h.903c.951 0 1.342-.312 1.342-.909 0-.591-.382-.954-1.095-.954zm5.089-.711v.775c0 1.156.49 1.803 1.347 1.803.705 0 1.163-.454 1.212-1.096H16v.12C15.942 10.173 14.95 11 13.607 11c-1.648 0-2.573-1.073-2.573-2.849v-.78c0-1.775.934-2.871 2.573-2.871 1.347 0 2.34.849 2.393 2.087v.115h-1.172c-.05-.665-.516-1.156-1.212-1.156-.849 0-1.347.67-1.347 1.83" />
-                  </svg>
-                  <span className={collapsed ? "hidden" : ""} class="">
-                    Grade
-                  </span>
-                </div>
-              </Link>
-            )}
+            <div className="ms-3">
+              {screenType.includes("EmployeeGrade") && (
+                <Link to="/EmployeeGrade" className="nav-link" title="Grade">
+                  <div class="menu-item">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      fill="currentColor"
+                      class="bi bi-alphabet-uppercase me-3"
+                      viewBox="0 0 16 16"
+                    >
+                      <path d="M1.226 10.88H0l2.056-6.26h1.42l2.047 6.26h-1.29l-.48-1.61H1.707l-.48 1.61ZM2.76 5.818h-.054l-.75 2.532H3.51zm3.217 5.062V4.62h2.56c1.09 0 1.808.582 1.808 1.54 0 .762-.444 1.22-1.05 1.372v.055c.736.074 1.365.587 1.365 1.528 0 1.119-.89 1.766-2.133 1.766zM7.18 5.55v1.675h.8c.812 0 1.171-.308 1.171-.853 0-.51-.328-.822-.898-.822zm0 2.537V9.95h.903c.951 0 1.342-.312 1.342-.909 0-.591-.382-.954-1.095-.954zm5.089-.711v.775c0 1.156.49 1.803 1.347 1.803.705 0 1.163-.454 1.212-1.096H16v.12C15.942 10.173 14.95 11 13.607 11c-1.648 0-2.573-1.073-2.573-2.849v-.78c0-1.775.934-2.871 2.573-2.871 1.347 0 2.34.849 2.393 2.087v.115h-1.172c-.05-.665-.516-1.156-1.212-1.156-.849 0-1.347.67-1.347 1.83" />
+                    </svg>
+                    <span className={collapsed ? "hidden" : ""} class="">
+                      Grade
+                    </span>
+                  </div>
+                </Link>
+              )}
+            </div>
+            <div className="ms-3">
+              {screenType.includes("EmpLeave") && (
+                <Link to="/EmpLeave" className="nav-link" title="Leave">
+                  <div class="menu-item">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      fill="currentColor"
+                      class="bi bi-person-walking me-3"
+                      viewBox="0 0 16 16"
+                    >
+                      <path d="M9.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0M6.44 3.752A.75.75 0 0 1 7 3.5h1.445c.742 0 1.32.643 1.243 1.38l-.43 4.083a1.8 1.8 0 0 1-.088.395l-.318.906.213.242a.8.8 0 0 1 .114.175l2 4.25a.75.75 0 1 1-1.357.638l-1.956-4.154-1.68-1.921A.75.75 0 0 1 6 8.96l.138-2.613-.435.489-.464 2.786a.75.75 0 1 1-1.48-.246l.5-3a.75.75 0 0 1 .18-.375l2-2.25Z" />
+                      <path d="M6.25 11.745v-1.418l1.204 1.375.261.524a.8.8 0 0 1-.12.231l-2.5 3.25a.75.75 0 1 1-1.19-.914zm4.22-4.215-.494-.494.205-1.843.006-.067 1.124 1.124h1.44a.75.75 0 0 1 0 1.5H11a.75.75 0 0 1-.531-.22Z" />
+                    </svg>
+                    <span className={collapsed ? "hidden" : ""} class="">
+                      Leave
+                    </span>
+                  </div>
+                </Link>
+              )}
+            </div>
+            <div className="ms-3">
+              {screenType.includes("EmployeeLoan") && (
+                <Link to="/EmployeeLoan" className="nav-link" title="Loan">
+                  <div class="menu-item">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      fill="currentColor"
+                      class="bi bi-cash-coin me-3"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M11 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8m5-4a5 5 0 1 1-10 0 5 5 0 0 1 10 0"
+                      />
+                      <path d="M9.438 11.944c.047.596.518 1.06 1.363 1.116v.44h.375v-.443c.875-.061 1.386-.529 1.386-1.207 0-.618-.39-.936-1.09-1.1l-.296-.07v-1.2c.376.043.614.248.671.532h.658c-.047-.575-.54-1.024-1.329-1.073V8.5h-.375v.45c-.747.073-1.255.522-1.255 1.158 0 .562.378.92 1.007 1.066l.248.061v1.272c-.384-.058-.639-.27-.696-.563h-.668zm1.36-1.354c-.369-.085-.569-.26-.569-.522 0-.294.216-.514.572-.578v1.1zm.432.746c.449.104.655.272.655.569 0 .339-.257.571-.709.614v-1.195z" />
+                      <path d="M1 0a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4.083q.088-.517.258-1H3a2 2 0 0 0-2-2V3a2 2 0 0 0 2-2h10a2 2 0 0 0 2 2v3.528c.38.34.717.728 1 1.154V1a1 1 0 0 0-1-1z" />
+                      <path d="M9.998 5.083 10 5a2 2 0 1 0-3.132 1.65 6 6 0 0 1 3.13-1.567" />
+                    </svg>
+                    <span className={collapsed ? "hidden" : ""} class="">
+                      Loan
+                    </span>
+                  </div>
+                </Link>
+              )}
+            </div>
+            <div className="ms-3">
+              {screenType.includes("Announce") && (
+                <Link to="/Announce" className="nav-link" title="Announcement">
+                  <div class="menu-item">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      fill="currentColor"
+                      class="bi bi-megaphone-fill me-3"
+                      viewBox="0 0 16 16"
+                    >
+                      <path d="M13 2.5a1.5 1.5 0 0 1 3 0v11a1.5 1.5 0 0 1-3 0zm-1 .724c-2.067.95-4.539 1.481-7 1.656v6.237a25 25 0 0 1 1.088.085c2.053.204 4.038.668 5.912 1.56zm-8 7.841V4.934c-.68.027-1.399.043-2.008.053A2.02 2.02 0 0 0 0 7v2c0 1.106.896 1.996 1.994 2.009l.496.008a64 64 0 0 1 1.51.048m1.39 1.081q.428.032.85.078l.253 1.69a1 1 0 0 1-.983 1.187h-.548a1 1 0 0 1-.916-.599l-1.314-2.48a66 66 0 0 1 1.692.064q.491.026.966.06" />
+                    </svg>
+                    <span className={collapsed ? "hidden" : ""} class="">
+                      Announcement
+                    </span>
+                  </div>
+                </Link>
+              )}
+            </div>
+            <div className="ms-3">
+              {screenType.includes("HoliDays") && (
+                <Link to="/HoliDays" className="nav-link" title="HoliDays">
+                  <div className="menu-item">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      fill="currentColor"
+                      className="bi bi-calendar-check-fill me-3"
+                      viewBox="0 0 16 16"
+                    >
+                      <path d="M4 .5a.5.5 0 0 1 .5.5V2h6V1a.5.5 0 0 1 1 0v1h2a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h2V1a.5.5 0 0 1 .5-.5zM2 6v8h12V6H2zm9.854 2.854a.5.5 0 0 0-.708-.708L8 11.293 6.854 10.146a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l4-4z" />
+                    </svg>
+                    <span className={collapsed ? "hidden" : ""}>Employee Holiday</span>
+                  </div>
+                </Link>
+              )}
+            </div>
           </div>
-          <div className="ms-3">
-            {screenType.includes("EmpLeave") && (
-              <Link to="/EmpLeave" className="nav-link" title="Leave">
-                <div class="menu-item">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    fill="currentColor"
-                    class="bi bi-person-walking me-3"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M9.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0M6.44 3.752A.75.75 0 0 1 7 3.5h1.445c.742 0 1.32.643 1.243 1.38l-.43 4.083a1.8 1.8 0 0 1-.088.395l-.318.906.213.242a.8.8 0 0 1 .114.175l2 4.25a.75.75 0 1 1-1.357.638l-1.956-4.154-1.68-1.921A.75.75 0 0 1 6 8.96l.138-2.613-.435.489-.464 2.786a.75.75 0 1 1-1.48-.246l.5-3a.75.75 0 0 1 .18-.375l2-2.25Z" />
-                    <path d="M6.25 11.745v-1.418l1.204 1.375.261.524a.8.8 0 0 1-.12.231l-2.5 3.25a.75.75 0 1 1-1.19-.914zm4.22-4.215-.494-.494.205-1.843.006-.067 1.124 1.124h1.44a.75.75 0 0 1 0 1.5H11a.75.75 0 0 1-.531-.22Z" />
-                  </svg>
-                  <span className={collapsed ? "hidden" : ""} class="">
-                    Leave
-                  </span>
-                </div>
-              </Link>
-            )}
-          </div>
-          <div className="ms-3">
-            {screenType.includes("EmployeeLoan") && (
-              <Link to="/EmployeeLoan" className="nav-link" title="Loan">
-                <div class="menu-item">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    fill="currentColor"
-                    class="bi bi-cash-coin me-3"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M11 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8m5-4a5 5 0 1 1-10 0 5 5 0 0 1 10 0"
-                    />
-                    <path d="M9.438 11.944c.047.596.518 1.06 1.363 1.116v.44h.375v-.443c.875-.061 1.386-.529 1.386-1.207 0-.618-.39-.936-1.09-1.1l-.296-.07v-1.2c.376.043.614.248.671.532h.658c-.047-.575-.54-1.024-1.329-1.073V8.5h-.375v.45c-.747.073-1.255.522-1.255 1.158 0 .562.378.92 1.007 1.066l.248.061v1.272c-.384-.058-.639-.27-.696-.563h-.668zm1.36-1.354c-.369-.085-.569-.26-.569-.522 0-.294.216-.514.572-.578v1.1zm.432.746c.449.104.655.272.655.569 0 .339-.257.571-.709.614v-1.195z" />
-                    <path d="M1 0a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4.083q.088-.517.258-1H3a2 2 0 0 0-2-2V3a2 2 0 0 0 2-2h10a2 2 0 0 0 2 2v3.528c.38.34.717.728 1 1.154V1a1 1 0 0 0-1-1z" />
-                    <path d="M9.998 5.083 10 5a2 2 0 1 0-3.132 1.65 6 6 0 0 1 3.13-1.567" />
-                  </svg>
-                  <span className={collapsed ? "hidden" : ""} class="">
-                    Loan
-                  </span>
-                </div>
-              </Link>
-            )}
-          </div>
-          <div className="ms-3">
-            {screenType.includes("Announce") && (
-              <Link to="/Announce" className="nav-link" title="Announcement">
-                <div class="menu-item">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    fill="currentColor"
-                    class="bi bi-megaphone-fill me-3"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M13 2.5a1.5 1.5 0 0 1 3 0v11a1.5 1.5 0 0 1-3 0zm-1 .724c-2.067.95-4.539 1.481-7 1.656v6.237a25 25 0 0 1 1.088.085c2.053.204 4.038.668 5.912 1.56zm-8 7.841V4.934c-.68.027-1.399.043-2.008.053A2.02 2.02 0 0 0 0 7v2c0 1.106.896 1.996 1.994 2.009l.496.008a64 64 0 0 1 1.51.048m1.39 1.081q.428.032.85.078l.253 1.69a1 1 0 0 1-.983 1.187h-.548a1 1 0 0 1-.916-.599l-1.314-2.48a66 66 0 0 1 1.692.064q.491.026.966.06" />
-                  </svg>
-                  <span className={collapsed ? "hidden" : ""} class="">
-                    Announcement
-                  </span>
-                </div>
-              </Link>
-            )}
-          </div>
-          <div className="ms-3">
-            {screenType.includes("HoliDays") && (
-              <Link to="/HoliDays" className="nav-link" title="HoliDays">
-                <div className="menu-item">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    fill="currentColor"
-                    className="bi bi-calendar-check-fill me-3"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M4 .5a.5.5 0 0 1 .5.5V2h6V1a.5.5 0 0 1 1 0v1h2a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h2V1a.5.5 0 0 1 .5-.5zM2 6v8h12V6H2zm9.854 2.854a.5.5 0 0 0-.708-.708L8 11.293 6.854 10.146a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l4-4z" />
-                  </svg>
-                  <span className={collapsed ? "hidden" : ""}>Employee Holiday</span>
-                </div>
-              </Link>
-            )}
-          </div>
-          </div>
-       <div className="menu-item-container">
-  <Link to="/FinancialYear" className="nav-link" title="Payslip Master">
-    <div className="menu-item" onClick={togglePayslipCollapse}>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
-        fill="currentColor"
-        className="bi bi-receipt-dollar me-2 Report-font"
-        viewBox="0 0 16 16"
-      >
-        <path d="M2 1.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 .5.5V15a.5.5 0 0 1-.5.5H2.5a.5.5 0 0 1-.5-.5V1.5zM3 2v12h10V2H3z" />
-        <path d="M5 3.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1-.5-.5v-9zM6 4v2h4V4H6zm0 3v1h4V7H6zm0 2v2h4v-2H6z" />
-        <path d="M8.5 12.5c.83 0 1.5-.672 1.5-1.5s-.67-1.5-1.5-1.5S7 10.17 7 11s.67 1.5 1.5 1.5z" />
-      </svg>
+          <div className="menu-item-container">
+            <Link to="/FinancialYear" className="nav-link" title="Payslip Master">
+              <div className="menu-item" onClick={togglePayslipCollapse}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  fill="currentColor"
+                  className="bi bi-receipt-dollar me-2 Report-font"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M2 1.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 .5.5V15a.5.5 0 0 1-.5.5H2.5a.5.5 0 0 1-.5-.5V1.5zM3 2v12h10V2H3z" />
+                  <path d="M5 3.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1-.5-.5v-9zM6 4v2h4V4H6zm0 3v1h4V7H6zm0 2v2h4v-2H6z" />
+                  <path d="M8.5 12.5c.83 0 1.5-.672 1.5-1.5s-.67-1.5-1.5-1.5S7 10.17 7 11s.67 1.5 1.5 1.5z" />
+                </svg>
 
-      <span className={collapsed ? "hidden" : ""}>Payslip Master</span>
-    </div>
-  </Link>
-</div>
+                <span className={collapsed ? "hidden" : ""}>Payslip Master</span>
+              </div>
+            </Link>
+          </div>
           <div className={`collapse ${payslipCollapsed ? "show" : ""}`}>
-          
+
 
             {/* <div className="ms-3">
             {screenType.includes("FinancialYear") && (
@@ -2117,7 +2175,7 @@ setCRMCollapsed(false);  };
           </div> */}
           </div>
         </div>
-        
+
         <div className="menu-item" onClick={toggleMastertsCollapse} title="PMS">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -2141,7 +2199,7 @@ setCRMCollapsed(false);  };
         </div>
         <div className={`collapse ${MastersCollapsed ? "show" : ""}`}>
           <div className="menu-item" onClick={toggleMastertsCollapse} title="Maters">
-        
+
             <span className={collapsed ? "hidden" : ""}>Masters</span>
             <div className="PmsMaster-arrow">
               {MastersCollapsed ? <BsChevronDown /> : <BsChevronRight />}
@@ -2336,7 +2394,7 @@ setCRMCollapsed(false);  };
             </div>
 
           </div>
-          
+
           <div className="menu-item" onClick={toggleMastertsCollapse} title="Reports">
             {/* <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -2436,7 +2494,7 @@ setCRMCollapsed(false);  };
           </div>
         </div>
 
-         <div className="menu-item" onClick={toggleCRM} title="CRM">
+        <div className="menu-item" onClick={toggleCRM} title="CRM">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
@@ -2456,10 +2514,10 @@ setCRMCollapsed(false);  };
           <div className="CRM-arrow ms-5 ps-5">
             {CRMCollapsed ? <BsChevronDown /> : <BsChevronRight />}
           </div>
-           </div>
-      <div className={`collapse ${CRMCollapsed ? "show" : ""}`}>
-      <div className="menu-item ms-3 mt-3">
-                  {screenType.includes("Crmworkspace") && (
+        </div>
+        <div className={`collapse ${CRMCollapsed ? "show" : ""}`}>
+          <div className="menu-item ms-3 mt-3">
+            {screenType.includes("Crmworkspace") && (
               <Link to="/Crmworkspace" className="nav-link" title="Warehouse">
                 <div class="">
                   <BuildingFill size={18} className="me-3" />
@@ -2468,8 +2526,8 @@ setCRMCollapsed(false);  };
               </Link>
             )}
           </div>
-           <div className="menu-item ms-3 mt-3">
-                  {screenType.includes("Crmworkspace") && (
+          <div className="menu-item ms-3 mt-3">
+            {screenType.includes("Crmworkspace") && (
               <Link to="/Forcast" className="nav-link" title="Warehouse">
                 <div class="">
                   <BuildingFill size={18} className="me-3" />
@@ -2480,7 +2538,7 @@ setCRMCollapsed(false);  };
           </div>
 
 
-            <div className="menu-item" onClick={toggleCRM} title="Reports">
+          <div className="menu-item" onClick={toggleCRM} title="Reports">
             {/* <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
@@ -2496,13 +2554,13 @@ setCRMCollapsed(false);  };
               <path d="M13.635 9.04a3 3 0 0 1 0 5.92M12.5 14h1.5m-1.5-1.5h1.5m-1.5-1.5h1.5" />
             </svg> */}
 
-           <span className={collapsed ? "hidden" : ""}>Configuration </span>
-          <div className="CRM-arrow ms-5 ps-5">
-            {CRMCollapsed ? <BsChevronDown /> : <BsChevronRight />}
+            <span className={collapsed ? "hidden" : ""}>Configuration </span>
+            <div className="CRM-arrow ms-5 ps-5">
+              {CRMCollapsed ? <BsChevronDown /> : <BsChevronRight />}
+            </div>
           </div>
-          </div>
-           <div className="menu-item ms-3 mt-3">
-                  {screenType.includes("CRMSettings") && (
+          <div className="menu-item ms-3 mt-3">
+            {screenType.includes("CRMSettings") && (
               <Link to="/CRMSettings" className="nav-link" title="Warehouse">
                 <div class="">
                   <BuildingFill size={18} className="me-3" />
@@ -2511,37 +2569,37 @@ setCRMCollapsed(false);  };
               </Link>
             )}
           </div>
-            <div className="menu-item ms-3 mt-3">
-                  {screenType.includes("CRMSalesTeam") && (
+          <div className="menu-item ms-3 mt-3">
+            {screenType.includes("CRMSalesTeam") && (
               <Link to="/CRMSalesTeam" className="nav-link" title="Warehouse">
                 <div class="">
                   <BuildingFill size={18} className="me-3" />
-                  <span className={collapsed ? "show" : ""}>  
-                     Sales Team </span>
+                  <span className={collapsed ? "show" : ""}>
+                    Sales Team </span>
                 </div>
               </Link>
             )}
           </div>
           <div className="menu-item ms-3 mt-3">
-                  {screenType.includes("CRMSalesTeam") && (
+            {screenType.includes("CRMSalesTeam") && (
               <Link to="/CRMSalesTeam" className="nav-link" title="Warehouse">
                 <div class="">
                   <BuildingFill size={18} className="me-3" />
-                  <span className={collapsed ? "show" : ""}>  
-                     Activity Types </span>
+                  <span className={collapsed ? "show" : ""}>
+                    Activity Types </span>
                 </div>
               </Link>
             )}
           </div>
 
-          
-
- </div>
 
 
+        </div>
 
-       
-        
+
+
+
+
       </div>
       <div className="sidebar-footer">
         <h3 className="">YJK Technologies</h3>
