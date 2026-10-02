@@ -743,6 +743,7 @@ function PurchaseReturn() {
 
   const handleItem = async (data) => {
     if (data && data.length > 0) {
+      setShowExcelButton(true)
       const [{ TransactionNo, TransactionDate, Entrydate, PurchaseType, PayType, purch_autono, VendorName, Vendorcode }] = data;
 
       const partycodeInput = document.getElementById('payType');
@@ -1679,13 +1680,11 @@ function PurchaseReturn() {
   // Header Sheet
   const headerSheet = XLSX.utils.aoa_to_sheet([
     ["Purchase Return"],
-    [`Company Code : ${sessionStorage.getItem("selectedCompanyCode")}`],
+    [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
     [],
   ]);
 
-  XLSX.utils.sheet_add_json(headerSheet, headerData, {
-    origin: "A4",
-  });
+  XLSX.utils.sheet_add_json(headerSheet, headerData, {origin: "A4",});
 
   // Merge Heading
   headerSheet["!merges"] = [
@@ -1738,7 +1737,7 @@ function PurchaseReturn() {
   XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Tax Details");
 
   XLSX.writeFile(workbook, "Purchase_Return_Data.xlsx");
-  };
+};
   
   const handleChangeStatus = (selectedOption) => {
     setSelectedStatus(selectedOption);

@@ -1728,6 +1728,7 @@ setLoading(true)
       setButtonsVisible(false)
       setShowAsterisk(true);
       setupdated(true);
+      setDeleteButtonVisible(true)
       setPrintButtonVisible(true)
       setAuthorizeButton(true);
       const [{ BillNo, BillDate, SalesType, RoundOff, PaidAmount, ReturnAmount, SalesMode, DCNo, SaleAmount, TotalAmount, TotalTax, PayType, CustomerName, CustomerCode, OrderType, inventory_autono }] = data;
@@ -2114,13 +2115,13 @@ setLoading(true)
       const taxData = await PrintSumTax();
       const TCPrintData = await PrintTCPrintData();
 
-      if (headerData && detailData && taxData && TCPrintData) {
-        console.log("All API calls completed successfully");
+      if (headerData && detailData && taxData ) {
+        console.log("All required  API calls completed successfully");
 
         sessionStorage.setItem('SheaderData', JSON.stringify(headerData));
         sessionStorage.setItem('SdetailData', JSON.stringify(detailData));
         sessionStorage.setItem('StaxData', JSON.stringify(taxData));
-        sessionStorage.setItem('STCPrintData', JSON.stringify(TCPrintData));
+        sessionStorage.setItem('STCPrintData', JSON.stringify(TCPrintData || []));
 
         window.open('/SalesPrint', '_blank');
       } else {
@@ -2305,6 +2306,7 @@ setLoading(true)
       setShowExcelButton(true);
       setShowDropdown(true);
       setAuthorizeButton(true);
+      setDeleteButtonVisible(true)
       setPrintButtonVisible(true)
       setupdated(true);
       TransactionStatus(code)
