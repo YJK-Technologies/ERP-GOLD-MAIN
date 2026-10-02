@@ -29424,6 +29424,8 @@ const Financial_YearLoopUpdate = async (req, res) => {
     return res.status(400).json("Invalid or empty Financial_YearData array.");
   }
 
+  const modified_by = req.headers["modified-by"];
+
   try {
     const pool = await sql.connect(dbConfig);
 
@@ -29445,7 +29447,7 @@ const Financial_YearLoopUpdate = async (req, res) => {
         .input("Keyfield", sql.NVarChar, item.Keyfield)
         .input("company_code", sql.NVarChar, item.company_code)
         .input("location_code", sql.NVarChar, item.location_code)
-        .input("modified_by", sql.NVarChar, item.modified_by)
+        .input("modified_by", sql.NVarChar, modified_by)
         .input("modified_date", sql.DateTime, item.modified_date)
         .query(`EXEC sp_Financial_Year @mode, @Financial_Year_ID, @Financial_Year_Code, @Financial_Year_Name, @Start_Date, @End_Date, @Status, @Keyfield, @company_code, @location_code,
             '', '', '', '', '', '', @modified_by, @modified_date `);
@@ -29464,7 +29466,7 @@ const Financial_YearLoopDelete = async (req, res) => {
   if (!Financial_YearData || !Array.isArray(Financial_YearData) || Financial_YearData.length === 0) {
     return res.status(400).json({ message: "Invalid or empty Financial_YearData array." });
   }
-
+  const modified_by = req.headers["modified-by"];
   try {
     const pool = await sql.connect(dbConfig);
     for (const item of Financial_YearData) {
@@ -29473,7 +29475,8 @@ const Financial_YearLoopDelete = async (req, res) => {
         .input("Keyfield", sql.NVarChar, item.Keyfield)
         .input("company_code", sql.NVarChar, item.company_code)
         .input("location_code", sql.NVarChar, item.location_code)
-        .query(`EXEC sp_Financial_Year @mode, 0, '', '', '', '', '', @Keyfield, @company_code, @location_code, '', '', '', '', '', '', '', ''`);
+        .input("modified_by", sql.NVarChar, modified_by)
+        .query(`EXEC sp_Financial_Year @mode, 0, '', '', '', '', '', @Keyfield, @company_code, @location_code, '', '', '', '', '', '', @modified_by, ''`);
     }
     res.status(200).json("Financial_Year data deleted successfully");
   } catch (err) {
