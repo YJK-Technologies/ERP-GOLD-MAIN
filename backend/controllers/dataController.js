@@ -29386,15 +29386,56 @@ const Financial_YearUpdate = async (req, res) => {
   }
 };
 
+// const Financial_YearLoopUpdate = async (req, res) => {
+//   const Financial_YearData = req.body.Financial_YearData;
+//   if (!Financial_YearData || !Financial_YearData.length) {
+//     return res.status(400).json("Invalid or empty Financial_YearData array.");
+//   }
+
+//   try {
+//     const pool = await sql.connect(dbConfig);
+//     for (const item of Financial_YearData) {
+//       await pool.request()
+//         .input("mode", sql.NVarChar, "U")
+//         .input("Financial_Year_ID", sql.Int, item.Financial_Year_ID)
+//         .input("Financial_Year_Code", sql.NVarChar, item.Financial_Year_Code)
+//         .input("Financial_Year_Name", sql.NVarChar, item.Financial_Year_Name)
+//         .input("Start_Date", sql.Date, item.Start_Date)
+//         .input("End_Date", sql.Date, item.End_Date)
+//         .input("Status", sql.NVarChar, item.Status)
+//         .input("Keyfield", sql.NVarChar, item.Keyfield)
+//         .input("company_code", sql.NVarChar, item.company_code)
+//         .input("location_code", sql.NVarChar, item.location_code)
+//         .input("modified_by", sql.NVarChar, item.modified_by)
+//         .input("modified_date", sql.DateTime, item.modified_date)
+//         .query(`EXEC sp_Financial_Year @mode, @Financial_Year_ID, @Financial_Year_Code, @Financial_Year_Name, @Start_Date, @End_Date, @Status, @Keyfield, @company_code, @location_code, '', '', '', '', '', '', @modified_by, @modified_date`);
+//     }
+//     res.status(200).json("Financial_Year data updated successfully");
+//   } catch (err) {
+//     console.error("Error in Financial_YearLoopUpdate:", err);
+//     res.status(500).json({ message: err.message || "Internal Server Error" });
+//   }
+// };
+
 const Financial_YearLoopUpdate = async (req, res) => {
   const Financial_YearData = req.body.Financial_YearData;
+
   if (!Financial_YearData || !Financial_YearData.length) {
     return res.status(400).json("Invalid or empty Financial_YearData array.");
   }
 
+  const modified_by = req.headers["modified-by"];
+
   try {
     const pool = await sql.connect(dbConfig);
-    for (const item of Financial_YearData) {
+
+    const uniqueFinancial_YearData = Array.from(
+      new Map(
+        Financial_YearData.map((item) => [item.Keyfield, item])
+      ).values()
+    );
+
+    for (const item of uniqueFinancial_YearData) {
       await pool.request()
         .input("mode", sql.NVarChar, "U")
         .input("Financial_Year_ID", sql.Int, item.Financial_Year_ID)
@@ -29406,22 +29447,26 @@ const Financial_YearLoopUpdate = async (req, res) => {
         .input("Keyfield", sql.NVarChar, item.Keyfield)
         .input("company_code", sql.NVarChar, item.company_code)
         .input("location_code", sql.NVarChar, item.location_code)
-        .input("modified_by", sql.NVarChar, item.modified_by)
+        .input("modified_by", sql.NVarChar, modified_by)
         .input("modified_date", sql.DateTime, item.modified_date)
-        .query(`EXEC sp_Financial_Year @mode, @Financial_Year_ID, @Financial_Year_Code, @Financial_Year_Name, @Start_Date, @End_Date, @Status, @Keyfield, @company_code, @location_code, '', '', '', '', '', '', @modified_by, @modified_date`);
+        .query(`EXEC sp_Financial_Year @mode, @Financial_Year_ID, @Financial_Year_Code, @Financial_Year_Name, @Start_Date, @End_Date, @Status, @Keyfield, @company_code, @location_code,
+            '', '', '', '', '', '', @modified_by, @modified_date `);
     }
     res.status(200).json("Financial_Year data updated successfully");
   } catch (err) {
     console.error("Error in Financial_YearLoopUpdate:", err);
-    res.status(500).json({ message: err.message || "Internal Server Error" });
+    res.status(500).json({
+      message: err.message || "Internal Server Error"
+    });
   }
 };
+
 const Financial_YearLoopDelete = async (req, res) => {
   const Financial_YearData = req.body.Financial_YearData || req.body.keyfield;
   if (!Financial_YearData || !Array.isArray(Financial_YearData) || Financial_YearData.length === 0) {
     return res.status(400).json({ message: "Invalid or empty Financial_YearData array." });
   }
-
+  const modified_by = req.headers["modified-by"];
   try {
     const pool = await sql.connect(dbConfig);
     for (const item of Financial_YearData) {
@@ -29430,7 +29475,8 @@ const Financial_YearLoopDelete = async (req, res) => {
         .input("Keyfield", sql.NVarChar, item.Keyfield)
         .input("company_code", sql.NVarChar, item.company_code)
         .input("location_code", sql.NVarChar, item.location_code)
-        .query(`EXEC sp_Financial_Year @mode, 0, '', '', '', '', '', @Keyfield, @company_code, @location_code, '', '', '', '', '', '', '', ''`);
+        .input("modified_by", sql.NVarChar, modified_by)
+        .query(`EXEC sp_Financial_Year @mode, 0, '', '', '', '', '', @Keyfield, @company_code, @location_code, '', '', '', '', '', '', @modified_by, ''`);
     }
     res.status(200).json("Financial_Year data deleted successfully");
   } catch (err) {
