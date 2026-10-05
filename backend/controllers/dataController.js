@@ -3905,7 +3905,7 @@ const getsalessearchdata = async (req, res) => {
       .input("pay_type", sql.NVarChar, pay_type)
       .input("order_type", sql.NVarChar, order_type)
       // .input("status", sql.NVarChar, status)
-      .query(`EXEC sp_sales_hdr_Test @mode,@company_code,@bill_date,@bill_no,@dely_chlno,@warehouse_code,@sales_type,@customer_code,
+      .query(`EXEC sp_sales_hdr @mode,@company_code,@bill_date,@bill_no,@dely_chlno,@warehouse_code,@sales_type,@customer_code,
         @sale_amt,0,0,0,0,0,0,0,0,0,@bill_amt,0,0,@pay_type,'','','','','','',
         @customer_name,'','',@order_type,0,'','','','','','',0,0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
@@ -4881,7 +4881,7 @@ const getAllsaleshdrData = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "A")
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_sales_hdr_Test 'A',@company_code,'','','','','','',0,0,0,0,0,0,0,0,0,0,0,0,0,'','','','','','','','','','','',0,'','','','',0,0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_sales_hdr 'A',@company_code,'','','','','','',0,0,0,0,0,0,0,0,0,0,0,0,0,'','','','','','','','','','','',0,'','','','',0,0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     // Send response
     if (result.recordset.length > 0) {
@@ -4963,7 +4963,7 @@ const addsaleshdr = async (req, res) => {
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
       .query(
-        `EXEC sp_sales_hdr_Test @mode,@company_code,@bill_date,@bill_no,@dely_chlno,@warehouse_code,@sales_type,@customer_code,@sale_amt,@less_frit,@less_disc,@less_amt,@net_amt,@excs_amt,@cess_amt,
+        `EXEC sp_sales_hdr @mode,@company_code,@bill_date,@bill_no,@dely_chlno,@warehouse_code,@sales_type,@customer_code,@sale_amt,@less_frit,@less_disc,@less_amt,@net_amt,@excs_amt,@cess_amt,
         @dely_amt,@roff_amt,@othr_amt,@bill_amt,@tax_amount,@total_item,@pay_type,@broker_code,@tpot_code,@sman_code,@vehl_no,@mark_name,@payment_mode,@customer_name,
         @entry_no,@roff_acccode,@order_type,@deli_charge,@tax_acc_code,@sale_amt_acc_code,@othr_amt_acc_code,'','',@sales_mode,@paid_amount,@return_amount,@created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`
       );
@@ -8005,7 +8005,7 @@ const saledeletehdrData = async (req, res) => {
         .input("company_code", company_code)
         .input("bill_no", bill_no)
         .input("modified_by", sql.NVarChar, req.headers['modified-by'])
-        .query(`EXEC sp_sales_hdr_Test 'D',@company_code,'',@bill_no,'','','','',0,0,0,0,0,0,0,0,0,0,0,0,0,'','','','','','','','','','','',0,
+        .query(`EXEC sp_sales_hdr 'D',@company_code,'',@bill_no,'','','','',0,0,0,0,0,0,0,0,0,0,0,0,0,'','','','','','','','','','','',0,
 '','','','','','',0,0,'',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
         `);
     } catch (error) {
@@ -8598,7 +8598,7 @@ const getsalesdelsearchdata = async (req, res) => {
       .input("customer_name", sql.NVarChar, customer_name)
       .input("pay_type", sql.NVarChar, pay_type)
       .input("order_type", sql.NVarChar, order_type)
-      .query(`EXEC sp_sales_hdr_Test @mode,@company_code,@bill_date,@bill_no,'','',@sales_type,@customer_code,
+      .query(`EXEC sp_sales_hdr @mode,@company_code,@bill_date,@bill_no,'','',@sales_type,@customer_code,
               0,0,0,0,0,0,0,0,0,0,0,0,0,@pay_type,'','','','','','',
               @customer_name,'','',@order_type,0,'','','','','','',0,0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
@@ -15194,7 +15194,7 @@ const SalesAuthHdr = async (req, res) => {
       .input("company_code", sql.NVarChar, company_code)
       .input("bill_no", sql.NVarChar, bill_no)
       .input("authroization_status", sql.NVarChar, authroization_status)
-      .query(`EXEC sp_sales_hdr_Test @mode,@company_code,'',@bill_no,'','','','',0,0,0,0,0,0,0,0,0,0,0,0,0,'','','','','','','','','','','',0,
+      .query(`EXEC sp_sales_hdr @mode,@company_code,'',@bill_no,'','','','',0,0,0,0,0,0,0,0,0,0,0,0,0,'','','','','','','','','','','',0,
 '','','',@authroization_status,'','',0,0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
@@ -17607,7 +17607,7 @@ const salauthstatus = async (req, res) => {
       .input("mode", sql.NVarChar, "TS")
       .input("company_code", sql.NVarChar, company_code)
       .input("bill_no", sql.NVarChar, bill_no)
-      .query(`EXEC sp_sales_hdr_Test @mode,@company_code,'',@bill_no,'','','','',0,0,0,0,0,0,0,0,0,0,0,0,0,'','','','','','','','','','','',0,'','','','','','',0,0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_sales_hdr @mode,@company_code,'',@bill_no,'','','','',0,0,0,0,0,0,0,0,0,0,0,0,0,'','','','','','','','','','','',0,'','','','','','',0,0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     // Check if any records were returned
     if (result.recordset.length === 0) {
