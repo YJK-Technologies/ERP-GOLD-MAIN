@@ -117,7 +117,7 @@ const defaultColDef = {
   // flex: 1,
   filter: true,
 };
-export default function ItemPopup({ open, handleClose, handlePurchaseData }) {
+export default function ItemPopup({ open, handleClose, handlePurchaseData, selectedPartyCode }) {
 
   const [rowData, setRowData] = useState([]);
   const [transaction_no, settransaction_no] = useState("");
@@ -127,6 +127,55 @@ export default function ItemPopup({ open, handleClose, handlePurchaseData }) {
   const [purchase_type, setpurchase_type] = useState("");
   const [pay_type, setpay_type] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      const codeToSet = selectedPartyCode || "";
+      setvendor_code(codeToSet);
+
+      // Automatic initial search trigger (Selected party code irundha matum, or search all)
+      autoFetchSearchData(codeToSet);
+    }
+  }, [open, selectedPartyCode]);
+
+  const autoFetchSearchData = async (vCode) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/getpursearchdata`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          transaction_no: "",
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          transaction_date: "",
+          vendor_code: vCode, // Send auto-populated vendor code
+          vendor_name: "",
+          purchase_type: "",
+          pay_type: ""
+        })
+      });
+
+      if (response.ok) {
+        const searchData = await response.json();
+        setRowData(searchData);
+        console.log(searchData)
+        console.log("data fetched successfully")
+      } else if (response.status === 404) {
+        toast.warning('Data not found')
+        setRowData([]);
+        // clearInputs([])
+        console.log("Data not found"); // Log the message for 404 Not Found
+      } else {
+        console.log("Bad request"); // Log the message for other errors
+        setRowData([]);
+      }
+    } catch (error) {
+      console.error("Error fetching search data:", error);
+      setRowData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // For Dropdown field
   const [selected, setSelected] = useState(null);

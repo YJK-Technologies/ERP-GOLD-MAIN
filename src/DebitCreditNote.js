@@ -21,6 +21,8 @@ import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
 import labels from './Labels';
 import LoadingScreen from './Loading';
 import SalesHdrPopup from './SalesPopup'
+import PurchaseReturnView from './PurchaseReturnViewPopup';
+import SalesRetrunView from './SalesReturnViewPopup';
 
 const config = require('./Apiconfig');
 
@@ -80,7 +82,12 @@ function DebitCreditNote() {
 
     const [openPurchaseHelp, setOpenPurchaseHelp] = useState(false);
     const [openSalesHelp, setOpenSalesHelp] = useState(false);
+    const [openPurchaseReturnHelp, setOpenPurchaseReturnHelp] = useState(false);
+    const [openSalesReturnHelp, setOpenSalesReturnHelp] = useState(false);
+
     const [refTransactionNumber, setRefTransactionNumber] = useState('');
+    const [keyfield, setKeyfield] = useState('');
+    const [refNo, setRefNo] = useState('');
 
     const [additionalData, setAdditionalData] = useState({
         modified_by: '',
@@ -389,13 +396,31 @@ function DebitCreditNote() {
         // Compare normalized value (handling casing variations like 'Purchase', 'PURCHASE', 'Sales', etc.)
         const selectedType = refType.trim().toLowerCase();
 
+        const partyCode = partyName || "";
+
         if (selectedType === "purchase") {
             setOpenPurchaseHelp(true);
         } else if (selectedType === "sales") {
             setOpenSalesHelp(true);
+        } else if (selectedType === "purchase_return") {
+            setOpenPurchaseReturnHelp(true);
+        } else if (selectedType === "sales_return") {
+            setOpenSalesReturnHelp(true);
         } else {
             toast.warning(`No help popup configured for Ref. Type: ${refType}`);
         }
+    };
+
+    const formatToTwoDecimalPoints = (number) => {
+        return parseFloat(number).toFixed(2);
+    };
+
+    const formatDate = (isoDateString) => {
+        const date = new Date(isoDateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const day = String(date.getDate()).padStart(2, '0');
+        return (`${year}-${month}-${day}`);
     };
 
     const handlePurchaseDataSelect = (selectedData) => {
@@ -444,6 +469,7 @@ function DebitCreditNote() {
                 setTotalTax(formatToTwoDecimalPoints(item.tax_amount));
                 setTotalAmount(formatToTwoDecimalPoints(item.total_amount));
                 setRoundDifference(formatToTwoDecimalPoints(item.rounded_off));
+                setKeyfield(item.keyfield);
 
             } else {
                 console.log("Header Data is empty or not found");
@@ -465,16 +491,15 @@ function DebitCreditNote() {
                         serialNumber: item.ItemSNo,
                         itemCode: item.item_code,
                         itemName: item.item_name,
-                        unitWeight: item.weight,
                         warehouse: item.warehouse_code,
                         Qty: item.bill_qty,
-                        ItemTotalWight: parseFloat(item.total_weight).toFixed(2),
                         purchaseAmt: item.item_amt,
                         TotalTaxAmount: parseFloat(item.tax_amount).toFixed(2),
                         TotalItemAmount: parseFloat(item.bill_rate).toFixed(2),
                         taxType: taxType || null,
                         taxPer: taxPer || null,
                         taxDetails: taxDetails || null,
+                        keyField: `${item.ItemSNo || ''}-${item.item_code || ''}`,
                     };
                 });
 
@@ -527,6 +552,113 @@ function DebitCreditNote() {
         }
     };
 
+    const handlePurchaseReturnDataSelect = (selectedData) => {
+        if (selectedData && selectedData.length > 0) {
+            const item = selectedData[0];
+            setRefTransactionNumber(item.ReturnNo);
+            // Fetch full transaction details using your existing handleRefNo
+            handleRefPurchaseReturnNo(item.ReturnNo);
+        }
+    };
+
+    const handleRefPurchaseReturnNo = async (code) => {
+        setLoading(true)
+        try {
+            const response = await fetch(`${config.apiBaseUrl}/getpurchasereturnView`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ transaction_no: code, company_code: sessionStorage.getItem("selectedCompanyCode") })
+            });
+
+            if (!response.ok) {
+                if (response.status === 404) {
+                    toast.warning("Data not found");
+                    // clearFormFields();
+                    setRowDataTax([]);
+                } else {
+                    const errorResponse = await response.json();
+                    toast.error(errorResponse.message || "An error occurred");
+                }
+                return;
+            }
+            const searchData = await response.json();
+            if (searchData.table1 && searchData.table1.length > 0) {
+                const item = searchData.table1[0];
+                setRefTransactionNumber(item.return_no);
+                setRefTransactionDate(formatDate(item.return_date));
+                setRoundDifference(item.rounded_off);
+                setTotalAmount(item.purchase_amount_returne);
+                setTotal(item.total_amount);
+                setTotalTax(item.tax_amount);
+                setKeyfield(item.keyfield);
+            } else {
+                console.log("Table 1 is empty or not found");
+                // clearFormFields();
+            }
+
+            if (searchData.table2 && searchData.table2.length > 0) {
+                const updatedRowData = searchData.table2.map(item => {
+
+                    const taxDetailsList = (searchData.table3 && searchData.table3.length > 0)
+                        ? searchData.table3.filter(taxItem => taxItem.item_code === item.item_code)
+                        : [];
+
+                    const taxDetails = taxDetailsList.map(taxItem => taxItem.tax_name_details || taxItem.TaxType).join(",");
+                    const taxPer = taxDetailsList.map(taxItem => taxItem.tax_per || taxItem.TaxPercentage).join(",");
+                    const taxType = taxDetailsList.length > 0 ? (taxDetailsList[0].tax_type || taxDetailsList[0].TaxType) : null;
+
+                    return {
+                        serialNumber: item.ItemSNo,
+                        itemCode: item.item_code,
+                        itemName: item.item_name,
+                        warehouse: item.warehouse_code,
+                        Qty: item.return_qty,
+                        purchaseAmt: item.item_amt,
+                        TotalTaxAmount: item.tax_amount,
+                        TotalItemAmount: item.bill_rate,
+                        taxType: taxType || null,
+                        taxPer: taxPer || null,
+                        taxDetails: taxDetails || null,
+                        keyField: `${item.ItemSNo || ''}-${item.item_code || ''}`,
+
+                    };
+                });
+
+                setRowData(updatedRowData);
+            } else {
+                console.log("Table 2 is empty or not found");
+                setRowData([]);
+            }
+
+            if (searchData.table3 && searchData.table3.length > 0) {
+                const updatedRowDataTax = searchData.table3.map(item => {
+                    return {
+                        ItemSNO: item.ItemSNo,
+                        TaxSNO: item.TaxSNo,
+                        Item_code: item.item_code,
+                        TaxType: item.tax_name_details,
+                        TaxPercentage: item.tax_per,
+                        TaxAmount: item.tax_amt,
+                    };
+                });
+
+                setRowDataTax(updatedRowDataTax);
+            } else {
+                console.log("Table 3 is empty or not found");
+                setRowDataTax([]);
+            }
+
+            console.log("Data fetched successfully");
+
+        } catch (error) {
+            console.error("Error fetching search data:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleSalesDataSelect = (selectedData) => {
         if (selectedData && selectedData.length > 0) {
             const item = selectedData[0];
@@ -534,18 +666,6 @@ function DebitCreditNote() {
             // Fetch full transaction details using your existing handleRefNo
             // handleRefSalesNo(item.BillNo);
         }
-    };
-
-    const formatToTwoDecimalPoints = (number) => {
-        return parseFloat(number).toFixed(2);
-    };
-
-    const formatDate = (isoDateString) => {
-        const date = new Date(isoDateString);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-        const day = String(date.getDate()).padStart(2, '0');
-        return (`${year}-${month}-${day}`);
     };
 
     const handleRefSalesNo = async (code) => {
@@ -580,6 +700,7 @@ function DebitCreditNote() {
                 setRoundDifference(formatToTwoDecimalPoints(item.roff_amt));
                 setTotal(formatToTwoDecimalPoints(item.sale_amt));
                 setTotalTax(formatToTwoDecimalPoints(item.tax_amount));
+                setKeyfield(item.keyfield);
 
             } else {
                 console.log("Header Data is empty or not found");
@@ -600,22 +721,16 @@ function DebitCreditNote() {
                         serialNumber: item.ItemSNo,
                         itemCode: item.item_code,
                         itemName: item.item_name,
-                        unitWeight: item.weight,
                         warehouse: item.warehouse_code,
                         Qty: item.bill_qty,
-                        ItemTotalWeight: item.total_weight,
                         itemAmt: item.item_amt,
-                        totalReturnAmt: item.bill_rate,
-                        ReturnWeight: item.return_weight,
                         purchaseAmt: item.item_amt,
-                        delvychellanno: item.dely_chlno,
-                        discount: item.discount,
-                        discountAmount: item.discount_amount,
                         TotalTaxAmount: parseFloat(item.tax_amt).toFixed(2),
                         TotalItemAmount: parseFloat(item.bill_rate).toFixed(2),
                         taxType: taxType || null,
                         taxPer: taxPer || null,
-                        taxDetails: taxDetails || null
+                        taxDetails: taxDetails || null,
+                        keyField: `${item.ItemSNo || ''}-${item.item_code || ''}`,
                     };
                 });
 
@@ -651,6 +766,112 @@ function DebitCreditNote() {
         } catch (error) {
             console.error("Error fetching search data:", error);
             return false;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSalesReturnDataSelect = (selectedData) => {
+        if (selectedData && selectedData.length > 0) {
+            const item = selectedData[0];
+            setRefTransactionNumber(item.ReturnNo);
+            // Fetch full transaction details using your existing handleRefNo
+            handleRefSalesReturnNo(item.ReturnNo);
+        }
+    };
+
+    const handleRefSalesReturnNo = async (code) => {
+        setLoading(true);
+        try {
+            const response = await fetch(`${config.apiBaseUrl}/getSalesreturnView`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ transaction_no: code, company_code: sessionStorage.getItem("selectedCompanyCode"), }) // Send company_no and company_name as search criteria
+            });
+            if (response.ok) {
+                const searchData = await response.json();
+                if (searchData.table1 && searchData.table1.length > 0) {
+                    console.log("Table 1 Data:", searchData.table1);
+                    const item = searchData.table1[0];
+                    setRefTransactionNumber(item.return_no)
+                    setRefTransactionDate(formatDate(item.return_date));
+                    setTotalAmount(item.bill_amt);
+                    setTotalTax(item.tax_amount);
+                    setTotal(item.sale_amt);
+                    setRoundDifference(item.roff_amt);
+                    setKeyfield(item.keyfield);
+
+                } else {
+                    console.log("Table 1 is empty or not found");
+                }
+
+                if (searchData.table2 && searchData.table2.length > 0) {
+                    console.log("Table 2 Data:", searchData.table2);
+
+                    const updatedRowData = searchData.table2.map(item => {
+                        // Find all tax details from table3 that correspond to the current item in table2
+                        const taxDetailsList = searchData.table3.filter(taxItem => taxItem.item_code === item.item_code);
+
+                        // Extract and join tax types and percentages as comma-separated strings
+                        const taxDetails = taxDetailsList.map(taxItem => taxItem.tax_name_details).join(",");
+                        const taxPer = taxDetailsList.map(taxItem => taxItem.tax_per).join(",");
+                        const taxType = taxDetailsList.length > 0 ? taxDetailsList[0].tax_type : null;
+
+
+                        return {
+                            serialNumber: item.ItemSNo,
+                            itemCode: item.item_code,
+                            itemName: item.item_name,
+                            Qty: item.return_qty,
+                            purchaseAmt: item.item_amt,
+                            TotalTaxAmount: item.tax_amt,
+                            TotalItemAmount: item.return_amt,
+                            warehouse: item.warehouse_code,
+                            taxType: taxType || null,
+                            taxPer: taxPer || null,
+                            taxDetails: taxDetails || null,
+                            keyField: `${item.ItemSNo || ''}-${item.item_code || ''}`,
+                        };
+                    });
+
+                    setRowData(updatedRowData);
+                } else {
+                    console.log("Table 2 is empty or not found");
+                }
+
+                if (searchData.table3 && searchData.table3.length > 0) {
+                    console.log("Table 3 Data:", searchData.table3);
+
+                    const updatedRowDataTax = searchData.table3.map(item => {
+                        return {
+                            ItemSNO: item.ItemSNo,
+                            TaxSNO: item.TaxSNo,
+                            Item_code: item.item_code,
+                            TaxType: item.tax_name_details,
+                            TaxPercentage: item.tax_per,
+                            TaxAmount: item.tax_amt,
+                        };
+                    });
+
+                    console.log(updatedRowDataTax);
+                    setRowDataTax(updatedRowDataTax);
+                } else {
+                    console.log("Table 3 is empty or not found");
+                }
+
+                console.log("data fetched successfully")
+
+            } else if (response.status === 404) {
+                toast.warning('Data not found');
+                setRowData([{ serialNumber: 1, delete: '', itemCode: '', itemName: '', serach: '', unitWeight: 0, warehouse: '', billQty: 0, ItemTotalWight: 0, salesAmt: 0, TotalTaxAmount: 0, TotalItemAmount: 0 }]);
+                setRowDataTax([]);
+            } else {
+                console.log("Bad request"); // Log the message for other errors
+            }
+        } catch (error) {
+            console.error("Error fetching search data:", error);
         } finally {
             setLoading(false);
         }
@@ -918,9 +1139,149 @@ function DebitCreditNote() {
         setRowData(updatedRowData);
     };
 
-    const ItemAmountCalculation = async (params) => { /* AgGrid Calculation Logic preserved */ };
+    const ItemAmountCalculation = async (params) => {
+        try {
+            const response = await fetch(`${config.apiBaseUrl}/ItemAmountCalculation`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    Item_SNO: params.data.serialNumber,
+                    Item_code: params.data.itemCode,
+                    bill_qty: params.data.Qty,
+                    purchaser_amt: params.data.purchaseAmt,
+                    tax_type_header: params.data.taxType,
+                    tax_name_details: params.data.taxDetails,
+                    tax_percentage: params.data.taxPer,
+                    UnitWeight: params.data.unitWeight,
+                    keyfield: params.data.keyField
+                })
+            });
+
+            if (response.ok) {
+                const searchData = await response.json();
+
+                const updatedRowData = rowData.map(row => {
+                    if (row.itemCode === params.data.itemCode && row.serialNumber === params.data.serialNumber) {
+                        const matchedItem = searchData.find(item => {
+                            console.log("Item ID being checked:", item.id);  // Printing item.id being checked
+                            return item.id === row.id;
+                        });
+                        if (matchedItem) {
+                            return {
+                                ...row,
+                                // Use nullish coalescing to replace null/undefined with 0
+                                ItemTotalWight: formatToTwoDecimalPoints(matchedItem.ItemTotalWight ?? 0),
+                                TotalItemAmount: formatToTwoDecimalPoints(matchedItem.TotalItemAmount ?? 0),
+                                TotalTaxAmount: formatToTwoDecimalPoints(matchedItem.TotalTaxAmount ?? 0)
+                            };
+                        }
+                    }
+                    return row;
+                });
+
+
+                setRowData(updatedRowData);
+
+                let updatedRowDataTaxCopy = [...rowDataTax];
+
+                searchData.forEach(item => {
+                    const existingItem = updatedRowDataTaxCopy.find(row => row.ItemSNO === item.ItemSNO && row.Item_code !== item.Item_code);
+
+                    if (existingItem) {
+                        const indexToRemove = updatedRowDataTaxCopy.indexOf(existingItem);
+                        updatedRowDataTaxCopy.splice(indexToRemove, 1);
+                    }
+
+                    const existingItemWithSameCode = updatedRowDataTaxCopy.find(row => row.ItemSNO === item.ItemSNO && row.Item_code === item.Item_code && row.TaxType === item.TaxType);
+
+                    if (existingItemWithSameCode) {
+                        existingItemWithSameCode.TaxPercentage = item.TaxPercentage ?? 0;
+                        existingItemWithSameCode.TaxAmount = parseFloat(item.TaxAmount ?? 0).toFixed(2);
+                    } else {
+                        const newRow = {
+                            ItemSNO: item.ItemSNO,
+                            TaxSNO: item.TaxSNO,
+                            Item_code: item.Item_code,
+                            TaxType: item.TaxType,
+                            TaxPercentage: item.TaxPercentage ?? 0,
+                            TaxAmount: item.TaxAmount ?? 0,
+                            keyfield: item.keyfield,
+                        };
+                        updatedRowDataTaxCopy.push(newRow);
+                        console.log(newRow);
+                    }
+                });
+
+                updatedRowDataTaxCopy.sort((a, b) => a.ItemSNO - b.ItemSNO);
+                setRowDataTax(updatedRowDataTaxCopy);
+
+                // Check if any row has purchaseQty defined``
+                const hasPurchaseQty = updatedRowData.some(row => row.Qty >= 0);
+
+                if (hasPurchaseQty) {
+                    const totalItemAmounts = updatedRowData.map(row => row.TotalItemAmount || 0).join(',');
+                    const totalTaxAmounts = updatedRowData.map(row => row.TotalTaxAmount || 0).join(',');
+
+                    // Remove trailing commas if present
+                    const formattedTotalItemAmounts = totalItemAmounts.endsWith(',') ? totalItemAmounts.slice(0, -1) : totalItemAmounts;
+                    const formattedTotalTaxAmounts = totalTaxAmounts.endsWith(',') ? totalTaxAmounts.slice(0, -1) : totalTaxAmounts;
+
+                    console.log("formattedTotalItemAmounts", formattedTotalItemAmounts);
+                    console.log("formattedTotalTaxAmounts", formattedTotalTaxAmounts);
+
+                    // Ensure that TotalAmountCalculation receives numbers, not strings
+                    await TotalAmountCalculation(formattedTotalTaxAmounts, formattedTotalItemAmounts);
+
+                    console.log("TotalAmountCalculation executed successfully");
+                } else {
+                    console.log("No rows with purchaseQty greater than 0 found");
+                }
+
+                console.log("Data fetched successfully");
+            } else if (response.status === 404) {
+                console.log("Data not found");
+            } else {
+                console.log("Bad request");
+            }
+        } catch (error) {
+            console.error("Error fetching search data:", error);
+        }
+    };
+
+    const TotalAmountCalculation = async (formattedTotalTaxAmounts, formattedTotalItemAmounts) => {
+        if (parseFloat(formattedTotalTaxAmounts) >= 0 && parseFloat(formattedTotalItemAmounts) >= 0) {
+            try {
+                const response = await fetch(`${config.apiBaseUrl}/TotalAmountCalculation`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        Tax_amount: formattedTotalTaxAmounts, Putchase_amount: formattedTotalItemAmounts,
+                        company_code: sessionStorage.getItem("selectedCompanyCode")
+                    }),
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    // console.table(data)
+                    const [{ rounded_amount, round_difference, TotalPurchase, TotalTax }] = data;
+                    setTotalAmount(formatToTwoDecimalPoints(rounded_amount));
+                    setRoundDifference(formatToTwoDecimalPoints(round_difference));
+                    setTotal(formatToTwoDecimalPoints(TotalPurchase));
+                    setTotalTax(formatToTwoDecimalPoints(TotalTax));
+                } else {
+                    const errorMessage = await response.text();
+                    console.error(`Server responded with error: ${errorMessage}`);
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+    };
+
     const handlePurchase = () => setOpen3(true);
-    const handlePurchaseData = () => { };
 
     // UNTOUCHED AG-GRID COLUMN DEFS
     const columnDefs = [
@@ -1007,25 +1368,25 @@ function DebitCreditNote() {
         //     filter: true,
         //     sortable: false
         // },
-        // {
-        //     headerName: 'Warehouse',
-        //     field: 'warehouse',
-        //     editable: true,
-        //     filter: true,
-        //     cellEditorParams: { maxLength: 18 },
-        //     onCellValueChanged: function (params) {
-        //         handleWarehouseCode(params);
-        //     },
-        //     sortable: false,
-        //     cellRenderer: (params) => (
-        //         <div className="position-relative d-flex align-items-center" style={{ minHeight: '100%' }}>
-        //             <div className="flex-grow-1">{params.value}</div>
-        //             <span className="icon searchIcon" style={{ position: 'absolute', right: '-10px', cursor: 'pointer' }} onClick={() => handleOpen(params)}>
-        //                 <i className="fa fa-search"></i>
-        //             </span>
-        //         </div>
-        //     )
-        // },
+        {
+            headerName: 'Warehouse',
+            field: 'warehouse',
+            editable: true,
+            filter: true,
+            cellEditorParams: { maxLength: 18 },
+            onCellValueChanged: function (params) {
+                handleWarehouseCode(params);
+            },
+            sortable: false,
+            cellRenderer: (params) => (
+                <div className="position-relative d-flex align-items-center" style={{ minHeight: '100%' }}>
+                    <div className="flex-grow-1">{params.value}</div>
+                    <span className="icon searchIcon" style={{ position: 'absolute', right: '-10px', cursor: 'pointer' }} onClick={() => handleOpen(params)}>
+                        <i className="fa fa-search"></i>
+                    </span>
+                </div>
+            )
+        },
         {
             headerName: 'Qty',
             field: 'Qty',
@@ -1144,6 +1505,345 @@ function DebitCreditNote() {
         }
     ];
 
+    // MAIN SAVE BUTTON CLICK HANDLER
+    const handleSaveButtonClick = async () => {
+        // 1. Header Field Validation
+        if (
+            !partyName ||
+            !noteType ||
+            !reason ||
+            !refTransactionNumber ||
+            !refTransactionDate ||
+            !transactionDate
+        ) {
+            toast.warning("Error: Missing required header fields.");
+            return;
+        }
+
+        // 2. Grid Empty Validation
+        if (rowData.length === 0 || rowDataTax.length === 0) {
+            toast.warning("No item details or tax details found to save.");
+            return;
+        }
+
+        // 3. Row-level Validation
+        const invalidRows = rowData.filter(
+            (row) => row.itemCode && (!row.Qty || row.Qty <= 0)
+        );
+        if (invalidRows.length > 0) {
+            toast.warning("Item code is present but Quantity is missing or zero.");
+            return;
+        }
+
+        const rowsWithQtyNoItemCode = rowData.filter(
+            (row) => row.Qty > 0 && (!row.itemCode || row.itemCode.trim() === "")
+        );
+        if (rowsWithQtyNoItemCode.length > 0) {
+            toast.warning("Quantity is entered but Item Code is missing.");
+            return;
+        }
+
+        const filteredRowData = rowData.filter(
+            (row) => row.Qty > 0 && row.purchaseAmt > 0 && row.TotalItemAmount > 0
+        );
+
+        const hasNullWarehouse = filteredRowData.some(
+            (row) => !row.warehouse || row.warehouse.trim() === ""
+        );
+        if (hasNullWarehouse) {
+            toast.warning("One or more rows have an empty warehouse.");
+            return;
+        }
+
+        if (filteredRowData.length === 0) {
+            toast.warning("Please check Qty, Rate, and Amount values are greater than zero.");
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            // 4. Construct Header Data Payload
+            const headerPayload = {
+                Note_Type: noteType,
+                Note_Date: transactionDate,
+                Party_Type: partyType,
+                Party_ID: partyName,
+                Reference_Type: refType,
+                Reference_ID: keyfield,
+                Reference_Invoice_No: refTransactionNumber,
+                Reference_Invoice_Date: refTransactionDate,
+                Reason_ID: reason,
+                Reference_No: refNo,
+                Sub_Total: total,
+                Tax_Amount: totalTax,
+                Rounded_off: roundDifference,
+                Total_Amount: totalAmount,
+                Narration: narration,
+                company_code: sessionStorage.getItem("selectedCompanyCode"),
+                location_code: sessionStorage.getItem("selectedLocationCode") || "LOC01",
+                created_by: sessionStorage.getItem("selectedUserCode")
+            };
+
+            const response = await fetch(`${config.apiBaseUrl}/Debit_Credit_NoteInsert`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(headerPayload)
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+
+                // Extract generated Keyfield and Note_No from backend response
+                const keyfieldHeader = result.Keyfield;
+                const noteNo = result.Note_No;
+
+                setTransactionNumber(noteNo);
+
+                await saveDebitCreditDetails(noteNo, keyfieldHeader);
+                await saveDebitCreditTaxDetails(noteNo, keyfieldHeader);
+
+                toast.success("Debit/Credit Note saved successfully!");
+
+                // setAuthButtonVisible(false);
+                // setDelButtonVisible(true);
+                // setPrintButtonVisible(true);
+                // setShowExcelButton(true);
+            } else {
+                const errorResponse = await response.json();
+                toast.warning(errorResponse.message || "Failed to save Header data");
+            }
+        } catch (error) {
+            console.error("Error saving header data:", error);
+            toast.error("Error saving data: " + error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // 5. SAVE ITEM DETAILS FUNCTION
+    const saveDebitCreditDetails = async (noteId, keyfieldHeader) => {
+        try {
+            const validRows = rowData.filter(
+                (row) => row.itemCode && row.itemName && row.Qty > 0
+            );
+
+            for (const row of validRows) {
+                const detailPayload = {
+                    Note_ID: noteId,
+                    Item_ID: row.serialNumber,
+                    Item_Code: row.itemCode,
+                    Item_Name: row.itemName,
+                    // UOM_ID: row.uomId,
+                    Qty: row.Qty,
+                    Rate: row.purchaseAmt,
+                    Amount: row.TotalItemAmount,
+                    Tax_Amount: row.TotalTaxAmount,
+                    Warehouse_ID: row.warehouse,
+                    Keyfield_header: keyfieldHeader,
+                    company_code: sessionStorage.getItem("selectedCompanyCode"),
+                    location_code: sessionStorage.getItem("selectedLocationCode") || "LOC01",
+                    created_by: sessionStorage.getItem("selectedUserCode")
+                };
+
+                const response = await fetch(`${config.apiBaseUrl}/Debit_Credit_Note_DetailInsert`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(detailPayload)
+                });
+
+                if (!response.ok) {
+                    const errorResponse = await response.json();
+                    console.error("Detail Insert Error:", errorResponse);
+                }
+            }
+        } catch (error) {
+            console.error("Error saving details:", error);
+            toast.error("Error saving item details: " + error.message);
+        }
+    };
+
+    // 6. SAVE TAX DETAILS FUNCTION
+    const saveDebitCreditTaxDetails = async (noteId, keyfieldHeader) => {
+        try {
+            for (const row of rowData) {
+                const matchingTaxRows = rowDataTax.filter(
+                    (taxRow) => taxRow.Item_code === row.itemCode
+                );
+
+                for (const taxRow of matchingTaxRows) {
+                    const taxPayload = {
+                        Note_ID: noteId,
+                        Item_code: row.itemCode,
+                        Tax_code: taxRow.TaxType,
+                        Tax_percentage: taxRow.TaxPercentage,
+                        Tax_amount: taxRow.TaxAmount,
+                        Item_SNo: Number(row.serialNumber),
+                        Tax_SNo: Number(taxRow.TaxSNO),
+                        tax_type: row.taxType,
+                        Keyfield_header: keyfieldHeader,
+                        company_code: sessionStorage.getItem("selectedCompanyCode"),
+                        location_code: sessionStorage.getItem("selectedLocationCode") || "LOC01",
+                        created_by: sessionStorage.getItem("selectedUserCode")
+                    };
+
+                    const response = await fetch(`${config.apiBaseUrl}/TaxDetailsTableInsert`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(taxPayload)
+                    });
+
+                    if (!response.ok) {
+                        const errorResponse = await response.json();
+                        console.error("Tax Detail Insert Error:", errorResponse);
+                    }
+                }
+            }
+        } catch (error) {
+            console.error("Error saving tax details:", error);
+            toast.error("Error saving tax details: " + error.message);
+        }
+    };
+
+    const handleTransactionNoKeyDown = (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault(); // Prevents form submission/page refresh on Enter
+            if (!transactionNumber || transactionNumber.trim() === "") {
+                toast.warning("Please enter a Transaction Number");
+                return;
+            }
+            fetchDebitCreditNoteData(transactionNumber.trim());
+        }
+    };
+
+    const fetchDebitCreditNoteData = async (code) => {
+        if (!code) return;
+        setLoading(true);
+
+        try {
+            const response = await fetch(`${config.apiBaseUrl}/getDebitCreditNoteDate`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    transaction_no: code,
+                    company_code: sessionStorage.getItem("selectedCompanyCode"),
+                }),
+            });
+
+            if (!response.ok) {
+                if (response.status === 404) {
+                    toast.warning("Transaction Data not found");
+                    setRowData([]);
+                    setRowDataTax([]);
+                } else {
+                    const errorResponse = await response.json();
+                    toast.error(errorResponse.message || "An error occurred while fetching data");
+                }
+                return;
+            }
+
+            const searchData = await response.json();
+
+            // Map Header Data
+            if (searchData.header && searchData.header.length > 0) {
+                const headerItem = searchData.header[0];
+
+                // Update form fields based on backend returned values
+                setSelectedNoteType(headerItem.Note_Type || "");
+                setNoteType(headerItem.Note_Type || "");
+                setSelectedPartyType(headerItem.Party_Type || "");
+                setPartyType(headerItem.Party_Type || "");
+                setSelectedPartyName(headerItem.Party_ID || "");
+                setPartyName(headerItem.Party_ID || "");
+                setSelectedRefType(headerItem.Reference_Type || "");
+                setRefType(headerItem.Reference_Type || "");
+                setRefTransactionNumber(headerItem.Reference_Invoice_No || "");
+                if (headerItem.Reference_Invoice_Date) {
+                    setRefTransactionDate(formatDate(headerItem.Reference_Invoice_Date));
+                }
+                setSelectedReason(headerItem.Reason_ID || "");
+                setReason(headerItem.Reason_ID || "");
+                setTotal(formatToTwoDecimalPoints(headerItem.Sub_Total || 0));
+                setTotalTax(formatToTwoDecimalPoints(headerItem.Tax_Amount || 0));
+                setTotalAmount(formatToTwoDecimalPoints(headerItem.Total_Amount || 0));
+                setNarration(headerItem.Narration || "");
+                setKeyfield(headerItem.Keyfield || "");
+            } else {
+                toast.warning("Header details not found");
+            }
+
+            // Map Detail/Item Data
+            if (searchData.detail && searchData.detail.length > 0) {
+                const updatedRowData = searchData.detail.map((item, index) => {
+                    const taxDetailsList = (searchData.taxdetail || []).filter(
+                        (taxItem) => taxItem.Item_code === item.Item_Code || taxItem.item_code === item.Item_Code
+                    );
+
+                    const taxDetails = taxDetailsList.map((t) =>  t.Tax_code).join(",");
+                    const taxPer = taxDetailsList.map((t) => t.tax_per || t.Tax_percentage).join(",");
+                    const taxType = taxDetailsList.length > 0 ? taxDetailsList[0].tax_type : null;
+
+                    return {
+                        serialNumber: item.Item_ID,
+                        itemCode: item.Item_Code,
+                        itemName: item.Item_Name,
+                        warehouse: item.Warehouse_ID,
+                        Qty: item.Qty,
+                        purchaseAmt: item.Rate,
+                        TotalTaxAmount: parseFloat(item.Tax_Amount || 0).toFixed(2),
+                        TotalItemAmount: parseFloat(item.Amount || item.Total_Amount).toFixed(2),
+                        taxType: taxType || null,
+                        taxPer: taxPer || null,
+                        taxDetails: taxDetails || null,
+                        keyField: `${index + 1}-${item.Item_Code || ''}`,
+                    };
+                });
+
+                setRowData(updatedRowData);
+            } else {
+                // Default empty row if no items found
+                setRowData([
+                    {
+                        serialNumber: 1,
+                        itemCode: "",
+                        itemName: "",
+                        warehouse: "",
+                        Qty: 0,
+                        purchaseAmt: 0,
+                        TotalTaxAmount: 0,
+                        TotalItemAmount: 0,
+                    },
+                ]);
+            }
+
+            // Map Tax Details Data
+            if (searchData.taxdetail && searchData.taxdetail.length > 0) {
+                const updatedRowDataTax = searchData.taxdetail.map((item) => ({
+                    ItemSNO: item.Item_SNo,
+                    TaxSNO: item.Tax_SNo,
+                    Item_code: item.Item_code,
+                    TaxType: item.Tax_code,
+                    TaxPercentage: item.Tax_percentage,
+                    TaxAmount: parseFloat(item.Tax_amount).toFixed(2),
+                    TaxName: item.tax_type,
+                }));
+
+                setRowDataTax(updatedRowDataTax);
+            } else {
+                setRowDataTax([]);
+            }
+
+            toast.success("Data loaded successfully!");
+        } catch (error) {
+            console.error("Error fetching Debit/Credit Note data:", error);
+            toast.error(error.message || "Failed to fetch data");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div>
             <div className="container-fluid Topnav-screen">
@@ -1161,7 +1861,7 @@ function DebitCreditNote() {
                         <div className="d-flex align-items-center gap-5 my-1">
                             {/* 1. Note Type */}
                             <div className="col-md-3 form-group mb-2">
-                                <label htmlFor="noteType" className="">Note Type:</label>
+                                <label htmlFor="noteType" className="">Note Type</label>
                                 <div style={{ minWidth: '180px' }} title="Select Note Type (Debit / Credit)">
                                     <Select
                                         id="noteType"
@@ -1178,7 +1878,7 @@ function DebitCreditNote() {
                             {/* 2. Note Date */}
                             <div className="col-md-4 form-group mb-2">
                                 <div className="exp-form-floating">
-                                    <label htmlFor="transactionDate">Date<span className="text-danger">*</span></label>
+                                    <label htmlFor="transactionDate">Date</label>
                                     <input
                                         name="transactionDate"
                                         id="transactionDate"
@@ -1195,7 +1895,7 @@ function DebitCreditNote() {
                             </div>
 
                             <div className="col-md-4 form-group mb-2">
-                                <label htmlFor="transactionNumber">Transaction ID</label>
+                                <label htmlFor="transactionNumber">Transaction No</label>
                                 <div className="exp-form-floating">
                                     <div className="d-flex justify-content-end">
                                         <input
@@ -1206,6 +1906,7 @@ function DebitCreditNote() {
                                             title="Enter Original Transaction Reference Number"
                                             value={transactionNumber}
                                             onChange={(e) => setTransactionNumber(e.target.value)}
+                                            onKeyDown={handleTransactionNoKeyDown}
                                             maxLength={50}
                                             autoComplete="off"
                                         />
@@ -1239,7 +1940,7 @@ function DebitCreditNote() {
                             </div>
 
                             {saveButtonVisible && ['add', 'all permission'].some(permission => DebitCreditNotePermission.includes(permission)) && (
-                                <addbutton type="button" className="purbut" title="Save Note">
+                                <addbutton type="button" className="purbut" title="Save Note" onClick={handleSaveButtonClick}>
                                     <i className="fa-regular fa-floppy-disk"></i>
                                 </addbutton>
                             )}
@@ -1283,7 +1984,7 @@ function DebitCreditNote() {
                     <div className="row ms-3 me-3">
                         {/* 4. Party Type */}
                         <div className="col-md-3 form-group mb-2">
-                            <label htmlFor="partyType">Party Type<span className="text-danger">*</span></label>
+                            <label htmlFor="partyType">Party Type</label>
                             <div className="exp-form-floating" title="Select Party Type (Vendor or Customer)">
                                 <Select
                                     id="partyType"
@@ -1301,7 +2002,7 @@ function DebitCreditNote() {
                         {/* 3. Party Name */}
                         <div className="col-md-3 form-group mb-2">
                             <label htmlFor="partyName">
-                                Party Name<span className="text-danger">*</span>
+                                Party Name
                             </label>
 
                             <div
@@ -1331,7 +2032,7 @@ function DebitCreditNote() {
 
                         {/* 4. Reason */}
                         <div className="col-md-3 form-group mb-2">
-                            <label htmlFor="reason">Ref. Type<span className="text-danger">*</span></label>
+                            <label htmlFor="reason">Ref. Type</label>
                             <div className="exp-form-floating" title="Select Reason for Debit/Credit Note">
                                 <Select
                                     id="reason"
@@ -1346,7 +2047,7 @@ function DebitCreditNote() {
                         </div>
 
                         <div className="col-md-3 form-group mb-2">
-                            <label htmlFor="reason">Reason<span className="text-danger">*</span></label>
+                            <label htmlFor="reason">Reason</label>
                             <div className="exp-form-floating" title="Select Reason for Debit/Credit Note">
                                 <Select
                                     id="reason"
@@ -1397,6 +2098,20 @@ function DebitCreditNote() {
                                     title="Select Transaction Date"
                                     value={refTransactionDate}
                                     onChange={(e) => setRefTransactionDate(e.target.value)}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="col-md-3 form-group mb-2">
+                            <label htmlFor="refNo">Ref. No</label>
+                            <div className="exp-form-floating">
+                                <input
+                                    className="exp-input-field form-control"
+                                    id="refNo"
+                                    title="Enter Reference No"
+                                    // placeholder="Enter Narration or Remarks"
+                                    value={refNo}
+                                    onChange={(e) => setRefNo(e.target.value)}
                                 />
                             </div>
                         </div>
@@ -1517,7 +2232,7 @@ function DebitCreditNote() {
                             rowData={activeTable === 'myTable' ? rowData : rowDataTax}
                             defaultColDef={{ editable: true, resizable: true }}
                             onCellValueChanged={async (event) => {
-                                if (event.colDef.field === 'purchaseQty' || event.colDef.field === 'purchaseAmt') {
+                                if (event.colDef.field === 'Qty' || event.colDef.field === 'purchaseAmt') {
                                     await ItemAmountCalculation(event);
                                 }
                             }}
@@ -1528,8 +2243,10 @@ function DebitCreditNote() {
                 {/* POPUPS & FOOTER */}
                 <PurchaseItemPopup open={open} handleClose={handleClose} handleItem={handleItem} />
                 <PurchaseWarehousePopup open={open1} handleClose={handleClose} handleWarehouse={handleWarehouse} />
-                <PurchasePopup open={openPurchaseHelp} handleClose={() => setOpenPurchaseHelp(false)} handlePurchaseData={handlePurchaseDataSelect} />
-                <SalesHdrPopup open={openSalesHelp} handleClose={() => setOpenSalesHelp(false)} handleData={handleSalesDataSelect} />
+                <PurchasePopup open={openPurchaseHelp} handleClose={() => setOpenPurchaseHelp(false)} handlePurchaseData={handlePurchaseDataSelect} selectedPartyCode={partyName || ""} />
+                <SalesHdrPopup open={openSalesHelp} handleClose={() => setOpenSalesHelp(false)} handleData={handleSalesDataSelect} selectedPartyCode={partyName || ""} />
+                <PurchaseReturnView open={openPurchaseReturnHelp} handleClose={() => setOpenPurchaseReturnHelp(false)} handleItemView={handlePurchaseReturnDataSelect} selectedPartyCode={partyName || ""} />
+                <SalesRetrunView open={openSalesReturnHelp} handleClose={() => setOpenSalesReturnHelp(false)} handleDataView={handleSalesReturnDataSelect} selectedPartyCode={partyName || ""} />
                 <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
                     <div className="row ms-2">
                         <div className="d-flex justify-content-start">
