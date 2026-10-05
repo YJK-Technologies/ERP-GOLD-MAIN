@@ -146,7 +146,7 @@ const defaultColDef = {
 };
 
 
-export default function InventoryHdrPopup({ open, handleClose, handleData }) {
+export default function InventoryHdrPopup({ open, handleClose, handleData, selectedPartyCode }) {
 
   const [rowData, setRowData] = useState([]);
   const [bill_date, setbill_date] = useState("");
@@ -169,6 +169,56 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
 
   const [orderdrop, setOrderdrop] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
+
+  useEffect(() => {
+    if (open) {
+      const codeToSet = selectedPartyCode || "";
+      setcustomer_code(codeToSet);
+
+      autoFetchSalesData(codeToSet);
+    }
+  }, [open, selectedPartyCode]);
+
+  const autoFetchSalesData = async (cCode) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/salessearchdata`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          bill_date: "",
+          bill_no: "",
+          dely_chlno: "",
+          sales_type: "",
+          customer_code: cCode, // Send auto-populated customer code
+          customer_name: "",
+          pay_type: "",
+          order_type: "",
+          inventry_autono: ""
+        })
+      });
+
+      if (response.ok) {
+        const searchData = await response.json();
+        setRowData(searchData);
+        console.log("data fetched successfully")
+      } else if (response.status === 404) {
+        toast.warning("Data not found")
+        setRowData([]);
+        // clearInputs([])
+        console.log("Data not found");
+      } else {
+        console.log("Bad request");
+        setRowData([]);
+      }
+    } catch (error) {
+      console.error("Error fetching sales data:", error);
+      setRowData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChangePay = (selectedPay) => {
     setselectedPay(selectedPay);

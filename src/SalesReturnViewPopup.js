@@ -112,7 +112,7 @@ const defaultColDef = {
 };
 
 
-export default function SalesRetrunView({ open, handleClose, handleDataView }) {
+export default function SalesRetrunView({ open, handleClose, handleDataView, selectedPartyCode }) {
 
   const [rowData, setRowData] = useState([]);
   const [bill_date, setbill_date] = useState("");
@@ -134,7 +134,7 @@ export default function SalesRetrunView({ open, handleClose, handleDataView }) {
   const [payType, setPayType] = useState("");
   const [paydrop, setPaydrop] = useState([]);
 
-    useEffect(() => {
+  useEffect(() => {
     fetch(`${config.apiBaseUrl}/paytype`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -160,7 +160,54 @@ export default function SalesRetrunView({ open, handleClose, handleDataView }) {
       .catch((error) => console.error("Error fetching sales types:", error));
 
   }, []);
-  
+
+  useEffect(() => {
+    if (open) {
+      const codeToSet = selectedPartyCode || "";
+      setcustomer_code(codeToSet);
+      autoFetchSalesReturnData(codeToSet);
+    }
+  }, [open, selectedPartyCode]);
+
+  const autoFetchSalesReturnData = async (cCode) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/getsalesreturnsearchViewdata`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          bill_date: "",
+          company_code: sessionStorage.getItem('selectedCompanyCode'),
+          bill_no: "",
+          return_no: "",
+          dely_chlno: "",
+          sales_type: "",
+          customer_code: cCode,
+          customer_name: "",
+          pay_type: "",
+          order_type: ""
+        })
+      });
+      if (response.ok) {
+        const searchData = await response.json();
+        setRowData(searchData);
+        console.log("data fetched successfully")
+      } else if (response.status === 404) {
+        toast.warning("Data Not Found")
+        setRowData([]);
+        // clearInputs([])
+        console.log("Data not found"); // Log the message for 404 Not Found
+      } else {
+        console.log("Bad request"); // Log the message for other errors
+      }
+    } catch (error) {
+      console.error("Error fetching sales return data:", error);
+      setRowData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleChangePay = (selectedOption) => {
     setSelectedPay(selectedOption);
     setPayType(selectedOption ? selectedOption.value : '');
@@ -189,7 +236,7 @@ export default function SalesRetrunView({ open, handleClose, handleDataView }) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ bill_date, company_code: sessionStorage.getItem('selectedCompanyCode'), bill_no, return_no, dely_chlno, sales_type:salesType, customer_code, customer_name, pay_type:payType, order_type })
+        body: JSON.stringify({ bill_date, company_code: sessionStorage.getItem('selectedCompanyCode'), bill_no, return_no, dely_chlno, sales_type: salesType, customer_code, customer_name, pay_type: payType, order_type })
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -259,7 +306,7 @@ export default function SalesRetrunView({ open, handleClose, handleDataView }) {
     setRowData([])
   }
 
-    const handleRowDoubleClick = (params) => {
+  const handleRowDoubleClick = (params) => {
     const row = params.data;
 
     if (!row) return;
@@ -386,32 +433,32 @@ export default function SalesRetrunView({ open, handleClose, handleDataView }) {
                         </div>
                       </div>
                       <div className="row ms-3 me-3">
-                          <div className="col-sm mb-2">
-                            <div title="Select the Sales type">
-                              <Select
-                                id="SalesType"
-                                value={selectedSales}
-                                onChange={handleChangeSales}
-                                options={filteredOptionSales}
-                                className="exp-input-field"
-                                placeholder="Sales type"
-                                isClearable
-                              />
-                            </div>
-                          </div>                        
-                          <div className="col-sm mb-2">
-                            <div title="Select the Pay type">
-                              <Select
-                                id="PayType"
-                                value={selectedPay}
-                                onChange={handleChangePay}
-                                options={filteredOptionPay}
-                                className="exp-input-field"
-                                placeholder="Pay type"
-                                isClearable
-                              />
-                            </div>
-                          </div>  
+                        <div className="col-sm mb-2">
+                          <div title="Select the Sales type">
+                            <Select
+                              id="SalesType"
+                              value={selectedSales}
+                              onChange={handleChangeSales}
+                              options={filteredOptionSales}
+                              className="exp-input-field"
+                              placeholder="Sales type"
+                              isClearable
+                            />
+                          </div>
+                        </div>
+                        <div className="col-sm mb-2">
+                          <div title="Select the Pay type">
+                            <Select
+                              id="PayType"
+                              value={selectedPay}
+                              onChange={handleChangePay}
+                              options={filteredOptionPay}
+                              className="exp-input-field"
+                              placeholder="Pay type"
+                              isClearable
+                            />
+                          </div>
+                        </div>
                         <div className="mb-2 mt-2 d-flex justify-content-end">
                           <icon className="icon popups-btn" title="Search" onClick={handleSearchItem}>
                             <FontAwesomeIcon icon={faMagnifyingGlass} />
@@ -531,32 +578,32 @@ export default function SalesRetrunView({ open, handleClose, handleDataView }) {
                         </div>
                       </div>
                       <div className="row ms-3 me-3">
-                          <div className="col-sm mb-2">
-                            <div title="Select the Sales type">
-                              <Select
-                                id="SalesType"
-                                value={selectedSales}
-                                onChange={handleChangeSales}
-                                options={filteredOptionSales}
-                                className="exp-input-field"
-                                placeholder="Sales type"
-                                isClearable
-                              />
-                            </div>
-                          </div>                        
-                          <div className="col-sm mb-2">
-                            <div title="Select the Pay type">
-                              <Select
-                                id="PayType"
-                                value={selectedPay}
-                                onChange={handleChangePay}
-                                options={filteredOptionPay}
-                                className="exp-input-field"
-                                placeholder="Pay type"
-                                isClearable
-                              />
-                            </div>
-                          </div>  
+                        <div className="col-sm mb-2">
+                          <div title="Select the Sales type">
+                            <Select
+                              id="SalesType"
+                              value={selectedSales}
+                              onChange={handleChangeSales}
+                              options={filteredOptionSales}
+                              className="exp-input-field"
+                              placeholder="Sales type"
+                              isClearable
+                            />
+                          </div>
+                        </div>
+                        <div className="col-sm mb-2">
+                          <div title="Select the Pay type">
+                            <Select
+                              id="PayType"
+                              value={selectedPay}
+                              onChange={handleChangePay}
+                              options={filteredOptionPay}
+                              className="exp-input-field"
+                              placeholder="Pay type"
+                              isClearable
+                            />
+                          </div>
+                        </div>
                         <div className="mb-2 mt-2 d-flex justify-content-end">
                           <button className="" onClick={handleSearchItem}>
                             <FontAwesomeIcon icon={faMagnifyingGlass} />
