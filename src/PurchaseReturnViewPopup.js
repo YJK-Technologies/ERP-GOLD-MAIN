@@ -158,7 +158,7 @@ const defaultColDef = {
   // flex: 1,
   filter: true,
 };
-export default function PurchaseReturnView({ open, handleClose, handleItemView }) {
+export default function PurchaseReturnView({ open, handleClose, handleItemView, selectedPartyCode }) {
 
   const [rowData, setRowData] = useState([]);
   const [transaction_no, settransaction_no] = useState("");
@@ -232,6 +232,52 @@ export default function PurchaseReturnView({ open, handleClose, handleItemView }
       .catch((error) => console.error("Error fetching purchase types:", error));
 
   }, []);
+
+  useEffect(() => {
+    if (open) {
+      const codeToSet = selectedPartyCode || "";
+      setvendor_code(codeToSet);
+      autoFetchSearchData(codeToSet);
+    }
+  }, [open, selectedPartyCode]);
+
+  const autoFetchSearchData = async (vCode) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/getpurreturnsearchViewdata`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          transaction_no: "",
+          transaction_date: "",
+          vendor_code: vCode,
+          vendor_name: "",
+          purchase_type: "",
+          pay_type: "",
+          return_no: ""
+        })
+      });
+      if (response.ok) {
+        const searchData = await response.json();
+        setRowData(searchData);
+        console.log(searchData)
+        console.log("data fetched successfully")
+      } else if (response.status === 404) {
+        toast.warning('Data not found')
+        setRowData([]);
+        // clearInputs([])
+        console.log("Data not found"); // Log the message for 404 Not Found
+      } else {
+        console.log("Bad request"); // Log the message for other errors
+      }
+    } catch (error) {
+      console.error("Error fetching search data:", error);
+      setRowData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSearch = async () => {
     setLoading(true);
