@@ -23,6 +23,7 @@ import LoadingScreen from './Loading';
 import SalesHdrPopup from './SalesPopup'
 import PurchaseReturnView from './PurchaseReturnViewPopup';
 import SalesRetrunView from './SalesReturnViewPopup';
+import DebitCrediNoteHelp from './DebitCreditNotePopup';
 
 const config = require('./Apiconfig');
 
@@ -84,6 +85,7 @@ function DebitCreditNote() {
     const [openSalesHelp, setOpenSalesHelp] = useState(false);
     const [openPurchaseReturnHelp, setOpenPurchaseReturnHelp] = useState(false);
     const [openSalesReturnHelp, setOpenSalesReturnHelp] = useState(false);
+    const [openDebitCreditNoteHelp, setOpenDebitCreditNoteHelp] = useState(false);
 
     const [refTransactionNumber, setRefTransactionNumber] = useState('');
     const [keyfield, setKeyfield] = useState('');
@@ -98,7 +100,6 @@ function DebitCreditNote() {
 
     const [open, setOpen] = useState(false);
     const [open1, setOpen1] = useState(false);
-    const [open3, setOpen3] = useState(false);
 
     const permissions = JSON.parse(sessionStorage.getItem('permissions')) || [];
     const DebitCreditNotePermission = permissions
@@ -428,7 +429,7 @@ function DebitCreditNote() {
             const item = selectedData[0];
             setRefTransactionNumber(item.TransactionNo);
             // Fetch full transaction details using your existing handleRefNo
-            // handleRefPurchaseNo(item.TransactionNo);
+            handleRefPurchaseNo(item.TransactionNo);
         }
     };
 
@@ -664,7 +665,7 @@ function DebitCreditNote() {
             const item = selectedData[0];
             setRefTransactionNumber(item.BillNo);
             // Fetch full transaction details using your existing handleRefNo
-            // handleRefSalesNo(item.BillNo);
+            handleRefSalesNo(item.BillNo);
         }
     };
 
@@ -898,7 +899,7 @@ function DebitCreditNote() {
     };
 
     const handleClose = () => {
-        setOpen(false); setOpen1(false); setOpen3(false);
+        setOpen(false); setOpen1(false);
     };
 
     const handleOpen = (params) => {
@@ -1281,7 +1282,7 @@ function DebitCreditNote() {
         }
     };
 
-    const handlePurchase = () => setOpen3(true);
+    const handleDebitCreditNoteHelp = () => setOpenDebitCreditNoteHelp(true);
 
     // UNTOUCHED AG-GRID COLUMN DEFS
     const columnDefs = [
@@ -1608,7 +1609,7 @@ function DebitCreditNote() {
                 // setAuthButtonVisible(false);
                 // setDelButtonVisible(true);
                 // setPrintButtonVisible(true);
-                // setShowExcelButton(true);
+                setShowExcelButton(true);
             } else {
                 const errorResponse = await response.json();
                 toast.warning(errorResponse.message || "Failed to save Header data");
@@ -1745,26 +1746,54 @@ function DebitCreditNote() {
             }
 
             const searchData = await response.json();
+            setShowExcelButton(true);
 
             // Map Header Data
             if (searchData.header && searchData.header.length > 0) {
                 const headerItem = searchData.header[0];
 
-                // Update form fields based on backend returned values
-                setSelectedNoteType(headerItem.Note_Type || "");
+                // 1. Note Type Mapping
+                const matchedNoteTypeOption = filteredOptionNoteType.find(
+                    (opt) => opt.value === headerItem.Note_Type
+                ) || (headerItem.Note_Type ? { value: headerItem.Note_Type, label: headerItem.Note_Type } : null);
+
+                setSelectedNoteType(matchedNoteTypeOption);
                 setNoteType(headerItem.Note_Type || "");
-                setSelectedPartyType(headerItem.Party_Type || "");
-                setPartyType(headerItem.Party_Type || "");
-                setSelectedPartyName(headerItem.Party_ID || "");
+
+                // 2. Party Type Mapping
+                const partyTypeVal = headerItem.Party_Type || (headerItem.Note_Type === "DN" ? "Vendor" : headerItem.Note_Type === "CN" ? "Customer" : "");
+                setSelectedPartyType(partyTypeVal ? { value: partyTypeVal, label: partyTypeVal } : null);
+                setPartyType(partyTypeVal);
+
+                // 3. Party Name / Code Mapping (Look up matching option from filteredOptionCode)
+                const matchedPartyNameOption = filteredOptionCode.find(
+                    (opt) => opt.value === headerItem.Party_ID
+                ) || (headerItem.Party_ID ? { value: headerItem.Party_ID, label: headerItem.Party_ID } : null);
+
+                setSelectedPartyName(matchedPartyNameOption);
                 setPartyName(headerItem.Party_ID || "");
-                setSelectedRefType(headerItem.Reference_Type || "");
+
+                // 4. Ref Type Mapping
+                const matchedRefTypeOption = filteredOptionRefType.find(
+                    (opt) => opt.value === headerItem.Reference_Type || opt.label === headerItem.Reference_Type
+                ) || (headerItem.Reference_Type ? { value: headerItem.Reference_Type, label: headerItem.Reference_Type } : null);
+
+                setSelectedRefType(matchedRefTypeOption);
                 setRefType(headerItem.Reference_Type || "");
+
+                // 5. Reason Mapping
+                const matchedReasonOption = reasonOptions.find(
+                    (opt) => opt.value === headerItem.Reason_ID || opt.label === headerItem.Reason_ID
+                ) || (headerItem.Reason_ID ? { value: headerItem.Reason_ID, label: headerItem.Reason_ID } : null);
+
+                setSelectedReason(matchedReasonOption);
+                setReason(headerItem.Reason_ID || "");
+
+                // Standard Input Mapping
                 setRefTransactionNumber(headerItem.Reference_Invoice_No || "");
                 if (headerItem.Reference_Invoice_Date) {
                     setRefTransactionDate(formatDate(headerItem.Reference_Invoice_Date));
                 }
-                setSelectedReason(headerItem.Reason_ID || "");
-                setReason(headerItem.Reason_ID || "");
                 setTotal(formatToTwoDecimalPoints(headerItem.Sub_Total || 0));
                 setTotalTax(formatToTwoDecimalPoints(headerItem.Tax_Amount || 0));
                 setTotalAmount(formatToTwoDecimalPoints(headerItem.Total_Amount || 0));
@@ -1781,7 +1810,7 @@ function DebitCreditNote() {
                         (taxItem) => taxItem.Item_code === item.Item_Code || taxItem.item_code === item.Item_Code
                     );
 
-                    const taxDetails = taxDetailsList.map((t) =>  t.Tax_code).join(",");
+                    const taxDetails = taxDetailsList.map((t) => t.Tax_code).join(",");
                     const taxPer = taxDetailsList.map((t) => t.tax_per || t.Tax_percentage).join(",");
                     const taxType = taxDetailsList.length > 0 ? taxDetailsList[0].tax_type : null;
 
@@ -1803,7 +1832,6 @@ function DebitCreditNote() {
 
                 setRowData(updatedRowData);
             } else {
-                // Default empty row if no items found
                 setRowData([
                     {
                         serialNumber: 1,
@@ -1835,13 +1863,123 @@ function DebitCreditNote() {
                 setRowDataTax([]);
             }
 
-            toast.success("Data loaded successfully!");
         } catch (error) {
             console.error("Error fetching Debit/Credit Note data:", error);
             toast.error(error.message || "Failed to fetch data");
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleExcelDownload = () => {
+        // 1. Filter valid line items
+        const filteredRowData = rowData.filter(
+            row => (row.Qty > 0) && (row.TotalItemAmount > 0 || row.purchaseAmt > 0)
+        );
+
+        // 2. Filter valid tax details
+        const filteredRowDataTax = rowDataTax.filter(
+            taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0
+        );
+
+        // --- AG Grid Column Header & Hide Mapper Helper Function ---
+        const mapDataToHeaders = (dataList, colDefs) => {
+            // hide: true இல்லாத மற்றும் headerName காலியாக இல்லாத columns-ஐ மட்டும் filter செய்கிறோம்
+            const visibleCols = colDefs.filter(col => !col.hide && col.headerName && col.headerName !== '');
+
+            return dataList.map(row => {
+                const mappedRow = {};
+                visibleCols.forEach(col => {
+                    // key = headerName, value = field value
+                    mappedRow[col.headerName] = row[col.field] !== undefined ? row[col.field] : '';
+                });
+                return mappedRow;
+            });
+        };
+
+        // 3. Map Row Data using Header Names (Excluding Hidden Columns)
+        const formattedItemDetails = mapDataToHeaders(filteredRowData, columnDefs);
+        const formattedTaxDetails = mapDataToHeaders(filteredRowDataTax, columnDefsTax);
+
+        // 4. Prepare Debit/Credit Note Header object
+        const headerData = [{
+            "Note Type": noteType === "DN" ? "Debit Note" : noteType === "CN" ? "Credit Note" : noteType,
+            "Party Type": partyType,
+            "Party Name": partyName,
+            "Reason": reason,
+            "Ref Type": refType,
+            "Ref Transaction No": refTransactionNumber,
+            "Ref Transaction Date": refTransactionDate,
+            "Transaction Date": transactionDate,
+            "Transaction No": transactionNumber,
+            "Narration": narration,
+            "Total Amount": total,
+            "Total Tax": totalTax,
+            "Round Off": roundDifference,
+            "Total Bill Amount": totalAmount
+        }];
+
+        // 5. Create Header Sheet with Title and Company Name
+        const noteTitle = noteType === "DN" ? "Debit Note" : noteType === "CN" ? "Credit Note" : "Debit / Credit Note";
+
+        const headerSheet = XLSX.utils.aoa_to_sheet([
+            [noteTitle],
+            [`Company Name : ${sessionStorage.getItem("selectedCompanyName") || ""}`],
+            [],
+        ]);
+
+        // Append header data starting at row A4
+        XLSX.utils.sheet_add_json(headerSheet, headerData, {
+            origin: "A4",
+        });
+
+        // Merge Heading across columns
+        headerSheet["!merges"] = [
+            { s: { r: 0, c: 0 }, e: { r: 0, c: 14 } },
+            { s: { r: 1, c: 0 }, e: { r: 1, c: 14 } },
+        ];
+
+        // 6. Convert Formatted Item and Tax Details to Sheets
+        const rowDataSheet = XLSX.utils.json_to_sheet(formattedItemDetails);
+        const rowDataTaxSheet = XLSX.utils.json_to_sheet(formattedTaxDetails);
+
+        // 7. Auto Column Width Adjustment Function
+        const autoFitColumns = (worksheet, data) => {
+            if (!data || data.length === 0) return;
+
+            const cols = [];
+
+            data.forEach((row) => {
+                Object.keys(row).forEach((key, i) => {
+                    const value = row[key] == null ? "" : row[key].toString();
+
+                    cols[i] = Math.max(
+                        cols[i] || key.length,
+                        key.length,
+                        value.length
+                    );
+                });
+            });
+
+            worksheet["!cols"] = cols.map(width => ({
+                wch: width + 5,
+            }));
+        };
+
+        // 8. Apply Column Widths
+        autoFitColumns(headerSheet, headerData);
+        autoFitColumns(rowDataSheet, formattedItemDetails);
+        autoFitColumns(rowDataTaxSheet, formattedTaxDetails);
+
+        // 9. Construct Workbook and Append Sheets
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+        XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Note Details");
+        XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Tax Details");
+
+        // 10. Trigger Download
+        const fileName = `${noteType === "DN" ? "Debit_Note" : noteType === "CN" ? "Credit_Note" : "Debit_Credit_Note"}_${transactionNumber || "Data"}.xlsx`;
+        XLSX.writeFile(workbook, fileName);
     };
 
     return (
@@ -1911,7 +2049,7 @@ function DebitCreditNote() {
                                             autoComplete="off"
                                         />
                                         <div className="position-absolute mt-1 me-2">
-                                            <span className="icon searchIcon" title="Search Ref Transaction" onClick={handlePurchase}>
+                                            <span className="icon searchIcon" title="Search Ref Transaction" onClick={handleDebitCreditNoteHelp}>
                                                 <i className="fa fa-search"></i>
                                             </span>
                                         </div>
@@ -1958,7 +2096,7 @@ function DebitCreditNote() {
                             )}
 
                             {showExcelButton && (
-                                <printbutton type="button" className="purbut" title="Export Excel">
+                                <printbutton type="button" className="purbut" title="Export Excel" onClick={handleExcelDownload}>
                                     <i className="fa-solid fa-file-excel"></i>
                                 </printbutton>
                             )}
@@ -2247,6 +2385,7 @@ function DebitCreditNote() {
                 <SalesHdrPopup open={openSalesHelp} handleClose={() => setOpenSalesHelp(false)} handleData={handleSalesDataSelect} selectedPartyCode={partyName || ""} />
                 <PurchaseReturnView open={openPurchaseReturnHelp} handleClose={() => setOpenPurchaseReturnHelp(false)} handleItemView={handlePurchaseReturnDataSelect} selectedPartyCode={partyName || ""} />
                 <SalesRetrunView open={openSalesReturnHelp} handleClose={() => setOpenSalesReturnHelp(false)} handleDataView={handleSalesReturnDataSelect} selectedPartyCode={partyName || ""} />
+                <DebitCrediNoteHelp open={openDebitCreditNoteHelp} handleClose={() => setOpenDebitCreditNoteHelp(false)} handleDataView={handleSalesReturnDataSelect} />
                 <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
                     <div className="row ms-2">
                         <div className="d-flex justify-content-start">
