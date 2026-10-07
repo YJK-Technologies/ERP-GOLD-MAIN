@@ -1003,6 +1003,8 @@ router.post("/getCreditNote", dataController.getCreditNote)
 router.post("/getReferenceType", dataController.getReferenceType)
 router.post("/getDebitCreditNoteData", dataController.getDebitCreditNoteData)
 router.post("/getDebitCreditNoteSearch", dataController.getDebitCreditNoteSearch)
+router.post("/getDeletedDebitCreditNoteData", dataController.getDeletedDebitCreditNoteData)
+router.post("/getDeletedDebitCreditNoteSearch", dataController.getDeletedDebitCreditNoteSearch)
 
 
 module.exports = router;

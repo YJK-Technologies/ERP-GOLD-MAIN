@@ -30475,6 +30475,76 @@ const getDebitCreditNoteSearch = async (req, res) => {
 };
 //Code ended by pavun on 06-10-2026
 
+//Code added by pavun on 07-10-2026
+const getDeletedDebitCreditNoteData = async (req, res) => {
+  const { transaction_no, company_code } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "DDCN")
+      .input("transaction_no", sql.NVarChar, transaction_no)
+      .input("company_code", sql.NVarChar, company_code)
+      .query(`EXEC sp_getdata_test @mode,@transaction_no,@company_code,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+
+    if (result.recordsets && result.recordsets.length > 0 && result.recordsets[0].length > 0) {
+      const data = {
+        header: result.recordsets[0],
+        detail: result.recordsets[1] || [],
+        taxdetail: result.recordsets[2] || []  
+      };
+      res.status(200).json(data); // 200 OK if data is found
+    } else {
+      res.status(404).json("Data not found"); // 404 Not Found if no data is found
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const getDeletedDebitCreditNoteSearch = async (req, res) => {
+  const { Note_Type, Note_No, Party_Type, Party_ID, Reference_Type, Reference_ID, Reference_Invoice_No, Reason_ID, Reference_No,
+    Total_Amount, Narration, Note_Date_From, Note_Date_To, Reference_Invoice_Date_From, Reference_Invoice_Date_To, company_code, location_code } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "DSC")
+      .input("Note_Type", sql.NVarChar, Note_Type)
+      .input("Note_No", sql.NVarChar, Note_No)
+      .input("Party_Type", sql.NVarChar, Party_Type)
+      .input("Party_ID", sql.NVarChar, Party_ID)
+      .input("Reference_Type", sql.NVarChar, Reference_Type)
+      .input("Reference_ID", sql.NVarChar, Reference_ID)
+      .input("Reference_Invoice_No", sql.NVarChar, Reference_Invoice_No)
+      .input("Reason_ID", sql.NVarChar, Reason_ID)
+      .input("Reference_No", sql.NVarChar, Reference_No)
+      .input("Total_Amount", sql.Decimal(18,2), Total_Amount)
+      .input("Narration", sql.NVarChar, Narration)
+      .input("Note_Date_From", sql.NVarChar, Note_Date_From)
+      .input("Note_Date_To", sql.NVarChar, Note_Date_To)
+      .input("Reference_Invoice_Date_From", sql.NVarChar, Reference_Invoice_Date_From)
+      .input("Reference_Invoice_Date_To", sql.NVarChar, Reference_Invoice_Date_To)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .query(`EXEC sp_Debit_Credit_Note_test @mode, @Note_Type, @Note_No, '', @Party_Type, @Party_ID, @Reference_Type, @Reference_ID, @Reference_Invoice_No, '', @Reason_ID, @Reference_No, 0, 0, 0, @Total_Amount, @Narration, '', '', '', @Note_Date_From, 
+        @Note_Date_To, @Reference_Invoice_Date_From, @Reference_Invoice_Date_To, @company_code, @location_code, '', '', '', ''`);
+
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset); // 200 OK if data is found
+    } else {
+      res.status(404).json("Data not found"); // 404 Not Found if no data is found
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+//Code ended by pavun on 07-10-2026
+
 module.exports = {
   login,
   forgetPassword,
@@ -31455,6 +31525,8 @@ module.exports = {
   getDCNItemAmountCalculation,
   getDCNTotalAmountCalculation,
   getDebitCreditNoteData,
-  getDebitCreditNoteSearch
+  getDebitCreditNoteSearch,
+  getDeletedDebitCreditNoteData,
+  getDeletedDebitCreditNoteSearch
 
 };
