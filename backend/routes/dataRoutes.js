@@ -1001,7 +1001,8 @@ router.post("/getPartyName", dataController.getPartyName)
 router.post("/getDebiteNote", dataController.getDebiteNote)
 router.post("/getCreditNote", dataController.getCreditNote)
 router.post("/getReferenceType", dataController.getReferenceType)
-router.post("/getDebitCreditNoteDate", dataController.getDebitCreditNoteDate)
+router.post("/getDebitCreditNoteData", dataController.getDebitCreditNoteData)
+router.post("/getDebitCreditNoteSearch", dataController.getDebitCreditNoteSearch)
 
 
 module.exports = router;
