@@ -9,7 +9,6 @@ import * as XLSX from 'xlsx';
 import "bootstrap/dist/css/bootstrap.min.css";
 import 'ag-grid-autocomplete-editor/dist/main.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useLocation, useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import "./mobile.css";
 import PurchaseItemPopup from './PurchaseItemPopup';
@@ -24,6 +23,7 @@ import SalesHdrPopup from './SalesPopup'
 import PurchaseReturnView from './PurchaseReturnViewPopup';
 import SalesRetrunView from './SalesReturnViewPopup';
 import DebitCrediNoteHelp from './DebitCreditNotePopup';
+import { showConfirmationToast } from './ToastConfirmation';
 
 const config = require('./Apiconfig');
 
@@ -44,15 +44,16 @@ function DebitCreditNote() {
 
     const getTodayDate = () => new Date().toISOString().split('T')[0];
     const [transactionDate, setTransactionDate] = useState(getTodayDate());
-    const [total, setTotal] = useState('');
+    const [total, setTotal] = useState(0);
     const [totalTax, setTotalTax] = useState(0);
     const [totalAmount, setTotalAmount] = useState(0);
     const [roundDifference, setRoundDifference] = useState(0);
-    const [error, setError] = useState("");
+    const [error, setError] = useState(false);
 
     const [global, setGlobal] = useState(null);
     const [globalItem, setGlobalItem] = useState(null);
     const [saveButtonVisible, setSaveButtonVisible] = useState(true);
+    const [updateButtonVisible, setUpdateButtonVisible] = useState(false);
     const [printButtonVisible, setPrintButtonVisible] = useState(false);
     const [delButtonVisible, setDelButtonVisible] = useState(false);
     const [showExcelButton, setShowExcelButton] = useState(false);
@@ -89,6 +90,7 @@ function DebitCreditNote() {
 
     const [refTransactionNumber, setRefTransactionNumber] = useState('');
     const [keyfield, setKeyfield] = useState('');
+    const [keyfieldHeader, setKeyfieldHeader] = useState('');
     const [refNo, setRefNo] = useState('');
 
     const [additionalData, setAdditionalData] = useState({
@@ -1510,14 +1512,18 @@ function DebitCreditNote() {
     const handleSaveButtonClick = async () => {
         // 1. Header Field Validation
         if (
-            !partyName ||
             !noteType ||
+            !transactionDate ||
+            !partyType ||
+            !partyName ||
+            !refType ||
             !reason ||
-            !refTransactionNumber ||
-            !refTransactionDate ||
-            !transactionDate
+            !total ||
+            !totalTax ||
+            !totalAmount
         ) {
-            toast.warning("Error: Missing required header fields.");
+            toast.warning("Error: Missing required fields.");
+            setError(true);
             return;
         }
 
@@ -1561,6 +1567,7 @@ function DebitCreditNote() {
             return;
         }
 
+        setError(false);
         setLoading(true);
 
         try {
@@ -1596,13 +1603,13 @@ function DebitCreditNote() {
                 const result = await response.json();
 
                 // Extract generated Keyfield and Note_No from backend response
-                const keyfieldHeader = result.Keyfield;
+                const KeyfieldHeader = result.Keyfield;
                 const noteNo = result.Note_No;
 
                 setTransactionNumber(noteNo);
 
-                await saveDebitCreditDetails(noteNo, keyfieldHeader);
-                await saveDebitCreditTaxDetails(noteNo, keyfieldHeader);
+                await saveDebitCreditDetails(noteNo, KeyfieldHeader);
+                await saveDebitCreditTaxDetails(noteNo, KeyfieldHeader);
 
                 toast.success("Debit/Credit Note saved successfully!");
 
@@ -1717,12 +1724,21 @@ function DebitCreditNote() {
         }
     };
 
+    const handleDebitCreditData = (selectedData) => {
+        if (selectedData && selectedData.length > 0) {
+            const item = selectedData[0];
+            setTransactionNumber(item.TransactionNo);
+            // Fetch full transaction details using your existing handleRefNo
+            fetchDebitCreditNoteData(item.TransactionNo);
+        }
+    };
+
     const fetchDebitCreditNoteData = async (code) => {
         if (!code) return;
         setLoading(true);
 
         try {
-            const response = await fetch(`${config.apiBaseUrl}/getDebitCreditNoteDate`, {
+            const response = await fetch(`${config.apiBaseUrl}/getDebitCreditNoteData`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -1747,12 +1763,15 @@ function DebitCreditNote() {
 
             const searchData = await response.json();
             setShowExcelButton(true);
+            setSaveButtonVisible(false);
+            setUpdateButtonVisible(true);
+            setDelButtonVisible(true);
+            setPrintButtonVisible(true);
 
             // Map Header Data
             if (searchData.header && searchData.header.length > 0) {
                 const headerItem = searchData.header[0];
 
-                // 1. Note Type Mapping
                 const matchedNoteTypeOption = filteredOptionNoteType.find(
                     (opt) => opt.value === headerItem.Note_Type
                 ) || (headerItem.Note_Type ? { value: headerItem.Note_Type, label: headerItem.Note_Type } : null);
@@ -1760,12 +1779,10 @@ function DebitCreditNote() {
                 setSelectedNoteType(matchedNoteTypeOption);
                 setNoteType(headerItem.Note_Type || "");
 
-                // 2. Party Type Mapping
                 const partyTypeVal = headerItem.Party_Type || (headerItem.Note_Type === "DN" ? "Vendor" : headerItem.Note_Type === "CN" ? "Customer" : "");
                 setSelectedPartyType(partyTypeVal ? { value: partyTypeVal, label: partyTypeVal } : null);
                 setPartyType(partyTypeVal);
 
-                // 3. Party Name / Code Mapping (Look up matching option from filteredOptionCode)
                 const matchedPartyNameOption = filteredOptionCode.find(
                     (opt) => opt.value === headerItem.Party_ID
                 ) || (headerItem.Party_ID ? { value: headerItem.Party_ID, label: headerItem.Party_ID } : null);
@@ -1773,7 +1790,6 @@ function DebitCreditNote() {
                 setSelectedPartyName(matchedPartyNameOption);
                 setPartyName(headerItem.Party_ID || "");
 
-                // 4. Ref Type Mapping
                 const matchedRefTypeOption = filteredOptionRefType.find(
                     (opt) => opt.value === headerItem.Reference_Type || opt.label === headerItem.Reference_Type
                 ) || (headerItem.Reference_Type ? { value: headerItem.Reference_Type, label: headerItem.Reference_Type } : null);
@@ -1781,7 +1797,6 @@ function DebitCreditNote() {
                 setSelectedRefType(matchedRefTypeOption);
                 setRefType(headerItem.Reference_Type || "");
 
-                // 5. Reason Mapping
                 const matchedReasonOption = reasonOptions.find(
                     (opt) => opt.value === headerItem.Reason_ID || opt.label === headerItem.Reason_ID
                 ) || (headerItem.Reason_ID ? { value: headerItem.Reason_ID, label: headerItem.Reason_ID } : null);
@@ -1789,7 +1804,6 @@ function DebitCreditNote() {
                 setSelectedReason(matchedReasonOption);
                 setReason(headerItem.Reason_ID || "");
 
-                // Standard Input Mapping
                 setRefTransactionNumber(headerItem.Reference_Invoice_No || "");
                 if (headerItem.Reference_Invoice_Date) {
                     setRefTransactionDate(formatDate(headerItem.Reference_Invoice_Date));
@@ -1798,7 +1812,9 @@ function DebitCreditNote() {
                 setTotalTax(formatToTwoDecimalPoints(headerItem.Tax_Amount || 0));
                 setTotalAmount(formatToTwoDecimalPoints(headerItem.Total_Amount || 0));
                 setNarration(headerItem.Narration || "");
-                setKeyfield(headerItem.Keyfield || "");
+                setRefNo(headerItem.Reference_No || "");
+                setKeyfieldHeader(headerItem.Keyfield || "");
+                setKeyfield(headerItem.Reference_ID || "")
             } else {
                 toast.warning("Header details not found");
             }
@@ -1982,6 +1998,252 @@ function DebitCreditNote() {
         XLSX.writeFile(workbook, fileName);
     };
 
+    const handleUpdateButtonClick = async () => {
+        // 1. Header Field Validation
+        if (
+            !noteType ||
+            !transactionDate ||
+            !partyType ||
+            !partyName ||
+            !refType ||
+            !reason ||
+            !total ||
+            !totalTax ||
+            !totalAmount
+        ) {
+            toast.warning("Error: Missing required fields.");
+            setError(true);
+            return;
+        }
+
+        // 2. Grid Empty Validation
+        if (rowData.length === 0 || rowDataTax.length === 0) {
+            toast.warning("No item details or tax details found to save.");
+            return;
+        }
+
+        // 3. Row-level Validation
+        const invalidRows = rowData.filter(
+            (row) => row.itemCode && (!row.Qty || row.Qty <= 0)
+        );
+        if (invalidRows.length > 0) {
+            toast.warning("Item code is present but Quantity is missing or zero.");
+            return;
+        }
+
+        const rowsWithQtyNoItemCode = rowData.filter(
+            (row) => row.Qty > 0 && (!row.itemCode || row.itemCode.trim() === "")
+        );
+        if (rowsWithQtyNoItemCode.length > 0) {
+            toast.warning("Quantity is entered but Item Code is missing.");
+            return;
+        }
+
+        const filteredRowData = rowData.filter(
+            (row) => row.Qty > 0 && row.purchaseAmt > 0 && row.TotalItemAmount > 0
+        );
+
+        const hasNullWarehouse = filteredRowData.some(
+            (row) => !row.warehouse || row.warehouse.trim() === ""
+        );
+        if (hasNullWarehouse) {
+            toast.warning("One or more rows have an empty warehouse.");
+            return;
+        }
+
+        if (filteredRowData.length === 0) {
+            toast.warning("Please check Qty, Rate, and Amount values are greater than zero.");
+            return;
+        }
+
+        setError(false);
+        setLoading(true);
+
+        try {
+            // 4. Construct Header Data Payload
+            const headerPayload = {
+                Note_No: transactionNumber,
+                Note_Type: noteType,
+                Note_Date: transactionDate,
+                Party_Type: partyType,
+                Party_ID: partyName,
+                Reference_Type: refType,
+                Reference_ID: keyfield,
+                Reference_Invoice_No: refTransactionNumber,
+                Reference_Invoice_Date: refTransactionDate,
+                Reason_ID: reason,
+                Reference_No: refNo,
+                Sub_Total: total,
+                Tax_Amount: totalTax,
+                Rounded_off: roundDifference,
+                Total_Amount: totalAmount,
+                Narration: narration,
+                company_code: sessionStorage.getItem("selectedCompanyCode"),
+                location_code: sessionStorage.getItem("selectedLocationCode"),
+                modified_by: sessionStorage.getItem("selectedUserCode")
+            };
+
+            const response = await fetch(`${config.apiBaseUrl}/Debit_Credit_NoteUpdate`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(headerPayload)
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+
+                await saveDebitCreditDetails(transactionNumber, keyfieldHeader);
+                await saveDebitCreditTaxDetails(transactionNumber, keyfieldHeader);
+
+                toast.success("Debit/Credit Note saved successfully!");
+
+                // setAuthButtonVisible(false);
+                // setDelButtonVisible(true);
+                // setPrintButtonVisible(true);
+                setShowExcelButton(true);
+            } else {
+                const errorResponse = await response.json();
+                toast.warning(errorResponse.message || "Failed to save Header data");
+            }
+        } catch (error) {
+            console.error("Error saving header data:", error);
+            toast.error("Error saving data: " + error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // 1. Delete Header Data API
+    const handleDeleteHeader = async () => {
+        try {
+            const response = await fetch(`${config.apiBaseUrl}/Debit_Credit_NoteDelete`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    Note_No: transactionNumber, // or new_running_no
+                    company_code: sessionStorage.getItem("selectedCompanyCode"),
+                    location_code: sessionStorage.getItem("selectedLocationCode") || ""
+                })
+            });
+
+            if (response.ok) {
+                console.log("Header deleted successfully:", transactionNumber);
+                return true;
+            } else {
+                const errorResponse = await response.json();
+                return errorResponse.message || "Failed to delete Header.";
+            }
+        } catch (error) {
+            return "Error deleting Header: " + error.message;
+        }
+    };
+
+    // 2. Delete Detail Items API
+    const handleDeleteDetail = async () => {
+        try {
+            const response = await fetch(`${config.apiBaseUrl}/Debit_Credit_Note_DetailDelete`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    Note_ID: transactionNumber,
+                    company_code: sessionStorage.getItem("selectedCompanyCode"),
+                    location_code: sessionStorage.getItem("selectedLocationCode") || ""
+                })
+            });
+
+            if (response.ok) {
+                console.log("Detail rows deleted successfully:", transactionNumber);
+                return true;
+            } else {
+                const errorResponse = await response.json();
+                return errorResponse.message || "Failed to delete Details.";
+            }
+        } catch (error) {
+            return "Error deleting Details: " + error.message;
+        }
+    };
+
+    // 3. Delete Tax Details API
+    const handleDeleteTaxDetail = async () => {
+        try {
+            const response = await fetch(`${config.apiBaseUrl}/TaxDetailsTableDelete`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    Note_ID: transactionNumber,
+                    company_code: sessionStorage.getItem("selectedCompanyCode"),
+                    location_code: sessionStorage.getItem("selectedLocationCode") || ""
+                })
+            });
+
+            if (response.ok) {
+                console.log("Tax Details deleted successfully:", transactionNumber);
+                return true;
+            } else {
+                const errorResponse = await response.json();
+                return errorResponse.message || "Failed to delete Tax Details.";
+            }
+        } catch (error) {
+            return "Error deleting Tax Details: " + error.message;
+        }
+    };
+
+    // Main Delete Trigger Handler
+    const handleDeleteButtonClick = async () => {
+        if (!transactionNumber) {
+            toast.warning('Error: Transaction Number is missing');
+            return;
+        }
+
+        showConfirmationToast(
+            "Are you sure you want to delete this Debit/Credit Note?",
+            async () => {
+                setLoading(true);
+                try {
+                    // Delete Tax Details, Details, and Header sequentially/in parallel
+                    const taxDetailResult = await handleDeleteTaxDetail();
+                    const detailResult = await handleDeleteDetail();
+                    const headerResult = await handleDeleteHeader();
+
+                    if (headerResult === true && detailResult === true && taxDetailResult === true) {
+                        console.log("All Delete API calls completed successfully");
+                        toast.success("Debit/Credit Note Deleted Successfully", {
+                            autoClose: 1500,
+                            onClose: () => {
+                                window.location.reload();
+                            }
+                        });
+                    } else {
+                        const errorMessage =
+                            headerResult !== true
+                                ? headerResult
+                                : detailResult !== true
+                                    ? detailResult
+                                    : taxDetailResult !== true
+                                        ? taxDetailResult
+                                        : "An unknown error occurred while deleting.";
+
+                        toast.error(errorMessage);
+                    }
+                } catch (error) {
+                    console.error("Error executing Delete API calls:", error);
+                    toast.error(error.message || "An Error occurred while Deleting Data");
+                } finally {
+                    setLoading(false);
+                }
+            },
+            () => {
+                toast.info("Delete cancelled.");
+            }
+        );
+    };
+
     return (
         <div>
             <div className="container-fluid Topnav-screen">
@@ -1999,7 +2261,7 @@ function DebitCreditNote() {
                         <div className="d-flex align-items-center gap-5 my-1">
                             {/* 1. Note Type */}
                             <div className="col-md-3 form-group mb-2">
-                                <label htmlFor="noteType" className="">Note Type</label>
+                                <label htmlFor="noteType" className={`${error && !noteType ? 'red' : ''}`}>Note Type<span className="text-danger">*</span></label>
                                 <div style={{ minWidth: '180px' }} title="Select Note Type (Debit / Credit)">
                                     <Select
                                         id="noteType"
@@ -2016,7 +2278,7 @@ function DebitCreditNote() {
                             {/* 2. Note Date */}
                             <div className="col-md-4 form-group mb-2">
                                 <div className="exp-form-floating">
-                                    <label htmlFor="transactionDate">Date</label>
+                                    <label htmlFor="transactionDate" className={`${error && !transactionDate ? 'red' : ''}`}>Date<span className="text-danger">*</span></label>
                                     <input
                                         name="transactionDate"
                                         id="transactionDate"
@@ -2083,8 +2345,14 @@ function DebitCreditNote() {
                                 </addbutton>
                             )}
 
+                            {updateButtonVisible && ['update', 'all permission'].some(permission => DebitCreditNotePermission.includes(permission)) && (
+                                <addbutton type="button" className="purbut" title="Update Note" onClick={handleUpdateButtonClick}>
+                                    <i className="fa-solid fa-floppy-disk"></i>
+                                </addbutton>
+                            )}
+
                             {delButtonVisible && ['delete', 'all permission'].some(permission => DebitCreditNotePermission.includes(permission)) && (
-                                <delbutton type="button" className="purbut" title="Delete Note">
+                                <delbutton type="button" className="purbut" title="Delete Note" onClick={handleDeleteButtonClick}>
                                     <i className="fa-solid fa-trash"></i>
                                 </delbutton>
                             )}
@@ -2105,13 +2373,13 @@ function DebitCreditNote() {
                                 <i className="fa-solid fa-arrow-rotate-right"></i>
                             </printbutton>
 
-                            <printbutton type="button" className="purbut" title="Settings">
+                            {/* <printbutton type="button" className="purbut" title="Settings">
                                 <i className="fa-solid fa-gear"></i>
-                            </printbutton>
+                            </printbutton> */}
 
-                            <button className="btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
+                            {/* <button className="btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
                                 <i class="fa-solid fa-xmark"></i>
-                            </button>
+                            </button> */}
 
                         </div>
                     </div>
@@ -2122,7 +2390,7 @@ function DebitCreditNote() {
                     <div className="row ms-3 me-3">
                         {/* 4. Party Type */}
                         <div className="col-md-3 form-group mb-2">
-                            <label htmlFor="partyType">Party Type</label>
+                            <label htmlFor="partyType" className={`exp-form-labels ${error && !partyType ? 'red' : ''}`}>Party Type<span className="text-danger">*</span></label>
                             <div className="exp-form-floating" title="Select Party Type (Vendor or Customer)">
                                 <Select
                                     id="partyType"
@@ -2139,8 +2407,8 @@ function DebitCreditNote() {
 
                         {/* 3. Party Name */}
                         <div className="col-md-3 form-group mb-2">
-                            <label htmlFor="partyName">
-                                Party Name
+                            <label htmlFor="partyName" className={`${error && !partyName ? 'red' : ''}`}>
+                                Party Name<span className="text-danger">*</span>
                             </label>
 
                             <div
@@ -2170,8 +2438,8 @@ function DebitCreditNote() {
 
                         {/* 4. Reason */}
                         <div className="col-md-3 form-group mb-2">
-                            <label htmlFor="reason">Ref. Type</label>
-                            <div className="exp-form-floating" title="Select Reason for Debit/Credit Note">
+                            <label htmlFor="reason" className={`${error && !refType ? 'red' : ''}`}>Ref. Type<span className="text-danger">*</span></label>
+                            <div className="exp-form-floating" title="Select Reference Type for Debit/Credit Note">
                                 <Select
                                     id="reason"
                                     value={selectedRefType}
@@ -2185,7 +2453,7 @@ function DebitCreditNote() {
                         </div>
 
                         <div className="col-md-3 form-group mb-2">
-                            <label htmlFor="reason">Reason</label>
+                            <label htmlFor="reason" className={`${error && !reason ? 'red' : ''}`}>Reason<span className="text-danger">*</span></label>
                             <div className="exp-form-floating" title="Select Reason for Debit/Credit Note">
                                 <Select
                                     id="reason"
@@ -2276,7 +2544,7 @@ function DebitCreditNote() {
                     <div className="row ms-3 me-3 mb-3">
                         <div className="col-md-3 form-group mb-2">
                             <div className="exp-form-floating">
-                                <label className="exp-form-labels">Total Amount</label>
+                                <label className={`${error && !total ? 'red' : ''}`}>Total Amount<span className="text-danger">*</span></label>
                                 <input
                                     id="totalPurchaseAmount"
                                     className="exp-input-field form-control input"
@@ -2289,7 +2557,7 @@ function DebitCreditNote() {
                         </div>
                         <div className="col-md-3 form-group mb-2">
                             <div className="exp-form-floating">
-                                <label className="exp-form-labels">Total Tax</label>
+                                <label className={`${error && !totalTax ? 'red' : ''}`}>Total Tax<span className="text-danger">*</span></label>
                                 <input
                                     id="totalTaxAmount"
                                     title="Total Calculated Tax Amount"
@@ -2315,7 +2583,7 @@ function DebitCreditNote() {
                         </div>
                         <div className="col-md-3 form-group mb-2">
                             <div className="exp-form-floating">
-                                <label className="exp-form-labels">Total Bill Amount</label>
+                                <label className={`${error && !totalAmount ? 'red' : ''}`}>Total Bill Amount<span className="text-danger">*</span></label>
                                 <input
                                     id="totalBillAmount"
                                     title="Final Total Bill Amount"
@@ -2385,7 +2653,7 @@ function DebitCreditNote() {
                 <SalesHdrPopup open={openSalesHelp} handleClose={() => setOpenSalesHelp(false)} handleData={handleSalesDataSelect} selectedPartyCode={partyName || ""} />
                 <PurchaseReturnView open={openPurchaseReturnHelp} handleClose={() => setOpenPurchaseReturnHelp(false)} handleItemView={handlePurchaseReturnDataSelect} selectedPartyCode={partyName || ""} />
                 <SalesRetrunView open={openSalesReturnHelp} handleClose={() => setOpenSalesReturnHelp(false)} handleDataView={handleSalesReturnDataSelect} selectedPartyCode={partyName || ""} />
-                <DebitCrediNoteHelp open={openDebitCreditNoteHelp} handleClose={() => setOpenDebitCreditNoteHelp(false)} handleDataView={handleSalesReturnDataSelect} />
+                <DebitCrediNoteHelp open={openDebitCreditNoteHelp} handleClose={() => setOpenDebitCreditNoteHelp(false)} handleDebitCreditData={handleDebitCreditData} />
                 <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
                     <div className="row ms-2">
                         <div className="d-flex justify-content-start">

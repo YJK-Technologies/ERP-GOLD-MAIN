@@ -108,7 +108,7 @@ const defaultColDef = {
     filter: true,
 };
 
-export default function DebitCreditNoteHelp({ open, handleClose, handlePurchaseData, selectedPartyCode }) {
+export default function DebitCreditNoteHelp({ open, handleClose, handleDebitCreditData }) {
 
     const [rowData, setRowData] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -322,24 +322,25 @@ export default function DebitCreditNoteHelp({ open, handleClose, handlePurchaseD
     const handleSearch = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`${config.apiBaseUrl}/getpursearchdata`, {
+            const response = await fetch(`${config.apiBaseUrl}/getDebitCreditNoteSearch`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     company_code: sessionStorage.getItem("selectedCompanyCode"),
-                    note_type: noteType,
-                    from_date: fromDate,
-                    to_date: toDate,
-                    transaction_no: transactionNo,
-                    party_type: partyType,
-                    party_name: partyName,
-                    ref_type: refType,
-                    reason: reason,
+                    location_code: sessionStorage.getItem("selectedLocationCode"),
+                    Note_Type: noteType,
+                    Note_Date_From: fromDate,
+                    Note_Date_To: toDate,
+                    Note_No: transactionNo,
+                    Party_Type: partyType,
+                    Party_ID: partyName,
+                    Reference_Type: refType,
+                    Reason_ID: reason,
                     ref_transaction_id: refTransactionId,
-                    ref_from_date: refFromDate,
-                    ref_to_date: refToDate,
-                    narration: narration,
-                    total_bill_amount: totalBillAmount
+                    Reference_Invoice_Date_From: refFromDate,
+                    Reference_Invoice_Date_To: refToDate,
+                    Narration: narration,
+                    Total_Amount: Number(totalBillAmount) 
                 })
             });
 
@@ -393,19 +394,9 @@ export default function DebitCreditNoteHelp({ open, handleClose, handlePurchaseD
 
     const handleConfirm = () => {
         const selectedData = selectedRows.map(row => ({
-            TransactionNo: row.transaction_no,
-            TransactionDate: row.transaction_date,
-            PurchaseType: row.purchase_type,
-            PayType: row.pay_type,
-            TotalTax: row.tax_amount,
-            TotalAmount: row.total_amount,
-            VendorName: row.vendor_name,
-            Amount: row.purchase_amount,
-            Vendorcode: row.vendor_code,
-            Entrydate: row.Entry_date,
-            RoundOff: row.rounded_off
+            TransactionNo: row.Note_No,
         }));
-        handlePurchaseData(selectedData);
+        handleDebitCreditData(selectedData);
         handleClose();
         clearInputs();
         setRowData([]);
@@ -415,22 +406,10 @@ export default function DebitCreditNoteHelp({ open, handleClose, handlePurchaseD
     const handleRowDoubleClick = (params) => {
         const row = params.data;
         if (!row) return;
-
         const selectedData = [{
-            TransactionNo: row.transaction_no,
-            TransactionDate: row.transaction_date,
-            PurchaseType: row.purchase_type,
-            PayType: row.pay_type,
-            TotalTax: row.tax_amount,
-            TotalAmount: row.total_amount,
-            VendorName: row.vendor_name,
-            Amount: row.purchase_amount,
-            Vendorcode: row.vendor_code,
-            Entrydate: row.Entry_date,
-            RoundOff: row.rounded_off
+            TransactionNo: row.Note_No,
         }];
-
-        handlePurchaseData(selectedData);
+        handleDebitCreditData(selectedData);
         handleClose();
         clearInputs();
         setRowData([]);
