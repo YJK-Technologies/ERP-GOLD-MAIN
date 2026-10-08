@@ -1341,7 +1341,60 @@ const Sidebar = () => {
               </Link>
             )}
           </div>
-          <div className="menu-item" onClick={toggleSalesCollapse} title="Sales">
+          <div className=" ms-3">
+            {screenType.includes("DebitCreditNote") && (
+              <Link
+                to="/DebitCreditNote"
+                className="nav-link"
+                title="Sales Entry"
+                onClick={() => handleLinkClick("DebitCreditNote")}
+              >
+                <div class="menu-item">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    fill="currentColor"
+                    class="bi bi-bar-chart-line-fill me-3"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1z" />
+                  </svg>
+                  <span className={collapsed ? "hidden" : ""} class="ms-1">
+                    Debit / Credit Note
+                  </span>
+                </div>
+              </Link>
+            )}
+          </div>
+          <div className=" ms-3">
+            {screenType.includes("DebitCreditNote") && (
+              <Link
+                to="/Payment"
+                className="nav-link"
+                title="Sales Entry"
+                onClick={() => handleLinkClick("DebitCreditNote")}
+              >
+                <div class="menu-item">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    fill="currentColor"
+                    className="bi bi-wallet2 me-3"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M12.136.326A1.5 1.5 0 0 1 14 1.78V3h.5A1.5 1.5 0 0 1 16 4.5v9A1.5 1.5 0 0 1 14.5 15h-13A1.5 1.5 0 0 1 0 13.5v-11A1.5 1.5 0 0 1 1.5 1h10.636zM13 3V1.78a.5.5 0 0 0-.621-.485L3.31 3H13zM1.5 2a.5.5 0 0 0-.5.5v11a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-13z" />
+                    <path d="M15 5.5a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0 0 1h8a.5.5 0 0 0 .5-.5z" />
+                  </svg>
+                  <span className={collapsed ? "hidden" : ""} class="ms-1">
+                    Payment
+                  </span>
+                </div>
+              </Link>
+            )}
+          </div>
+          {/* <div className="menu-item" onClick={toggleSalesCollapse} title="Sales">
             <span className={collapsed ? "hidden" : ""}>A/C Transaction</span>
             <div class="sales-arrow">
               {acTransactionCollapsed ? <BsChevronDown /> : <BsChevronRight />}
@@ -1374,7 +1427,7 @@ const Sidebar = () => {
                 </Link>
               )}
             </div>
-          </div>
+          </div> */}
           <div className="menu-item" onClick={togglePurchaseCollapse} title="Purchase">
             <span className={collapsed ? "hidden" : ""}>Purchase</span>
             <div class="purchase-arrow">

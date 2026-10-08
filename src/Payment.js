@@ -30,7 +30,7 @@ import SalesVendorPopup from './SalesVendorPopup';
 
 const config = require('./Apiconfig');
 
-function DebitCreditNote() {
+function Payment() {
 
     // Form States
     const [noteNo, setNoteNo] = useState('DN-2026-001');
@@ -81,6 +81,10 @@ function DebitCreditNote() {
     const [selectedPartyType, setSelectedPartyType] = useState('');
     const [partyType, setPartyType] = useState('');
 
+    const [paymentTypeDrop, setPaymentTypeDrop] = useState([])
+    const [selectedPaymentType, setSelectedPaymentType] = useState('');
+    const [paymentType, setPaymentType] = useState('');
+
     const [refTypeDrop, setRefTypeDrop] = useState([])
     const [selectedRefType, setSelectedRefType] = useState('');
     const [refType, setRefType] = useState('');
@@ -101,6 +105,10 @@ function DebitCreditNote() {
 
     const [openVendorPartyHelp, setOpenVendorPartyHelp] = useState(false);
     const [openCustomerPartyHelp, setOpenCustomerPartyHelp] = useState(false);
+
+    const [paymentModeDrop, setPaymentModeDrop] = useState([])
+    const [selectedPaymentMode, setSelectedPaymentMode] = useState('');
+    const [paymentMode, setPaymentMode] = useState('');
 
     const [additionalData, setAdditionalData] = useState({
         modified_by: '',
@@ -220,61 +228,18 @@ function DebitCreditNote() {
     }, [noteType]);
 
     useEffect(() => {
-        fetch(`${config.apiBaseUrl}/getReferenceType`, {
+        fetch(`${config.apiBaseUrl}/getPaymentMode`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode') }),
         })
             .then((res) => res.json())
-            .then(setRefTypeDrop)
+            .then(setPaymentModeDrop)
             .catch((err) => console.error('Error fetching Vendors:', err));
     }, []);
 
     useEffect(() => {
-        fetch(`${config.apiBaseUrl}/getNoteType`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                company_code: sessionStorage.getItem("selectedCompanyCode")
-            }),
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                setNoteTypeDrop(data);
-
-                if (data.length > 0) {
-                    const firstOption = {
-                        value: data[0].attributedetails_code,
-                        label: data[0].attributedetails_name
-                    };
-
-                    setSelectedNoteType(firstOption);
-                    setNoteType(firstOption.value);
-
-                    // Set Vendor / Customer Name based on Note Type
-                    if (firstOption.value === "DN") {
-                        setSelectedPartyType({
-                            value: "Vendor",
-                            label: "Vendor"
-                        });
-                        setPartyType("Vendor");
-                    }
-                    else if (firstOption.value === "CN") {
-                        setSelectedPartyType({
-                            value: "Customer",
-                            label: "Customer"
-                        });
-                        setPartyType("Customer");
-                    }
-                }
-            })
-            .catch((err) => console.error("Error fetching Note Type:", err));
-    }, []);
-
-    useEffect(() => {
-        fetch(`${config.apiBaseUrl}/getPartyName`, {
+        fetch(`${config.apiBaseUrl}/getPartyType`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -286,19 +251,26 @@ function DebitCreditNote() {
             .then((res) => res.json())
             .then((data) => {
                 setPartyTypeDrop(data);
-
-                if (data.length > 0) {
-                    const firstOption = {
-                        value: data[0].attributedetails_name,
-                        label: data[0].attributedetails_name
-                    };
-
-                    setSelectedPartyType(firstOption);
-                    setPartyType(firstOption.value);
-                }
             })
             .catch((err) => console.error("Error fetching Note Type:", err));
     }, []);
+
+    useEffect(() => {
+    fetch(`${config.apiBaseUrl}/getPaymentType`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            company_code: sessionStorage.getItem("selectedCompanyCode")
+        }),
+    })
+        .then((res) => res.json())
+        .then((data) => {
+            setPaymentTypeDrop(data);
+        })
+        .catch((err) => console.error("Error fetching Payment Type:", err));
+}, []);
 
     useEffect(() => {
         fetch(`${config.apiBaseUrl}/getEvent`, {
@@ -343,7 +315,8 @@ function DebitCreditNote() {
                 : [];
     const filteredOptionScreens = screensDrop.map((opt) => ({ value: opt.attributedetails_name, label: opt.attributedetails_name }));
     const filteredOptionPartyType = partyTypeDrop.map((opt) => ({ value: opt.attributedetails_name, label: opt.attributedetails_name }));
-    const filteredOptionRefType = refTypeDrop.map((opt) => ({ value: opt.attributedetails_name, label: opt.attributedetails_name }));
+    const filteredOptionPaymentType = paymentTypeDrop.map((opt) => ({ value: opt.attributedetails_name, label: opt.attributedetails_name }));
+    const filteredOptionPaymentMode = paymentModeDrop.map((opt) => ({ value: opt.attributedetails_name, label: opt.attributedetails_name }));
 
     const handleChangeNoteType = (selectedOption) => {
 
@@ -382,9 +355,9 @@ function DebitCreditNote() {
         }
     };
 
-    const handleChangeRefType = (selectedOption) => {
-        setSelectedRefType(selectedOption);
-        setRefType(selectedOption ? selectedOption.value : "");
+    const handleChangePaymentMode = (selectedOption) => {
+        setSelectedPaymentMode(selectedOption);
+        setPaymentMode(selectedOption ? selectedOption.value : "");
     };
 
     const handleChangeReason = (selectedOption) => {
@@ -395,6 +368,11 @@ function DebitCreditNote() {
     const handleChangePartyType = (selectedOption) => {
         setSelectedPartyType(selectedOption);
         setPartyType(selectedOption ? selectedOption.value : "");
+    };
+
+    const handleChangePaymentType = (selectedOption) => {
+        setSelectedPaymentType(selectedOption);
+        setPaymentType(selectedOption ? selectedOption.value : "");
     };
 
     const handleChangeScreens = (selected) => {
@@ -446,7 +424,7 @@ function DebitCreditNote() {
 
     const handleSearchRefTransaction = () => {
         if (!refType) {
-            toast.warning("Please select a Ref. Type first");
+            toast.warning("Please select a Payment Mode first");
             return;
         }
 
@@ -464,7 +442,7 @@ function DebitCreditNote() {
         } else if (selectedType === "sales_return") {
             setOpenSalesReturnHelp(true);
         } else {
-            toast.warning(`No help popup configured for Ref. Type: ${refType}`);
+            toast.warning(`No help popup configured for Payment Mode: ${refType}`);
         }
     };
 
@@ -549,7 +527,7 @@ function DebitCreditNote() {
 
             if (!vendor) {
                 setPartyName('');
-                setPartyNameDisplay('Vendor not found');
+                setPartyNameDisplay('');
                 toast.warning("Vendor code not found");
                 return;
             }
@@ -569,7 +547,7 @@ function DebitCreditNote() {
 
             if (!customer) {
                 setPartyName('');
-                setPartyNameDisplay('Customer not found');
+                setPartyNameDisplay('');
                 toast.warning("Customer code not found");
                 return;
             }
@@ -1479,19 +1457,19 @@ function DebitCreditNote() {
             cellStyle: { display: 'flex', justifyContent: 'center', alignItems: 'center' },
             sortable: false
         },
+        // {
+        //     headerName: 'Ref. Transaction No',
+        //     field: 'itemCode',
+        //     editable: true,
+        //     filter: true,
+        //     cellEditorParams: { maxLength: 18 },
+        //     onCellValueChanged: function (params) {
+        //         handleItemCode(params);
+        //     },
+        //     sortable: false
+        // },
         {
-            headerName: 'Item Code',
-            field: 'itemCode',
-            editable: true,
-            filter: true,
-            cellEditorParams: { maxLength: 18 },
-            onCellValueChanged: function (params) {
-                handleItemCode(params);
-            },
-            sortable: false
-        },
-        {
-            headerName: "Item Name",
+            headerName: "Ref. Trans No",
             field: "itemName",
             editable: false,
             filter: true,
@@ -1537,34 +1515,15 @@ function DebitCreditNote() {
                 );
             },
         },
-        // {
-        //     headerName: 'Unit Weight',
-        //     field: 'unitWeight',
-        //     editable: false,
-        //     filter: true,
-        //     sortable: false
-        // },
         {
-            headerName: 'Warehouse',
-            field: 'warehouse',
-            editable: true,
+            headerName: 'Invoice No',
+            field: 'unitWeight',
+            editable: false,
             filter: true,
-            cellEditorParams: { maxLength: 18 },
-            onCellValueChanged: function (params) {
-                handleWarehouseCode(params);
-            },
-            sortable: false,
-            cellRenderer: (params) => (
-                <div className="position-relative d-flex align-items-center" style={{ minHeight: '100%' }}>
-                    <div className="flex-grow-1">{params.value}</div>
-                    <span className="icon searchIcon" style={{ position: 'absolute', right: '-10px', cursor: 'pointer' }} onClick={() => handleOpen(params)}>
-                        <i className="fa fa-search"></i>
-                    </span>
-                </div>
-            )
+            sortable: false
         },
         {
-            headerName: 'UOM',
+            headerName: 'Invoice Amount',
             field: 'UOM_ID',
             editable: true,
             filter: true,
@@ -1572,74 +1531,28 @@ function DebitCreditNote() {
             cellEditorParams: { maxLength: 10 }
         },
         {
-            headerName: 'Qty',
+            headerName: 'Paid',
             field: 'Qty',
             editable: false,
             filter: true,
             sortable: false,
             cellEditorParams: { maxLength: 10 }
         },
-        // {
-        //     headerName: 'Total Weight',
-        //     field: 'ItemTotalWight',
-        //     editable: false,
-        //     filter: true,
-        //     sortable: false
-        // },
         {
-            headerName: 'Rate',
+            headerName: 'Outstanding',
+            field: 'ItemTotalWight',
+            editable: false,
+            filter: true,
+            sortable: false
+        },
+        {
+            headerName: 'Adjustment Amount',
             field: 'purchaseAmt',
             editable: true,
             filter: true,
             sortable: false,
             cellEditorParams: { maxLength: 18 }
         },
-        {
-            headerName: 'Tax Amount',
-            field: 'TotalTaxAmount',
-            editable: false,
-            filter: true,
-            sortable: false
-        },
-        {
-            headerName: 'Total',
-            field: 'TotalItemAmount',
-            editable: false,
-            filter: true,
-            sortable: false
-        },
-        {
-            headerName: 'Purchase Tax Type',
-            field: 'taxType',
-            editable: false,
-            filter: true,
-            hide: true,
-            sortable: false
-        },
-        {
-            headerName: 'Tax Detail',
-            field: 'taxDetails',
-            editable: false,
-            filter: true,
-            hide: true,
-            sortable: false
-        },
-        {
-            headerName: 'tax Percentage',
-            field: 'taxPer',
-            editable: false,
-            filter: true,
-            hide: true,
-            sortable: false
-        },
-        {
-            headerName: 'KeyField',
-            field: 'keyField',
-            editable: false,
-            filter: true,
-            sortable: false,
-            hide: true
-        }
     ];
 
     const columnDefsTax = [
@@ -1971,12 +1884,12 @@ function DebitCreditNote() {
                 setSelectedPartyName(matchedPartyNameOption);
                 setPartyName(headerItem.Party_ID || "");
 
-                const matchedRefTypeOption = filteredOptionRefType.find(
-                    (opt) => opt.value === headerItem.Reference_Type || opt.label === headerItem.Reference_Type
-                ) || (headerItem.Reference_Type ? { value: headerItem.Reference_Type, label: headerItem.Reference_Type } : null);
+                // const matchedRefTypeOption = filteredOptionRefType.find(
+                //     (opt) => opt.value === headerItem.Reference_Type || opt.label === headerItem.Reference_Type
+                // ) || (headerItem.Reference_Type ? { value: headerItem.Reference_Type, label: headerItem.Reference_Type } : null);
 
-                setSelectedRefType(matchedRefTypeOption);
-                setRefType(headerItem.Reference_Type || "");
+                // setSelectedRefType(matchedRefTypeOption);
+                // setRefType(headerItem.Reference_Type || "");
 
                 const matchedReasonOption = reasonOptions.find(
                     (opt) => opt.value === headerItem.Reason_ID || opt.label === headerItem.Reason_ID
@@ -2468,7 +2381,7 @@ function DebitCreditNote() {
             editable: false
         },
         {
-            headerName: 'Item Code',
+            headerName: 'Ref. Trans No',
             field: 'deletedItemCode',
             editable: false,
             filter: true,
@@ -2476,7 +2389,7 @@ function DebitCreditNote() {
             sortable: false
         },
         {
-            headerName: 'Item Name',
+            headerName: 'Invoice No',
             field: 'deletedItemName',
             editable: false,
             filter: true,
@@ -2484,13 +2397,13 @@ function DebitCreditNote() {
             sortable: false,
         },
         {
-            headerName: 'Warehouse',
+            headerName: 'Invoice Amount',
             field: 'deletedWarehouse',
             editable: false,
             filter: true,
         },
         {
-            headerName: 'Qty',
+            headerName: 'Paid',
             field: 'deletedQty',
             editable: false,
             filter: true,
@@ -2498,7 +2411,7 @@ function DebitCreditNote() {
             cellEditorParams: { maxLength: 10 }
         },
         {
-            headerName: 'Rate',
+            headerName: 'Outstanding',
             field: 'deletedPurchaseAmt',
             editable: false,
             filter: true,
@@ -2506,19 +2419,12 @@ function DebitCreditNote() {
             cellEditorParams: { maxLength: 18 }
         },
         {
-            headerName: 'Tax Amount',
+            headerName: 'Adjustment Amount',
             field: 'deletedTotalTaxAmount',
             editable: false,
             filter: true,
             sortable: false
         },
-        {
-            headerName: 'Total',
-            field: 'deletedTotalItemAmount',
-            editable: false,
-            filter: true,
-            sortable: false
-        }
     ];
 
     const deletedColumnDefsTax = [
@@ -2696,7 +2602,7 @@ function DebitCreditNote() {
                     <div className="shadow-lg p-2 bg-body-tertiary rounded mb-2 mt-2">
                         <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
                             <div className="d-flex align-items-center">
-                                <h1 className="purbut">Debit / Credit Note</h1>
+                                <h1 className="purbut">Payment</h1>
                             </div>
 
                             {/* CENTER SECTION: Note Type Dropdown & Note No Label */}
@@ -2829,7 +2735,7 @@ function DebitCreditNote() {
                             {/* CENTER SECTION: Note Type Dropdown & Note No Label */}
                             <div className="row ms-3 me-3">
 
-                                <div className="col-md-4 form-group mb-2">
+                                <div className="col-md-6 form-group mb-2">
                                     <label htmlFor="transactionNumber">Transaction No</label>
                                     <div className="exp-form-floating">
                                         <div className="d-flex justify-content-end">
@@ -2855,7 +2761,7 @@ function DebitCreditNote() {
                                 </div>
 
                                 {/* 2. Note Date */}
-                                <div className="col-md-4 form-group mb-2">
+                                <div className="col-md-6 form-group mb-2">
                                     <div className="exp-form-floating">
                                         <label htmlFor="transactionDate" className={`${error && !transactionDate ? 'red' : ''}`}>Date<span className="text-danger">*</span></label>
                                         <input
@@ -2873,22 +2779,6 @@ function DebitCreditNote() {
                                     </div>
                                 </div>
 
-                                {/* 1. Note Type */}
-                                <div className="col-md-4 form-group mb-2">
-                                    <label htmlFor="noteType" className={`${error && !noteType ? 'red' : ''}`}>Note Type<span className="text-danger">*</span></label>
-                                    <div style={{ minWidth: '180px' }} title="Select Note Type (Debit / Credit)">
-                                        <Select
-                                            id="noteType"
-                                            className="exp-input-field"
-                                            placeholder="Select Type"
-                                            value={selectedNoteType}
-                                            onChange={handleChangeNoteType}
-                                            options={filteredOptionNoteType}
-                                            styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
-                                        />
-                                    </div>
-                                </div>
-
                             </div>
                         </div>
                     </div>
@@ -2896,17 +2786,33 @@ function DebitCreditNote() {
                     {/* ================= FORM INPUT FIELDS SECTION ================= */}
                     <div className="shadow-lg p-1 bg-body-tertiary rounded pt-3 pb-4" align="left">
                         <div className="row ms-3 me-3">
-                            {/* 4. Vendor / Customer Type */}
+                            {/* 4. Payment Type */}
+                            <div className="col-md-3 form-group mb-2">
+                                <label htmlFor="partyType" className={`exp-form-labels ${error && !partyType ? 'red' : ''}`}>Payment Type<span className="text-danger">*</span></label>
+                                <div className="exp-form-floating" title="Select Payment Type (Vendor or Customer)">
+                                    <Select
+                                        id="paymentType"
+                                        value={selectedPaymentType}
+                                        onChange={handleChangePaymentType}
+                                        options={filteredOptionPaymentType}
+                                        className="exp-input-field"
+                                        // isDisabled={true}
+                                        // placeholder="Select Payment Type"
+                                        styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                                    />
+                                </div>
+                            </div>
+
                             <div className="col-md-3 form-group mb-2">
                                 <label htmlFor="partyType" className={`exp-form-labels ${error && !partyType ? 'red' : ''}`}>Vendor / Customer Type<span className="text-danger">*</span></label>
                                 <div className="exp-form-floating" title="Select Vendor / Customer Type (Vendor or Customer)">
                                     <Select
                                         id="partyType"
                                         value={selectedPartyType}
-                                        // onChange={handleChangePartyType}
-                                        // options={filteredOptionPartyType}
+                                        onChange={handleChangePartyType}
+                                        options={filteredOptionPartyType}
                                         className="exp-input-field"
-                                        isDisabled={true}
+                                        // isDisabled={true}
                                         // placeholder="Select Vendor / Customer Type"
                                         styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                                     />
@@ -3009,13 +2915,13 @@ function DebitCreditNote() {
 
                             {/* 4. Reason */}
                             <div className="col-md-3 form-group mb-2">
-                                <label htmlFor="reason" className={`${error && !refType ? 'red' : ''}`}>Ref. Type<span className="text-danger">*</span></label>
+                                <label htmlFor="reason" className={`${error && !refType ? 'red' : ''}`}>Payment Mode<span className="text-danger">*</span></label>
                                 <div className="exp-form-floating" title="Select Reference Type for Debit/Credit Note">
                                     <Select
                                         id="reason"
-                                        value={selectedRefType}
-                                        onChange={handleChangeRefType}
-                                        options={filteredOptionRefType}
+                                        value={selectedPaymentMode}
+                                        onChange={handleChangePaymentMode}
+                                        options={filteredOptionPaymentMode}
                                         className="exp-input-field"
                                         // placeholder="Select Reason"
                                         styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
@@ -3024,7 +2930,7 @@ function DebitCreditNote() {
                             </div>
 
                             <div className="col-md-3 form-group mb-2">
-                                <label htmlFor="reason" className={`${error && !reason ? 'red' : ''}`}>Reason<span className="text-danger">*</span></label>
+                                <label htmlFor="reason" className={`${error && !reason ? 'red' : ''}`}>Bank / Cash Account<span className="text-danger">*</span></label>
                                 <div className="exp-form-floating" title="Select Reason for Debit/Credit Note">
                                     <Select
                                         id="reason"
@@ -3040,7 +2946,7 @@ function DebitCreditNote() {
 
                             {/* 5. Ref. Transaction No */}
                             <div className="col-md-3 form-group mb-2">
-                                <label htmlFor="transactionNumber">Ref. Transaction ID</label>
+                                <label htmlFor="transactionNumber">Reference No</label>
                                 <div className="exp-form-floating">
                                     <div className="d-flex justify-content-end">
                                         <input
@@ -3055,18 +2961,18 @@ function DebitCreditNote() {
                                             autoComplete="off"
                                         />
                                         <div className="position-absolute mt-1 me-2">
-                                            <span className="icon searchIcon" title="Search Ref Transaction" onClick={handleSearchRefTransaction}>
+                                            {/* <span className="icon searchIcon" title="Search Ref Transaction" onClick={handleSearchRefTransaction}>
                                                 <i className="fa fa-search"></i>
-                                            </span>
+                                            </span> */}
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* 6. Ref. Transaction Date */}
+                            {/* 6. Reference Date */}
                             <div className="col-md-3 form-group mb-2">
                                 <div className="exp-form-floating">
-                                    <label htmlFor="refTransactionDate">Ref. Transaction Date</label>
+                                    <label htmlFor="refTransactionDate">Reference Date</label>
                                     <input
                                         name="refTransactionDate"
                                         id="refTransactionDate"
@@ -3080,7 +2986,7 @@ function DebitCreditNote() {
                             </div>
 
                             <div className="col-md-3 form-group mb-2">
-                                <label htmlFor="refNo">Ref. No</label>
+                                <label htmlFor="refNo">Amount</label>
                                 <div className="exp-form-floating">
                                     <input
                                         className="exp-input-field form-control"
@@ -3104,64 +3010,6 @@ function DebitCreditNote() {
                                         // placeholder="Enter Narration or Remarks"
                                         value={narration}
                                         onChange={(e) => setNarration(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* ================= TOTAL BILL SECTION ================= */}
-                    <div className="shadow-lg p-1 bg-body-tertiary rounded mt-2 pt-3 pb-4" align="left">
-                        <div className="row ms-3 me-3 mb-3">
-                            <div className="col-md-3 form-group mb-2">
-                                <div className="exp-form-floating">
-                                    <label className={`${error && !total ? 'red' : ''}`}>Taxable Amount<span className="text-danger">*</span></label>
-                                    <input
-                                        id="totalPurchaseAmount"
-                                        className="exp-input-field form-control input"
-                                        title="Total Net Amount"
-                                        type="text"
-                                        value={total}
-                                        readOnly
-                                    />
-                                </div>
-                            </div>
-                            <div className="col-md-3 form-group mb-2">
-                                <div className="exp-form-floating">
-                                    <label className={`${error && !totalTax ? 'red' : ''}`}>Total Tax Amount<span className="text-danger">*</span></label>
-                                    <input
-                                        id="totalTaxAmount"
-                                        title="Total Calculated Tax Amount"
-                                        type="text"
-                                        className="exp-input-field form-control input"
-                                        value={totalTax}
-                                        readOnly
-                                    />
-                                </div>
-                            </div>
-                            <div className="col-md-3 form-group mb-2">
-                                <div className="exp-form-floating">
-                                    <label className="exp-form-labels">Round Off</label>
-                                    <input
-                                        id="roundOff"
-                                        title="Round Off Difference"
-                                        type="text"
-                                        className="exp-input-field form-control input"
-                                        value={roundDifference}
-                                        readOnly
-                                    />
-                                </div>
-                            </div>
-                            <div className="col-md-3 form-group mb-2">
-                                <div className="exp-form-floating">
-                                    <label className={`${error && !totalAmount ? 'red' : ''}`}>Total Amount<span className="text-danger">*</span></label>
-                                    <input
-                                        id="totalBillAmount"
-                                        title="Final Total Amount"
-                                        type="text"
-                                        className="exp-input-field form-control input"
-                                        value={totalAmount}
-                                        readOnly
                                     />
                                 </div>
                             </div>
@@ -3259,7 +3107,7 @@ function DebitCreditNote() {
                     <div className="shadow-lg p-2 bg-body-tertiary rounded mb-2 mt-2">
                         <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
                             <div className="d-flex align-items-center">
-                                <h1 className="purbut">Deleted Debit / Credit Note</h1>
+                                <h1 className="purbut">Deleted Payment</h1>
                             </div>
 
                             {/* CENTER SECTION: Note Type, Date & Search Transaction */}
@@ -3337,6 +3185,17 @@ function DebitCreditNote() {
                         <div className="row ms-3 me-3">
                             {/* Vendor / Customer Type */}
                             <div className="col-md-3 form-group mb-2">
+                                <label htmlFor="deletedPartyType" className="exp-form-labels">Payment Type</label>
+                                <input
+                                    id="deletedPartyType"
+                                    type="text"
+                                    className="exp-input-field form-control bg-light"
+                                    value={deletedPartyType}
+                                    readOnly
+                                />
+                            </div>
+
+                            <div className="col-md-3 form-group mb-2">
                                 <label htmlFor="deletedPartyType" className="exp-form-labels">Vendor / Customer Type</label>
                                 <input
                                     id="deletedPartyType"
@@ -3361,7 +3220,7 @@ function DebitCreditNote() {
 
                             {/* Ref. Type */}
                             <div className="col-md-3 form-group mb-2">
-                                <label htmlFor="deletedRefType">Ref. Type</label>
+                                <label htmlFor="deletedRefType">Payment Mode</label>
                                 <input
                                     id="deletedRefType"
                                     type="text"
@@ -3373,7 +3232,7 @@ function DebitCreditNote() {
 
                             {/* Reason */}
                             <div className="col-md-3 form-group mb-2">
-                                <label htmlFor="deletedReason">Reason</label>
+                                <label htmlFor="deletedReason">Bank / Cash Account</label>
                                 <input
                                     id="deletedReason"
                                     type="text"
@@ -3383,9 +3242,9 @@ function DebitCreditNote() {
                                 />
                             </div>
 
-                            {/* Ref. Transaction ID */}
+                            {/* Reference No */}
                             <div className="col-md-3 form-group mb-2">
-                                <label htmlFor="deletedRefTransactionNumber">Ref. Transaction ID</label>
+                                <label htmlFor="deletedRefTransactionNumber">Reference No</label>
                                 <input
                                     id="deletedRefTransactionNumber"
                                     type="text"
@@ -3395,9 +3254,9 @@ function DebitCreditNote() {
                                 />
                             </div>
 
-                            {/* Ref. Transaction Date */}
+                            {/* Reference Date */}
                             <div className="col-md-3 form-group mb-2">
-                                <label htmlFor="deletedRefTransactionDate">Ref. Transaction Date</label>
+                                <label htmlFor="deletedRefTransactionDate">Reference Date</label>
                                 <input
                                     id="deletedRefTransactionDate"
                                     type="date"
@@ -3407,9 +3266,9 @@ function DebitCreditNote() {
                                 />
                             </div>
 
-                            {/* Ref. No */}
+                            {/* Amount */}
                             <div className="col-md-3 form-group mb-2">
-                                <label htmlFor="deletedRefNo">Ref. No</label>
+                                <label htmlFor="deletedRefNo">Amount</label>
                                 <input
                                     id="deletedRefNo"
                                     type="text"
@@ -3427,52 +3286,6 @@ function DebitCreditNote() {
                                     className="exp-input-field form-control bg-light"
                                     value={deletedNarration}
                                     rows="2"
-                                    readOnly
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* ================= TOTAL BILL SECTION ================= */}
-                    <div className="shadow-lg p-1 bg-body-tertiary rounded mt-2 pt-3 pb-4" align="left">
-                        <div className="row ms-3 me-3 mb-3">
-                            <div className="col-md-3 form-group mb-2">
-                                <label>Taxable Amount</label>
-                                <input
-                                    id="deletedTotal"
-                                    className="exp-input-field form-control bg-light"
-                                    type="text"
-                                    value={deletedTotal}
-                                    readOnly
-                                />
-                            </div>
-                            <div className="col-md-3 form-group mb-2">
-                                <label>Total Tax Amount</label>
-                                <input
-                                    id="deletedTotalTax"
-                                    className="exp-input-field form-control bg-light"
-                                    type="text"
-                                    value={deletedTotalTax}
-                                    readOnly
-                                />
-                            </div>
-                            <div className="col-md-3 form-group mb-2">
-                                <label>Round Off</label>
-                                <input
-                                    id="deletedRoundDifference"
-                                    className="exp-input-field form-control bg-light"
-                                    type="text"
-                                    value={deletedRoundDifference}
-                                    readOnly
-                                />
-                            </div>
-                            <div className="col-md-3 form-group mb-2">
-                                <label>Total Amount</label>
-                                <input
-                                    id="deletedTotalAmount"
-                                    className="exp-input-field form-control bg-light"
-                                    type="text"
-                                    value={deletedTotalAmount}
                                     readOnly
                                 />
                             </div>
@@ -3532,4 +3345,4 @@ function DebitCreditNote() {
     );
 }
 
-export default DebitCreditNote;
+export default Payment;

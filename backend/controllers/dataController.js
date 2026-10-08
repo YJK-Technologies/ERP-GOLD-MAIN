@@ -29971,7 +29971,7 @@ const Debit_Credit_Note_DetailDelete = async (req, res) => {
       .input("company_code", sql.NVarChar, company_code)
       .input("Note_ID", sql.NVarChar, Note_ID)
       .input("location_code", sql.NVarChar, location_code)
-      .query(`EXEC sp_Debit_Credit_Note_Detail @mode, @Note_ID, 0, '', '', '', 0, 0, 0, 0, '', '', 0, '', @company_code, @location_code, '', '', '', ''`);
+      .query(`EXEC sp_Debit_Credit_Note_Detail @mode, @Note_ID, 0, '', '', 0, 0, 0, 0, 0, '', '', 0, '', @company_code, @location_code, '', '', '', ''`);
 
     res.status(200).json({ success: true, message: "Debit Credit Note Detail deleted successfully" });
   } catch (err) {
@@ -30545,6 +30545,61 @@ const getDeletedDebitCreditNoteSearch = async (req, res) => {
 };
 //Code ended by pavun on 07-10-2026
 
+//Code added by Dinesh Gokul on 08-10-2026
+const getPaymentType = async (req, res) => {
+  const { company_code } = req.body;
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("company_code", sql.NVarChar, company_code)
+      .query(
+        "EXEC sp_attribute_Info_sakthi 'F',@company_code,'PaymentTypes','','','', '','','', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL"
+      );
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const getPartyType = async (req, res) => {
+  const { company_code } = req.body;
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("company_code", sql.NVarChar, company_code)
+      .query(
+        "EXEC sp_attribute_Info_sakthi 'F',@company_code,'PartyTypes','','','', '','','', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL"
+      );
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const getPaymentMode = async (req, res) => {
+  const { company_code } = req.body;
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("company_code", sql.NVarChar, company_code)
+      .query(
+        "EXEC sp_attribute_Info_sakthi 'F',@company_code,'PaymentMode','','','', '','','', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL"
+      );
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+//Code ended by Dinesh Gokul on 08-10-2026
 module.exports = {
   login,
   forgetPassword,
@@ -31527,6 +31582,9 @@ module.exports = {
   getDebitCreditNoteData,
   getDebitCreditNoteSearch,
   getDeletedDebitCreditNoteData,
-  getDeletedDebitCreditNoteSearch
+  getDeletedDebitCreditNoteSearch,
+  getPaymentType,
+  getPartyType,
+  getPaymentMode
 
 };

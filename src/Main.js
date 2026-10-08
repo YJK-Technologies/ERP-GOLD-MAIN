@@ -201,6 +201,7 @@ import FinancialYears from './FinancialYear/FinancialYears.js';
 import FinancialPeriod from './FinancialPeriod/FinancialPeriod.js';
 import AddFinancialPeriod from './FinancialPeriod/AddFinancialPeriod.js';
 import DebitCreditNote from './DebitCreditNote.js';
+import Payment from './Payment.js';
 
 function Main() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -444,6 +445,7 @@ function Main() {
      { path: "/FinancialPeriod", component: <FinancialPeriod /> },
      { path: "/AddFinancialPeriod", component: <AddFinancialPeriod /> },
      { path: "/DebitCreditNote", component: <DebitCreditNote /> },
+     { path: "/Payment", component: <Payment /> },
 
     
 
