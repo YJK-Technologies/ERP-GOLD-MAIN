@@ -1005,6 +1005,9 @@ router.post("/getDebitCreditNoteData", dataController.getDebitCreditNoteData)
 router.post("/getDebitCreditNoteSearch", dataController.getDebitCreditNoteSearch)
 router.post("/getDeletedDebitCreditNoteData", dataController.getDeletedDebitCreditNoteData)
 router.post("/getDeletedDebitCreditNoteSearch", dataController.getDeletedDebitCreditNoteSearch)
+router.post("/getPaymentType", dataController.getPaymentType)
+router.post("/getPartyType", dataController.getPartyType)
+router.post("/getPaymentMode", dataController.getPaymentMode)
 
 
 module.exports = router;
