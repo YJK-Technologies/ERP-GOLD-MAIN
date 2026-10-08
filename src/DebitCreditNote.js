@@ -23,6 +23,7 @@ import SalesHdrPopup from './SalesPopup'
 import PurchaseReturnView from './PurchaseReturnViewPopup';
 import SalesRetrunView from './SalesReturnViewPopup';
 import DebitCrediNoteHelp from './DebitCreditNotePopup';
+import DeletedDebitCrediNoteHelp from './DeleteDebitCreditNotePopup';
 import { showConfirmationToast } from './ToastConfirmation';
 
 const config = require('./Apiconfig');
@@ -302,25 +303,21 @@ function DebitCreditNote() {
             }),
         })
             .then((response) => response.json())
-            .then((data) => {
-                setScreensDrop(data);
-
-                if (data.length > 0) {
-                    const firstOption = {
-                        value: data[0].attributedetails_code,
-                        label: data[0].attributedetails_name,
-                    };
-
-                    setSelectedscreens(firstOption);
-
-                    setScreens(
-                        firstOption.value === "Add" ? "Add" : "Delete"
-                    );
-                }
-            })
+            .then((data) => setScreensDrop(data))
             .catch((error) =>
                 console.error("Error fetching events:", error)
             );
+    }, []);
+
+    useEffect(() => {
+        const savedScreen = sessionStorage.getItem('DebitCreditScreenSelection');
+        if (savedScreen) {
+            setSelectedscreens({ value: savedScreen, label: savedScreen === 'Add' ? 'Add' : 'Delete' });
+            setScreens(savedScreen);
+        } else {
+            setSelectedscreens({ value: 'Add', label: 'Add' });
+            setScreens('Add');
+        }
     }, []);
 
     const filteredOptionNoteType = noteTypeDrop.map((opt) => ({ value: opt.attributedetails_code, label: opt.attributedetails_name }));
@@ -387,7 +384,10 @@ function DebitCreditNote() {
 
     const handleChangeScreens = (selected) => {
         setSelectedscreens(selected);
-        setScreens(selected?.value === 'Add' ? 'Add' : 'Delete');
+        const screenValue = selected?.value === 'Add' ? 'Add' : 'Delete';
+        setScreens(screenValue);
+
+        sessionStorage.setItem('DebitCreditScreenSelection', screenValue);
     };
 
     const handleSearchRefTransaction = () => {
@@ -1804,13 +1804,19 @@ function DebitCreditNote() {
                 setSelectedReason(matchedReasonOption);
                 setReason(headerItem.Reason_ID || "");
 
+                if (headerItem.Note_Date) {
+                    setTransactionDate(formatDate(headerItem.Note_Date));
+                }
+
                 setRefTransactionNumber(headerItem.Reference_Invoice_No || "");
                 if (headerItem.Reference_Invoice_Date) {
                     setRefTransactionDate(formatDate(headerItem.Reference_Invoice_Date));
                 }
+                setTransactionNumber(headerItem.Note_No || "");
                 setTotal(formatToTwoDecimalPoints(headerItem.Sub_Total || 0));
                 setTotalTax(formatToTwoDecimalPoints(headerItem.Tax_Amount || 0));
                 setTotalAmount(formatToTwoDecimalPoints(headerItem.Total_Amount || 0));
+                setRoundDifference(formatToTwoDecimalPoints(headerItem.rounded_off || 0));
                 setNarration(headerItem.Narration || "");
                 setRefNo(headerItem.Reference_No || "");
                 setKeyfieldHeader(headerItem.Keyfield || "");
@@ -2244,58 +2250,486 @@ function DebitCreditNote() {
         );
     };
 
+    //Deleted Screen Functionalities
+    const [deletedNoteType, setDeletedNoteType] = useState("");
+    const [deletedTransactionDate, setDeletedTransactionDate] = useState("");
+    const [deletedTransactionNumber, setDeletedTransactionNumber] = useState("");
+    const [deletedPartyType, setDeletedPartyType] = useState("");
+    const [deletedPartyName, setDeletedPartyName] = useState("");
+    const [deletedRefType, setDeletedRefType] = useState("");
+    const [deletedReason, setDeletedReason] = useState("");
+    const [deletedRefTransactionNumber, setDeletedRefTransactionNumber] = useState("");
+    const [deletedRefTransactionDate, setDeletedRefTransactionDate] = useState("");
+    const [deletedRefNo, setDeletedRefNo] = useState("");
+    const [deletedNarration, setDeletedNarration] = useState("");
+
+    // Deleted Screen Summary Totals
+    const [deletedTotal, setDeletedTotal] = useState("");
+    const [deletedTotalTax, setDeletedTotalTax] = useState("");
+    const [deletedRoundDifference, setDeletedRoundDifference] = useState("");
+    const [deletedTotalAmount, setDeletedTotalAmount] = useState("");
+
+    const [openDelDebitCreditNoteHelp, setOpenDelDebitCreditNoteHelp] = useState(false);
+
+    // Deleted Screen Separate Table States (Default Empty Array)
+    const [deletedRowData, setDeletedRowData] = useState([]);      // Starts empty (no default row)
+    const [deletedRowDataTax, setDeletedRowDataTax] = useState([]);
+
+    const handleDelDebitCreditNoteHelp = () => setOpenDelDebitCreditNoteHelp(true);
+
+    const deletedColumnDefs = [
+        {
+            headerName: 'S.No',
+            field: 'deletedSerialNumber',
+            maxWidth: 80,
+            sortable: false,
+            editable: false
+        },
+        {
+            headerName: 'Item Code',
+            field: 'deletedItemCode',
+            editable: false,
+            filter: true,
+            cellEditorParams: { maxLength: 18 },
+            sortable: false
+        },
+        {
+            headerName: 'Item Name',
+            field: 'deletedItemName',
+            editable: false,
+            filter: true,
+            cellEditorParams: { maxLength: 40 },
+            sortable: false,
+        },
+        {
+            headerName: 'Warehouse',
+            field: 'deletedWarehouse',
+            editable: false,
+            filter: true,
+        },
+        {
+            headerName: 'Qty',
+            field: 'deletedQty',
+            editable: false,
+            filter: true,
+            sortable: false,
+            cellEditorParams: { maxLength: 10 }
+        },
+        {
+            headerName: 'Rate',
+            field: 'deletedPurchaseAmt',
+            editable: false,
+            filter: true,
+            sortable: false,
+            cellEditorParams: { maxLength: 18 }
+        },
+        {
+            headerName: 'Tax Amount',
+            field: 'deletedTotalTaxAmount',
+            editable: false,
+            filter: true,
+            sortable: false
+        },
+        {
+            headerName: 'Total',
+            field: 'deletedTotalItemAmount',
+            editable: false,
+            filter: true,
+            sortable: false
+        }
+    ];
+
+    const deletedColumnDefsTax = [
+        {
+            headerName: 'S.No',
+            field: 'deletedItemSNO',
+            maxWidth: 250,
+            sortable: false,
+            editable: true
+        },
+        {
+            headerName: 'Tax S.No',
+            field: 'deletedTaxSNO',
+            sortable: false,
+            editable: false
+        },
+        {
+            headerName: 'Item Code',
+            field: 'deletedItem_code',
+            sortable: false,
+            editable: false
+        },
+        {
+            headerName: 'Tax Type',
+            field: 'deletedTaxType',
+            sortable: false,
+            editable: false
+        },
+        {
+            headerName: 'Tax %',
+            field: 'deletedTaxPercentage',
+            sortable: false,
+            editable: false
+        },
+        {
+            headerName: 'Tax Amount',
+            field: 'deletedTaxAmount',
+            sortable: false,
+            editable: false
+        }
+    ];
+
+    const handleDeleteNoteNoKeyDown = (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault(); // Prevents form submission/page refresh on Enter
+            if (!deletedTransactionNumber || deletedTransactionNumber.trim() === "") {
+                toast.warning("Please enter a Transaction Number");
+                return;
+            }
+            fetchDeletedDebitCreditNoteData(deletedTransactionNumber.trim());
+        }
+    };
+
+    const handleDeleteDebitCreditData = (selectedData) => {
+        if (selectedData && selectedData.length > 0) {
+            const item = selectedData[0];
+            setDeletedTransactionNumber(item.TransactionNo);
+            // Fetch full transaction details using your existing handleRefNo
+            fetchDeletedDebitCreditNoteData(item.TransactionNo);
+        }
+    };
+
+    const fetchDeletedDebitCreditNoteData = async (code) => {
+        if (!code) return;
+        setLoading(true);
+
+        try {
+            const response = await fetch(`${config.apiBaseUrl}/getDeletedDebitCreditNoteData`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    transaction_no: code,
+                    company_code: sessionStorage.getItem("selectedCompanyCode"),
+                }),
+            });
+
+            if (!response.ok) {
+                if (response.status === 404) {
+                    toast.warning("Transaction Data not found");
+                    setRowData([]);
+                    setRowDataTax([]);
+                } else {
+                    const errorResponse = await response.json();
+                    toast.error(errorResponse.message || "An error occurred while fetching data");
+                }
+                return;
+            }
+
+            const searchData = await response.json();
+
+            // Map Header Data
+            if (searchData.header && searchData.header.length > 0) {
+                const headerItem = searchData.header[0];
+
+                setDeletedTransactionNumber(headerItem.Note_No || "");
+                setDeletedNoteType(headerItem.Note_Type || "");
+                setDeletedPartyType(headerItem.Note_Type || "");
+                setDeletedPartyName(headerItem.Party_ID || "");
+                setDeletedRefType(headerItem.Reference_Type || "");
+                setDeletedReason(headerItem.Reason_ID || "");
+
+                setDeletedRefTransactionNumber(headerItem.Reference_Invoice_No || "");
+                if (headerItem.Note_Date) {
+                    setDeletedTransactionDate(formatDate(headerItem.Note_Date));
+                }
+                if (headerItem.Reference_Invoice_Date) {
+                    setDeletedRefTransactionDate(formatDate(headerItem.Reference_Invoice_Date));
+                }
+                setDeletedTotal(formatToTwoDecimalPoints(headerItem.Sub_Total || 0));
+                setDeletedTotalTax(formatToTwoDecimalPoints(headerItem.Tax_Amount || 0));
+                setDeletedRoundDifference(formatToTwoDecimalPoints(headerItem.rounded_off || 0));
+                setDeletedTotalAmount(formatToTwoDecimalPoints(headerItem.Total_Amount || 0));
+                setDeletedNarration(headerItem.Narration || "");
+                setDeletedRefNo(headerItem.Reference_No || "");
+            } else {
+                toast.warning("Header details not found");
+            }
+
+            // Map Detail/Item Data
+            if (searchData.detail && searchData.detail.length > 0) {
+                const updatedRowData = searchData.detail.map((item) => {
+
+                    return {
+                        deletedSerialNumber: item.Item_ID,
+                        deletedItemCode: item.Item_Code,
+                        deletedItemName: item.Item_Name,
+                        deletedWarehouse: item.Warehouse_ID,
+                        deletedQty: item.Qty,
+                        deletedPurchaseAmt: item.Rate,
+                        deletedTotalTaxAmount: parseFloat(item.Tax_Amount || 0).toFixed(2),
+                        deletedTotalItemAmount: parseFloat(item.Amount || item.Total_Amount).toFixed(2),
+                    };
+                });
+
+                setDeletedRowData(updatedRowData);
+            } else {
+                setDeletedRowData([]);
+            }
+
+            // Map Tax Details Data
+            if (searchData.taxdetail && searchData.taxdetail.length > 0) {
+                const updatedRowDataTax = searchData.taxdetail.map((item) => ({
+                    deletedItemSNO: item.Item_SNo,
+                    deletedTaxSNO: item.Tax_SNo,
+                    deletedItem_code: item.Item_code,
+                    deletedTaxType: item.Tax_code,
+                    TaxPercentage: item.Tax_percentage,
+                    deletedTaxPercentage: parseFloat(item.Tax_amount).toFixed(2),
+                    deletedTaxAmount: item.tax_type,
+                }));
+
+                setDeletedRowDataTax(updatedRowDataTax);
+            } else {
+                setDeletedRowDataTax([]);
+            }
+
+        } catch (error) {
+            console.error("Error fetching Debit/Credit Note data:", error);
+            toast.error(error.message || "Failed to fetch data");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div>
-            <div className="container-fluid Topnav-screen">
-                {loading && <LoadingScreen />}
-                <ToastContainer position="top-right" className="toast-design" theme="colored" />
+            {Screens === 'Add' ? (
+                <div className="container-fluid Topnav-screen">
+                    {loading && <LoadingScreen />}
+                    <ToastContainer position="top-right" className="toast-design" theme="colored" />
 
-                {/* ================= HEADER SECTION ================= */}
-                <div className="shadow-lg p-2 bg-body-tertiary rounded mb-2 mt-2">
-                    <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                        <div className="d-flex align-items-center">
-                            <h1 className="purbut">Debit / Credit Note</h1>
-                        </div>
+                    {/* ================= HEADER SECTION ================= */}
+                    <div className="shadow-lg p-2 bg-body-tertiary rounded mb-2 mt-2">
+                        <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div className="d-flex align-items-center">
+                                <h1 className="purbut">Debit / Credit Note</h1>
+                            </div>
 
-                        {/* CENTER SECTION: Note Type Dropdown & Note No Label */}
-                        <div className="d-flex align-items-center gap-5 my-1">
-                            {/* 1. Note Type */}
-                            <div className="col-md-3 form-group mb-2">
-                                <label htmlFor="noteType" className={`${error && !noteType ? 'red' : ''}`}>Note Type<span className="text-danger">*</span></label>
-                                <div style={{ minWidth: '180px' }} title="Select Note Type (Debit / Credit)">
+                            {/* CENTER SECTION: Note Type Dropdown & Note No Label */}
+                            <div className="d-flex align-items-center gap-5 my-1">
+                                {/* 1. Note Type */}
+                                <div className="col-md-3 form-group mb-2">
+                                    <label htmlFor="noteType" className={`${error && !noteType ? 'red' : ''}`}>Note Type<span className="text-danger">*</span></label>
+                                    <div style={{ minWidth: '180px' }} title="Select Note Type (Debit / Credit)">
+                                        <Select
+                                            id="noteType"
+                                            className="exp-input-field"
+                                            placeholder="Select Type"
+                                            value={selectedNoteType}
+                                            onChange={handleChangeNoteType}
+                                            options={filteredOptionNoteType}
+                                            styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* 2. Note Date */}
+                                <div className="col-md-4 form-group mb-2">
+                                    <div className="exp-form-floating">
+                                        <label htmlFor="transactionDate" className={`${error && !transactionDate ? 'red' : ''}`}>Date<span className="text-danger">*</span></label>
+                                        <input
+                                            name="transactionDate"
+                                            id="transactionDate"
+                                            className="exp-input-field form-control"
+                                            type="date"
+                                            title="Select Note Date"
+                                            required
+                                            min={financialYearStart}
+                                            max={financialYearEnd}
+                                            value={transactionDate}
+                                            onChange={handleTransactionDateChange}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="col-md-4 form-group mb-2">
+                                    <label htmlFor="transactionNumber">Transaction No</label>
+                                    <div className="exp-form-floating">
+                                        <div className="d-flex justify-content-end">
+                                            <input
+                                                id="transactionNumber"
+                                                className="exp-input-field form-control"
+                                                type="text"
+                                                // placeholder="Enter Transaction ID"
+                                                title="Enter Original Transaction Reference Number"
+                                                value={transactionNumber}
+                                                onChange={(e) => setTransactionNumber(e.target.value)}
+                                                onKeyDown={handleTransactionNoKeyDown}
+                                                maxLength={50}
+                                                autoComplete="off"
+                                            />
+                                            <div className="position-absolute mt-1 me-2">
+                                                <span className="icon searchIcon" title="Search Ref Transaction" onClick={handleDebitCreditNoteHelp}>
+                                                    <i className="fa fa-search"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {/* <div className="d-flex align-items-center bg-light px-3 py-1" title="Note Document Number">
+                                <span className="fw-bold me-2 text-secondary text-nowrap">Note No:</span>
+                                <span className="fw-bold text-primary">{noteNo}</span>
+                            </div> */}
+                            </div>
+
+                            {/* RIGHT SECTION: Screen Selector & Action Buttons */}
+                            <div className="d-flex align-items-center gap-2 purbut">
+                                {/* 3. Screen Type */}
+                                <div className="exp-form-floating" style={{ minWidth: '160px' }} title="Select Screen Action">
                                     <Select
-                                        id="noteType"
+                                        id="returnType"
                                         className="exp-input-field"
-                                        placeholder="Select Type"
-                                        value={selectedNoteType}
-                                        onChange={handleChangeNoteType}
-                                        options={filteredOptionNoteType}
+                                        // placeholder="Select Screen"
+                                        value={selectedscreens}
+                                        onChange={handleChangeScreens}
+                                        options={filteredOptionScreens}
+                                        styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                                    />
+                                </div>
+
+                                {saveButtonVisible && ['add', 'all permission'].some(permission => DebitCreditNotePermission.includes(permission)) && (
+                                    <addbutton type="button" className="purbut" title="Save Note" onClick={handleSaveButtonClick}>
+                                        <i className="fa-regular fa-floppy-disk"></i>
+                                    </addbutton>
+                                )}
+
+                                {updateButtonVisible && ['update', 'all permission'].some(permission => DebitCreditNotePermission.includes(permission)) && (
+                                    <addbutton type="button" className="purbut" title="Update Note" onClick={handleUpdateButtonClick}>
+                                        <i className="fa-solid fa-floppy-disk"></i>
+                                    </addbutton>
+                                )}
+
+                                {delButtonVisible && ['delete', 'all permission'].some(permission => DebitCreditNotePermission.includes(permission)) && (
+                                    <delbutton type="button" className="purbut" title="Delete Note" onClick={handleDeleteButtonClick}>
+                                        <i className="fa-solid fa-trash"></i>
+                                    </delbutton>
+                                )}
+
+                                {printButtonVisible && ['all permission', 'view'].some(permission => DebitCreditNotePermission.includes(permission)) && (
+                                    <printbutton type="button" className="purbut" title="Print PDF">
+                                        <i className="fa-solid fa-file-pdf"></i>
+                                    </printbutton>
+                                )}
+
+                                {showExcelButton && (
+                                    <printbutton type="button" className="purbut" title="Export Excel" onClick={handleExcelDownload}>
+                                        <i className="fa-solid fa-file-excel"></i>
+                                    </printbutton>
+                                )}
+
+                                <printbutton type="button" className="purbut" title="Reload Page" onClick={handleReload}>
+                                    <i className="fa-solid fa-arrow-rotate-right"></i>
+                                </printbutton>
+
+                                {/* <printbutton type="button" className="purbut" title="Settings">
+                                <i className="fa-solid fa-gear"></i>
+                            </printbutton> */}
+
+                                {/* <button className="btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button> */}
+
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* ================= FORM INPUT FIELDS SECTION ================= */}
+                    <div className="shadow-lg p-1 bg-body-tertiary rounded pt-3 pb-4" align="left">
+                        <div className="row ms-3 me-3">
+                            {/* 4. Party Type */}
+                            <div className="col-md-3 form-group mb-2">
+                                <label htmlFor="partyType" className={`exp-form-labels ${error && !partyType ? 'red' : ''}`}>Party Type<span className="text-danger">*</span></label>
+                                <div className="exp-form-floating" title="Select Party Type (Vendor or Customer)">
+                                    <Select
+                                        id="partyType"
+                                        value={selectedPartyType}
+                                        // onChange={handleChangePartyType}
+                                        // options={filteredOptionPartyType}
+                                        className="exp-input-field"
+                                        isDisabled={true}
+                                        // placeholder="Select Party Type"
                                         styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                                     />
                                 </div>
                             </div>
 
-                            {/* 2. Note Date */}
-                            <div className="col-md-4 form-group mb-2">
-                                <div className="exp-form-floating">
-                                    <label htmlFor="transactionDate" className={`${error && !transactionDate ? 'red' : ''}`}>Date<span className="text-danger">*</span></label>
-                                    <input
-                                        name="transactionDate"
-                                        id="transactionDate"
-                                        className="exp-input-field form-control"
-                                        type="date"
-                                        title="Select Note Date"
-                                        required
-                                        min={financialYearStart}
-                                        max={financialYearEnd}
-                                        value={transactionDate}
-                                        onChange={handleTransactionDateChange}
+                            {/* 3. Party Name */}
+                            <div className="col-md-3 form-group mb-2">
+                                <label htmlFor="partyName" className={`${error && !partyName ? 'red' : ''}`}>
+                                    Party Name<span className="text-danger">*</span>
+                                </label>
+
+                                <div
+                                    className="exp-form-floating"
+                                    title="Select Vendor or Customer Name"
+                                >
+                                    <Select
+                                        id="partyName"
+                                        value={selectedPartyName}
+                                        onChange={(opt) => {
+                                            setSelectedPartyName(opt);
+                                            setPartyName(opt?.value || "");
+                                        }}
+                                        options={filteredOptionCode}
+                                        className="exp-input-field"
+                                        // placeholder="Select Party Name"
+                                        isDisabled={!partyType}
+                                        styles={{
+                                            menu: (provided) => ({
+                                                ...provided,
+                                                zIndex: 9999
+                                            })
+                                        }}
                                     />
                                 </div>
                             </div>
 
-                            <div className="col-md-4 form-group mb-2">
-                                <label htmlFor="transactionNumber">Transaction No</label>
+                            {/* 4. Reason */}
+                            <div className="col-md-3 form-group mb-2">
+                                <label htmlFor="reason" className={`${error && !refType ? 'red' : ''}`}>Ref. Type<span className="text-danger">*</span></label>
+                                <div className="exp-form-floating" title="Select Reference Type for Debit/Credit Note">
+                                    <Select
+                                        id="reason"
+                                        value={selectedRefType}
+                                        onChange={handleChangeRefType}
+                                        options={filteredOptionRefType}
+                                        className="exp-input-field"
+                                        // placeholder="Select Reason"
+                                        styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="col-md-3 form-group mb-2">
+                                <label htmlFor="reason" className={`${error && !reason ? 'red' : ''}`}>Reason<span className="text-danger">*</span></label>
+                                <div className="exp-form-floating" title="Select Reason for Debit/Credit Note">
+                                    <Select
+                                        id="reason"
+                                        value={selectedReason}
+                                        onChange={handleChangeReason}
+                                        options={reasonOptions}
+                                        className="exp-input-field"
+                                        // placeholder="Select Reason"
+                                        styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* 5. Ref. Transaction No */}
+                            <div className="col-md-3 form-group mb-2">
+                                <label htmlFor="transactionNumber">Ref. Transaction ID</label>
                                 <div className="exp-form-floating">
                                     <div className="d-flex justify-content-end">
                                         <input
@@ -2304,369 +2738,473 @@ function DebitCreditNote() {
                                             type="text"
                                             // placeholder="Enter Transaction ID"
                                             title="Enter Original Transaction Reference Number"
-                                            value={transactionNumber}
-                                            onChange={(e) => setTransactionNumber(e.target.value)}
-                                            onKeyDown={handleTransactionNoKeyDown}
+                                            value={refTransactionNumber}
+                                            onChange={(e) => setRefTransactionNumber(e.target.value)}
                                             maxLength={50}
                                             autoComplete="off"
                                         />
                                         <div className="position-absolute mt-1 me-2">
-                                            <span className="icon searchIcon" title="Search Ref Transaction" onClick={handleDebitCreditNoteHelp}>
+                                            <span className="icon searchIcon" title="Search Ref Transaction" onClick={handleSearchRefTransaction}>
                                                 <i className="fa fa-search"></i>
                                             </span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            {/* <div className="d-flex align-items-center bg-light px-3 py-1" title="Note Document Number">
-                                <span className="fw-bold me-2 text-secondary text-nowrap">Note No:</span>
-                                <span className="fw-bold text-primary">{noteNo}</span>
-                            </div> */}
-                        </div>
 
-                        {/* RIGHT SECTION: Screen Selector & Action Buttons */}
-                        <div className="d-flex align-items-center gap-2 purbut">
-                            {/* 3. Screen Type */}
-                            <div className="exp-form-floating" style={{ minWidth: '160px' }} title="Select Screen Action">
-                                <Select
-                                    id="returnType"
-                                    className="exp-input-field"
-                                    // placeholder="Select Screen"
-                                    value={selectedscreens}
-                                    onChange={handleChangeScreens}
-                                    options={filteredOptionScreens}
-                                    styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
-                                />
-                            </div>
-
-                            {saveButtonVisible && ['add', 'all permission'].some(permission => DebitCreditNotePermission.includes(permission)) && (
-                                <addbutton type="button" className="purbut" title="Save Note" onClick={handleSaveButtonClick}>
-                                    <i className="fa-regular fa-floppy-disk"></i>
-                                </addbutton>
-                            )}
-
-                            {updateButtonVisible && ['update', 'all permission'].some(permission => DebitCreditNotePermission.includes(permission)) && (
-                                <addbutton type="button" className="purbut" title="Update Note" onClick={handleUpdateButtonClick}>
-                                    <i className="fa-solid fa-floppy-disk"></i>
-                                </addbutton>
-                            )}
-
-                            {delButtonVisible && ['delete', 'all permission'].some(permission => DebitCreditNotePermission.includes(permission)) && (
-                                <delbutton type="button" className="purbut" title="Delete Note" onClick={handleDeleteButtonClick}>
-                                    <i className="fa-solid fa-trash"></i>
-                                </delbutton>
-                            )}
-
-                            {printButtonVisible && ['all permission', 'view'].some(permission => DebitCreditNotePermission.includes(permission)) && (
-                                <printbutton type="button" className="purbut" title="Print PDF">
-                                    <i className="fa-solid fa-file-pdf"></i>
-                                </printbutton>
-                            )}
-
-                            {showExcelButton && (
-                                <printbutton type="button" className="purbut" title="Export Excel" onClick={handleExcelDownload}>
-                                    <i className="fa-solid fa-file-excel"></i>
-                                </printbutton>
-                            )}
-
-                            <printbutton type="button" className="purbut" title="Reload Page" onClick={handleReload}>
-                                <i className="fa-solid fa-arrow-rotate-right"></i>
-                            </printbutton>
-
-                            {/* <printbutton type="button" className="purbut" title="Settings">
-                                <i className="fa-solid fa-gear"></i>
-                            </printbutton> */}
-
-                            {/* <button className="btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
-                                <i class="fa-solid fa-xmark"></i>
-                            </button> */}
-
-                        </div>
-                    </div>
-                </div>
-
-                {/* ================= FORM INPUT FIELDS SECTION ================= */}
-                <div className="shadow-lg p-1 bg-body-tertiary rounded pt-3 pb-4" align="left">
-                    <div className="row ms-3 me-3">
-                        {/* 4. Party Type */}
-                        <div className="col-md-3 form-group mb-2">
-                            <label htmlFor="partyType" className={`exp-form-labels ${error && !partyType ? 'red' : ''}`}>Party Type<span className="text-danger">*</span></label>
-                            <div className="exp-form-floating" title="Select Party Type (Vendor or Customer)">
-                                <Select
-                                    id="partyType"
-                                    value={selectedPartyType}
-                                    // onChange={handleChangePartyType}
-                                    // options={filteredOptionPartyType}
-                                    className="exp-input-field"
-                                    isDisabled={true}
-                                    // placeholder="Select Party Type"
-                                    styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
-                                />
-                            </div>
-                        </div>
-
-                        {/* 3. Party Name */}
-                        <div className="col-md-3 form-group mb-2">
-                            <label htmlFor="partyName" className={`${error && !partyName ? 'red' : ''}`}>
-                                Party Name<span className="text-danger">*</span>
-                            </label>
-
-                            <div
-                                className="exp-form-floating"
-                                title="Select Vendor or Customer Name"
-                            >
-                                <Select
-                                    id="partyName"
-                                    value={selectedPartyName}
-                                    onChange={(opt) => {
-                                        setSelectedPartyName(opt);
-                                        setPartyName(opt?.value || "");
-                                    }}
-                                    options={filteredOptionCode}
-                                    className="exp-input-field"
-                                    // placeholder="Select Party Name"
-                                    isDisabled={!partyType}
-                                    styles={{
-                                        menu: (provided) => ({
-                                            ...provided,
-                                            zIndex: 9999
-                                        })
-                                    }}
-                                />
-                            </div>
-                        </div>
-
-                        {/* 4. Reason */}
-                        <div className="col-md-3 form-group mb-2">
-                            <label htmlFor="reason" className={`${error && !refType ? 'red' : ''}`}>Ref. Type<span className="text-danger">*</span></label>
-                            <div className="exp-form-floating" title="Select Reference Type for Debit/Credit Note">
-                                <Select
-                                    id="reason"
-                                    value={selectedRefType}
-                                    onChange={handleChangeRefType}
-                                    options={filteredOptionRefType}
-                                    className="exp-input-field"
-                                    // placeholder="Select Reason"
-                                    styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="col-md-3 form-group mb-2">
-                            <label htmlFor="reason" className={`${error && !reason ? 'red' : ''}`}>Reason<span className="text-danger">*</span></label>
-                            <div className="exp-form-floating" title="Select Reason for Debit/Credit Note">
-                                <Select
-                                    id="reason"
-                                    value={selectedReason}
-                                    onChange={handleChangeReason}
-                                    options={reasonOptions}
-                                    className="exp-input-field"
-                                    // placeholder="Select Reason"
-                                    styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
-                                />
-                            </div>
-                        </div>
-
-                        {/* 5. Ref. Transaction No */}
-                        <div className="col-md-3 form-group mb-2">
-                            <label htmlFor="transactionNumber">Ref. Transaction ID</label>
-                            <div className="exp-form-floating">
-                                <div className="d-flex justify-content-end">
+                            {/* 6. Ref. Transaction Date */}
+                            <div className="col-md-3 form-group mb-2">
+                                <div className="exp-form-floating">
+                                    <label htmlFor="refTransactionDate">Ref. Transaction Date</label>
                                     <input
-                                        id="transactionNumber"
+                                        name="refTransactionDate"
+                                        id="refTransactionDate"
                                         className="exp-input-field form-control"
-                                        type="text"
-                                        // placeholder="Enter Transaction ID"
-                                        title="Enter Original Transaction Reference Number"
-                                        value={refTransactionNumber}
-                                        onChange={(e) => setRefTransactionNumber(e.target.value)}
-                                        maxLength={50}
-                                        autoComplete="off"
+                                        type="date"
+                                        title="Select Transaction Date"
+                                        value={refTransactionDate}
+                                        onChange={(e) => setRefTransactionDate(e.target.value)}
                                     />
-                                    <div className="position-absolute mt-1 me-2">
-                                        <span className="icon searchIcon" title="Search Ref Transaction" onClick={handleSearchRefTransaction}>
-                                            <i className="fa fa-search"></i>
-                                        </span>
-                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="col-md-3 form-group mb-2">
+                                <label htmlFor="refNo">Ref. No</label>
+                                <div className="exp-form-floating">
+                                    <input
+                                        className="exp-input-field form-control"
+                                        id="refNo"
+                                        title="Enter Reference No"
+                                        // placeholder="Enter Narration or Remarks"
+                                        value={refNo}
+                                        onChange={(e) => setRefNo(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* 7. Narration */}
+                            <div className="col-md-6 form-group mb-2">
+                                <label htmlFor="narration">Narration</label>
+                                <div className="exp-form-floating">
+                                    <textarea
+                                        className="exp-input-field form-control"
+                                        id="narration"
+                                        title="Enter Remarks / Narration"
+                                        // placeholder="Enter Narration or Remarks"
+                                        value={narration}
+                                        onChange={(e) => setNarration(e.target.value)}
+                                    />
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        {/* 6. Ref. Transaction Date */}
-                        <div className="col-md-3 form-group mb-2">
-                            <div className="exp-form-floating">
-                                <label htmlFor="refTransactionDate">Ref. Transaction Date</label>
+                    {/* ================= TOTAL BILL SECTION ================= */}
+                    <div className="shadow-lg p-1 bg-body-tertiary rounded mt-2 pt-3 pb-4" align="left">
+                        <div className="row ms-3 me-3 mb-3">
+                            <div className="col-md-3 form-group mb-2">
+                                <div className="exp-form-floating">
+                                    <label className={`${error && !total ? 'red' : ''}`}>Total Amount<span className="text-danger">*</span></label>
+                                    <input
+                                        id="totalPurchaseAmount"
+                                        className="exp-input-field form-control input"
+                                        title="Total Net Amount"
+                                        type="text"
+                                        value={total}
+                                        readOnly
+                                    />
+                                </div>
+                            </div>
+                            <div className="col-md-3 form-group mb-2">
+                                <div className="exp-form-floating">
+                                    <label className={`${error && !totalTax ? 'red' : ''}`}>Total Tax<span className="text-danger">*</span></label>
+                                    <input
+                                        id="totalTaxAmount"
+                                        title="Total Calculated Tax Amount"
+                                        type="text"
+                                        className="exp-input-field form-control input"
+                                        value={totalTax}
+                                        readOnly
+                                    />
+                                </div>
+                            </div>
+                            <div className="col-md-3 form-group mb-2">
+                                <div className="exp-form-floating">
+                                    <label className="exp-form-labels">Round Off</label>
+                                    <input
+                                        id="roundOff"
+                                        title="Round Off Difference"
+                                        type="text"
+                                        className="exp-input-field form-control input"
+                                        value={roundDifference}
+                                        readOnly
+                                    />
+                                </div>
+                            </div>
+                            <div className="col-md-3 form-group mb-2">
+                                <div className="exp-form-floating">
+                                    <label className={`${error && !totalAmount ? 'red' : ''}`}>Total Bill Amount<span className="text-danger">*</span></label>
+                                    <input
+                                        id="totalBillAmount"
+                                        title="Final Total Bill Amount"
+                                        type="text"
+                                        className="exp-input-field form-control input"
+                                        value={totalAmount}
+                                        readOnly
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* ================= AG GRID TABLE SECTION ================= */}
+                    <div className="shadow-lg p-1 bg-body-tertiary rounded mt-2 pt-3 pb-4" align="left">
+                        <div className="d-flex justify-content-between">
+                            <div className="d-flex justify-content-start ms-5">
+                                <purButton
+                                    type="button"
+                                    className={`"toggle-btn"  ${activeTable === 'myTable' ? 'active' : ''}`}
+                                    onClick={() => handleToggleTable('myTable')}>
+                                    Item Details
+                                </purButton>
+                                <purButton
+                                    type="button"
+                                    className={`"toggle-btn"  ${activeTable === 'myTable' ? 'active' : ''}`}
+                                    onClick={() => handleToggleTable('tax')}>
+                                    Tax Details
+                                </purButton>
+                            </div>
+                            <div className="d-flex me-4 gap-2">
+                                <icon
+                                    type="button"
+                                    className="popups-btn"
+                                    title="Add Row"
+                                    onClick={handleAddRow}>
+                                    <FontAwesomeIcon icon={faPlus} />
+                                </icon>
+                                <icon
+                                    type="button"
+                                    className="popups-btn"
+                                    title="Remove Row"
+                                    onClick={handleRemoveRow}>
+                                    <FontAwesomeIcon icon={faMinus} />
+                                </icon>
+                            </div>
+                        </div>
+
+                        <div className="ag-theme-alpine" style={{ height: 437, width: "100%" }}>
+                            <AgGridReact
+                                columnDefs={activeTable === 'myTable' ? columnDefs : columnDefsTax}
+                                rowData={activeTable === 'myTable' ? rowData : rowDataTax}
+                                defaultColDef={{ editable: true, resizable: true }}
+                                onCellValueChanged={async (event) => {
+                                    if (event.colDef.field === 'Qty' || event.colDef.field === 'purchaseAmt') {
+                                        await ItemAmountCalculation(event);
+                                    }
+                                }}
+                            />
+                        </div>
+                    </div>
+
+                    {/* POPUPS & FOOTER */}
+                    <PurchaseItemPopup open={open} handleClose={handleClose} handleItem={handleItem} />
+                    <PurchaseWarehousePopup open={open1} handleClose={handleClose} handleWarehouse={handleWarehouse} />
+                    <PurchasePopup open={openPurchaseHelp} handleClose={() => setOpenPurchaseHelp(false)} handlePurchaseData={handlePurchaseDataSelect} selectedPartyCode={partyName || ""} />
+                    <SalesHdrPopup open={openSalesHelp} handleClose={() => setOpenSalesHelp(false)} handleData={handleSalesDataSelect} selectedPartyCode={partyName || ""} />
+                    <PurchaseReturnView open={openPurchaseReturnHelp} handleClose={() => setOpenPurchaseReturnHelp(false)} handleItemView={handlePurchaseReturnDataSelect} selectedPartyCode={partyName || ""} />
+                    <SalesRetrunView open={openSalesReturnHelp} handleClose={() => setOpenSalesReturnHelp(false)} handleDataView={handleSalesReturnDataSelect} selectedPartyCode={partyName || ""} />
+                    <DebitCrediNoteHelp open={openDebitCreditNoteHelp} handleClose={() => setOpenDebitCreditNoteHelp(false)} handleDebitCreditData={handleDebitCreditData} />
+                    <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
+                        <div className="row ms-2">
+                            <div className="d-flex justify-content-start">
+                                <p className="col-md-6">{labels.createdBy}: {additionalData.created_by}</p>
+                                <p className="col-md-6">{labels.createdDate}: {additionalData.created_date}</p>
+                            </div>
+                            <div className="d-flex justify-content-start">
+                                <p className="col-md-6">{labels.modifiedBy}: {additionalData.modified_by}</p>
+                                <p className="col-md-6">{labels.modifiedDate}: {additionalData.modified_date}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <div className="container-fluid Topnav-screen">
+                    {loading && <LoadingScreen />}
+                    <ToastContainer position="top-right" className="toast-design" theme="colored" />
+
+                    {/* ================= HEADER SECTION ================= */}
+                    <div className="shadow-lg p-2 bg-body-tertiary rounded mb-2 mt-2">
+                        <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div className="d-flex align-items-center">
+                                <h1 className="purbut">Deleted Debit / Credit Note</h1>
+                            </div>
+
+                            {/* CENTER SECTION: Note Type, Date & Search Transaction */}
+                            <div className="d-flex align-items-center gap-3 my-1">
+                                {/* 1. Note Type (Read-Only Input) */}
+                                <div className="form-group mb-2" style={{ minWidth: '180px' }}>
+                                    <label htmlFor="deletedNoteType">Note Type</label>
+                                    <input
+                                        id="deletedNoteType"
+                                        type="text"
+                                        className="exp-input-field form-control bg-light"
+                                        value={deletedNoteType}
+                                        readOnly
+                                    />
+                                </div>
+
+                                {/* 2. Note Date (Read-Only Input) */}
+                                <div className="form-group mb-2" style={{ minWidth: '160px' }}>
+                                    <label htmlFor="deletedTransactionDate">Date</label>
+                                    <input
+                                        id="deletedTransactionDate"
+                                        type="date"
+                                        className="exp-input-field form-control bg-light"
+                                        value={deletedTransactionDate}
+                                        readOnly
+                                    />
+                                </div>
+
+                                {/* 3. Transaction No */}
+                                <div className="form-group mb-2" style={{ minWidth: '220px' }}>
+                                    <label htmlFor="deletedTransactionNumber">Transaction No</label>
+                                    <div className="exp-form-floating position-relative">
+                                        <input
+                                            id="deletedTransactionNumber"
+                                            className="exp-input-field form-control"
+                                            type="text"
+                                            title="Enter Original Transaction Reference Number"
+                                            value={deletedTransactionNumber}
+                                            onChange={(e) => setDeletedTransactionNumber(e.target.value)}
+                                            onKeyDown={handleDeleteNoteNoKeyDown}
+                                            maxLength={50}
+                                            autoComplete="off"
+                                        />
+                                        <div className="position-absolute top-50 end-0 translate-middle-y me-2">
+                                            <span className="icon searchIcon" title="Search Deleted Transaction" onClick={handleDelDebitCreditNoteHelp}>
+                                                <i className="fa fa-search"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* RIGHT SECTION: Screen Selector & Action Buttons */}
+                            <div className="d-flex align-items-center gap-2 purbut">
+                                <div className="exp-form-floating" style={{ minWidth: '160px' }} title="Select Screen Action">
+                                    <Select
+                                        id="returnType"
+                                        className="exp-input-field"
+                                        value={selectedscreens}
+                                        onChange={handleChangeScreens}
+                                        options={filteredOptionScreens}
+                                        styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                                    />
+                                </div>
+
+                                <printbutton type="button" className="purbut btn" title="Reload Page" onClick={handleReload}>
+                                    <i className="fa-solid fa-arrow-rotate-right"></i>
+                                </printbutton>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* ================= FORM INPUT FIELDS SECTION (ALL NON-EDITABLE) ================= */}
+                    <div className="shadow-lg p-1 bg-body-tertiary rounded pt-3 pb-4" align="left">
+                        <div className="row ms-3 me-3">
+                            {/* Party Type */}
+                            <div className="col-md-3 form-group mb-2">
+                                <label htmlFor="deletedPartyType" className="exp-form-labels">Party Type</label>
                                 <input
-                                    name="refTransactionDate"
-                                    id="refTransactionDate"
-                                    className="exp-input-field form-control"
+                                    id="deletedPartyType"
+                                    type="text"
+                                    className="exp-input-field form-control bg-light"
+                                    value={deletedPartyType}
+                                    readOnly
+                                />
+                            </div>
+
+                            {/* Party Name */}
+                            <div className="col-md-3 form-group mb-2">
+                                <label htmlFor="deletedPartyName">Party Name</label>
+                                <input
+                                    id="deletedPartyName"
+                                    type="text"
+                                    className="exp-input-field form-control bg-light"
+                                    value={deletedPartyName}
+                                    readOnly
+                                />
+                            </div>
+
+                            {/* Ref. Type */}
+                            <div className="col-md-3 form-group mb-2">
+                                <label htmlFor="deletedRefType">Ref. Type</label>
+                                <input
+                                    id="deletedRefType"
+                                    type="text"
+                                    className="exp-input-field form-control bg-light"
+                                    value={deletedRefType}
+                                    readOnly
+                                />
+                            </div>
+
+                            {/* Reason */}
+                            <div className="col-md-3 form-group mb-2">
+                                <label htmlFor="deletedReason">Reason</label>
+                                <input
+                                    id="deletedReason"
+                                    type="text"
+                                    className="exp-input-field form-control bg-light"
+                                    value={deletedReason}
+                                    readOnly
+                                />
+                            </div>
+
+                            {/* Ref. Transaction ID */}
+                            <div className="col-md-3 form-group mb-2">
+                                <label htmlFor="deletedRefTransactionNumber">Ref. Transaction ID</label>
+                                <input
+                                    id="deletedRefTransactionNumber"
+                                    type="text"
+                                    className="exp-input-field form-control bg-light"
+                                    value={deletedRefTransactionNumber}
+                                    readOnly
+                                />
+                            </div>
+
+                            {/* Ref. Transaction Date */}
+                            <div className="col-md-3 form-group mb-2">
+                                <label htmlFor="deletedRefTransactionDate">Ref. Transaction Date</label>
+                                <input
+                                    id="deletedRefTransactionDate"
                                     type="date"
-                                    title="Select Transaction Date"
-                                    value={refTransactionDate}
-                                    onChange={(e) => setRefTransactionDate(e.target.value)}
+                                    className="exp-input-field form-control bg-light"
+                                    value={deletedRefTransactionDate}
+                                    readOnly
                                 />
                             </div>
-                        </div>
 
-                        <div className="col-md-3 form-group mb-2">
-                            <label htmlFor="refNo">Ref. No</label>
-                            <div className="exp-form-floating">
+                            {/* Ref. No */}
+                            <div className="col-md-3 form-group mb-2">
+                                <label htmlFor="deletedRefNo">Ref. No</label>
                                 <input
-                                    className="exp-input-field form-control"
-                                    id="refNo"
-                                    title="Enter Reference No"
-                                    // placeholder="Enter Narration or Remarks"
-                                    value={refNo}
-                                    onChange={(e) => setRefNo(e.target.value)}
+                                    id="deletedRefNo"
+                                    type="text"
+                                    className="exp-input-field form-control bg-light"
+                                    value={deletedRefNo}
+                                    readOnly
                                 />
                             </div>
-                        </div>
 
-                        {/* 7. Narration */}
-                        <div className="col-md-6 form-group mb-2">
-                            <label htmlFor="narration">Narration</label>
-                            <div className="exp-form-floating">
+                            {/* Narration */}
+                            <div className="col-md-6 form-group mb-2">
+                                <label htmlFor="deletedNarration">Narration</label>
                                 <textarea
-                                    className="exp-input-field form-control"
-                                    id="narration"
-                                    title="Enter Remarks / Narration"
-                                    // placeholder="Enter Narration or Remarks"
-                                    value={narration}
-                                    onChange={(e) => setNarration(e.target.value)}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* ================= TOTAL BILL SECTION ================= */}
-                <div className="shadow-lg p-1 bg-body-tertiary rounded mt-2 pt-3 pb-4" align="left">
-                    <div className="row ms-3 me-3 mb-3">
-                        <div className="col-md-3 form-group mb-2">
-                            <div className="exp-form-floating">
-                                <label className={`${error && !total ? 'red' : ''}`}>Total Amount<span className="text-danger">*</span></label>
-                                <input
-                                    id="totalPurchaseAmount"
-                                    className="exp-input-field form-control input"
-                                    title="Total Net Amount"
-                                    type="text"
-                                    value={total}
-                                    readOnly
-                                />
-                            </div>
-                        </div>
-                        <div className="col-md-3 form-group mb-2">
-                            <div className="exp-form-floating">
-                                <label className={`${error && !totalTax ? 'red' : ''}`}>Total Tax<span className="text-danger">*</span></label>
-                                <input
-                                    id="totalTaxAmount"
-                                    title="Total Calculated Tax Amount"
-                                    type="text"
-                                    className="exp-input-field form-control input"
-                                    value={totalTax}
-                                    readOnly
-                                />
-                            </div>
-                        </div>
-                        <div className="col-md-3 form-group mb-2">
-                            <div className="exp-form-floating">
-                                <label className="exp-form-labels">Round Off</label>
-                                <input
-                                    id="roundOff"
-                                    title="Round Off Difference"
-                                    type="text"
-                                    className="exp-input-field form-control input"
-                                    value={roundDifference}
-                                    readOnly
-                                />
-                            </div>
-                        </div>
-                        <div className="col-md-3 form-group mb-2">
-                            <div className="exp-form-floating">
-                                <label className={`${error && !totalAmount ? 'red' : ''}`}>Total Bill Amount<span className="text-danger">*</span></label>
-                                <input
-                                    id="totalBillAmount"
-                                    title="Final Total Bill Amount"
-                                    type="text"
-                                    className="exp-input-field form-control input"
-                                    value={totalAmount}
+                                    id="deletedNarration"
+                                    className="exp-input-field form-control bg-light"
+                                    value={deletedNarration}
+                                    rows="2"
                                     readOnly
                                 />
                             </div>
                         </div>
                     </div>
-                </div>
 
-                {/* ================= AG GRID TABLE SECTION ================= */}
-                <div className="shadow-lg p-1 bg-body-tertiary rounded mt-2 pt-3 pb-4" align="left">
-                    <div className="d-flex justify-content-between">
-                        <div className="d-flex justify-content-start ms-5">
-                            <purButton
-                                type="button"
-                                className={`"toggle-btn"  ${activeTable === 'myTable' ? 'active' : ''}`}
-                                onClick={() => handleToggleTable('myTable')}>
-                                Item Details
-                            </purButton>
-                            <purButton
-                                type="button"
-                                className={`"toggle-btn"  ${activeTable === 'myTable' ? 'active' : ''}`}
-                                onClick={() => handleToggleTable('tax')}>
-                                Tax Details
-                            </purButton>
-                        </div>
-                        <div className="d-flex me-4 gap-2">
-                            <icon
-                                type="button"
-                                className="popups-btn"
-                                title="Add Row"
-                                onClick={handleAddRow}>
-                                <FontAwesomeIcon icon={faPlus} />
-                            </icon>
-                            <icon
-                                type="button"
-                                className="popups-btn"
-                                title="Remove Row"
-                                onClick={handleRemoveRow}>
-                                <FontAwesomeIcon icon={faMinus} />
-                            </icon>
+                    {/* ================= TOTAL BILL SECTION ================= */}
+                    <div className="shadow-lg p-1 bg-body-tertiary rounded mt-2 pt-3 pb-4" align="left">
+                        <div className="row ms-3 me-3 mb-3">
+                            <div className="col-md-3 form-group mb-2">
+                                <label>Total Amount</label>
+                                <input
+                                    id="deletedTotal"
+                                    className="exp-input-field form-control bg-light"
+                                    type="text"
+                                    value={deletedTotal}
+                                    readOnly
+                                />
+                            </div>
+                            <div className="col-md-3 form-group mb-2">
+                                <label>Total Tax</label>
+                                <input
+                                    id="deletedTotalTax"
+                                    className="exp-input-field form-control bg-light"
+                                    type="text"
+                                    value={deletedTotalTax}
+                                    readOnly
+                                />
+                            </div>
+                            <div className="col-md-3 form-group mb-2">
+                                <label>Round Off</label>
+                                <input
+                                    id="deletedRoundDifference"
+                                    className="exp-input-field form-control bg-light"
+                                    type="text"
+                                    value={deletedRoundDifference}
+                                    readOnly
+                                />
+                            </div>
+                            <div className="col-md-3 form-group mb-2">
+                                <label>Total Bill Amount</label>
+                                <input
+                                    id="deletedTotalAmount"
+                                    className="exp-input-field form-control bg-light"
+                                    type="text"
+                                    value={deletedTotalAmount}
+                                    readOnly
+                                />
+                            </div>
                         </div>
                     </div>
 
-                    <div className="ag-theme-alpine" style={{ height: 437, width: "100%" }}>
-                        <AgGridReact
-                            columnDefs={activeTable === 'myTable' ? columnDefs : columnDefsTax}
-                            rowData={activeTable === 'myTable' ? rowData : rowDataTax}
-                            defaultColDef={{ editable: true, resizable: true }}
-                            onCellValueChanged={async (event) => {
-                                if (event.colDef.field === 'Qty' || event.colDef.field === 'purchaseAmt') {
-                                    await ItemAmountCalculation(event);
-                                }
-                            }}
-                        />
-                    </div>
-                </div>
+                    {/* ================= SEPARATED AG GRID TABLE SECTION ================= */}
+                    <div className="shadow-lg p-1 bg-body-tertiary rounded mt-2 pt-3 pb-4">
+                        <div className="d-flex justify-content-between">
+                            <div align="left" class="d-flex justify-content-start ms-5">
+                                <purButton
+                                    type="button"
+                                    className={`"toggle-btn" ${activeTable === 'myTable' ? 'active' : ''}`}
+                                    onClick={() => handleToggleTable('myTable')}>
+                                    Item Details
+                                </purButton>
+                                <purButton
+                                    type="button"
+                                    className={`"toggle-btn" ${activeTable === 'tax' ? 'active' : ''}`}
+                                    onClick={() => handleToggleTable('tax')}>
+                                    Tax Details
+                                </purButton>
 
-                {/* POPUPS & FOOTER */}
-                <PurchaseItemPopup open={open} handleClose={handleClose} handleItem={handleItem} />
-                <PurchaseWarehousePopup open={open1} handleClose={handleClose} handleWarehouse={handleWarehouse} />
-                <PurchasePopup open={openPurchaseHelp} handleClose={() => setOpenPurchaseHelp(false)} handlePurchaseData={handlePurchaseDataSelect} selectedPartyCode={partyName || ""} />
-                <SalesHdrPopup open={openSalesHelp} handleClose={() => setOpenSalesHelp(false)} handleData={handleSalesDataSelect} selectedPartyCode={partyName || ""} />
-                <PurchaseReturnView open={openPurchaseReturnHelp} handleClose={() => setOpenPurchaseReturnHelp(false)} handleItemView={handlePurchaseReturnDataSelect} selectedPartyCode={partyName || ""} />
-                <SalesRetrunView open={openSalesReturnHelp} handleClose={() => setOpenSalesReturnHelp(false)} handleDataView={handleSalesReturnDataSelect} selectedPartyCode={partyName || ""} />
-                <DebitCrediNoteHelp open={openDebitCreditNoteHelp} handleClose={() => setOpenDebitCreditNoteHelp(false)} handleDebitCreditData={handleDebitCreditData} />
-                <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
-                    <div className="row ms-2">
-                        <div className="d-flex justify-content-start">
-                            <p className="col-md-6">{labels.createdBy}: {additionalData.created_by}</p>
-                            <p className="col-md-6">{labels.createdDate}: {additionalData.created_date}</p>
+                            </div>
                         </div>
-                        <div className="d-flex justify-content-start">
-                            <p className="col-md-6">{labels.modifiedBy}: {additionalData.modified_by}</p>
-                            <p className="col-md-6">{labels.modifiedDate}: {additionalData.modified_date}</p>
+
+                        <div className="ag-theme-alpine" style={{ height: 437, width: "100%" }}>
+                            <AgGridReact
+                                columnDefs={activeTable === 'myTable' ? deletedColumnDefs : deletedColumnDefsTax}
+                                rowData={activeTable === 'myTable' ? deletedRowData : deletedRowDataTax}
+                                defaultColDef={{ editable: false, resizable: true }}
+                            />
+                        </div>
+                    </div>
+
+                    {/* POPUPS & FOOTER */}
+                    <DeletedDebitCrediNoteHelp
+                        open={openDelDebitCreditNoteHelp}
+                        handleClose={() => setOpenDelDebitCreditNoteHelp(false)}
+                        handleDeleteDebitCreditData={handleDeleteDebitCreditData}
+                    />
+                    <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
+                        <div className="row ms-2">
+                            <div className="d-flex justify-content-start">
+                                <p className="col-md-6">{labels.createdBy}: {additionalData.created_by}</p>
+                                <p className="col-md-6">{labels.createdDate}: {additionalData.created_date}</p>
+                            </div>
+                            <div className="d-flex justify-content-start">
+                                <p className="col-md-6">{labels.modifiedBy}: {additionalData.modified_by}</p>
+                                <p className="col-md-6">{labels.modifiedDate}: {additionalData.modified_date}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 }
