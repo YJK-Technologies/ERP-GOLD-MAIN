@@ -87,16 +87,44 @@ function AccNameInput({ }) {
   const created_by = sessionStorage.getItem('selectedUserCode')
 
   console.log(selectedRows);
-  useEffect(() => {
-    fetch(`${config.apiBaseUrl}/getStdAccGrp`)
-      .then((data) => data.json())
-      .then((val) => setStdAccGrpdrop(val));
-  }, []);
-  useEffect(() => {
-    fetch(`${config.apiBaseUrl}/getbasaccode`)
-      .then((data) => data.json())
-      .then((val) => setbaseaccdrop(val));
-  }, []);
+  // useEffect(() => {
+  //   fetch(`${config.apiBaseUrl}/getStdAccGrp`)
+  //     .then((data) => data.json())
+  //     .then((val) => setStdAccGrpdrop(val));
+  // }, []);
+  const company_code = sessionStorage.getItem('selectedCompanyCode');
+
+useEffect(() => {
+fetch(`${config.apiBaseUrl}/getStdAccGrp`, {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json'
+},
+body: JSON.stringify({ company_code })
+})
+.then((data) => data.json())
+.then((val) => setStdAccGrpdrop(val))
+.catch((err) => console.error('Error fetching Standard Account Groups:', err));
+}, []);
+
+  // useEffect(() => {
+  //   fetch(`${config.apiBaseUrl}/getbasaccode`)
+  //     .then((data) => data.json())
+  //     .then((val) => setbaseaccdrop(val));
+  // }, []);
+
+useEffect(() => {
+fetch(`${config.apiBaseUrl}/getbasaccode`, {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json',
+},
+body: JSON.stringify({ company_code }),
+})
+.then((data) => data.json())
+.then((val) => setbaseaccdrop(val));
+}, []);
+
 
   useEffect(() => {
     fetch(`${config.apiBaseUrl}/trcode`)

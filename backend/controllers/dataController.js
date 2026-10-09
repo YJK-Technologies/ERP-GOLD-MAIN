@@ -8906,7 +8906,7 @@ const refNumberToStockDetailPrintData = async (req, res) => {
 
 const addBaseaccountData = async (req, res) => {
   const {
-    base_accgroup_name, base_accgroup_code, status, deletePermission, created_by, modified_by,
+    base_accgroup_name, base_accgroup_code, status, company_code, created_by, modified_by,
     tempstr1, tempstr2, tempstr3, tempstr4, datetime1, datetime2, datetime3, datetime4,
   } = req.body;
 
@@ -8923,6 +8923,7 @@ const addBaseaccountData = async (req, res) => {
       .input("base_accgroup_code", sql.NVarChar, base_accgroup_code)
       .input("base_accgroup_name", sql.NVarChar, base_accgroup_name)
       .input("status", sql.NVarChar, status)
+      .input("company_code", sql.NVarChar, company_code)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
       .input("tempstr1", sql.NVarChar, tempstr1)
@@ -8934,7 +8935,7 @@ const addBaseaccountData = async (req, res) => {
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
       .query(
-        `EXEC sp_Base_Account_group @mode,@base_accgroup_code,@base_accgroup_name,@status,@created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`
+        `EXEC sp_Base_Account_group @mode,@base_accgroup_code,@base_accgroup_name,@status,@company_code,@created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`
 
       );
 
@@ -8955,20 +8956,40 @@ const addBaseaccountData = async (req, res) => {
 //code Ended by Harish (02/08/2024)
 
 //code Added by Harish (02/08/2024)
-const getAllBaseAccountData = async (req, res) => {
-  try {
-    await connection.connectToDatabase();
-    const result = await sql.query(`EXEC sp_Base_Account_group 'A','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+// const getAllBaseAccountData = async (req, res) => {
+//   try {
+//     await connection.connectToDatabase();
+//     const result = await sql.query(`EXEC sp_Base_Account_group 'A','','','',@company_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
-    res.json(result.recordset);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: err.message || 'Internal Server Error' });
-  }
+//     res.json(result.recordset);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: err.message || 'Internal Server Error' });
+//   }
+// };
+
+const getAllBaseAccountData = async (req, res) => {
+const { company_code } = req.body;
+
+try {
+const pool = await connection.connectToDatabase();
+const result = await pool.request()
+.input("company_code", sql.NVarChar, company_code)
+.query(`EXEC sp_Base_Account_group 'A','','','',@company_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+
+
+res.json(result.recordset);
+
+
+} catch (err) {
+console.error(err);
+res.status(500).json({ message: err.message || 'Internal Server Error' });
+}
 };
 
+
 const getsearchdataBase = async (req, res) => {
-  const { base_accgroup_code, base_accgroup_name, status } = req.body;
+  const { base_accgroup_code, base_accgroup_name, status, company_code } = req.body;
 
   try {
     // Connect to the database
@@ -8981,8 +9002,9 @@ const getsearchdataBase = async (req, res) => {
       .input("base_accgroup_code", sql.NVarChar, base_accgroup_code)
       .input("base_accgroup_name", sql.NVarChar, base_accgroup_name)
       .input("status", sql.NVarChar, status)
+      .input("company_code", sql.NVarChar, company_code)
 
-      .query(` EXEC [sp_Base_Account_group] @mode,@base_accgroup_code,@base_accgroup_name,@status,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
+      .query(` EXEC [sp_Base_Account_group] @mode,@base_accgroup_code,@base_accgroup_name,@status,@company_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
 
     // Send response
     if (result.recordset.length > 0) {
@@ -9017,6 +9039,7 @@ const updateBase = async (req, res) => {
         .input("base_accgroup_code", updatedRow.base_accgroup_code)
         .input("base_accgroup_name", updatedRow.base_accgroup_name)
         .input("status", updatedRow.status)
+        .input("company_code", updatedRow.company_code)
         .input("created_by", updatedRow.created_by)
         .input("modified_by", sql.NVarChar, req.headers['modified-by'])
         .input("tempstr1", updatedRow.tempstr1)
@@ -9027,7 +9050,7 @@ const updateBase = async (req, res) => {
         .input("datetime2", updatedRow.datetime2)
         .input("datetime3", updatedRow.datetime3)
         .input("datetime4", updatedRow.datetime4)
-        .query(`EXEC sp_Base_Account_group @mode, @base_accgroup_code, @base_accgroup_name, @status,  @created_by , @modified_by,
+        .query(`EXEC sp_Base_Account_group @mode, @base_accgroup_code, @base_accgroup_name, @status,  @company_code,@created_by , @modified_by,
            @tempstr1, @tempstr2, @tempstr3, @tempstr4, 
           @datetime1, @datetime2, @datetime3, @datetime4`);
     }
@@ -9079,42 +9102,84 @@ const updateBase = async (req, res) => {
 //   }
 // };
 
+// const deleteBaseData = async (req, res) => {
+//   const company_nosToDelete = req.body.company_nos;
+
+//   if (!company_nosToDelete || !company_nosToDelete.length) {
+//     res.status(400).json("Invalid or empty company_nos array.");
+//     return;
+//   }
+
+//   try {
+//     const pool = await connection.connectToDatabase();
+
+//     for (const base_accgroup_code of company_nosToDelete) {
+//       try {
+//         await pool.request().input("base_accgroup_code", base_accgroup_code)
+//           .input("modified_by", sql.NVarChar, req.headers['modified-by'])
+//           .query(`
+//             EXEC [sp_Base_Account_group] 'D',@base_accgroup_code,'','',@company_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+
+//           `);
+//       } catch (error) {
+//         if (error.number === 50000) {
+//           // Foreign key constraint violation
+//           res.status(400).json("The base account group cannot be deleted due to a link with another record");
+//           return;
+//         } else {
+//           throw error; // Rethrow other SQL errors
+//         }
+//       }
+//     }
+
+//     res.status(200).json("Companies deleted successfully");
+//   } catch (err) {
+//     console.error("Error", err);
+//     res.status(500).json({ message: err.message || 'Internal Server Error' });
+//   }
+// };
+
 const deleteBaseData = async (req, res) => {
-  const company_nosToDelete = req.body.company_nos;
+const company_nosToDelete = req.body.company_nos;
+const { company_code } = req.body;
 
-  if (!company_nosToDelete || !company_nosToDelete.length) {
-    res.status(400).json("Invalid or empty company_nos array.");
-    return;
-  }
+if (!company_nosToDelete || !company_nosToDelete.length) {
+res.status(400).json("Invalid or empty company_nos array.");
+return;
+}
 
+try {
+const pool = await connection.connectToDatabase();
+
+for (const base_accgroup_code of company_nosToDelete) {
   try {
-    const pool = await connection.connectToDatabase();
-
-    for (const base_accgroup_code of company_nosToDelete) {
-      try {
-        await pool.request().input("base_accgroup_code", base_accgroup_code)
-          .input("modified_by", sql.NVarChar, req.headers['modified-by'])
-          .query(`
-            EXEC [sp_Base_Account_group] 'D',@base_accgroup_code,'','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
-
-          `);
-      } catch (error) {
-        if (error.number === 50000) {
-          // Foreign key constraint violation
-          res.status(400).json("The base account group cannot be deleted due to a link with another record");
-          return;
-        } else {
-          throw error; // Rethrow other SQL errors
-        }
-      }
+    await pool.request()
+      .input("base_accgroup_code", sql.NVarChar, base_accgroup_code)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("modified_by", sql.NVarChar, req.headers['modified-by'])
+      .query(`
+        EXEC [sp_Base_Account_group] 'D',@base_accgroup_code,'','',@company_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+      `);
+  } catch (error) {
+    if (error.number === 50000) {
+      // Foreign key constraint violation
+      res.status(400).json("The base account group cannot be deleted due to a link with another record");
+      return;
+    } else {
+      throw error; // Rethrow other SQL errors
     }
-
-    res.status(200).json("Companies deleted successfully");
-  } catch (err) {
-    console.error("Error", err);
-    res.status(500).json({ message: err.message || 'Internal Server Error' });
   }
+}
+
+res.status(200).json("Companies deleted successfully");
+
+
+} catch (err) {
+console.error("Error", err);
+res.status(500).json({ message: err.message || 'Internal Server Error' });
+}
 };
+
 
 //ADD DATAS IN USER ACCOUNT GROUP
 const addUserAccGrp = async (req, res) => {
@@ -9124,6 +9189,7 @@ const addUserAccGrp = async (req, res) => {
     standard_accgroup_code,
     base_accgroup_code,
     status,
+    company_code,
     created_by,
     modified_by,
     tempstr1,
@@ -9146,6 +9212,7 @@ const addUserAccGrp = async (req, res) => {
       .input("standard_accgroup_code", sql.NVarChar, standard_accgroup_code)
       .input("base_accgroup_code", sql.NVarChar, base_accgroup_code)
       .input("status", sql.NVarChar, status)
+      .input("company_code", sql.NVarChar, company_code)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
       .input("tempstr1", sql.NVarChar, tempstr1)
@@ -9157,7 +9224,7 @@ const addUserAccGrp = async (req, res) => {
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
       .query(
-        `EXEC sp_user_account_group @mode,@user_accgroup_code,@user_accgroup_name,@standard_accgroup_code,@base_accgroup_code,@status,@created_by,
+        `EXEC sp_user_account_group @mode,@user_accgroup_code,@user_accgroup_name,@standard_accgroup_code,@base_accgroup_code,@status,@company_code,@created_by,
         @modified_by,@tempstr1,@tempstr2,@tempstr3,@tempstr4,@datetime1,@datetime2,@datetime3,@datetime4`);
 
 
@@ -9177,7 +9244,7 @@ const addUserAccGrp = async (req, res) => {
 };
 
 const getsearchUserAccGrp = async (req, res) => {
-  const { user_accgroup_code, user_accgroup_name, standard_accgroup_code, base_accgroup_code, status, } = req.body;
+  const { user_accgroup_code, user_accgroup_name, standard_accgroup_code, base_accgroup_code, status, company_code } = req.body;
 
   try {
     // Connect to the database
@@ -9192,8 +9259,9 @@ const getsearchUserAccGrp = async (req, res) => {
       .input("standard_accgroup_code", sql.NVarChar, standard_accgroup_code)
       .input("base_accgroup_code", sql.NVarChar, base_accgroup_code)
       .input("status", sql.NVarChar, status)
+      .input("company_code", sql.NVarChar, company_code)
       .query(`EXEC sp_user_account_group @mode,@user_accgroup_code,@user_accgroup_name,@standard_accgroup_code,
-                 @base_accgroup_code,@status,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+                 @base_accgroup_code,@status,@company_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     // Send response
     if (result.recordset.length > 0) {
@@ -9227,6 +9295,7 @@ const updUserAccGrp = async (req, res) => {
         .input("standard_accgroup_code", sql.NVarChar, updatedRow.standard_accgroup_code)
         .input("base_accgroup_code", sql.NVarChar, updatedRow.base_accgroup_code)
         .input("status", sql.NVarChar, updatedRow.status)
+        .input("company_code", sql.NVarChar, updatedRow.company_code)
         .input("created_by", sql.NVarChar, updatedRow.created_by)
         .input("modified_by", sql.NVarChar, req.headers['modified-by'])
         .input("tempstr1", sql.NVarChar, updatedRow.tempstr1)
@@ -9238,7 +9307,7 @@ const updUserAccGrp = async (req, res) => {
         .input("datetime3", sql.NVarChar, updatedRow.datetime3)
         .input("datetime4", sql.NVarChar, updatedRow.datetime4)
         .query(
-          `EXEC sp_user_account_group @mode,@user_accgroup_code, @user_accgroup_name, @standard_accgroup_code, @base_accgroup_code, @status,
+          `EXEC sp_user_account_group @mode,@user_accgroup_code, @user_accgroup_name, @standard_accgroup_code, @base_accgroup_code, @status, @company_code,
             @created_by,@modified_by, @tempstr1, @tempstr2, @tempstr3, @tempstr4, @datetime1, @datetime2, @datetime3, @datetime4`
         );
     }
@@ -9250,7 +9319,7 @@ const updUserAccGrp = async (req, res) => {
 };
 
 const deleteUserAccGrp = async (req, res) => {
-  const { user_accgroup_codesToDelete, user_accgroup_nameToDelete } = req.body;
+  const { user_accgroup_codesToDelete, user_accgroup_nameToDelete, company_code } = req.body;
 
   if (!user_accgroup_codesToDelete || !user_accgroup_nameToDelete.length || !user_accgroup_codesToDelete || !user_accgroup_nameToDelete.length) {
     res.status(400).json("Invalid or empty Codes or codeDetails array.");
@@ -9260,7 +9329,7 @@ const deleteUserAccGrp = async (req, res) => {
   try {
     const pool = await connection.connectToDatabase();
 
-    const deleteQuery = `EXEC sp_user_account_group 'D',@user_accgroup_code, @user_accgroup_name,'','','',
+    const deleteQuery = `EXEC sp_user_account_group 'D',@user_accgroup_code, @user_accgroup_name,'','','',@company_code,
       '',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
       `;
     for (let i = 0; i < user_accgroup_codesToDelete.length; i++) {
@@ -9268,6 +9337,7 @@ const deleteUserAccGrp = async (req, res) => {
         await pool.request()
           .input("user_accgroup_code", user_accgroup_codesToDelete[i])
           .input("user_accgroup_name", user_accgroup_nameToDelete[i])
+          .input("company_code", sql.NVarChar, company_code)
           .input("modified_by", sql.NVarChar, req.headers['modified-by'])
           .query(deleteQuery);
       } catch (error) {
@@ -9288,11 +9358,14 @@ const deleteUserAccGrp = async (req, res) => {
   }
 };
 const getStdAccGrp = async (req, res) => {
+  const { company_code } = req.body;
   try {
     await connection.connectToDatabase();
-    const result = await sql.query(
-      "EXEC [sp_standard_account_group] 'F','standard_accgroup_code','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL"
-    );
+    const request = new sql.Request();
+request.input("company_code", sql.NVarChar, company_code);
+const result = await request.query(
+  "EXEC [sp_standard_account_group] 'F','standard_accgroup_code','','','','','','',@company_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL"
+);
 
     res.json(result.recordset);
   } catch (err) {
@@ -9300,24 +9373,46 @@ const getStdAccGrp = async (req, res) => {
     res.status(500).json({ message: err.message || 'Internal Server Error' });
   }
 };
+// const getBaseAccGrp = async (req, res) => {
+//   try {
+//     await connection.connectToDatabase();
+//     const result = await sql.query(
+//       "EXEC sp_Base_Account_group 'F','base_accgroup_code','','',@company_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL"
+//     );
+
+//     res.json(result.recordset);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: err.message || 'Internal Server Error' });
+//   }
+// };
+
 const getBaseAccGrp = async (req, res) => {
-  try {
-    await connection.connectToDatabase();
-    const result = await sql.query(
-      "EXEC sp_Base_Account_group 'F','base_accgroup_code','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL"
-    );
+const { company_code } = req.body;
 
-    res.json(result.recordset);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: err.message || 'Internal Server Error' });
-  }
+try {
+const pool = await connection.connectToDatabase();
+const result = await pool.request()
+.input("company_code", sql.NVarChar, company_code)
+.query(
+"EXEC sp_Base_Account_group 'F','base_accgroup_code','','',@company_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL"
+);
+
+
+res.json(result.recordset);
+
+
+} catch (err) {
+console.error(err);
+res.status(500).json({ message: err.message || 'Internal Server Error' });
+}
 };
+
 
 //code added by kathiravan arumugam on 01-08-2024\\
 const addstandardaccountData = async (req, res) => {
   const {
-    standard_accgroup_code, standard_accgroup_name, base_accgroup_code, user_accgroup_from, user_accgroup_to, status, deletePermission, created_by, modified_by,
+    standard_accgroup_code, standard_accgroup_name, base_accgroup_code, user_accgroup_from, user_accgroup_to, status, deletePermission, company_code, created_by, modified_by,
     tempstr1, tempstr2, tempstr3, tempstr4, datetime1, datetime2, datetime3, datetime4,
   } = req.body;
 
@@ -9338,6 +9433,7 @@ const addstandardaccountData = async (req, res) => {
       .input("user_accgroup_to", sql.NVarChar, user_accgroup_to)
       .input("status", sql.NVarChar, status)
       .input("deletePermission", sql.NVarChar, deletePermission)
+      .input("company_code", sql.NVarChar, company_code)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
       .input("tempstr1", sql.NVarChar, tempstr1)
@@ -9349,7 +9445,7 @@ const addstandardaccountData = async (req, res) => {
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
       .query(
-        `EXEC sp_standard_account_group @mode, @standard_accgroup_code, @standard_accgroup_name, @base_accgroup_code, @user_accgroup_from, @user_accgroup_to, @status, @deletePermission, @created_by,@modified_by,  
+        `EXEC sp_standard_account_group @mode, @standard_accgroup_code, @standard_accgroup_name, @base_accgroup_code, @user_accgroup_from, @user_accgroup_to, @status, @deletePermission, @company_code, @created_by,@modified_by,  
        @tempstr1, @tempstr2, @tempstr3, @tempstr4, 
       @datetime1, @datetime2, @datetime3, @datetime4 `
       );
@@ -9370,10 +9466,16 @@ const addstandardaccountData = async (req, res) => {
 };
 
 const getAllStandardAccountData = async (req, res) => {
+  const { company_code } = req.body;
   try {
     await connection.connectToDatabase();
-    const result = await sql.query(`EXEC sp_standard_account_group 'A','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
-`);
+//     const result = await sql.query(`EXEC sp_standard_account_group 'A','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+// `);
+const request = new sql.Request();
+request.input("company_code", sql.NVarChar, company_code);
+const result = await request.query(
+  "EXEC [sp_standard_account_group] 'A','','','','','','','',@company_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL"
+);
 
     res.json(result.recordset);
   } catch (err) {
@@ -9385,11 +9487,17 @@ const getAllStandardAccountData = async (req, res) => {
 
 
 const getbasaccode = async (req, res) => {
+  const { company_code } = req.body;
   try {
     await connection.connectToDatabase();
-    const result = await sql.query(
-      `EXEC sp_standard_account_group 'BAF','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`
-    );
+    // const result = await sql.query(
+    //   `EXEC sp_standard_account_group 'BAF','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`
+    // );
+    const request = new sql.Request();
+request.input("company_code", sql.NVarChar, company_code);
+const result = await request.query(
+  "EXEC [sp_standard_account_group] 'BAF','','','','','','','',@company_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL"
+);
 
     res.json(result.recordset);
   } catch (err) {
@@ -9455,7 +9563,7 @@ const getNegativeStock = async (req, res) => {
 
 
 const getstandardsearchdata = async (req, res) => {
-  const { standard_accgroup_code, standard_accgroup_name, base_accgroup_code, status } = req.body;
+  const { standard_accgroup_code, standard_accgroup_name, base_accgroup_code, status, company_code} = req.body;
 
   try {
     // Connect to the database
@@ -9469,7 +9577,8 @@ const getstandardsearchdata = async (req, res) => {
       .input("standard_accgroup_name", sql.NVarChar, standard_accgroup_name)
       .input("base_accgroup_code", sql.NVarChar, base_accgroup_code)
       .input("status", sql.NVarChar, status)
-      .query(` EXEC [sp_standard_account_group] 'SC',@standard_accgroup_code,@standard_accgroup_name,@base_accgroup_code	,'','',@status,'','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
+      .input("company_code", sql.NVarChar, company_code)
+      .query(` EXEC [sp_standard_account_group] 'SC',@standard_accgroup_code,@standard_accgroup_name,@base_accgroup_code	,'','',@status,'',@company_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
 
     // Send response
     if (result.recordset.length > 0) {
@@ -9484,29 +9593,56 @@ const getstandardsearchdata = async (req, res) => {
 };
 
 
+// const deleteStdAccGrp = async (req, res) => {
+//   const { standard_accgroup_codeToDelete, standard_accgroup_nameToDelete } = req.body;
+
+
+
+//   try {
+//     const pool = await connection.connectToDatabase();
+
+//     const deleteQuery = `EXEC [sp_standard_account_group] 'D', @standard_accgroup_code,@standard_accgroup_name,'','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `;
+//     for (let i = 0; i < standard_accgroup_codeToDelete.length; i++) {
+//       await pool.request()
+//         .input("standard_accgroup_code", standard_accgroup_codeToDelete[i])
+//         .input("standard_accgroup_name", standard_accgroup_nameToDelete[i])
+//         .input("modified_by", sql.NVarChar, req.headers['modified-by'])
+//         .query(deleteQuery);
+//     }
+
+//     res.status(200).json("Standard Account Group data deleted successfully");
+//   } catch (err) {
+//     console.error("Error", err);
+//     res.status(500).json({ message: err.message || 'Internal Server Error' });
+//   }
+// };
+
 const deleteStdAccGrp = async (req, res) => {
-  const { standard_accgroup_codeToDelete, standard_accgroup_nameToDelete } = req.body;
+const { standard_accgroup_codeToDelete, standard_accgroup_nameToDelete, company_code } = req.body;
+
+try {
+const pool = await connection.connectToDatabase();
 
 
+const deleteQuery = `EXEC [sp_standard_account_group] 'D', @standard_accgroup_code,@standard_accgroup_name,'','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`;
 
-  try {
-    const pool = await connection.connectToDatabase();
+for (let i = 0; i < standard_accgroup_codeToDelete.length; i++) {
+  await pool.request()
+    .input("standard_accgroup_code", sql.NVarChar, standard_accgroup_codeToDelete[i])
+    .input("standard_accgroup_name", sql.NVarChar, standard_accgroup_nameToDelete[i])
+    .input("company_code", sql.NVarChar, company_code)
+    .query(deleteQuery);
+}
 
-    const deleteQuery = `EXEC [sp_standard_account_group] 'D', @standard_accgroup_code,@standard_accgroup_name,'','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `;
-    for (let i = 0; i < standard_accgroup_codeToDelete.length; i++) {
-      await pool.request()
-        .input("standard_accgroup_code", standard_accgroup_codeToDelete[i])
-        .input("standard_accgroup_name", standard_accgroup_nameToDelete[i])
-        .input("modified_by", sql.NVarChar, req.headers['modified-by'])
-        .query(deleteQuery);
-    }
+res.status(200).json("Standard Account Group data deleted successfully");
 
-    res.status(200).json("Standard Account Group data deleted successfully");
-  } catch (err) {
-    console.error("Error", err);
-    res.status(500).json({ message: err.message || 'Internal Server Error' });
-  }
+
+} catch (err) {
+console.error("Error", err);
+res.status(500).json({ message: err.message || 'Internal Server Error' });
+}
 };
+
 
 //USER ACCOUNT GROUP UPDATE 05/08/2024 Harish//
 const updStdAccGrp = async (req, res) => {
@@ -9534,6 +9670,7 @@ const updStdAccGrp = async (req, res) => {
         .input("user_accgroup_to", sql.NVarChar, updatedRow.user_accgroup_to)
         .input("status", sql.NVarChar, updatedRow.status)
         .input("deletePermission", sql.NVarChar, updatedRow.deletePermission)
+        .input("company_code", sql.NVarChar, updatedRow.company_code)
         .input("created_by", sql.NVarChar, updatedRow.created_by)
         .input("modified_by", sql.NVarChar, req.headers['modified-by'])
         .input("tempstr1", sql.NVarChar, updatedRow.tempstr1)
@@ -9545,7 +9682,7 @@ const updStdAccGrp = async (req, res) => {
         .input("datetime3", sql.NVarChar, updatedRow.datetime3)
         .input("datetime4", sql.NVarChar, updatedRow.datetime4)
         .query(
-          `EXEC [sp_standard_account_group] @mode,@standard_accgroup_code,@standard_accgroup_name, @base_accgroup_code	,@user_accgroup_from,@user_accgroup_to,@status,@deletePermission,@created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+          `EXEC [sp_standard_account_group] @mode,@standard_accgroup_code,@standard_accgroup_name, @base_accgroup_code	,@user_accgroup_from,@user_accgroup_to,@status,@deletePermission,@company_code,@created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     }
 
     res.status(200).json("Updated data successfully");
@@ -17097,7 +17234,7 @@ const EmployeeUpdate = async (req, res) => {
 };
 
 const BaseAccountUpdate = async (req, res) => {
-  const { base_accgroup_code, base_accgroup_name, status, modified_by } = req.body;
+  const { base_accgroup_code, base_accgroup_name, status, company_code, modified_by } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -17108,8 +17245,9 @@ const BaseAccountUpdate = async (req, res) => {
       .input("base_accgroup_code", sql.NVarChar, base_accgroup_code)
       .input("base_accgroup_name", sql.NVarChar, base_accgroup_name)
       .input("status", sql.NVarChar, status)
+      .input("company_code", sql.NVarChar, company_code)
       .input("modified_by", sql.NVarChar, modified_by)
-      .query(`EXEC sp_Base_Account_group @mode, @base_accgroup_code, @base_accgroup_name, @status,  '' , @modified_by,
+      .query(`EXEC sp_Base_Account_group @mode, @base_accgroup_code, @base_accgroup_name, @status, @company_code, '' , @modified_by,
          '', '', '', '', '', '', '', ''`);
 
     res.status(200).json("Edited data saved successfully");
@@ -17181,7 +17319,7 @@ const COAUpdate = async (req, res) => { //charts of accounts
 };
 
 const StandardAccUpdate = async (req, res) => {
-  const { standard_accgroup_code, standard_accgroup_name, base_accgroup_code, user_accgroup_from, user_accgroup_to, status, deletePermission, created_by, modified_by } = req.body;
+  const { standard_accgroup_code, standard_accgroup_name, base_accgroup_code, user_accgroup_from, user_accgroup_to, status, deletePermission, company_code, created_by, modified_by } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -17195,9 +17333,10 @@ const StandardAccUpdate = async (req, res) => {
       .input("user_accgroup_to", sql.NVarChar, user_accgroup_to)
       .input("status", sql.NVarChar, status)
       .input("deletePermission", sql.NVarChar, deletePermission)
+      .input("company_code", sql.NVarChar, company_code)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
-      .query(`EXEC sp_standard_account_group @mode,@standard_accgroup_code,@standard_accgroup_name, @base_accgroup_code	,@user_accgroup_from,@user_accgroup_to,@status,@deletePermission,@created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_standard_account_group @mode,@standard_accgroup_code,@standard_accgroup_name, @base_accgroup_code	,@user_accgroup_from,@user_accgroup_to,@status,@deletePermission,@company_code,@created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     res.status(200).json("Updated data successfully");
   } catch (err) {
@@ -17207,7 +17346,7 @@ const StandardAccUpdate = async (req, res) => {
 };
 
 const UserAccGrpUpdate = async (req, res) => {
-  const { user_accgroup_code, user_accgroup_name, standard_accgroup_code, base_accgroup_code, status, created_by, modified_by } = req.body;
+  const { user_accgroup_code, user_accgroup_name, standard_accgroup_code, base_accgroup_code, status, company_code, created_by, modified_by } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -17220,9 +17359,10 @@ const UserAccGrpUpdate = async (req, res) => {
       .input("standard_accgroup_code", sql.NVarChar, standard_accgroup_code)
       .input("base_accgroup_code", sql.NVarChar, base_accgroup_code)
       .input("status", sql.NVarChar, status)
+      .input("company_code", sql.NVarChar, company_code)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
-      .query(`EXEC sp_user_account_group @mode,@user_accgroup_code, @user_accgroup_name, @standard_accgroup_code, @base_accgroup_code, @status,
+      .query(`EXEC sp_user_account_group @mode,@user_accgroup_code, @user_accgroup_name, @standard_accgroup_code, @base_accgroup_code, @status, @company_code,
           @created_by,@modified_by, '', '', '', '', '', '', '', ''`);
     res.status(200).json("Edited data saved successfully");
   } catch (err) {
