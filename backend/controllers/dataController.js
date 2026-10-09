@@ -9154,8 +9154,8 @@ const pool = await connection.connectToDatabase();
 for (const base_accgroup_code of company_nosToDelete) {
   try {
     await pool.request()
-      .input("base_accgroup_code", sql.NVarChar, base_accgroup_code)
-      .input("company_code", sql.NVarChar, company_code)
+      .input("base_accgroup_code", sql.NVarChar, base_accgroup_code.base_accgroup_code)
+      .input("company_code", sql.NVarChar, base_accgroup_code.company_code)
       .input("modified_by", sql.NVarChar, req.headers['modified-by'])
       .query(`
         EXEC [sp_Base_Account_group] 'D',@base_accgroup_code,'','',@company_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
@@ -30981,6 +30981,125 @@ const CurrencyType = async (req, res) => {
   }
 };
 //Code ended by sakthiganesh J on 09-10-2026
+
+//Code added by Dinesh Gokul on 09-10-2026
+const getBankAccountPayment = async (req, res) => {
+  const { company_code } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, 'BAP')
+      .input("company_code", sql.NVarChar, company_code)
+      .query(`EXEC sp_account_name @mode,@company_code,'','','','','','','','','','','','','','','',0,'','','','','','','','','','','','','','','','','','','','',NULL,NULL,NULL,null,null,null,null,null,''`);
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+
+const PaymentInsert = async (req, res) => {
+    const {
+        Payment_ID,
+        Payment_Date,
+        Payment_Type,
+        Party_ID,
+        Payment_Mode,
+        Account_ID,
+        Reference_No,
+        Reference_Date,
+        Amount,
+        Narration,
+        Status,
+        GL_Status,
+        BillNo_match,
+        Adjusted_Amount,
+        Unadjusted_Amount,
+        Keyfield,
+        company_code,
+        location_code,
+        created_by
+    } = req.body;
+
+    try {
+        const pool = await sql.connect(dbConfig);
+
+        const result = await pool.request()
+            .input("mode", sql.NVarChar, "I")
+            .input("Payment_ID", sql.NVarChar, Payment_ID || "")
+            .input("Payment_Date", sql.Date, Payment_Date || null)
+            .input("Payment_Type", sql.NVarChar, Payment_Type || "")
+            .input("Party_ID", sql.NVarChar, Party_ID || "")
+            .input("Payment_Mode", sql.NVarChar, Payment_Mode || "")
+            .input("Account_ID", sql.NVarChar, Account_ID || "")
+            .input("Reference_No", sql.NVarChar, Reference_No || "")
+            .input("Reference_Date", sql.Date, Reference_Date || null)
+            .input("Amount", sql.Decimal(18, 2), Amount ?? null)
+            .input("Narration", sql.NVarChar, Narration || "")
+            .input("Status", sql.NVarChar, Status || "Draft")
+            .input("GL_Status", sql.NVarChar, GL_Status || "Pending")
+            .input("BillNo_match", sql.NVarChar, BillNo_match || "")
+            .input("Adjusted_Amount", sql.Decimal(18, 2), Adjusted_Amount ?? 0)
+            .input("Unadjusted_Amount", sql.Decimal(18, 2), Unadjusted_Amount ?? 0)
+            .input("company_code", sql.NVarChar, company_code || "")
+            .input("location_code", sql.NVarChar, location_code || "")
+            .input("Keyfield", sql.NVarChar, Keyfield || "")
+            .input("created_by", sql.NVarChar, created_by || "")
+            .input("created_date", sql.DateTime, null)
+            .input("modified_by", sql.NVarChar, "")
+            .input("modified_date", sql.DateTime, null)
+            .query(`
+                EXEC dbo.sp_Payment_hdr
+                    @mode,
+                    @Payment_ID,
+                    @Payment_Date,
+                    @Payment_Type,
+                    @Party_ID,
+                    @Payment_Mode,
+                    @Account_ID,
+                    @Reference_No,
+                    @Reference_Date,
+                    @Amount,
+                    @Narration,
+                    @Status,
+                    @GL_Status,
+                    @BillNo_match,
+                    @Adjusted_Amount,
+                    @Unadjusted_Amount,
+                    @company_code,
+                    @location_code,
+                    @Keyfield,
+                    @created_by,
+                    @created_date,
+                    @modified_by,
+                    @modified_date
+            `);
+
+        const generatedData = result.recordset?.[0] || {};
+
+        res.status(200).json({
+            success: true,
+            message: "Payment inserted successfully",
+            Payment_ID: generatedData.Payment_ID,
+            Keyfield: generatedData.Keyfield
+        });
+
+    } catch (err) {
+        console.error("Error during Payment insert:", err);
+
+        res.status(500).json({
+            success: false,
+            message: err.message || "Internal Server Error"
+        });
+    }
+};
+//Code ended by Dinesh Gokul on 09-10-2026
+
 module.exports = {
   login,
   forgetPassword,
@@ -31967,6 +32086,8 @@ module.exports = {
   getPaymentType,
   getPartyType,
   getPaymentMode,
+  getBankAccountPayment,
+  PaymentInsert,
   CurrencyInsert,
   CurrencyLoopUpdate,
   CurrencydeleteData,
