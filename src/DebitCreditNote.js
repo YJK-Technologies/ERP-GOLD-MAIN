@@ -1574,7 +1574,7 @@ function DebitCreditNote() {
         {
             headerName: 'Qty',
             field: 'Qty',
-            editable: false,
+            editable: true,
             filter: true,
             sortable: false,
             cellEditorParams: { maxLength: 10 }

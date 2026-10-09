@@ -105,6 +105,7 @@ const BaseAccount = () => {
           base_accgroup_code,
           base_accgroup_name,
           status,
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
         }), // Send company_no and company_name as search criteria
       });
       if (response.ok) {
@@ -374,6 +375,7 @@ const BaseAccount = () => {
             },
             body: JSON.stringify({ editedData: selectedRowsData }), // Send only the selected rows for saving
             modified_by: modified_by,
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
           });
           if (response.status === 200) {
             setTimeout(() => {
@@ -421,6 +423,7 @@ const BaseAccount = () => {
             },
             body: JSON.stringify({ company_nos: company_nosToDelete }),
             modified_by: modified_by,
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
           });
 
           if (response.ok) {

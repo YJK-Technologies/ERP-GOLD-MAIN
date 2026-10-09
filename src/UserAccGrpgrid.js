@@ -68,18 +68,40 @@ function UserAccGrpGrid() {
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-  useEffect(() => {
-    fetch(`${config.apiBaseUrl}/getStdAccGrp`)
-      .then((response) => response.json())
-      .then((data) => {
-        // Extract city names from the fetched data
-        const statusOption = data.map(
-          (option) => option.standard_accgroup_code,
-        );
-        setStdAccGrpdrop(statusOption);
-      })
-      .catch((error) => console.error("Error fetching data:", error));
-  }, []);
+  // useEffect(() => {
+  //   fetch(`${config.apiBaseUrl}/getStdAccGrp`)
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       // Extract city names from the fetched data
+  //       const statusOption = data.map(
+  //         (option) => option.standard_accgroup_code,
+  //       );
+  //       setStdAccGrpdrop(statusOption);
+  //     })
+  //     .catch((error) => console.error("Error fetching data:", error));
+  // }, []);
+
+  const company_code = sessionStorage.getItem('selectedCompanyCode');
+
+useEffect(() => {
+fetch(`${config.apiBaseUrl}/getStdAccGrp`, {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json',
+},
+body: JSON.stringify({ company_code }),
+})
+.then((response) => response.json())
+.then((data) => {
+// Extract standard account group codes from the fetched data
+const statusOption = data.map(
+(option) => option.standard_accgroup_code,
+);
+setStdAccGrpdrop(statusOption);
+})
+.catch((error) => console.error("Error fetching data:", error));
+}, []);
+
 
   useEffect(() => {
     fetch(`${config.apiBaseUrl}/getBaseAccGrp`)
@@ -140,6 +162,7 @@ function UserAccGrpGrid() {
           standard_accgroup_code,
           base_accgroup_code,
           status,
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
         }),
       });
       if (response.ok) {
@@ -421,6 +444,7 @@ function UserAccGrpGrid() {
             },
             body: JSON.stringify({ editedData: selectedRowsData }), // Send only the selected rows for saving
             modified_by: modified_by,
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
           });
           if (response.status === 200) {
             setTimeout(() => {
@@ -473,6 +497,7 @@ function UserAccGrpGrid() {
               body: JSON.stringify({
                 user_accgroup_codesToDelete,
                 user_accgroup_nameToDelete,
+                company_code: sessionStorage.getItem("selectedCompanyCode"),
               }),
               modified_by: modified_by, // Corrected the key name to match the server-side expectation
             },

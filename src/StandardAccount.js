@@ -211,6 +211,7 @@ const StandardAcc = () => {
             user_accgroup_from,
             user_accgroup_to,
             deletePermission,
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
             status,
           }), // Send company_no and company_name as search criteria
         },
@@ -472,116 +473,238 @@ const StandardAcc = () => {
     }
   };
 
+  // const saveEditedData = async () => {
+  //   const selectedRowsData = editedData.filter((row) =>
+  //     selectedRows.some(
+  //       (selectedRow) =>
+  //         selectedRow.standard_accgroup_code === row.standard_accgroup_code &&
+  //         selectedRow.standard_accgroup_name === row.standard_accgroup_name,
+  //     ),
+  //   );
+
+  //   if (selectedRowsData.length === 0) {
+  //     toast.warning(
+  //       "Please select and modify at least one row to update its data",
+  //     );
+  //     return;
+  //   }
+
+  //   showConfirmationToast(
+  //     "Are you sure you want to update the data in the selected rows?",
+  //     async () => {
+  //       try {
+  //         const modified_by = sessionStorage.getItem("selectedUserCode");
+  //         // Filter the editedData state to include only the selected rows
+
+  //         const response = await fetch(`${config.apiBaseUrl}/updStdAccGrp`, {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //             "Modified-By": modified_by,
+  //           },
+  //           body: JSON.stringify({ editedData: selectedRowsData }), // Send only the selected rows for saving
+  //           modified_by: modified_by,
+  //         });
+  //         if (response.status === 200) {
+  //           setTimeout(() => {
+  //             toast.success("Data Updated Successfully");
+  //             handleSearch();
+  //           }, 1000);
+  //           return;
+  //         } else {
+  //           const errorResponse = await response.json();
+  //           toast.warning(errorResponse.message || "Failed to Update data");
+  //         }
+  //       } catch (error) {
+  //         console.error("Error saving data:", error);
+  //         toast.error("Error Updating Data: " + error.message);
+  //       }
+  //     },
+  //     () => {
+  //       toast.info("Data update cancelled.");
+  //     },
+  //   );
+  // };
+
   const saveEditedData = async () => {
-    const selectedRowsData = editedData.filter((row) =>
-      selectedRows.some(
-        (selectedRow) =>
-          selectedRow.standard_accgroup_code === row.standard_accgroup_code &&
-          selectedRow.standard_accgroup_name === row.standard_accgroup_name,
-      ),
-    );
+const selectedRowsData = editedData.filter((row) =>
+selectedRows.some(
+(selectedRow) =>
+selectedRow.standard_accgroup_code === row.standard_accgroup_code &&
+selectedRow.standard_accgroup_name === row.standard_accgroup_name,
+),
+);
 
-    if (selectedRowsData.length === 0) {
-      toast.warning(
-        "Please select and modify at least one row to update its data",
-      );
-      return;
+
+if (selectedRowsData.length === 0) {
+  toast.warning(
+    "Please select and modify at least one row to update its data",
+  );
+  return;
+}
+
+showConfirmationToast(
+  "Are you sure you want to update the data in the selected rows?",
+  async () => {
+    try {
+      const modified_by = sessionStorage.getItem("selectedUserCode");
+      const company_code = sessionStorage.getItem("selectedCompanyCode");
+      // Filter the editedData state to include only the selected rows
+
+      const response = await fetch(`${config.apiBaseUrl}/updStdAccGrp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Modified-By": modified_by,
+        },
+        body: JSON.stringify({ editedData: selectedRowsData, company_code }),
+      });
+
+      if (response.status === 200) {
+        setTimeout(() => {
+          toast.success("Data Updated Successfully");
+          handleSearch();
+        }, 1000);
+        return;
+      } else {
+        const errorResponse = await response.json();
+        toast.warning(errorResponse.message || "Failed to Update data");
+      }
+    } catch (error) {
+      console.error("Error saving data:", error);
+      toast.error("Error Updating Data: " + error.message);
     }
+  },
+  () => {
+    toast.info("Data update cancelled.");
+  },
+);
 
-    showConfirmationToast(
-      "Are you sure you want to update the data in the selected rows?",
-      async () => {
-        try {
-          const modified_by = sessionStorage.getItem("selectedUserCode");
-          // Filter the editedData state to include only the selected rows
 
-          const response = await fetch(`${config.apiBaseUrl}/updStdAccGrp`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Modified-By": modified_by,
-            },
-            body: JSON.stringify({ editedData: selectedRowsData }), // Send only the selected rows for saving
-            modified_by: modified_by,
-          });
-          if (response.status === 200) {
-            setTimeout(() => {
-              toast.success("Data Updated Successfully");
-              handleSearch();
-            }, 1000);
-            return;
-          } else {
-            const errorResponse = await response.json();
-            toast.warning(errorResponse.message || "Failed to Update data");
-          }
-        } catch (error) {
-          console.error("Error saving data:", error);
-          toast.error("Error Updating Data: " + error.message);
-        }
-      },
-      () => {
-        toast.info("Data update cancelled.");
-      },
-    );
-  };
+};
+
+
+  // const deleteSelectedRows = async () => {
+  //   const selectedRows = gridApi.getSelectedRows();
+
+  //   if (selectedRows.length === 0) {
+  //     toast.warning("Please select atleast One Row to Delete");
+  //     return;
+  //   }
+
+  //   const modified_by = sessionStorage.getItem("selectedUserCode");
+  //   const standard_accgroup_codeToDelete = selectedRows.map(
+  //     (row) => row.standard_accgroup_code,
+  //   );
+  //   const standard_accgroup_nameToDelete = selectedRows.map(
+  //     (row) => row.standard_accgroup_name,
+  //   );
+
+  //   showConfirmationToast(
+  //     "Are you sure you want to Delete the data in the selected rows?",
+  //     async () => {
+  //       try {
+  //         const response = await fetch(`${config.apiBaseUrl}/deleteStdAccGrp`, {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //             "Modified-By": modified_by,
+  //           },
+  //           body: JSON.stringify({
+  //             standard_accgroup_codeToDelete,
+  //             standard_accgroup_nameToDelete,
+  //           }),
+  //           modified_by: modified_by, // Corrected the key name to match the server-side expectation
+  //         });
+
+  //         if (response.ok) {
+  //           console.log(
+  //             "Rows deleted successfully:",
+  //             standard_accgroup_codeToDelete,
+  //             standard_accgroup_nameToDelete,
+  //           );
+  //           setTimeout(() => {
+  //             toast.success("Data Deleted successfully");
+  //             handleSearch();
+  //           }, 1000);
+  //         } else {
+  //           const errorResponse = await response.json();
+  //           toast.warning(errorResponse.message || "Failed to delete data");
+  //         }
+  //       } catch (error) {
+  //         console.error("Error saving data:", error);
+  //         toast.error("Error Deleting Data: " + error.message);
+  //       }
+  //     },
+  //     () => {
+  //       toast.info("Data Delete cancelled.");
+  //     },
+  //   );
+  // };
 
   const deleteSelectedRows = async () => {
-    const selectedRows = gridApi.getSelectedRows();
+const selectedRows = gridApi.getSelectedRows();
 
-    if (selectedRows.length === 0) {
-      toast.warning("Please select atleast One Row to Delete");
-      return;
+
+if (selectedRows.length === 0) {
+  toast.warning("Please select atleast One Row to Delete");
+  return;
+}
+
+const modified_by = sessionStorage.getItem("selectedUserCode");
+const company_code = sessionStorage.getItem("selectedCompanyCode");
+
+const standard_accgroup_codeToDelete = selectedRows.map(
+  (row) => row.standard_accgroup_code,
+);
+const standard_accgroup_nameToDelete = selectedRows.map(
+  (row) => row.standard_accgroup_name,
+);
+
+showConfirmationToast(
+  "Are you sure you want to Delete the data in the selected rows?",
+  async () => {
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/deleteStdAccGrp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Modified-By": modified_by,
+        },
+        body: JSON.stringify({
+          standard_accgroup_codeToDelete,
+          standard_accgroup_nameToDelete,
+          company_code,
+        }),
+      });
+
+      if (response.ok) {
+        console.log(
+          "Rows deleted successfully:",
+          standard_accgroup_codeToDelete,
+          standard_accgroup_nameToDelete,
+        );
+        setTimeout(() => {
+          toast.success("Data Deleted successfully");
+          handleSearch();
+        }, 1000);
+      } else {
+        const errorResponse = await response.json();
+        toast.warning(errorResponse.message || "Failed to delete data");
+      }
+    } catch (error) {
+      console.error("Error saving data:", error);
+      toast.error("Error Deleting Data: " + error.message);
     }
+  },
+  () => {
+    toast.info("Data Delete cancelled.");
+  },
+);
 
-    const modified_by = sessionStorage.getItem("selectedUserCode");
-    const standard_accgroup_codeToDelete = selectedRows.map(
-      (row) => row.standard_accgroup_code,
-    );
-    const standard_accgroup_nameToDelete = selectedRows.map(
-      (row) => row.standard_accgroup_name,
-    );
 
-    showConfirmationToast(
-      "Are you sure you want to Delete the data in the selected rows?",
-      async () => {
-        try {
-          const response = await fetch(`${config.apiBaseUrl}/deleteStdAccGrp`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Modified-By": modified_by,
-            },
-            body: JSON.stringify({
-              standard_accgroup_codeToDelete,
-              standard_accgroup_nameToDelete,
-            }),
-            modified_by: modified_by, // Corrected the key name to match the server-side expectation
-          });
+};
 
-          if (response.ok) {
-            console.log(
-              "Rows deleted successfully:",
-              standard_accgroup_codeToDelete,
-              standard_accgroup_nameToDelete,
-            );
-            setTimeout(() => {
-              toast.success("Data Deleted successfully");
-              handleSearch();
-            }, 1000);
-          } else {
-            const errorResponse = await response.json();
-            toast.warning(errorResponse.message || "Failed to delete data");
-          }
-        } catch (error) {
-          console.error("Error saving data:", error);
-          toast.error("Error Deleting Data: " + error.message);
-        }
-      },
-      () => {
-        toast.info("Data Delete cancelled.");
-      },
-    );
-  };
 
   const formatDate = (dateString) => {
     if (!dateString) return ""; // Return 'N/A' if the date is missing
