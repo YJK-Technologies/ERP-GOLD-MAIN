@@ -69,6 +69,7 @@ function AddBaseAcc({ }) {
         },
         body: JSON.stringify({
           created_by: sessionStorage.getItem('selectedUserCode'),
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
           base_accgroup_code,
           base_accgroup_name,
           status,

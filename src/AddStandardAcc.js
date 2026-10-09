@@ -58,11 +58,26 @@ function StdAccInput({  }) {
   }, []);
 
 
-  useEffect(() => {
-    fetch(`${config.apiBaseUrl}/getbasaccode`)
-      .then((data) => data.json())
-      .then((val) => setbaseaccdrop(val));
-  }, []);
+  // useEffect(() => {
+  //   fetch(`${config.apiBaseUrl}/getbasaccode`)
+  //     .then((data) => data.json())
+  //     .then((val) => setbaseaccdrop(val));
+  // }, []);
+
+  const company_code = sessionStorage.getItem('selectedCompanyCode');
+
+useEffect(() => {
+fetch(`${config.apiBaseUrl}/getbasaccode`, {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json',
+},
+body: JSON.stringify({ company_code }),
+})
+.then((data) => data.json())
+.then((val) => setbaseaccdrop(val));
+}, []);
+
 
 
   useEffect(() => {
@@ -145,6 +160,7 @@ function StdAccInput({  }) {
           user_accgroup_to,
           status,
           deletePermission,
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
           created_by: sessionStorage.getItem('selectedUserCode')
 
         }),
