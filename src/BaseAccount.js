@@ -408,8 +408,9 @@ const BaseAccount = () => {
 
     const modified_by = sessionStorage.getItem("selectedUserCode");
     const company_nosToDelete = selectedRows.map(
-      (row) => row.base_accgroup_code,
-    );
+      (row) => ({base_accgroup_code: row.base_accgroup_code,
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
+    }));
 
     showConfirmationToast(
       "Are you sure you want to Delete the data in the selected rows?",
