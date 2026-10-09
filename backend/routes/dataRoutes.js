@@ -1008,7 +1008,9 @@ router.post("/getDeletedDebitCreditNoteSearch", dataController.getDeletedDebitCr
 router.post("/getPaymentType", dataController.getPaymentType)
 router.post("/getPartyType", dataController.getPartyType)
 router.post("/getPaymentMode", dataController.getPaymentMode)
+router.post("/getBankAccountPayment", dataController.getBankAccountPayment)
+router.post("/PaymentInsert", dataController.PaymentInsert)
 
 
 module.exports = router;
-     
+
