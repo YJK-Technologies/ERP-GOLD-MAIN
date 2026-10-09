@@ -9154,8 +9154,8 @@ const pool = await connection.connectToDatabase();
 for (const base_accgroup_code of company_nosToDelete) {
   try {
     await pool.request()
-      .input("base_accgroup_code", sql.NVarChar, base_accgroup_code)
-      .input("company_code", sql.NVarChar, company_code)
+      .input("base_accgroup_code", sql.NVarChar, base_accgroup_code.base_accgroup_code)
+      .input("company_code", sql.NVarChar, base_accgroup_code.company_code)
       .input("modified_by", sql.NVarChar, req.headers['modified-by'])
       .query(`
         EXEC [sp_Base_Account_group] 'D',@base_accgroup_code,'','',@company_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
@@ -30740,6 +30740,366 @@ const getPaymentMode = async (req, res) => {
   }
 };
 //Code ended by Dinesh Gokul on 08-10-2026
+//Code added by sakthiganesh J on 09-10-2026
+const Currencysearch = async (req, res) => {
+  const { Currency_Code, Currency_Name, Currency_Symbol, Decimal_Places, Currency_Type, Status, company_code, location_code,} = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "SC")
+      .input("Currency_ID", sql.Int, null)
+      .input("Currency_Code", sql.NVarChar, Currency_Code || "")
+      .input("Currency_Name", sql.NVarChar, Currency_Name || "")
+      .input("Currency_Symbol", sql.NVarChar, Currency_Symbol || "")
+      .input("Decimal_Places", sql.Int, Decimal_Places)
+      .input("Currency_Type", sql.NVarChar, Currency_Type || "")
+      .input("Status", sql.NVarChar, Status || "")
+      .input("Keyfield", sql.NVarChar, "")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("created_by", sql.NVarChar, "")
+      .input("created_date", sql.NVarChar, null)
+      .input("modified_by", sql.NVarChar, "")
+      .input("modified_date", sql.NVarChar, null)
+      .query(`EXEC sp_Currency @mode, @Currency_ID, @Currency_Code, @Currency_Name, @Currency_Symbol, @Decimal_Places, @Currency_Type,
+          @Status, @Keyfield, @company_code, @location_code, @created_by, @created_date, @modified_by, @modified_date `);
+
+    if (result.recordset && result.recordset.length > 0) {
+      const formattedData = result.recordset.map((row) => ({
+        ...row,
+        created_date: row.created_date
+          ? row.created_date.toISOString().split("T")[0]
+          : null,
+        modified_date: row.modified_date
+          ? row.modified_date.toISOString().split("T")[0]
+          : null,
+      }));
+
+      return res.status(200).json(formattedData);
+    }
+
+    return res.status(404).json("Data not found");
+  } catch (err) {
+    console.error("Currency Search Error:", err);
+
+    return res.status(500).json({
+      message: err.message || "Internal Server Error",
+    });
+  }
+};
+
+const CurrencyInsert = async (req, res) => {
+  const { Currency_Code, Currency_Name, Currency_Symbol, Decimal_Places, Currency_Type, Status, company_code, location_code, created_by, created_date,} = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "I")
+      .input("Currency_ID", sql.Int, null)
+      .input("Currency_Code", sql.NVarChar, Currency_Code)
+      .input("Currency_Name", sql.NVarChar, Currency_Name)
+      .input("Currency_Symbol", sql.NVarChar, Currency_Symbol || "")
+      .input("Decimal_Places", sql.Int, Decimal_Places)
+      .input("Currency_Type", sql.NVarChar, Currency_Type)
+      .input("Status", sql.NVarChar, Status)
+      .input("Keyfield", sql.NVarChar, "")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("created_by", sql.NVarChar, created_by)
+      .input("created_date", sql.NVarChar, created_date || null)
+      .input("modified_by", sql.NVarChar, "")
+      .input("modified_date", sql.NVarChar, null)
+      .query(`EXEC sp_Currency @mode, @Currency_ID, @Currency_Code, @Currency_Name, @Currency_Symbol, @Decimal_Places,
+          @Currency_Type, @Status, @Keyfield, @company_code, @location_code, @created_by, @created_date, @modified_by, @modified_date `);
+
+    return res.status(200).json({
+      success: true,
+      message: "Currency inserted successfully",
+    });
+  } catch (err) {
+    console.error("Currency Insert Error:", err);
+
+    return res.status(500).json({
+      message: err.message || "Internal Server Error",
+    });
+  }
+};
+
+const CurrencyLoopUpdate = async (req, res) => {
+  const editedData = req.body.editedData;
+
+  if (!Array.isArray(editedData) || editedData.length === 0) {
+    return res.status(400).json("Invalid or empty editedData array.");
+  }
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    for (const updatedRow of editedData) {
+      await pool
+        .request()
+        .input("mode", sql.NVarChar, "U")
+        .input("Currency_ID", sql.Int, updatedRow.Currency_ID)
+        .input("Currency_Code", sql.NVarChar, updatedRow.Currency_Code)
+        .input("Currency_Name", sql.NVarChar, updatedRow.Currency_Name)
+        .input("Currency_Symbol", sql.NVarChar, updatedRow.Currency_Symbol || "")
+        .input("Decimal_Places", sql.Int, updatedRow.Decimal_Places)
+        .input("Currency_Type", sql.NVarChar, updatedRow.Currency_Type)
+        .input("Status", sql.NVarChar, updatedRow.Status)
+        .input("Keyfield", sql.NVarChar, updatedRow.Keyfield || "")
+        .input("company_code", sql.NVarChar, updatedRow.company_code)
+        .input("location_code", sql.NVarChar, updatedRow.location_code)
+        .input("created_by", sql.NVarChar, updatedRow.created_by || "")
+        .input("created_date", sql.NVarChar, updatedRow.created_date || null)
+        .input( "modified_by", sql.NVarChar, req.headers["modified-by"] || updatedRow.modified_by )
+        .input("modified_date", sql.NVarChar, null)
+        .query(`EXEC sp_Currency @mode, @Currency_ID, @Currency_Code, @Currency_Name, @Currency_Symbol,
+            @Decimal_Places, @Currency_Type, @Status, @Keyfield, @company_code, @location_code, @created_by, @created_date, @modified_by, @modified_date `);
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Update currency data saved successfully",
+    });
+  } catch (err) {
+    console.error("Currency Update Error:", err);
+
+    return res.status(500).json({
+      message: err.message || "Internal Server Error",
+    });
+  }
+};
+
+const CurrencydeleteData = async (req, res) => {
+  const Currency_IDs = req.body.Currency_IDs;
+  const company_code = req.body.company_code;
+  const location_code = req.body.location_code;
+  const modified_by =
+    req.headers["modified-by"] || req.body.modified_by;
+
+  if (!Array.isArray(Currency_IDs) || Currency_IDs.length === 0) {
+    return res.status(400).json("Invalid or empty Currency_IDs array.");
+  }
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    for (const Currency_ID of Currency_IDs) {
+      await pool
+        .request()
+        .input("mode", sql.NVarChar, "D")
+        .input("Currency_ID", sql.Int, Currency_ID)
+        .input("Currency_Code", sql.NVarChar, "")
+        .input("Currency_Name", sql.NVarChar, "")
+        .input("Currency_Symbol", sql.NVarChar, "")
+        .input("Decimal_Places", sql.Int, null)
+        .input("Currency_Type", sql.NVarChar, "")
+        .input("Status", sql.NVarChar, "")
+        .input("Keyfield", sql.NVarChar, "")
+        .input("company_code", sql.NVarChar, company_code || "")
+        .input("location_code", sql.NVarChar, location_code || "")
+        .input("created_by", sql.NVarChar, "")
+        .input("created_date", sql.NVarChar, null)
+        .input("modified_by", sql.NVarChar, modified_by || "")
+        .input("modified_date", sql.NVarChar, null)
+        .query(`EXEC sp_Currency @mode, @Currency_ID, @Currency_Code, @Currency_Name, @Currency_Symbol, @Decimal_Places,
+               @Currency_Type, @Status, @Keyfield, @company_code, @location_code, @created_by, @created_date, @modified_by, @modified_date `);
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Currencies deleted successfully",
+    });
+  } catch (err) {
+    console.error("Currency Delete Error:", err);
+
+    return res.status(500).json({
+      message: err.message || "Internal Server Error",
+    });
+  }
+};
+
+const CurrencyUpdate = async (req, res) => {
+  const { Currency_ID, Currency_Code, Currency_Name, Currency_Symbol, Decimal_Places, Currency_Type, Status, company_code, location_code, modified_by, } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    await pool
+      .request()
+      .input("mode", sql.NVarChar, "U")
+      .input("Currency_ID", sql.Int, Currency_ID)
+      .input("Currency_Code", sql.NVarChar, Currency_Code)
+      .input("Currency_Name", sql.NVarChar, Currency_Name)
+      .input("Currency_Symbol", sql.NVarChar, Currency_Symbol || "")
+      .input("Decimal_Places", sql.Int, Decimal_Places)
+      .input("Currency_Type", sql.NVarChar, Currency_Type)
+      .input("Status", sql.NVarChar, Status)
+      .input("Keyfield", sql.NVarChar, "")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("created_by", sql.NVarChar, "")
+      .input("created_date", sql.NVarChar, null)
+      .input( "modified_by", sql.NVarChar, modified_by || req.headers["modified-by"])
+      .input("modified_date", sql.NVarChar, null)
+      .query(`EXEC sp_Currency @mode, @Currency_ID, @Currency_Code, @Currency_Name, @Currency_Symbol, @Decimal_Places, @Currency_Type, @Status, @Keyfield,
+          @company_code, @location_code, @created_by, @created_date, @modified_by, @modified_date`);
+
+    return res.status(200).json({
+      success: true,
+      message: "Currency updated successfully",
+    });
+  } catch (err) {
+    console.error("Currency Update Error:", err);
+
+    return res.status(500).json({
+      message: err.message || "Internal Server Error",
+    });
+  }
+};
+
+const CurrencyType = async (req, res) => {
+  const { company_code } = req.body;
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("company_code", sql.NVarChar, company_code)
+      .query(
+        "EXEC sp_attribute_Info_sakthi 'F',@company_code,'Currency Type','','','', '' , '','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL"
+      );
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+//Code ended by sakthiganesh J on 09-10-2026
+
+//Code added by Dinesh Gokul on 09-10-2026
+const getBankAccountPayment = async (req, res) => {
+  const { company_code } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, 'BAP')
+      .input("company_code", sql.NVarChar, company_code)
+      .query(`EXEC sp_account_name @mode,@company_code,'','','','','','','','','','','','','','','',0,'','','','','','','','','','','','','','','','','','','','',NULL,NULL,NULL,null,null,null,null,null,''`);
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+
+const PaymentInsert = async (req, res) => {
+    const {
+        Payment_ID,
+        Payment_Date,
+        Payment_Type,
+        Party_ID,
+        Payment_Mode,
+        Account_ID,
+        Reference_No,
+        Reference_Date,
+        Amount,
+        Narration,
+        Status,
+        GL_Status,
+        BillNo_match,
+        Adjusted_Amount,
+        Unadjusted_Amount,
+        Keyfield,
+        company_code,
+        location_code,
+        created_by
+    } = req.body;
+
+    try {
+        const pool = await sql.connect(dbConfig);
+
+        const result = await pool.request()
+            .input("mode", sql.NVarChar, "I")
+            .input("Payment_ID", sql.NVarChar, Payment_ID || "")
+            .input("Payment_Date", sql.Date, Payment_Date || null)
+            .input("Payment_Type", sql.NVarChar, Payment_Type || "")
+            .input("Party_ID", sql.NVarChar, Party_ID || "")
+            .input("Payment_Mode", sql.NVarChar, Payment_Mode || "")
+            .input("Account_ID", sql.NVarChar, Account_ID || "")
+            .input("Reference_No", sql.NVarChar, Reference_No || "")
+            .input("Reference_Date", sql.Date, Reference_Date || null)
+            .input("Amount", sql.Decimal(18, 2), Amount ?? null)
+            .input("Narration", sql.NVarChar, Narration || "")
+            .input("Status", sql.NVarChar, Status || "Draft")
+            .input("GL_Status", sql.NVarChar, GL_Status || "Pending")
+            .input("BillNo_match", sql.NVarChar, BillNo_match || "")
+            .input("Adjusted_Amount", sql.Decimal(18, 2), Adjusted_Amount ?? 0)
+            .input("Unadjusted_Amount", sql.Decimal(18, 2), Unadjusted_Amount ?? 0)
+            .input("company_code", sql.NVarChar, company_code || "")
+            .input("location_code", sql.NVarChar, location_code || "")
+            .input("Keyfield", sql.NVarChar, Keyfield || "")
+            .input("created_by", sql.NVarChar, created_by || "")
+            .input("created_date", sql.DateTime, null)
+            .input("modified_by", sql.NVarChar, "")
+            .input("modified_date", sql.DateTime, null)
+            .query(`
+                EXEC dbo.sp_Payment_hdr
+                    @mode,
+                    @Payment_ID,
+                    @Payment_Date,
+                    @Payment_Type,
+                    @Party_ID,
+                    @Payment_Mode,
+                    @Account_ID,
+                    @Reference_No,
+                    @Reference_Date,
+                    @Amount,
+                    @Narration,
+                    @Status,
+                    @GL_Status,
+                    @BillNo_match,
+                    @Adjusted_Amount,
+                    @Unadjusted_Amount,
+                    @company_code,
+                    @location_code,
+                    @Keyfield,
+                    @created_by,
+                    @created_date,
+                    @modified_by,
+                    @modified_date
+            `);
+
+        const generatedData = result.recordset?.[0] || {};
+
+        res.status(200).json({
+            success: true,
+            message: "Payment inserted successfully",
+            Payment_ID: generatedData.Payment_ID,
+            Keyfield: generatedData.Keyfield
+        });
+
+    } catch (err) {
+        console.error("Error during Payment insert:", err);
+
+        res.status(500).json({
+            success: false,
+            message: err.message || "Internal Server Error"
+        });
+    }
+};
+//Code ended by Dinesh Gokul on 09-10-2026
+
 module.exports = {
   login,
   forgetPassword,
@@ -31725,6 +32085,14 @@ module.exports = {
   getDeletedDebitCreditNoteSearch,
   getPaymentType,
   getPartyType,
-  getPaymentMode
+  getPaymentMode,
+  getBankAccountPayment,
+  PaymentInsert,
+  CurrencyInsert,
+  CurrencyLoopUpdate,
+  CurrencydeleteData,
+  CurrencyUpdate,
+  Currencysearch,
+  CurrencyType
 
 };
