@@ -1008,6 +1008,12 @@ router.post("/getDeletedDebitCreditNoteSearch", dataController.getDeletedDebitCr
 router.post("/getPaymentType", dataController.getPaymentType)
 router.post("/getPartyType", dataController.getPartyType)
 router.post("/getPaymentMode", dataController.getPaymentMode)
+router.post("/CurrencyInsert", dataController.CurrencyInsert)
+router.post("/CurrencyLoopUpdate", dataController.CurrencyLoopUpdate)
+router.post("/CurrencydeleteData", dataController.CurrencydeleteData)
+router.post("/CurrencyUpdate", dataController.CurrencyUpdate)
+router.post("/Currencysearch", dataController.Currencysearch)
+router.post("/CurrencyType", dataController.CurrencyType)
 
 
 module.exports = router;
