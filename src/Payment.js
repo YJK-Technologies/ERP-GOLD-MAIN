@@ -22,7 +22,7 @@ import LoadingScreen from './Loading';
 import SalesHdrPopup from './SalesPopup'
 import PurchaseReturnView from './PurchaseReturnViewPopup';
 import SalesRetrunView from './SalesReturnViewPopup';
-import DebitCrediNoteHelp from './DebitCreditNotePopup';
+import PaymentHelp from './PaymentHelp';
 import DeletedDebitCrediNoteHelp from './DeleteDebitCreditNotePopup';
 import { showConfirmationToast } from './ToastConfirmation';
 import PurchaseVendorPopup from './PurchaseVendorPopup'
@@ -237,6 +237,32 @@ const [rowData, setRowData] = useState([
             .then((val) => setBankCashAccountDrop(val))
             .catch((error) => console.error('Error fetching Bank Account:', error));
     }, []);
+
+    useEffect(() => {
+    const code = String(partyCode || "").trim().toLowerCase();
+    const type = String(partyType || "").trim().toLowerCase();
+
+    if (!code || !type) {
+        setPartyNameDisplay("");
+        return;
+    }
+
+    if (type === "vendor") {
+        const vendor = (vendorCodeDrop || []).find((item) =>
+            String(item.vendor_code ?? "").trim().toLowerCase() === code
+        );
+
+        setPartyNameDisplay(vendor?.vendor_name ?? "");
+    } else if (type === "customer") {
+        const customer = (customerCodeDrop || []).find((item) =>
+            String(item.customer_code ?? "").trim().toLowerCase() === code
+        );
+
+        setPartyNameDisplay(customer?.customer_name ?? "");
+    } else {
+        setPartyNameDisplay("");
+    }
+}, [partyCode, partyType, vendorCodeDrop, customerCodeDrop]);
 
     const filteredOptionCode = partyType === "Vendor"
         ? vendorCodeDrop.map((opt) => ({ value: opt.vendor_code, label: `${opt.vendor_code} - ${opt.vendor_name}` }))
@@ -779,65 +805,171 @@ const [rowData, setRowData] = useState([
     };
 
     const fetchPaymentData = async (code) => {
-        if (!code) return;
-        setLoading(true);
+    if (!code) return;
 
-        try {
-            const response = await fetch(`${config.apiBaseUrl}/getPaymentData`, {
+    setLoading(true);
+
+    try {
+        const response = await fetch(
+            `${config.apiBaseUrl}/getPaymentData`,
+            {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ transaction_no: code, company_code: sessionStorage.getItem("selectedCompanyCode") }),
-            });
-
-            if (!response.ok) {
-                if (response.status === 404) {
-                    toast.warning("Transaction Data not found");
-                    setRowData([]);
-                    setRowDataTax([]);
-                } else {
-                    const errorResponse = await response.json();
-                    toast.error(errorResponse.message || "An error occurred while fetching data");
-                }
-                return;
+                body: JSON.stringify({
+                    transaction_no: code,
+                    company_code: sessionStorage.getItem("selectedCompanyCode")
+                })
             }
+        );
 
-            const searchData = await response.json();
-            setShowExcelButton(true);
-            setSaveButtonVisible(false);
-            setUpdateButtonVisible(true);
-            setDelButtonVisible(true);
-            setPrintButtonVisible(true);
-
-            if (searchData.header && searchData.header.length > 0) {
-                const headerItem = searchData.header[0];
-                setNoteType(headerItem.Note_Type || "");
-                const partyTypeVal = headerItem.Party_Type || "";
-                setSelectedPartyType(partyTypeVal ? { value: partyTypeVal, label: partyTypeVal } : null);
-                setPartyType(partyTypeVal);
-                setPartyName(headerItem.Party_ID || "");
-
-                if (headerItem.Note_Date) setTransactionDate(formatDate(headerItem.Note_Date));
-                setRefTransactionNumber(headerItem.Reference_Invoice_No || "");
-                if (headerItem.Reference_Invoice_Date) setRefTransactionDate(formatDate(headerItem.Reference_Invoice_Date));
-                setTransactionNumber(headerItem.Note_No || "");
-                setTotal(formatToTwoDecimalPoints(headerItem.Sub_Total || 0));
-                setTotalTax(formatToTwoDecimalPoints(headerItem.Tax_Amount || 0));
-                setTotalAmount(formatToTwoDecimalPoints(headerItem.Total_Amount || 0));
-                setRoundDifference(formatToTwoDecimalPoints(headerItem.rounded_off || 0));
-                setNarration(headerItem.Narration || "");
-                setRefNo(headerItem.Reference_No || "");
-                setKeyfieldHeader(headerItem.Keyfield || "");
-                setKeyfield(headerItem.Reference_ID || "");
+        if (!response.ok) {
+            if (response.status === 404) {
+                toast.warning("Transaction Data not found");
+                setRowData([]);
+                setRowDataTax([]);
             } else {
-                toast.warning("Header details not found");
+                const errorResponse = await response.json();
+                toast.error(
+                    errorResponse.message ||
+                    "An error occurred while fetching data"
+                );
             }
-        } catch (error) {
-            console.error("Error fetching Debit/Credit Note data:", error);
-            toast.error(error.message || "Failed to fetch data");
-        } finally {
-            setLoading(false);
+            return;
         }
-    };
+
+        const searchData = await response.json();
+
+        console.log("Fetched Payment Data:", searchData);
+
+        setShowExcelButton(true);
+        setSaveButtonVisible(false);
+        setUpdateButtonVisible(true);
+        setDelButtonVisible(true);
+        setPrintButtonVisible(true);
+
+        // STEP 1: Populate Payment Header
+        if (searchData.header && searchData.header.length > 0) {
+            const headerItem = searchData.header[0];
+
+            setPaymentType(headerItem.Payment_Type || "");
+
+            const paymentTypeValue = headerItem.Payment_Type || "";
+            setSelectedPaymentType(
+                paymentTypeValue
+                    ? {
+                          value: paymentTypeValue,
+                          label: paymentTypeValue
+                      }
+                    : null
+            );
+
+            // Populate the saved Vendor / Customer Code
+// Populate Vendor / Customer Type
+const savedPartyType = headerItem.Party_Type || "";
+
+setPartyType(savedPartyType);
+
+setSelectedPartyType(
+    savedPartyType
+        ? {
+              value: savedPartyType,
+              label: savedPartyType
+          }
+        : null
+);
+
+// Populate Vendor / Customer Code
+const savedPartyCode = headerItem.Party_ID || "";
+
+setPartyCode(savedPartyCode);
+setPartyName(savedPartyCode);
+
+            setPartyName(headerItem.Party_ID || "");
+
+            setTransactionDate(
+                headerItem.Payment_Date
+                    ? formatDate(headerItem.Payment_Date)
+                    : ""
+            );
+
+            setTransactionNumber(headerItem.Payment_ID || "");
+            setPaymentMode(headerItem.Payment_Mode || "");
+
+            setSelectedPaymentMode(
+                headerItem.Payment_Mode
+                    ? {
+                          value: headerItem.Payment_Mode,
+                          label: headerItem.Payment_Mode
+                      }
+                    : null
+            );
+
+            setBankCashAccount(headerItem.Account_ID ?? "");
+
+            setSelectedBankCashAccount(
+                headerItem.Account_ID != null
+                    ? {
+                          value: headerItem.Account_ID,
+                          label: String(headerItem.Account_ID)
+                      }
+                    : null
+            );
+
+            setRefTransactionNumber(headerItem.Reference_No || "");
+
+            setRefTransactionDate(
+                headerItem.Reference_Date
+                    ? formatDate(headerItem.Reference_Date)
+                    : ""
+            );
+
+            setAmount(headerItem.Amount ?? 0);
+            setNarration(headerItem.Narration || "");
+            setKeyfieldHeader(headerItem.Keyfield || "");
+        } else {
+            toast.warning("Payment header details not found");
+        }
+
+        // STEP 2: Populate Payment Details AG Grid
+        const detailRows = (searchData.detail || []).map((item, index) => ({
+            serialNumber: index + 1,
+            Payment_Detail_ID: item.Payment_Detail_ID ?? null,
+            Invoice_ID: item.Invoice_ID ?? "",
+            Invoice_Date: item.Invoice_Date
+                ? formatDate(item.Invoice_Date)
+                : "",
+            Invoice_Amount: Number(item.Invoice_Amount ?? 0),
+            Previous_Paid_Amount: Number(
+                item.Previous_Paid_Amount ?? 0
+            ),
+            Outstanding_Amount: Number(
+                item.Outstanding_Amount ?? 0
+            ),
+            Adjust_Amount: Number(item.Adjust_Amount ?? 0),
+            Keyfield_Header: item.Keyfield_Header ?? "",
+            Keyfield: item.Keyfield ?? ""
+        }));
+
+        console.log("Payment detail rows:", detailRows);
+        setRowData(detailRows);
+
+        // STEP 3: Populate Tax Details if returned
+        const taxRows = (searchData.taxdetail || []).map(
+            (item, index) => ({
+                ...item,
+                serialNumber: index + 1
+            })
+        );
+
+        setRowDataTax(taxRows);
+
+    } catch (error) {
+        console.error("Error fetching Payment data:", error);
+        toast.error(error.message || "Failed to fetch payment data");
+    } finally {
+        setLoading(false);
+    }
+};
 
     const handleExcelDownload = () => {
         const filteredRowData = rowData.filter(row => (row.Qty > 0) && (row.TotalItemAmount > 0 || row.purchaseAmt > 0));
@@ -1420,7 +1552,7 @@ const [rowData, setRowData] = useState([
                     <SalesHdrPopup open={openSalesHelp} handleClose={() => setOpenSalesHelp(false)} handleData={handleSalesDataSelect} selectedPartyCode={partyName || ""} />
                     <PurchaseReturnView open={openPurchaseReturnHelp} handleClose={() => setOpenPurchaseReturnHelp(false)} handleItemView={() => {}} selectedPartyCode={partyName || ""} />
                     <SalesRetrunView open={openSalesReturnHelp} handleClose={() => setOpenSalesReturnHelp(false)} handleDataView={() => {}} selectedPartyCode={partyName || ""} />
-                    <DebitCrediNoteHelp open={openDebitCreditNoteHelp} handleClose={() => setOpenDebitCreditNoteHelp(false)} handlePaymentData={handlePaymentData} />
+                    <PaymentHelp open={openDebitCreditNoteHelp} handleClose={() => setOpenDebitCreditNoteHelp(false)} handlePaymentData={handlePaymentData} />
                     <PurchaseVendorPopup open={openVendorPartyHelp} handleClose={() => setOpenVendorPartyHelp(false)} handleVendor={handleVendor} />
                     <SalesVendorPopup open={openCustomerPartyHelp} handleClose={() => setOpenCustomerPartyHelp(false)} handleVendor={handleCustomer} />
 

@@ -31207,6 +31207,95 @@ const getPaymentData = async (req, res) => {
     res.status(500).json({ message: err.message || "Internal Server Error" });
   }
 };
+
+const getPaymentSearch = async (req, res) => {
+  const {
+    Payment_ID,
+    Payment_Type,
+    Party_Type,
+    Party_ID,
+    Payment_Mode,
+    Account_ID,
+    Reference_No,
+    Status,
+    Payment_Date_From,
+    Payment_Date_To,
+    Reference_Date_From,
+    Reference_Date_To,
+    Amount_From,
+    Amount_To,
+    company_code,
+    location_code,
+  } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "SC")
+      .input("Payment_ID", sql.NVarChar, Payment_ID || null)
+      .input("Payment_Type", sql.NVarChar, Payment_Type || null)
+      .input("Party_Type", sql.NVarChar, Party_Type || null)
+      .input("Party_ID", sql.NVarChar, Party_ID || null)
+      .input("Payment_Mode", sql.NVarChar, Payment_Mode || null)
+      .input("Account_ID", sql.NVarChar, Account_ID || null)
+      .input("Reference_No", sql.NVarChar, Reference_No || null)
+      .input("Status", sql.NVarChar, Status || null)
+      .input("Payment_Date_From", sql.Date, Payment_Date_From ? Payment_Date_From : null)
+      .input("Payment_Date_To", sql.Date, Payment_Date_To ? Payment_Date_To : null)
+      .input("Reference_Date_From", sql.Date, Reference_Date_From ? Reference_Date_From : null)
+      .input("Reference_Date_To", sql.Date, Reference_Date_To ? Reference_Date_To : null)
+      .input("Amount_From", sql.Decimal(18, 2), (Amount_From !== "" && Amount_From != null) ? Number(Amount_From) : null)
+      .input("Amount_To", sql.Decimal(18, 2), (Amount_To !== "" && Amount_To != null) ? Number(Amount_To) : null)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .query(`
+        EXEC dbo.sp_Payment_hdr
+          @mode = @mode,
+          @Payment_ID = @Payment_ID,
+          @Payment_Date = NULL,
+          @Payment_Type = @Payment_Type,
+          @Party_Type = @Party_Type,
+          @Party_ID = @Party_ID,
+          @Payment_Mode = @Payment_Mode,
+          @Account_ID = @Account_ID,
+          @Reference_No = @Reference_No,
+          @Reference_Date = NULL,
+          @Amount = 0,
+          @Narration = '',
+          @Status = @Status,
+          @GL_Status = '',
+          @BillNo_match = '',
+          @Adjusted_Amount = 0,
+          @Unadjusted_Amount = 0,
+          @Payment_Date_From = @Payment_Date_From,
+          @Payment_Date_To = @Payment_Date_To,
+          @Reference_Date_From = @Reference_Date_From,
+          @Reference_Date_To = @Reference_Date_To,
+          @Amount_From = @Amount_From,
+          @Amount_To = @Amount_To,
+          @company_code = @company_code,
+          @location_code = @location_code,
+          @Keyfield = '',
+          @created_by = '',
+          @created_date = NULL,
+          @modified_by = '',
+          @modified_date = NULL
+      `);
+
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json("Data not found");
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: err.message || "Internal Server Error",
+    });
+  }
+};
 //Code ended by Dinesh Gokul on 10-10-2026
 
 module.exports = {
@@ -32204,6 +32293,7 @@ module.exports = {
   Currencysearch,
   CurrencyType,
   PaymentDetailsInsert,
-  getPaymentData
+  getPaymentData,
+  getPaymentSearch
 
 };

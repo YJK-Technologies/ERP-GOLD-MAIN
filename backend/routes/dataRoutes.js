@@ -1018,6 +1018,7 @@ router.post("/getBankAccountPayment", dataController.getBankAccountPayment)
 router.post("/PaymentHdrInsert", dataController.PaymentHdrInsert)
 router.post("/PaymentDetailsInsert", dataController.PaymentDetailsInsert)
 router.post("/getPaymentData", dataController.getPaymentData)
+router.post("/getPaymentSearch", dataController.getPaymentSearch)
 
 
 module.exports = router;
