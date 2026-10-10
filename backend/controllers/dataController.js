@@ -31038,7 +31038,7 @@ const PaymentHdrInsert = async (req, res) => {
             .input("modified_date", sql.DateTime, null)
             .query(` EXEC dbo.sp_Payment_hdr @mode, @Payment_ID, @Payment_Date, @Payment_Type, @Party_Type, @Party_ID, @Payment_Mode, @Account_ID, @Reference_No,
             @Reference_Date, @Amount, @Narration, @Status, @GL_Status, @BillNo_match, @Adjusted_Amount, @Unadjusted_Amount,
-            '', '', '', '', '', '', @company_code, @location_code, @Keyfield, @created_by, @created_date, @modified_by, @modified_date`);
+            '', '', '', '', 0, 0, @company_code, @location_code, @Keyfield, @created_by, @created_date, @modified_by, @modified_date`);
 
         const generatedData = result.recordset?.[0] || {};
 
@@ -31359,7 +31359,7 @@ const Payment_DetailDelete = async (req, res) => {
       .input("Created_Date", sql.DateTime, null)
       .input("Modify_By", sql.NVarChar, "")
       .input("Modify_Date", sql.DateTime, null)
-      .query(`EXEC sp_Payment_details @mode, 0, '', '', '', 0, 0, 0, 0, '', @Keyfield, @company_code,
+      .query(`EXEC sp_Payment_details @mode, 0, @Payment_ID, '', '', 0, 0, 0, 0, '', @Keyfield, @company_code,
       @location_code, '', '', '', ''`);
 
     res.status(200).json({
@@ -31576,7 +31576,7 @@ const Payment_hdrUpdate = async (req, res) => {
       .input("Party_Type", sql.NVarChar, Party_Type)
       .input("Party_ID", sql.NVarChar, Party_ID)
       .input("Payment_Mode", sql.NVarChar, Payment_Mode)
-      .input("Account_ID", sql.NVarChar, Account_ID)
+      .input("Account_ID", sql.Int, Account_ID)
       .input("Reference_No", sql.NVarChar, Reference_No)
       .input("Reference_Date", sql.Date, Reference_Date)
       .input("Amount", sql.Decimal(18, 2), Amount)
@@ -31588,7 +31588,7 @@ const Payment_hdrUpdate = async (req, res) => {
       .input("location_code", sql.NVarChar, location_code)
       .input("modified_by", sql.NVarChar, modified_by)
       .query(`EXEC sp_Payment_hdr @mode, @Payment_ID, @Payment_Date, @Payment_Type, @Party_Type, @Party_ID, @Payment_Mode, @Account_ID, @Reference_No,
-      @Reference_Date, @Amount, @Narration, '', '', @BillNo_match, @Adjusted_Amount, @Unadjusted_Amount, '', '', '', '', '', '', @company_code,
+      @Reference_Date, @Amount, @Narration, '', '', @BillNo_match, @Adjusted_Amount, @Unadjusted_Amount, '', '', '', '', 0, 0, @company_code,
       @location_code, '', '', '', @modified_by, ''`);
 
     res.status(200).json({
@@ -31616,7 +31616,7 @@ const Payment_hdrDelete = async (req, res) => {
       .input("location_code", sql.NVarChar, location_code)
       .input("modified_by", sql.NVarChar, modified_by)
       .query(`EXEC sp_Payment_hdr @mode, @Payment_ID, '', '', '', '', '', '', '', '',
-        0, '', '', '', 0, 0, 0, '', '', '', '', '', '', @company_code, @location_code, '', '', '', @modified_by, ''`);
+        0, '', '', '', 0, 0, 0, '', '', '', '', 0, 0, @company_code, @location_code, '', '', '', @modified_by, ''`);
 
     res.status(200).json({
       success: true,

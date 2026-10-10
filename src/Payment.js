@@ -796,13 +796,32 @@ const [rowData, setRowData] = useState([
         }
     };
 
-    const handlePaymentData = (selectedData) => {
-        if (selectedData && selectedData.length > 0) {
-            const item = selectedData[0];
-            setTransactionNumber(item.TransactionNo);
-            fetchPaymentData(item.TransactionNo);
+    // const handlePaymentData = (selectedData) => {
+    //     if (selectedData && selectedData.length > 0) {
+    //         const item = selectedData[0];
+    //         setTransactionNumber(item.TransactionNo);
+    //         fetchPaymentData(item.TransactionNo);
+    //     }
+    // };
+
+    
+const handlePaymentData = (selectedData) => {
+    if (selectedData && selectedData.length > 0) {
+        const item = selectedData[0];
+
+        // PaymentHelp sends PaymentID
+        const paymentId = item.PaymentID || item.TransactionNo;
+
+        if (!paymentId) {
+            toast.warning("Please select a valid Payment ID");
+            return;
         }
-    };
+
+        setTransactionNumber(paymentId);
+        fetchPaymentData(paymentId);
+    }
+};
+
 
     const fetchPaymentData = async (code) => {
     if (!code) return;
@@ -1027,111 +1046,188 @@ setPartyName(savedPartyCode);
         XLSX.writeFile(workbook, fileName);
     };
 
-    const handleUpdateButtonClick = async () => {
-        if (!noteType || !transactionDate || !partyType || !partyName || !refType || !total || !totalTax || !totalAmount) {
-            toast.warning("Error: Missing required fields.");
-            setError(true);
-            return;
-        }
+    
 
-        setError(false);
-        setLoading(true);
+const handleUpdateButtonClick = async () => {
+    setError(false);
+    setLoading(true);
 
-        try {
-            const headerPayload = {
-                Note_No: transactionNumber,
-                Note_Type: noteType,
-                Note_Date: transactionDate,
-                Party_Type: partyType,
-                Party_ID: partyName,
-                Reference_Type: refType,
-                Reference_ID: keyfield,
-                Reference_Invoice_No: refTransactionNumber,
-                Reference_Invoice_Date: refTransactionDate,
-                Reason_ID: 'Payment',
-                Reference_No: refNo,
-                Sub_Total: total,
-                Tax_Amount: totalTax,
-                Rounded_off: roundDifference,
-                Total_Amount: totalAmount,
-                Narration: narration,
-                company_code: sessionStorage.getItem("selectedCompanyCode"),
-                location_code: sessionStorage.getItem("selectedLocationCode"),
-                modified_by: sessionStorage.getItem("selectedUserCode")
-            };
+    try {
+        // 1. Prepare Payment Header Update Payload
+        const headerPayload = {
+            Payment_ID: transactionNumber,
+            Payment_Date: transactionDate,
+            Payment_Type: paymentType,
+            Party_Type: partyType,
+            Party_ID: partyName,
+            Payment_Mode: paymentMode,
+            Account_ID: bankCashAccount,
+            Reference_No: refTransactionNumber || "",
+            Reference_Date: refTransactionDate || null,
+            Amount: Number(amount || 0),
+            Narration: narration || "",
+            BillNo_match: "",
+            Adjusted_Amount: Number(total || 0),
+            Unadjusted_Amount:
+                Number(amount || 0) - Number(total || 0),
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
+            location_code: sessionStorage.getItem("selectedLocationCode"),
+            modified_by: sessionStorage.getItem("selectedUserCode")
+        };
 
-            const response = await fetch(`${config.apiBaseUrl}/Debit_Credit_NoteUpdate`, {
+        // 2. Update Payment Header
+        const response = await fetch(
+            `${config.apiBaseUrl}/Payment_hdrUpdate`,
+            {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json"
+                },
                 body: JSON.stringify(headerPayload)
-            });
-
-            if (response.ok) {
-                toast.success("Payment Note updated successfully!");
-                setShowExcelButton(true);
-            } else {
-                const errorResponse = await response.json();
-                toast.warning(errorResponse.message || "Failed to update Header data");
             }
-        } catch (error) {
-            console.error("Error updating header data:", error);
-            toast.error("Error updating data: " + error.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleDeleteHeader = async () => {
-        try {
-            const response = await fetch(`${config.apiBaseUrl}/Debit_Credit_NoteDelete`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    Note_No: transactionNumber,
-                    company_code: sessionStorage.getItem("selectedCompanyCode"),
-                    location_code: sessionStorage.getItem("selectedLocationCode") || ""
-                })
-            });
-
-            if (response.ok) return true;
-            else {
-                const errorResponse = await response.json();
-                return errorResponse.message || "Failed to delete Header.";
-            }
-        } catch (error) {
-            return "Error deleting Header: " + error.message;
-        }
-    };
-
-    const handleDeleteButtonClick = async () => {
-        if (!transactionNumber) {
-            toast.warning('Error: Transaction Number is missing');
-            return;
-        }
-
-        showConfirmationToast(
-            "Are you sure you want to delete this Payment Voucher?",
-            async () => {
-                setLoading(true);
-                try {
-                    const headerResult = await handleDeleteHeader();
-                    if (headerResult === true) {
-                        toast.success("Payment Voucher Deleted Successfully", {
-                            autoClose: 1500,
-                            onClose: () => { window.location.reload(); }
-                        });
-                    } else {
-                        toast.error(headerResult);
-                    }
-                } catch (error) {
-                    toast.error(error.message || "An Error occurred while Deleting Data");
-                } finally {
-                    setLoading(false);
-                }
-            },
-            () => { toast.info("Delete cancelled."); }
         );
-    };
+
+        const result = await response.json();
+
+        if (response.ok) {
+            // 3. Save Payment Details after successful header update
+            const paymentId = transactionNumber;
+
+            await savePaymentDetails(paymentId, keyfieldHeader);
+
+            // 4. Show success message after both operations succeed
+            toast.success(
+                result.message || "Payment updated successfully!"
+            );
+
+            setShowExcelButton(true);
+        } else {
+            toast.warning(
+                result.message || "Failed to update Payment"
+            );
+        }
+    } catch (error) {
+        console.error("Error updating Payment:", error);
+        toast.error("Error updating Payment: " + error.message);
+    } finally {
+        setLoading(false);
+    }
+};
+
+// 1. Delete Payment Details first
+const handleDeleteDetails = async () => {
+    try {
+        const response = await fetch(
+            `${config.apiBaseUrl}/Payment_DetailDelete`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    Payment_ID: transactionNumber,
+                    company_code: sessionStorage.getItem("selectedCompanyCode"),
+                    location_code:
+                        sessionStorage.getItem("selectedLocationCode") || ""
+                })
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            return result.message || "Failed to delete Payment Details.";
+        }
+
+        return true;
+    } catch (error) {
+        return "Error deleting Payment Details: " + error.message;
+    }
+};
+
+
+// 2. Delete Payment Header
+const handleDeleteHeader = async () => {
+    try {
+        const response = await fetch(
+            `${config.apiBaseUrl}/Payment_hdrDelete`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    Payment_ID: transactionNumber,
+                    company_code: sessionStorage.getItem("selectedCompanyCode"),
+                    location_code:
+                        sessionStorage.getItem("selectedLocationCode") || ""
+                })
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            return result.message || "Failed to delete Payment Header.";
+        }
+
+        return true;
+    } catch (error) {
+        return "Error deleting Payment Header: " + error.message;
+    }
+};
+
+
+// 3. Delete Details first, then Header
+const handleDeleteButtonClick = async () => {
+    if (!transactionNumber) {
+        toast.warning("Error: Transaction Number is missing");
+        return;
+    }
+
+    showConfirmationToast(
+        "Are you sure you want to delete this Payment Voucher?",
+        async () => {
+            setLoading(true);
+
+            try {
+                // Step 1: Delete Payment Details
+                const detailsResult = await handleDeleteDetails();
+
+                if (detailsResult !== true) {
+                    toast.error(detailsResult);
+                    return;
+                }
+
+                // Step 2: Delete Payment Header only if details succeed
+                const headerResult = await handleDeleteHeader();
+
+                if (headerResult !== true) {
+                    toast.error(headerResult);
+                    return;
+                }
+
+                // Step 3: Both deletions succeeded
+                toast.success("Payment Voucher Deleted Successfully", {
+                    autoClose: 1500,
+                    onClose: () => {
+                        window.location.reload();
+                    }
+                });
+
+            } catch (error) {
+                toast.error(
+                    error.message || "An error occurred while deleting the Payment Voucher."
+                );
+            } finally {
+                setLoading(false);
+            }
+        },
+        () => {
+            toast.info("Delete cancelled.");
+        }
+    );
+};
 
     // Deleted Screen States
     const [deletedNoteType, setDeletedNoteType] = useState("");
@@ -1519,12 +1615,12 @@ setPartyName(savedPartyCode);
                                     onClick={() => handleToggleTable('myTable')}>
                                     Item Details
                                 </purButton>
-                                <purButton
+                                {/* <purButton
                                     type="button"
                                     className={`"toggle-btn"  ${activeTable === 'myTable' ? 'active' : ''}`}
                                     onClick={() => handleToggleTable('tax')}>
                                     Tax Details
-                                </purButton>
+                                </purButton> */}
                             </div>
                             <div className="d-flex me-4 gap-2">
                                 <icon type="button" className="popups-btn" title="Add Row" onClick={handleAddRow}>

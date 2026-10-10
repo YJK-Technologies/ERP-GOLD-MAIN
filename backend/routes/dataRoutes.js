@@ -1028,6 +1028,8 @@ router.post("/Payment_hdrLoopInsert", dataController.Payment_hdrLoopInsert)
 router.post("/Payment_hdrLoopUpdate", dataController.Payment_hdrLoopUpdate)
 router.post("/Payment_hdrLoopDelete", dataController.Payment_hdrLoopDelete)
 router.post("/getPaymentSearch", dataController.getPaymentSearch)
+router.post("/Payment_hdrUpdate", dataController.Payment_hdrUpdate)
+router.post("/Payment_hdrDelete", dataController.Payment_hdrDelete)
 
 
 module.exports = router;
