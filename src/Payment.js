@@ -22,7 +22,7 @@ import LoadingScreen from './Loading';
 import SalesHdrPopup from './SalesPopup'
 import PurchaseReturnView from './PurchaseReturnViewPopup';
 import SalesRetrunView from './SalesReturnViewPopup';
-import DebitCrediNoteHelp from './DebitCreditNotePopup';
+import PaymentHelp from './PaymentHelp';
 import DeletedDebitCrediNoteHelp from './DeleteDebitCreditNotePopup';
 import { showConfirmationToast } from './ToastConfirmation';
 import PurchaseVendorPopup from './PurchaseVendorPopup'
@@ -37,7 +37,18 @@ function Payment() {
     const [narration, setNarration] = useState('');
     const [refTransactionDate, setRefTransactionDate] = useState('');
 
-    const [rowData, setRowData] = useState([{ serialNumber: 1, itemCode: '', itemName: '', unitWeight: '', warehouse: '', purchaseQty: '', ItemTotalWight: '', purchaseAmt: '', TotalTaxAmount: '', TotalItemAmount: '' }]);
+const [rowData, setRowData] = useState([
+    {
+        serialNumber: 1,
+        Invoice_ID: "",
+        Invoice_Date: "",
+        Invoice_Amount: 0,
+        Previous_Paid_Amount: 0,
+        Outstanding_Amount: 0,
+        Adjust_Amount: 0,
+        Keyfield: ""
+    }
+]);
     const [rowDataTax, setRowDataTax] = useState([]);
     const [activeTable, setActiveTable] = useState('myTable');
     const [transactionNumber, setTransactionNumber] = useState("");
@@ -227,6 +238,32 @@ function Payment() {
             .catch((error) => console.error('Error fetching Bank Account:', error));
     }, []);
 
+    useEffect(() => {
+    const code = String(partyCode || "").trim().toLowerCase();
+    const type = String(partyType || "").trim().toLowerCase();
+
+    if (!code || !type) {
+        setPartyNameDisplay("");
+        return;
+    }
+
+    if (type === "vendor") {
+        const vendor = (vendorCodeDrop || []).find((item) =>
+            String(item.vendor_code ?? "").trim().toLowerCase() === code
+        );
+
+        setPartyNameDisplay(vendor?.vendor_name ?? "");
+    } else if (type === "customer") {
+        const customer = (customerCodeDrop || []).find((item) =>
+            String(item.customer_code ?? "").trim().toLowerCase() === code
+        );
+
+        setPartyNameDisplay(customer?.customer_name ?? "");
+    } else {
+        setPartyNameDisplay("");
+    }
+}, [partyCode, partyType, vendorCodeDrop, customerCodeDrop]);
+
     const filteredOptionCode = partyType === "Vendor"
         ? vendorCodeDrop.map((opt) => ({ value: opt.vendor_code, label: `${opt.vendor_code} - ${opt.vendor_name}` }))
         : partyType === "Customer"
@@ -382,32 +419,90 @@ function Payment() {
     const handleToggleTable = (table) => setActiveTable(table);
 
     const fillSelectedInvoice = (invoice, invoiceType) => {
-        if (!invoice || !selectedInvoiceRow?.node) {
-            toast.warning("Please select an invoice.");
-            return;
-        }
+    if (!invoice || !selectedInvoiceRow?.node) {
+        toast.warning("Please select an invoice.");
+        return;
+    }
 
-        const isVendor = invoiceType === "Vendor";
-        const invoiceNo = isVendor ? invoice.TransactionNo : invoice.BillNo;
-        const invoiceAmount = Number(invoice.TotalAmount ?? invoice.total_amount ?? invoice.bill_amt ?? 0);
-        const paidAmount = Number(invoice.PaidAmount ?? invoice.paid_amount ?? 0);
-        const outstandingAmount = Math.max(0, invoiceAmount - paidAmount);
+    console.log("Selected invoice:", invoice);
+    console.log("Selected grid row:", selectedInvoiceRow);
 
-        const rowNode = selectedInvoiceRow.node;
+    const isVendor = invoiceType === "Vendor";
+    const rowNode = selectedInvoiceRow.node;
 
-        rowNode.setDataValue("itemName", invoiceNo ?? "");
-        rowNode.setDataValue("UOM_ID", invoiceAmount);
-        rowNode.setDataValue("Qty", paidAmount);
-        rowNode.setDataValue("ItemTotalWight", outstandingAmount);
+    if (!rowNode.data) {
+        toast.warning("Selected grid row is no longer available.");
+        return;
+    }
 
-        if (rowNode.data.purchaseAmt == null || rowNode.data.purchaseAmt === "") {
-            rowNode.setDataValue("purchaseAmt", 0);
-        }
+    // Map the popup fields to the Payment grid fields.
+    const invoiceNo = isVendor
+        ? (invoice.TransactionNo ?? invoice.transaction_no ?? invoice.bill_no)
+        : (invoice.bill_no ?? invoice.BillNo ?? invoice.TransactionNo);
 
-        setOpenPurchaseHelp(false);
-        setOpenSalesHelp(false);
-        setSelectedInvoiceRow(null);
+    const invoiceDate =
+        invoice.bill_date ??
+        invoice.Invoice_Date ??
+        invoice.TransactionDate ??
+        "";
+
+    const invoiceAmount = Number(
+        invoice.bill_amt ??
+        invoice.TotalAmount ??
+        invoice.total_amount ??
+        invoice.Invoice_Amount ??
+        invoice.Amount ??
+        0
+    );
+
+    const paidAmount = Number(
+        invoice.paid_amount ??
+        invoice.PaidAmount ??
+        invoice.Previous_Paid_Amount ??
+        0
+    );
+
+    const outstandingAmount = Math.max(
+        0,
+        Number(
+            invoice.OutstandingAmount ??
+            invoice.outstanding_amount ??
+            (invoiceAmount - paidAmount)
+        )
+    );
+
+    // Update the selected AG Grid row.
+    const updatedRow = {
+        ...rowNode.data,
+        Invoice_ID: invoiceNo ?? "",
+        Invoice_Date: invoiceDate,
+        Invoice_Amount: invoiceAmount,
+        Previous_Paid_Amount: paidAmount,
+        Outstanding_Amount: outstandingAmount,
+        Adjust_Amount: 0,
+        Keyfield: invoice.key_field ?? invoice.Keyfield ?? ""
     };
+
+    rowNode.setData(updatedRow);
+
+    // IMPORTANT: Also update React state because savePaymentDetails()
+    // reads rowData, not the AG Grid row directly.
+    const rowIndex = rowNode.rowIndex;
+
+    setRowData((previousRows) =>
+        previousRows.map((row, index) =>
+            index === rowIndex
+                ? updatedRow
+                : row
+        )
+    );
+
+    console.log("Updated invoice row:", updatedRow);
+
+    setOpenPurchaseHelp(false);
+    setOpenSalesHelp(false);
+    setSelectedInvoiceRow(null);
+};
 
     const handlePurchaseDataSelect = (selectedData) => {
         const invoice = Array.isArray(selectedData) ? selectedData[0] : selectedData;
@@ -455,9 +550,41 @@ function Payment() {
             return false;
         }
 
-        params.data.ItemTotalWight = newValue;
-        params.data.purchaseAmt = newValue;
-        params.data.Qty = newValue;
+        params.data.Previous_Paid_Amount = newValue;
+        return true;
+    }
+
+    function Outstanding_AmountValueSetter(params) {
+        const newValue = parseFloat(params.newValue);
+
+        if (isNaN(newValue) || params.newValue.toString().trim() === '' || params.newValue.toString().match(/[^0-9.]/)) {
+            toast.warning("Please enter a valid numeric quantity.");
+            return false;
+        }
+
+        if (newValue < 0) {
+            toast.warning("Quantity cannot be negative.");
+            return false;
+        }
+
+        params.data.Outstanding_Amount = newValue;
+        return true;
+    }
+
+    function Adjust_AmountValueSetter(params) {
+        const newValue = parseFloat(params.newValue);
+
+        if (isNaN(newValue) || params.newValue.toString().trim() === '' || params.newValue.toString().match(/[^0-9.]/)) {
+            toast.warning("Please enter a valid numeric quantity.");
+            return false;
+        }
+
+        if (newValue < 0) {
+            toast.warning("Quantity cannot be negative.");
+            return false;
+        }
+
+        params.data.Adjust_Amount = newValue;
         return true;
     }
 
@@ -485,7 +612,7 @@ function Payment() {
         },
         {
             headerName: "Invoice No",
-            field: "itemName",
+            field: "Invoice_ID",
             editable: false,
             filter: true,
             sortable: false,
@@ -514,7 +641,7 @@ function Payment() {
         },
         {
             headerName: 'Invoice Amount',
-            field: 'UOM_ID',
+            field: 'Invoice_Amount',
             editable: false,
             filter: true,
             sortable: false,
@@ -522,7 +649,7 @@ function Payment() {
         },
         {
             headerName: 'Paid',
-            field: 'Qty',
+            field: 'Previous_Paid_Amount',
             editable: true,
             filter: true,
             sortable: false,
@@ -531,22 +658,30 @@ function Payment() {
         },
         {
             headerName: 'Outstanding',
-            field: 'ItemTotalWight',
+            field: 'Outstanding_Amount',
             editable: true,
             filter: true,
             sortable: false,
-            valueSetter: qtyValueSetter,
+            valueSetter: Outstanding_AmountValueSetter,
             cellEditorParams: { maxLength: 10 }
         },
         {
             headerName: 'Adjustment Amount',
-            field: 'purchaseAmt',
+            field: 'Adjust_Amount',
             editable: true,
             filter: true,
             sortable: false,
-            valueSetter: qtyValueSetter,
+            valueSetter: Adjust_AmountValueSetter,
             cellEditorParams: { maxLength: 18 }
         },
+        {
+            headerName: 'KeyField',
+            field: 'Keyfield',
+            editable: false,
+            filter: true,
+            sortable: false,
+            hide: true
+        }
     ];
 
     const columnDefsTax = [
@@ -559,44 +694,31 @@ function Payment() {
         { headerName: 'Keyfield', field: 'keyfield', sortable: false, editable: false, hide: true }
     ];
 
+   // 1. Header Field Validation
     const handleSaveButtonClick = async () => {
-        if (!noteType || !transactionDate || !partyType || !partyName || !refType || !total || !totalTax || !totalAmount) {
-            toast.warning("Error: Missing required fields.");
-            setError(true);
-            return;
-        }
-
-        if (rowData.length === 0 || rowDataTax.length === 0) {
-            toast.warning("No item details or tax details found to save.");
-            return;
-        }
-
         setError(false);
         setLoading(true);
 
         try {
+            // 1. Construct Header Data Payload
             const headerPayload = {
-                Note_Type: noteType,
-                Note_Date: transactionDate,
+                Payment_Type: paymentType,
+                Payment_Date: transactionDate,
                 Party_Type: partyType,
                 Party_ID: partyName,
-                Reference_Type: refType,
-                Reference_ID: keyfield,
-                Reference_Invoice_No: refTransactionNumber,
-                Reference_Invoice_Date: refTransactionDate,
-                Reason_ID: 'Payment',
-                Reference_No: refNo,
-                Sub_Total: total,
-                Tax_Amount: totalTax,
-                Rounded_off: roundDifference,
-                Total_Amount: totalAmount,
+                Payment_Mode: paymentMode,
+                Keyfield: keyfield,
+                Account_ID: bankCashAccount,
+                Reference_No: refTransactionNumber,
+                Reference_Date: refTransactionDate,
+                Amount: amount,
                 Narration: narration,
                 company_code: sessionStorage.getItem("selectedCompanyCode"),
                 location_code: sessionStorage.getItem("selectedLocationCode") || "LOC01",
                 created_by: sessionStorage.getItem("selectedUserCode")
             };
 
-            const response = await fetch(`${config.apiBaseUrl}/Debit_Credit_NoteInsert`, {
+            const response = await fetch(`${config.apiBaseUrl}/PaymentHdrInsert`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(headerPayload)
@@ -604,11 +726,17 @@ function Payment() {
 
             if (response.ok) {
                 const result = await response.json();
-                const KeyfieldHeader = result.Keyfield;
-                const noteNo = result.Note_No;
 
-                setTransactionNumber(noteNo);
-                toast.success("Payment Note saved successfully!");
+                // Extract generated Keyfield and Payment_ID from backend response
+                const keyfieldHeader = result.Keyfield;
+                const paymentId = result.Payment_ID;
+
+                setTransactionNumber(paymentId || "");
+
+                // 2. Save Details directly without validations
+                await savePaymentDetails(paymentId, keyfieldHeader);
+
+                toast.success("Payment Note and Details saved successfully!");
                 setShowExcelButton(true);
             } else {
                 const errorResponse = await response.json();
@@ -622,6 +750,41 @@ function Payment() {
         }
     };
 
+    // SAVE PAYMENT DETAILS FUNCTION (Without Validations)
+    const savePaymentDetails = async (paymentId, keyfieldHeader) => {
+        try {
+            for (const row of (rowData || [])) {
+                const detailPayload = {
+                    Payment_ID: paymentId,
+                    Invoice_ID: row.Invoice_ID ?? row.invoice_ID ?? row.InvoiceId ?? "",
+                    Invoice_Date: row.Invoice_Date ?? null,
+                    Invoice_Amount: row.Invoice_Amount ?? 0,
+                    Previous_Paid_Amount: row.Previous_Paid_Amount ?? 0,
+                    Outstanding_Amount: row.Outstanding_Amount ?? 0,
+                    Adjust_Amount: row.Adjust_Amount ?? 0,
+                    Keyfield_Header: keyfieldHeader,
+                    company_code: sessionStorage.getItem("selectedCompanyCode"),
+                    location_code: sessionStorage.getItem("selectedLocationCode") || "LOC01",
+                    Created_By: sessionStorage.getItem("selectedUserCode")
+                };
+
+                const response = await fetch(`${config.apiBaseUrl}/PaymentDetailsInsert`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(detailPayload)
+                });
+
+                if (!response.ok) {
+                    const errorResponse = await response.json();
+                    console.error("Detail Insert Error:", errorResponse);
+                }
+            }
+        } catch (error) {
+            console.error("Error saving details:", error);
+            toast.error("Error saving payment details: " + error.message);
+        }
+    };
+
     const handleTransactionNoKeyDown = (e) => {
         if (e.key === "Enter") {
             e.preventDefault();
@@ -629,78 +792,203 @@ function Payment() {
                 toast.warning("Please enter a Transaction Number");
                 return;
             }
-            fetchDebitCreditNoteData(transactionNumber.trim());
+            fetchPaymentData(transactionNumber.trim());
         }
     };
 
-    const handleDebitCreditData = (selectedData) => {
-        if (selectedData && selectedData.length > 0) {
-            const item = selectedData[0];
-            setTransactionNumber(item.TransactionNo);
-            fetchDebitCreditNoteData(item.TransactionNo);
+    // const handlePaymentData = (selectedData) => {
+    //     if (selectedData && selectedData.length > 0) {
+    //         const item = selectedData[0];
+    //         setTransactionNumber(item.TransactionNo);
+    //         fetchPaymentData(item.TransactionNo);
+    //     }
+    // };
+
+    
+const handlePaymentData = (selectedData) => {
+    if (selectedData && selectedData.length > 0) {
+        const item = selectedData[0];
+
+        // PaymentHelp sends PaymentID
+        const paymentId = item.PaymentID || item.TransactionNo;
+
+        if (!paymentId) {
+            toast.warning("Please select a valid Payment ID");
+            return;
         }
-    };
 
-    const fetchDebitCreditNoteData = async (code) => {
-        if (!code) return;
-        setLoading(true);
+        setTransactionNumber(paymentId);
+        fetchPaymentData(paymentId);
+    }
+};
 
-        try {
-            const response = await fetch(`${config.apiBaseUrl}/getDebitCreditNoteData`, {
+
+    const fetchPaymentData = async (code) => {
+    if (!code) return;
+
+    setLoading(true);
+
+    try {
+        const response = await fetch(
+            `${config.apiBaseUrl}/getPaymentData`,
+            {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ transaction_no: code, company_code: sessionStorage.getItem("selectedCompanyCode") }),
-            });
-
-            if (!response.ok) {
-                if (response.status === 404) {
-                    toast.warning("Transaction Data not found");
-                    setRowData([]);
-                    setRowDataTax([]);
-                } else {
-                    const errorResponse = await response.json();
-                    toast.error(errorResponse.message || "An error occurred while fetching data");
-                }
-                return;
+                body: JSON.stringify({
+                    transaction_no: code,
+                    company_code: sessionStorage.getItem("selectedCompanyCode")
+                })
             }
+        );
 
-            const searchData = await response.json();
-            setShowExcelButton(true);
-            setSaveButtonVisible(false);
-            setUpdateButtonVisible(true);
-            setDelButtonVisible(true);
-            setPrintButtonVisible(true);
-
-            if (searchData.header && searchData.header.length > 0) {
-                const headerItem = searchData.header[0];
-                setNoteType(headerItem.Note_Type || "");
-                const partyTypeVal = headerItem.Party_Type || "";
-                setSelectedPartyType(partyTypeVal ? { value: partyTypeVal, label: partyTypeVal } : null);
-                setPartyType(partyTypeVal);
-                setPartyName(headerItem.Party_ID || "");
-
-                if (headerItem.Note_Date) setTransactionDate(formatDate(headerItem.Note_Date));
-                setRefTransactionNumber(headerItem.Reference_Invoice_No || "");
-                if (headerItem.Reference_Invoice_Date) setRefTransactionDate(formatDate(headerItem.Reference_Invoice_Date));
-                setTransactionNumber(headerItem.Note_No || "");
-                setTotal(formatToTwoDecimalPoints(headerItem.Sub_Total || 0));
-                setTotalTax(formatToTwoDecimalPoints(headerItem.Tax_Amount || 0));
-                setTotalAmount(formatToTwoDecimalPoints(headerItem.Total_Amount || 0));
-                setRoundDifference(formatToTwoDecimalPoints(headerItem.rounded_off || 0));
-                setNarration(headerItem.Narration || "");
-                setRefNo(headerItem.Reference_No || "");
-                setKeyfieldHeader(headerItem.Keyfield || "");
-                setKeyfield(headerItem.Reference_ID || "");
+        if (!response.ok) {
+            if (response.status === 404) {
+                toast.warning("Transaction Data not found");
+                setRowData([]);
+                setRowDataTax([]);
             } else {
-                toast.warning("Header details not found");
+                const errorResponse = await response.json();
+                toast.error(
+                    errorResponse.message ||
+                    "An error occurred while fetching data"
+                );
             }
-        } catch (error) {
-            console.error("Error fetching Debit/Credit Note data:", error);
-            toast.error(error.message || "Failed to fetch data");
-        } finally {
-            setLoading(false);
+            return;
         }
-    };
+
+        const searchData = await response.json();
+
+        console.log("Fetched Payment Data:", searchData);
+
+        setShowExcelButton(true);
+        setSaveButtonVisible(false);
+        setUpdateButtonVisible(true);
+        setDelButtonVisible(true);
+        setPrintButtonVisible(true);
+
+        // STEP 1: Populate Payment Header
+        if (searchData.header && searchData.header.length > 0) {
+            const headerItem = searchData.header[0];
+
+            setPaymentType(headerItem.Payment_Type || "");
+
+            const paymentTypeValue = headerItem.Payment_Type || "";
+            setSelectedPaymentType(
+                paymentTypeValue
+                    ? {
+                          value: paymentTypeValue,
+                          label: paymentTypeValue
+                      }
+                    : null
+            );
+
+            // Populate the saved Vendor / Customer Code
+// Populate Vendor / Customer Type
+const savedPartyType = headerItem.Party_Type || "";
+
+setPartyType(savedPartyType);
+
+setSelectedPartyType(
+    savedPartyType
+        ? {
+              value: savedPartyType,
+              label: savedPartyType
+          }
+        : null
+);
+
+// Populate Vendor / Customer Code
+const savedPartyCode = headerItem.Party_ID || "";
+
+setPartyCode(savedPartyCode);
+setPartyName(savedPartyCode);
+
+            setPartyName(headerItem.Party_ID || "");
+
+            setTransactionDate(
+                headerItem.Payment_Date
+                    ? formatDate(headerItem.Payment_Date)
+                    : ""
+            );
+
+            setTransactionNumber(headerItem.Payment_ID || "");
+            setPaymentMode(headerItem.Payment_Mode || "");
+
+            setSelectedPaymentMode(
+                headerItem.Payment_Mode
+                    ? {
+                          value: headerItem.Payment_Mode,
+                          label: headerItem.Payment_Mode
+                      }
+                    : null
+            );
+
+            setBankCashAccount(headerItem.Account_ID ?? "");
+
+            setSelectedBankCashAccount(
+                headerItem.Account_ID != null
+                    ? {
+                          value: headerItem.Account_ID,
+                          label: String(headerItem.Account_ID)
+                      }
+                    : null
+            );
+
+            setRefTransactionNumber(headerItem.Reference_No || "");
+
+            setRefTransactionDate(
+                headerItem.Reference_Date
+                    ? formatDate(headerItem.Reference_Date)
+                    : ""
+            );
+
+            setAmount(headerItem.Amount ?? 0);
+            setNarration(headerItem.Narration || "");
+            setKeyfieldHeader(headerItem.Keyfield || "");
+        } else {
+            toast.warning("Payment header details not found");
+        }
+
+        // STEP 2: Populate Payment Details AG Grid
+        const detailRows = (searchData.detail || []).map((item, index) => ({
+            serialNumber: index + 1,
+            Payment_Detail_ID: item.Payment_Detail_ID ?? null,
+            Invoice_ID: item.Invoice_ID ?? "",
+            Invoice_Date: item.Invoice_Date
+                ? formatDate(item.Invoice_Date)
+                : "",
+            Invoice_Amount: Number(item.Invoice_Amount ?? 0),
+            Previous_Paid_Amount: Number(
+                item.Previous_Paid_Amount ?? 0
+            ),
+            Outstanding_Amount: Number(
+                item.Outstanding_Amount ?? 0
+            ),
+            Adjust_Amount: Number(item.Adjust_Amount ?? 0),
+            Keyfield_Header: item.Keyfield_Header ?? "",
+            Keyfield: item.Keyfield ?? ""
+        }));
+
+        console.log("Payment detail rows:", detailRows);
+        setRowData(detailRows);
+
+        // STEP 3: Populate Tax Details if returned
+        const taxRows = (searchData.taxdetail || []).map(
+            (item, index) => ({
+                ...item,
+                serialNumber: index + 1
+            })
+        );
+
+        setRowDataTax(taxRows);
+
+    } catch (error) {
+        console.error("Error fetching Payment data:", error);
+        toast.error(error.message || "Failed to fetch payment data");
+    } finally {
+        setLoading(false);
+    }
+};
 
     const handleExcelDownload = () => {
         const filteredRowData = rowData.filter(row => (row.Qty > 0) && (row.TotalItemAmount > 0 || row.purchaseAmt > 0));
@@ -758,111 +1046,188 @@ function Payment() {
         XLSX.writeFile(workbook, fileName);
     };
 
-    const handleUpdateButtonClick = async () => {
-        if (!noteType || !transactionDate || !partyType || !partyName || !refType || !total || !totalTax || !totalAmount) {
-            toast.warning("Error: Missing required fields.");
-            setError(true);
-            return;
-        }
+    
 
-        setError(false);
-        setLoading(true);
+const handleUpdateButtonClick = async () => {
+    setError(false);
+    setLoading(true);
 
-        try {
-            const headerPayload = {
-                Note_No: transactionNumber,
-                Note_Type: noteType,
-                Note_Date: transactionDate,
-                Party_Type: partyType,
-                Party_ID: partyName,
-                Reference_Type: refType,
-                Reference_ID: keyfield,
-                Reference_Invoice_No: refTransactionNumber,
-                Reference_Invoice_Date: refTransactionDate,
-                Reason_ID: 'Payment',
-                Reference_No: refNo,
-                Sub_Total: total,
-                Tax_Amount: totalTax,
-                Rounded_off: roundDifference,
-                Total_Amount: totalAmount,
-                Narration: narration,
-                company_code: sessionStorage.getItem("selectedCompanyCode"),
-                location_code: sessionStorage.getItem("selectedLocationCode"),
-                modified_by: sessionStorage.getItem("selectedUserCode")
-            };
+    try {
+        // 1. Prepare Payment Header Update Payload
+        const headerPayload = {
+            Payment_ID: transactionNumber,
+            Payment_Date: transactionDate,
+            Payment_Type: paymentType,
+            Party_Type: partyType,
+            Party_ID: partyName,
+            Payment_Mode: paymentMode,
+            Account_ID: bankCashAccount,
+            Reference_No: refTransactionNumber || "",
+            Reference_Date: refTransactionDate || null,
+            Amount: Number(amount || 0),
+            Narration: narration || "",
+            BillNo_match: "",
+            Adjusted_Amount: Number(total || 0),
+            Unadjusted_Amount:
+                Number(amount || 0) - Number(total || 0),
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
+            location_code: sessionStorage.getItem("selectedLocationCode"),
+            modified_by: sessionStorage.getItem("selectedUserCode")
+        };
 
-            const response = await fetch(`${config.apiBaseUrl}/Debit_Credit_NoteUpdate`, {
+        // 2. Update Payment Header
+        const response = await fetch(
+            `${config.apiBaseUrl}/Payment_hdrUpdate`,
+            {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json"
+                },
                 body: JSON.stringify(headerPayload)
-            });
-
-            if (response.ok) {
-                toast.success("Payment Note updated successfully!");
-                setShowExcelButton(true);
-            } else {
-                const errorResponse = await response.json();
-                toast.warning(errorResponse.message || "Failed to update Header data");
             }
-        } catch (error) {
-            console.error("Error updating header data:", error);
-            toast.error("Error updating data: " + error.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleDeleteHeader = async () => {
-        try {
-            const response = await fetch(`${config.apiBaseUrl}/Debit_Credit_NoteDelete`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    Note_No: transactionNumber,
-                    company_code: sessionStorage.getItem("selectedCompanyCode"),
-                    location_code: sessionStorage.getItem("selectedLocationCode") || ""
-                })
-            });
-
-            if (response.ok) return true;
-            else {
-                const errorResponse = await response.json();
-                return errorResponse.message || "Failed to delete Header.";
-            }
-        } catch (error) {
-            return "Error deleting Header: " + error.message;
-        }
-    };
-
-    const handleDeleteButtonClick = async () => {
-        if (!transactionNumber) {
-            toast.warning('Error: Transaction Number is missing');
-            return;
-        }
-
-        showConfirmationToast(
-            "Are you sure you want to delete this Payment Voucher?",
-            async () => {
-                setLoading(true);
-                try {
-                    const headerResult = await handleDeleteHeader();
-                    if (headerResult === true) {
-                        toast.success("Payment Voucher Deleted Successfully", {
-                            autoClose: 1500,
-                            onClose: () => { window.location.reload(); }
-                        });
-                    } else {
-                        toast.error(headerResult);
-                    }
-                } catch (error) {
-                    toast.error(error.message || "An Error occurred while Deleting Data");
-                } finally {
-                    setLoading(false);
-                }
-            },
-            () => { toast.info("Delete cancelled."); }
         );
-    };
+
+        const result = await response.json();
+
+        if (response.ok) {
+            // 3. Save Payment Details after successful header update
+            const paymentId = transactionNumber;
+
+            await savePaymentDetails(paymentId, keyfieldHeader);
+
+            // 4. Show success message after both operations succeed
+            toast.success(
+                result.message || "Payment updated successfully!"
+            );
+
+            setShowExcelButton(true);
+        } else {
+            toast.warning(
+                result.message || "Failed to update Payment"
+            );
+        }
+    } catch (error) {
+        console.error("Error updating Payment:", error);
+        toast.error("Error updating Payment: " + error.message);
+    } finally {
+        setLoading(false);
+    }
+};
+
+// 1. Delete Payment Details first
+const handleDeleteDetails = async () => {
+    try {
+        const response = await fetch(
+            `${config.apiBaseUrl}/Payment_DetailDelete`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    Payment_ID: transactionNumber,
+                    company_code: sessionStorage.getItem("selectedCompanyCode"),
+                    location_code:
+                        sessionStorage.getItem("selectedLocationCode") || ""
+                })
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            return result.message || "Failed to delete Payment Details.";
+        }
+
+        return true;
+    } catch (error) {
+        return "Error deleting Payment Details: " + error.message;
+    }
+};
+
+
+// 2. Delete Payment Header
+const handleDeleteHeader = async () => {
+    try {
+        const response = await fetch(
+            `${config.apiBaseUrl}/Payment_hdrDelete`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    Payment_ID: transactionNumber,
+                    company_code: sessionStorage.getItem("selectedCompanyCode"),
+                    location_code:
+                        sessionStorage.getItem("selectedLocationCode") || ""
+                })
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            return result.message || "Failed to delete Payment Header.";
+        }
+
+        return true;
+    } catch (error) {
+        return "Error deleting Payment Header: " + error.message;
+    }
+};
+
+
+// 3. Delete Details first, then Header
+const handleDeleteButtonClick = async () => {
+    if (!transactionNumber) {
+        toast.warning("Error: Transaction Number is missing");
+        return;
+    }
+
+    showConfirmationToast(
+        "Are you sure you want to delete this Payment Voucher?",
+        async () => {
+            setLoading(true);
+
+            try {
+                // Step 1: Delete Payment Details
+                const detailsResult = await handleDeleteDetails();
+
+                if (detailsResult !== true) {
+                    toast.error(detailsResult);
+                    return;
+                }
+
+                // Step 2: Delete Payment Header only if details succeed
+                const headerResult = await handleDeleteHeader();
+
+                if (headerResult !== true) {
+                    toast.error(headerResult);
+                    return;
+                }
+
+                // Step 3: Both deletions succeeded
+                toast.success("Payment Voucher Deleted Successfully", {
+                    autoClose: 1500,
+                    onClose: () => {
+                        window.location.reload();
+                    }
+                });
+
+            } catch (error) {
+                toast.error(
+                    error.message || "An error occurred while deleting the Payment Voucher."
+                );
+            } finally {
+                setLoading(false);
+            }
+        },
+        () => {
+            toast.info("Delete cancelled.");
+        }
+    );
+};
 
     // Deleted Screen States
     const [deletedNoteType, setDeletedNoteType] = useState("");
@@ -1250,12 +1615,12 @@ function Payment() {
                                     onClick={() => handleToggleTable('myTable')}>
                                     Item Details
                                 </purButton>
-                                <purButton
+                                {/* <purButton
                                     type="button"
                                     className={`"toggle-btn"  ${activeTable === 'myTable' ? 'active' : ''}`}
                                     onClick={() => handleToggleTable('tax')}>
                                     Tax Details
-                                </purButton>
+                                </purButton> */}
                             </div>
                             <div className="d-flex me-4 gap-2">
                                 <icon type="button" className="popups-btn" title="Add Row" onClick={handleAddRow}>
@@ -1283,7 +1648,7 @@ function Payment() {
                     <SalesHdrPopup open={openSalesHelp} handleClose={() => setOpenSalesHelp(false)} handleData={handleSalesDataSelect} selectedPartyCode={partyName || ""} />
                     <PurchaseReturnView open={openPurchaseReturnHelp} handleClose={() => setOpenPurchaseReturnHelp(false)} handleItemView={() => {}} selectedPartyCode={partyName || ""} />
                     <SalesRetrunView open={openSalesReturnHelp} handleClose={() => setOpenSalesReturnHelp(false)} handleDataView={() => {}} selectedPartyCode={partyName || ""} />
-                    <DebitCrediNoteHelp open={openDebitCreditNoteHelp} handleClose={() => setOpenDebitCreditNoteHelp(false)} handleDebitCreditData={handleDebitCreditData} />
+                    <PaymentHelp open={openDebitCreditNoteHelp} handleClose={() => setOpenDebitCreditNoteHelp(false)} handlePaymentData={handlePaymentData} />
                     <PurchaseVendorPopup open={openVendorPartyHelp} handleClose={() => setOpenVendorPartyHelp(false)} handleVendor={handleVendor} />
                     <SalesVendorPopup open={openCustomerPartyHelp} handleClose={() => setOpenCustomerPartyHelp(false)} handleVendor={handleCustomer} />
 
