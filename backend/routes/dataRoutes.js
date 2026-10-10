@@ -1018,6 +1018,15 @@ router.post("/getBankAccountPayment", dataController.getBankAccountPayment)
 router.post("/PaymentHdrInsert", dataController.PaymentHdrInsert)
 router.post("/PaymentDetailsInsert", dataController.PaymentDetailsInsert)
 router.post("/getPaymentData", dataController.getPaymentData)
+router.post("/Payment_DetailInsert", dataController.Payment_DetailInsert)
+router.post("/Payment_DetailUpdate", dataController.Payment_DetailUpdate)
+router.post("/Payment_DetailDelete", dataController.Payment_DetailDelete)
+router.post("/Payment_DetailLoopInsert", dataController.Payment_DetailLoopInsert)
+router.post("/Payment_DetailLoopUpdate", dataController.Payment_DetailLoopUpdate)
+router.post("/Payment_DetailLoopDelete", dataController.Payment_DetailLoopDelete)
+router.post("/Payment_hdrLoopInsert", dataController.Payment_hdrLoopInsert)
+router.post("/Payment_hdrLoopUpdate", dataController.Payment_hdrLoopUpdate)
+router.post("/Payment_hdrLoopDelete", dataController.Payment_hdrLoopDelete)
 
 
 module.exports = router;
