@@ -31004,28 +31004,9 @@ const getBankAccountPayment = async (req, res) => {
 
 
 const PaymentHdrInsert = async (req, res) => {
-    const {
-    Payment_ID,
-    Payment_Date,
-    Payment_Type,
-    Party_Type,
-    Party_ID,
-    Payment_Mode,
-    Account_ID,
-    Reference_No,
-    Reference_Date,
-    Amount,
-    Narration,
-    Status,
-    GL_Status,
-    BillNo_match,
-    Adjusted_Amount,
-    Unadjusted_Amount,
-    Keyfield,
-    company_code,
-    location_code,
-    created_by
-} = req.body;
+  const { Payment_ID, Payment_Date, Payment_Type, Party_Type, Party_ID, Payment_Mode, Account_ID, Reference_No, Reference_Date, Amount,
+  Narration, Status, GL_Status, BillNo_match, Adjusted_Amount, Unadjusted_Amount, Keyfield, company_code, location_code, created_by
+  } = req.body;
 
     try {
         const pool = await sql.connect(dbConfig);
@@ -31055,33 +31036,9 @@ const PaymentHdrInsert = async (req, res) => {
             .input("created_date", sql.DateTime, null)
             .input("modified_by", sql.NVarChar, "")
             .input("modified_date", sql.DateTime, null)
-            .query(`
-                EXEC dbo.sp_Payment_hdr
-                    @mode,
-                    @Payment_ID,
-                    @Payment_Date,
-                    @Payment_Type,
-                    @Party_Type,
-                    @Party_ID,
-                    @Payment_Mode,
-                    @Account_ID,
-                    @Reference_No,
-                    @Reference_Date,
-                    @Amount,
-                    @Narration,
-                    @Status,
-                    @GL_Status,
-                    @BillNo_match,
-                    @Adjusted_Amount,
-                    @Unadjusted_Amount,
-                    @company_code,
-                    @location_code,
-                    @Keyfield,
-                    @created_by,
-                    @created_date,
-                    @modified_by,
-                    @modified_date
-            `);
+            .query(` EXEC dbo.sp_Payment_hdr @mode, @Payment_ID, @Payment_Date, @Payment_Type, @Party_Type, @Party_ID, @Payment_Mode, @Account_ID, @Reference_No,
+            @Reference_Date, @Amount, @Narration, @Status, @GL_Status, @BillNo_match, @Adjusted_Amount, @Unadjusted_Amount,
+            '', '', '', '', '', '', @company_code, @location_code, @Keyfield, @created_by, @created_date, @modified_by, @modified_date`);
 
         const generatedData = result.recordset?.[0] || {};
 
@@ -31297,6 +31254,500 @@ const getPaymentSearch = async (req, res) => {
   }
 };
 //Code ended by Dinesh Gokul on 10-10-2026
+//Code added by SakthiGanesh J on 10-10-2026
+const Payment_DetailInsert = async (req, res) => {
+  const { Payment_ID, Invoice_ID, Invoice_Date, Invoice_Amount, Previous_Paid_Amount, Outstanding_Amount,
+  Adjust_Amount, Keyfield_Header, Keyfield, company_code, location_code, Created_By, Created_Date } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+
+    await pool.request()
+      .input("mode", sql.NVarChar, "I")
+      .input("Payment_Detail_ID", sql.Int, 0)
+      .input("Payment_ID", sql.NVarChar, Payment_ID)
+      .input("Invoice_ID", sql.NVarChar, Invoice_ID)
+      .input("Invoice_Date", sql.Date, Invoice_Date)
+      .input("Invoice_Amount", sql.Decimal(18, 2), Invoice_Amount)
+      .input("Previous_Paid_Amount", sql.Decimal(18, 2), Previous_Paid_Amount)
+      .input("Outstanding_Amount", sql.Decimal(18, 2), Outstanding_Amount)
+      .input("Adjust_Amount", sql.Decimal(18, 2), Adjust_Amount)
+      .input("Keyfield_Header", sql.NVarChar, Keyfield_Header)
+      .input("Keyfield", sql.NVarChar, Keyfield)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("Created_By", sql.NVarChar, Created_By)
+      .input("Created_Date", sql.DateTime, Created_Date || null)
+      .input("Modify_By", sql.NVarChar, "")
+      .input("Modify_Date", sql.DateTime, null)
+      .query(`EXEC sp_Payment_details @mode, 0, @Payment_ID, @Invoice_ID, @Invoice_Date, @Invoice_Amount, @Previous_Paid_Amount, @Outstanding_Amount, @Adjust_Amount,
+      @Keyfield_Header, @Keyfield, @company_code, @location_code, @Created_By, @Created_Date, '', ''`);
+
+    res.status(200).json({
+      success: true,
+      message: "Payment Detail inserted successfully"
+    });
+  } catch (err) {
+    console.error("Error during Payment Detail insert:", err);
+    res.status(500).json({
+      message: err.message || "Internal Server Error"
+    });
+  }
+};
+
+const Payment_DetailUpdate = async (req, res) => {
+  const { Payment_Detail_ID, Payment_ID, Invoice_ID, Invoice_Date, Invoice_Amount, Previous_Paid_Amount, Outstanding_Amount,
+    Adjust_Amount, Keyfield_Header, Keyfield, company_code, location_code, Modify_By, Modify_Date  } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+
+    await pool.request()
+      .input("mode", sql.NVarChar, "U")
+      .input("Payment_Detail_ID", sql.Int, Payment_Detail_ID || 0)
+      .input("Payment_ID", sql.NVarChar, Payment_ID)
+      .input("Invoice_ID", sql.NVarChar, Invoice_ID)
+      .input("Invoice_Date", sql.Date, Invoice_Date)
+      .input("Invoice_Amount", sql.Decimal(18, 2), Invoice_Amount)
+      .input("Previous_Paid_Amount", sql.Decimal(18, 2), Previous_Paid_Amount)
+      .input("Outstanding_Amount", sql.Decimal(18, 2), Outstanding_Amount)
+      .input("Adjust_Amount", sql.Decimal(18, 2), Adjust_Amount)
+      .input("Keyfield_Header", sql.NVarChar, Keyfield_Header)
+      .input("Keyfield", sql.NVarChar, Keyfield)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("Created_By", sql.NVarChar, "")
+      .input("Created_Date", sql.DateTime, null)
+      .input("Modify_By", sql.NVarChar, Modify_By)
+      .input("Modify_Date", sql.DateTime, Modify_Date || null)
+      .query(`EXEC sp_Payment_details @mode, @Payment_Detail_ID, @Payment_ID, @Invoice_ID, @Invoice_Date, @Invoice_Amount, @Previous_Paid_Amount, @Outstanding_Amount, @Adjust_Amount,
+  @Keyfield_Header, @Keyfield, @company_code, @location_code, '', '', @Modify_By, @Modify_Date`);
+
+    res.status(200).json({
+      success: true,
+      message: "Payment Detail updated successfully"
+    });
+  } catch (err) {
+    console.error("Error during Payment Detail update:", err);
+    res.status(500).json({
+      message: err.message || "Internal Server Error"
+    });
+  }
+};
+
+const Payment_DetailDelete = async (req, res) => {
+  const { Payment_Detail_ID, Payment_ID, Keyfield_Header, Keyfield, company_code, location_code } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+
+    await pool.request()
+      .input("mode", sql.NVarChar, "D")
+      .input("Payment_Detail_ID", sql.Int, Payment_Detail_ID || 0)
+      .input("Payment_ID", sql.NVarChar, Payment_ID || "")
+      .input("Invoice_ID", sql.NVarChar, "")
+      .input("Invoice_Date", sql.Date, null)
+      .input("Invoice_Amount", sql.Decimal(18, 2), null)
+      .input("Previous_Paid_Amount", sql.Decimal(18, 2), null)
+      .input("Outstanding_Amount", sql.Decimal(18, 2), null)
+      .input("Adjust_Amount", sql.Decimal(18, 2), 0)
+      .input("Keyfield_Header", sql.NVarChar, Keyfield_Header || "")
+      .input("Keyfield", sql.NVarChar, Keyfield)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("Created_By", sql.NVarChar, "")
+      .input("Created_Date", sql.DateTime, null)
+      .input("Modify_By", sql.NVarChar, "")
+      .input("Modify_Date", sql.DateTime, null)
+      .query(`EXEC sp_Payment_details @mode, 0, '', '', '', 0, 0, 0, 0, '', @Keyfield, @company_code,
+      @location_code, '', '', '', ''`);
+
+    res.status(200).json({
+      success: true,
+      message: "Payment Detail deleted successfully"
+    });
+  } catch (err) {
+    console.error("Error during Payment Detail delete:", err);
+    res.status(500).json({
+      message: err.message || "Internal Server Error"
+    });
+  }
+};
+
+const Payment_DetailLoopInsert = async (req, res) => {
+  const Payment_DetailData = req.body.Payment_DetailData;
+
+  if (!Array.isArray(Payment_DetailData) || !Payment_DetailData.length) {
+    return res.status(400).json({
+      message: "Invalid or empty Payment_DetailData array."
+    });
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+
+    for (const item of Payment_DetailData) {
+      await pool.request()
+        .input("mode", sql.NVarChar, "I")
+        .input("Payment_Detail_ID", sql.Int, item.Payment_Detail_ID || 0)
+        .input("Payment_ID", sql.NVarChar, item.Payment_ID)
+        .input("Invoice_ID", sql.NVarChar, item.Invoice_ID)
+        .input("Invoice_Date", sql.Date, null)
+        .input("Invoice_Amount", sql.Decimal(18, 2), null)
+        .input("Previous_Paid_Amount", sql.Decimal(18, 2), null)
+        .input("Outstanding_Amount", sql.Decimal(18, 2), null)
+        .input("Adjust_Amount", sql.Decimal(18, 2), item.Adjust_Amount)
+        .input("Keyfield_Header", sql.NVarChar, item.Keyfield_Header)
+        .input("Keyfield", sql.NVarChar, item.Keyfield)
+        .input("company_code", sql.NVarChar, item.company_code)
+        .input("location_code", sql.NVarChar, item.location_code)
+        .input("Created_By", sql.NVarChar, item.Created_By)
+        .input("Created_Date", sql.DateTime, item.Created_Date || null)
+        .input("Modify_By", sql.NVarChar, "")
+        .input("Modify_Date", sql.DateTime, null)
+        .query(`EXEC sp_Payment_details @mode, 0, @Payment_ID, @Invoice_ID, '', 0, 0, 0, @Adjust_Amount,
+        @Keyfield_Header, @Keyfield, @company_code, @location_code, @Created_By, @Created_Date, '', ''`);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Payment Detail data inserted successfully"
+    });
+  } catch (err) {
+    console.error("Error in Payment_DetailLoopInsert:", err);
+    res.status(500).json({
+      message: err.message || "Internal Server Error"
+    });
+  }
+};
+
+const Payment_DetailLoopUpdate = async (req, res) => {
+  const Payment_DetailData = req.body.Payment_DetailData;
+
+  if (!Array.isArray(Payment_DetailData) || !Payment_DetailData.length) {
+    return res.status(400).json({
+      message: "Invalid or empty Payment_DetailData array."
+    });
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+
+    for (const item of Payment_DetailData) {
+      await pool.request()
+        .input("mode", sql.NVarChar, "U")
+        .input("Payment_Detail_ID", sql.Int, item.Payment_Detail_ID || 0)
+        .input("Payment_ID", sql.NVarChar, item.Payment_ID)
+        .input("Invoice_ID", sql.NVarChar, item.Invoice_ID)
+        .input("Invoice_Date", sql.Date, null)
+        .input("Invoice_Amount", sql.Decimal(18, 2), null)
+        .input("Previous_Paid_Amount", sql.Decimal(18, 2), null)
+        .input("Outstanding_Amount", sql.Decimal(18, 2), null)
+        .input("Adjust_Amount", sql.Decimal(18, 2), item.Adjust_Amount)
+        .input("Keyfield_Header", sql.NVarChar, item.Keyfield_Header)
+        .input("Keyfield", sql.NVarChar, item.Keyfield)
+        .input("company_code", sql.NVarChar, item.company_code)
+        .input("location_code", sql.NVarChar, item.location_code)
+        .input("Created_By", sql.NVarChar, "")
+        .input("Created_Date", sql.DateTime, null)
+        .input("Modify_By", sql.NVarChar, item.Modify_By)
+        .input("Modify_Date", sql.DateTime, item.Modify_Date || null)
+        .query(`EXEC sp_Payment_details @mode, @Payment_Detail_ID, @Payment_ID, @Invoice_ID, '', 0, 0, 0, @Adjust_Amount,
+        @Keyfield_Header, @Keyfield, @company_code, @location_code, '', '', @Modify_By, @Modify_Date`);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Payment Detail data updated successfully"
+    });
+  } catch (err) {
+    console.error("Error in Payment_DetailLoopUpdate:", err);
+    res.status(500).json({
+      message: err.message || "Internal Server Error"
+    });
+  }
+};
+
+const Payment_DetailLoopDelete = async (req, res) => {
+  const Payment_DetailData = req.body.Payment_DetailData;
+
+  if (!Array.isArray(Payment_DetailData) || !Payment_DetailData.length) {
+    return res.status(400).json({
+      message: "Invalid or empty Payment_DetailData array."
+    });
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+
+    for (const item of Payment_DetailData) {
+      await pool.request()
+        .input("mode", sql.NVarChar, "D")
+        .input("Payment_Detail_ID", sql.Int, item.Payment_Detail_ID || 0)
+        .input("Payment_ID", sql.NVarChar, item.Payment_ID || "")
+        .input("Invoice_ID", sql.NVarChar, "")
+        .input("Invoice_Date", sql.Date, null)
+        .input("Invoice_Amount", sql.Decimal(18, 2), null)
+        .input("Previous_Paid_Amount", sql.Decimal(18, 2), null)
+        .input("Outstanding_Amount", sql.Decimal(18, 2), null)
+        .input("Adjust_Amount", sql.Decimal(18, 2), 0)
+        .input("Keyfield_Header", sql.NVarChar, item.Keyfield_Header || "")
+        .input("Keyfield", sql.NVarChar, item.Keyfield)
+        .input("company_code", sql.NVarChar, item.company_code)
+        .input("location_code", sql.NVarChar, item.location_code)
+        .input("Created_By", sql.NVarChar, "")
+        .input("Created_Date", sql.DateTime, null)
+        .input("Modify_By", sql.NVarChar, "")
+        .input("Modify_Date", sql.DateTime, null)
+        .query(`EXEC sp_Payment_details @mode, 0, '', '', '', 0, 0, 0, 0, '', @Keyfield, @company_code,
+        @location_code, '', '', '', ''`);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Payment Detail data deleted successfully"
+    });
+  } catch (err) {
+    console.error("Error in Payment_DetailLoopDelete:", err);
+    res.status(500).json({
+      message: err.message || "Internal Server Error"
+    });
+  }
+};
+
+const Payment_hdrInsert = async (req, res) => {
+  const { Payment_Date, Payment_Type, Party_Type, Party_ID, Payment_Mode, Account_ID, Reference_No, Reference_Date, Amount,
+    Narration, BillNo_match, Adjusted_Amount, Unadjusted_Amount, company_code, location_code, created_by, created_date, } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+
+    const result = await pool.request()
+      .input("mode", sql.NVarChar, "I")
+      .input("Payment_Date", sql.Date, Payment_Date)
+      .input("Payment_Type", sql.NVarChar, Payment_Type)
+      .input("Party_Type", sql.NVarChar, Party_Type)
+      .input("Party_ID", sql.NVarChar, Party_ID)
+      .input("Payment_Mode", sql.NVarChar, Payment_Mode)
+      .input("Account_ID", sql.NVarChar, Account_ID)
+      .input("Reference_No", sql.NVarChar, Reference_No)
+      .input("Reference_Date", sql.Date, Reference_Date)
+      .input("Amount", sql.Decimal(18, 2), Amount)
+      .input("Narration", sql.NVarChar, Narration)
+      .input("BillNo_match", sql.NVarChar, BillNo_match)
+      .input("Adjusted_Amount", sql.Decimal(18, 2), Adjusted_Amount)
+      .input("Unadjusted_Amount", sql.Decimal(18, 2), Unadjusted_Amount)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("created_by", sql.NVarChar, created_by)
+      .input("created_date", sql.DateTime, created_date)
+      .query(`EXEC sp_Payment_hdr @mode, '', @Payment_Date, @Payment_Type, @Party_Type, @Party_ID, @Payment_Mode, @Account_ID, @Reference_No,
+      @Reference_Date, @Amount, @Narration, '', '', @BillNo_match, @Adjusted_Amount, @Unadjusted_Amount, '', '', '', '', '', '', @company_code,
+      @location_code, '', @created_by, @created_date, '', ''`);
+
+    const generatedData = result.recordset ? result.recordset[0] : {};
+
+    res.status(200).json({
+      success: true,
+      message: "Payment inserted successfully",
+      Payment_ID: generatedData.Payment_ID,
+      Keyfield: generatedData.Keyfield,
+    });
+  } catch (err) {
+    console.error("Error during Payment insert:", err);
+    res.status(500).json({
+      message: err.message || "Internal Server Error",
+    });
+  }
+};
+
+const Payment_hdrUpdate = async (req, res) => {
+  const { Payment_ID, Payment_Date, Payment_Type, Party_Type, Party_ID, Payment_Mode, Account_ID, Reference_No, Reference_Date,
+    Amount, Narration, BillNo_match, Adjusted_Amount, Unadjusted_Amount, company_code, location_code, modified_by, } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+
+    await pool.request()
+      .input("mode", sql.NVarChar, "U")
+      .input("Payment_ID", sql.NVarChar, Payment_ID)
+      .input("Payment_Date", sql.Date, Payment_Date)
+      .input("Payment_Type", sql.NVarChar, Payment_Type)
+      .input("Party_Type", sql.NVarChar, Party_Type)
+      .input("Party_ID", sql.NVarChar, Party_ID)
+      .input("Payment_Mode", sql.NVarChar, Payment_Mode)
+      .input("Account_ID", sql.NVarChar, Account_ID)
+      .input("Reference_No", sql.NVarChar, Reference_No)
+      .input("Reference_Date", sql.Date, Reference_Date)
+      .input("Amount", sql.Decimal(18, 2), Amount)
+      .input("Narration", sql.NVarChar, Narration)
+      .input("BillNo_match", sql.NVarChar, BillNo_match)
+      .input("Adjusted_Amount", sql.Decimal(18, 2), Adjusted_Amount)
+      .input("Unadjusted_Amount", sql.Decimal(18, 2), Unadjusted_Amount)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("modified_by", sql.NVarChar, modified_by)
+      .query(`EXEC sp_Payment_hdr @mode, @Payment_ID, @Payment_Date, @Payment_Type, @Party_Type, @Party_ID, @Payment_Mode, @Account_ID, @Reference_No,
+      @Reference_Date, @Amount, @Narration, '', '', @BillNo_match, @Adjusted_Amount, @Unadjusted_Amount, '', '', '', '', '', '', @company_code,
+      @location_code, '', '', '', @modified_by, ''`);
+
+    res.status(200).json({
+      success: true,
+      message: "Payment updated successfully",
+    });
+  } catch (err) {
+    console.error("Error during Payment update:", err);
+    res.status(500).json({
+      message: err.message || "Internal Server Error",
+    });
+  }
+};
+
+const Payment_hdrDelete = async (req, res) => {
+  const { Payment_ID, company_code, location_code, modified_by, } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+
+    await pool.request()
+      .input("mode", sql.NVarChar, "D")
+      .input("Payment_ID", sql.NVarChar, Payment_ID)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("modified_by", sql.NVarChar, modified_by)
+      .query(`EXEC sp_Payment_hdr @mode, @Payment_ID, '', '', '', '', '', '', '', '',
+        0, '', '', '', 0, 0, 0, '', '', '', '', '', '', @company_code, @location_code, '', '', '', @modified_by, ''`);
+
+    res.status(200).json({
+      success: true,
+      message: "Payment deleted successfully",
+    });
+  } catch (err) {
+    console.error("Error during Payment delete:", err);
+    res.status(500).json({
+      message: err.message || "Internal Server Error",
+    });
+  }
+};
+
+const Payment_hdrLoopInsert = async (req, res) => {
+  const PaymentData = req.body.PaymentData;
+
+  if (!PaymentData || !PaymentData.length) {
+    return res.status(400).json("Invalid or empty PaymentData array.");
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+
+    for (const item of PaymentData) {
+      await pool.request()
+        .input("mode", sql.NVarChar, "I")
+        .input("Payment_Date", sql.Date, item.Payment_Date)
+        .input("Payment_Type", sql.NVarChar, item.Payment_Type)
+        .input("Party_Type", sql.NVarChar, item.Party_Type)
+        .input("Party_ID", sql.NVarChar, item.Party_ID)
+        .input("Payment_Mode", sql.NVarChar, item.Payment_Mode)
+        .input("Account_ID", sql.NVarChar, item.Account_ID)
+        .input("Reference_No", sql.NVarChar, item.Reference_No)
+        .input("Reference_Date", sql.Date, item.Reference_Date)
+        .input("Amount", sql.Decimal(18, 2), item.Amount)
+        .input("Narration", sql.NVarChar, item.Narration)
+        .input("BillNo_match", sql.NVarChar, item.BillNo_match)
+        .input("Adjusted_Amount", sql.Decimal(18, 2), item.Adjusted_Amount)
+        .input("Unadjusted_Amount", sql.Decimal(18, 2), item.Unadjusted_Amount)
+        .input("company_code", sql.NVarChar, item.company_code)
+        .input("location_code", sql.NVarChar, item.location_code)
+        .input("created_by", sql.NVarChar, item.created_by)
+        .input("created_date", sql.DateTime, item.created_date)
+        .query(`EXEC sp_Payment_hdr @mode, '', @Payment_Date, @Payment_Type, @Party_Type, @Party_ID, @Payment_Mode, @Account_ID, @Reference_No,
+        @Reference_Date, @Amount, @Narration, '', '', @BillNo_match, @Adjusted_Amount, @Unadjusted_Amount, '', '', '', '', '', '',
+        @company_code, @location_code, '', @created_by, @created_date, '', ''`);
+    }
+
+    res.status(200).json("Payment data inserted successfully");
+  } catch (err) {
+    console.error("Error in Payment_hdrLoopInsert:", err);
+    res.status(500).json({
+      message: err.message || "Internal Server Error",
+    });
+  }
+};
+
+const Payment_hdrLoopUpdate = async (req, res) => {
+  const PaymentData = req.body.PaymentData;
+
+  if (!PaymentData || !PaymentData.length) {
+    return res.status(400).json("Invalid or empty PaymentData array.");
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+
+    for (const item of PaymentData) {
+      await pool.request()
+        .input("mode", sql.NVarChar, "U")
+        .input("Payment_ID", sql.NVarChar, item.Payment_ID)
+        .input("Payment_Date", sql.Date, item.Payment_Date)
+        .input("Payment_Type", sql.NVarChar, item.Payment_Type)
+        .input("Party_Type", sql.NVarChar, item.Party_Type)
+        .input("Party_ID", sql.NVarChar, item.Party_ID)
+        .input("Payment_Mode", sql.NVarChar, item.Payment_Mode)
+        .input("Account_ID", sql.NVarChar, item.Account_ID)
+        .input("Reference_No", sql.NVarChar, item.Reference_No)
+        .input("Reference_Date", sql.Date, item.Reference_Date)
+        .input("Amount", sql.Decimal(18, 2), item.Amount)
+        .input("Narration", sql.NVarChar, item.Narration)
+        .input("BillNo_match", sql.NVarChar, item.BillNo_match)
+        .input("Adjusted_Amount", sql.Decimal(18, 2), item.Adjusted_Amount)
+        .input("Unadjusted_Amount", sql.Decimal(18, 2), item.Unadjusted_Amount)
+        .input("company_code", sql.NVarChar, item.company_code)
+        .input("location_code", sql.NVarChar, item.location_code)
+        .input("modified_by", sql.NVarChar, item.modified_by)
+        .query(`EXEC sp_Payment_hdr @mode, @Payment_ID, @Payment_Date, @Payment_Type, @Party_Type, @Party_ID, @Payment_Mode,
+         @Account_ID, @Reference_No, @Reference_Date, @Amount, @Narration, '', '', @BillNo_match, @Adjusted_Amount,
+         @Unadjusted_Amount, '', '', '', '', '', '', @company_code, @location_code, '', '', '', @modified_by, ''`);
+    }
+
+    res.status(200).json("Payment data updated successfully");
+  } catch (err) {
+    console.error("Error in Payment_hdrLoopUpdate:", err);
+    res.status(500).json({
+      message: err.message || "Internal Server Error",
+    });
+  }
+};
+
+const Payment_hdrLoopDelete = async (req, res) => {
+  const PaymentData = req.body.PaymentData;
+
+  if (!PaymentData || !PaymentData.length) {
+    return res.status(400).json("Invalid or empty PaymentData array.");
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+
+    for (const item of PaymentData) {
+      await pool.request()
+        .input("mode", sql.NVarChar, "D")
+        .input("Payment_ID", sql.NVarChar, item.Payment_ID)
+        .input("company_code", sql.NVarChar, item.company_code)
+        .input("location_code", sql.NVarChar, item.location_code)
+        .input("modified_by", sql.NVarChar, item.modified_by)
+        .query(`EXEC sp_Payment_hdr @mode, @Payment_ID, '', '', '', '', '', '', '', '', 0, '', '', '', 0, 0,
+        0, '', '', '', '', '', '', @company_code, @location_code, '', '', '', @modified_by, ''`);
+    }
+
+    res.status(200).json("Payment data deleted successfully");
+  } catch (err) {
+    console.error("Error in Payment_hdrLoopDelete:", err);
+    res.status(500).json({
+      message: err.message || "Internal Server Error",
+    });
+  }
+};
+//Code ended by  SakthiGanesh J on 10-10-2026
 
 module.exports = {
   login,
@@ -32294,6 +32745,18 @@ module.exports = {
   CurrencyType,
   PaymentDetailsInsert,
   getPaymentData,
-  getPaymentSearch
+  getPaymentSearch,
+  Payment_DetailInsert,
+  Payment_DetailUpdate,
+  Payment_DetailDelete,
+  Payment_DetailLoopInsert,
+  Payment_DetailLoopUpdate,
+  Payment_DetailLoopDelete,
+  Payment_hdrInsert,
+  Payment_hdrUpdate,
+  Payment_hdrDelete,
+  Payment_hdrLoopInsert,
+  Payment_hdrLoopUpdate,
+  Payment_hdrLoopDelete
 
 };
