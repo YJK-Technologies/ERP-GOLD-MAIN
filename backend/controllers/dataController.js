@@ -31003,28 +31003,29 @@ const getBankAccountPayment = async (req, res) => {
 };
 
 
-const PaymentInsert = async (req, res) => {
+const PaymentHdrInsert = async (req, res) => {
     const {
-        Payment_ID,
-        Payment_Date,
-        Payment_Type,
-        Party_ID,
-        Payment_Mode,
-        Account_ID,
-        Reference_No,
-        Reference_Date,
-        Amount,
-        Narration,
-        Status,
-        GL_Status,
-        BillNo_match,
-        Adjusted_Amount,
-        Unadjusted_Amount,
-        Keyfield,
-        company_code,
-        location_code,
-        created_by
-    } = req.body;
+    Payment_ID,
+    Payment_Date,
+    Payment_Type,
+    Party_Type,
+    Party_ID,
+    Payment_Mode,
+    Account_ID,
+    Reference_No,
+    Reference_Date,
+    Amount,
+    Narration,
+    Status,
+    GL_Status,
+    BillNo_match,
+    Adjusted_Amount,
+    Unadjusted_Amount,
+    Keyfield,
+    company_code,
+    location_code,
+    created_by
+} = req.body;
 
     try {
         const pool = await sql.connect(dbConfig);
@@ -31034,6 +31035,7 @@ const PaymentInsert = async (req, res) => {
             .input("Payment_ID", sql.NVarChar, Payment_ID || "")
             .input("Payment_Date", sql.Date, Payment_Date || null)
             .input("Payment_Type", sql.NVarChar, Payment_Type || "")
+            .input("Party_Type", sql.NVarChar, Party_Type || "")
             .input("Party_ID", sql.NVarChar, Party_ID || "")
             .input("Payment_Mode", sql.NVarChar, Payment_Mode || "")
             .input("Account_ID", sql.NVarChar, Account_ID || "")
@@ -31059,6 +31061,7 @@ const PaymentInsert = async (req, res) => {
                     @Payment_ID,
                     @Payment_Date,
                     @Payment_Type,
+                    @Party_Type,
                     @Party_ID,
                     @Payment_Mode,
                     @Account_ID,
@@ -31099,6 +31102,112 @@ const PaymentInsert = async (req, res) => {
     }
 };
 //Code ended by Dinesh Gokul on 09-10-2026
+
+//Code added by Dinesh Gokul on 10-10-2026
+const PaymentDetailsInsert = async (req, res) => {
+    const {
+        Payment_Detail_ID,
+        Payment_ID,
+        Invoice_ID,
+        Invoice_Date,
+        Invoice_Amount,
+        Previous_Paid_Amount,
+        Outstanding_Amount,
+        Adjust_Amount,
+        Keyfield_Header,
+        Keyfield,
+        company_code,
+        location_code,
+        Created_By,
+        Modify_By
+    } = req.body;
+
+    try {
+        const pool = await sql.connect(dbConfig);
+
+        const result = await pool.request()
+            .input("Mode", sql.NVarChar, "I")
+            .input("Payment_Detail_ID", sql.Int, Payment_Detail_ID ?? null)
+            .input("Payment_ID", sql.NVarChar, Payment_ID ?? null)
+            .input("Invoice_ID", sql.NVarChar, Invoice_ID ?? null)
+            .input("Invoice_Date", sql.Date, Invoice_Date || null)
+            .input("Invoice_Amount", sql.Decimal(18, 2), Invoice_Amount ?? null)
+            .input("Previous_Paid_Amount", sql.Decimal(18, 2), Previous_Paid_Amount ?? null)
+            .input("Outstanding_Amount", sql.Decimal(18, 2), Outstanding_Amount ?? null)
+            .input("Adjust_Amount", sql.Decimal(18, 2), Adjust_Amount ?? null)
+            .input("Keyfield_Header", sql.NVarChar, Keyfield_Header ?? null)
+            .input("Keyfield", sql.NVarChar, Keyfield ?? null)
+            .input("company_code", sql.NVarChar, company_code ?? null)
+            .input("location_code", sql.NVarChar, location_code ?? null)
+            .input("Created_By", sql.NVarChar, Created_By ?? null)
+            .input("Modify_By", sql.NVarChar, Modify_By ?? null)
+            .query(`
+                EXEC dbo.sp_Payment_details
+                    @Mode,
+                    @Payment_Detail_ID,
+                    @Payment_ID,
+                    @Invoice_ID,
+                    @Invoice_Date,
+                    @Invoice_Amount,
+                    @Previous_Paid_Amount,
+                    @Outstanding_Amount,
+                    @Adjust_Amount,
+                    @Keyfield_Header,
+                    @Keyfield,
+                    @company_code,
+                    @location_code,
+                    @Created_By,
+                    '',
+                    @Modify_By,
+                    ''
+            `);
+
+        const insertedData = result.recordset?.[0] || {};
+
+        res.status(200).json({
+            success: true,
+            message: "Payment Details inserted successfully",
+            data: insertedData
+        });
+
+    } catch (err) {
+        console.error("Error during Payment Details insert:", err);
+
+        res.status(500).json({
+            success: false,
+            message: err.message || "Internal Server Error"
+        });
+    }
+};
+
+const getPaymentData = async (req, res) => {
+  const { transaction_no, company_code } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "PAY")
+      .input("transaction_no", sql.NVarChar, transaction_no)
+      .input("company_code", sql.NVarChar, company_code)
+      .query(`EXEC sp_getdata_test @mode,@transaction_no,@company_code,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+
+    if (result.recordsets && result.recordsets.length > 0 && result.recordsets[0].length > 0) {
+      const data = {
+        header: result.recordsets[0],
+        detail: result.recordsets[1] || [],
+        taxdetail: result.recordsets[2] || []  
+      };
+      res.status(200).json(data); // 200 OK if data is found
+    } else {
+      res.status(404).json("Data not found"); // 404 Not Found if no data is found
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+//Code ended by Dinesh Gokul on 10-10-2026
 
 module.exports = {
   login,
@@ -32087,12 +32196,14 @@ module.exports = {
   getPartyType,
   getPaymentMode,
   getBankAccountPayment,
-  PaymentInsert,
+  PaymentHdrInsert,
   CurrencyInsert,
   CurrencyLoopUpdate,
   CurrencydeleteData,
   CurrencyUpdate,
   Currencysearch,
-  CurrencyType
+  CurrencyType,
+  PaymentDetailsInsert,
+  getPaymentData
 
 };

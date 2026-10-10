@@ -1015,7 +1015,9 @@ router.post("/CurrencyUpdate", dataController.CurrencyUpdate)
 router.post("/Currencysearch", dataController.Currencysearch)
 router.post("/CurrencyType", dataController.CurrencyType)
 router.post("/getBankAccountPayment", dataController.getBankAccountPayment)
-router.post("/PaymentInsert", dataController.PaymentInsert)
+router.post("/PaymentHdrInsert", dataController.PaymentHdrInsert)
+router.post("/PaymentDetailsInsert", dataController.PaymentDetailsInsert)
+router.post("/getPaymentData", dataController.getPaymentData)
 
 
 module.exports = router;

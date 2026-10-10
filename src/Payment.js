@@ -37,7 +37,18 @@ function Payment() {
     const [narration, setNarration] = useState('');
     const [refTransactionDate, setRefTransactionDate] = useState('');
 
-    const [rowData, setRowData] = useState([{ serialNumber: 1, itemCode: '', itemName: '', unitWeight: '', warehouse: '', purchaseQty: '', ItemTotalWight: '', purchaseAmt: '', TotalTaxAmount: '', TotalItemAmount: '' }]);
+const [rowData, setRowData] = useState([
+    {
+        serialNumber: 1,
+        Invoice_ID: "",
+        Invoice_Date: "",
+        Invoice_Amount: 0,
+        Previous_Paid_Amount: 0,
+        Outstanding_Amount: 0,
+        Adjust_Amount: 0,
+        Keyfield: ""
+    }
+]);
     const [rowDataTax, setRowDataTax] = useState([]);
     const [activeTable, setActiveTable] = useState('myTable');
     const [transactionNumber, setTransactionNumber] = useState("");
@@ -382,32 +393,90 @@ function Payment() {
     const handleToggleTable = (table) => setActiveTable(table);
 
     const fillSelectedInvoice = (invoice, invoiceType) => {
-        if (!invoice || !selectedInvoiceRow?.node) {
-            toast.warning("Please select an invoice.");
-            return;
-        }
+    if (!invoice || !selectedInvoiceRow?.node) {
+        toast.warning("Please select an invoice.");
+        return;
+    }
 
-        const isVendor = invoiceType === "Vendor";
-        const invoiceNo = isVendor ? invoice.TransactionNo : invoice.BillNo;
-        const invoiceAmount = Number(invoice.TotalAmount ?? invoice.total_amount ?? invoice.bill_amt ?? 0);
-        const paidAmount = Number(invoice.PaidAmount ?? invoice.paid_amount ?? 0);
-        const outstandingAmount = Math.max(0, invoiceAmount - paidAmount);
+    console.log("Selected invoice:", invoice);
+    console.log("Selected grid row:", selectedInvoiceRow);
 
-        const rowNode = selectedInvoiceRow.node;
+    const isVendor = invoiceType === "Vendor";
+    const rowNode = selectedInvoiceRow.node;
 
-        rowNode.setDataValue("itemName", invoiceNo ?? "");
-        rowNode.setDataValue("UOM_ID", invoiceAmount);
-        rowNode.setDataValue("Qty", paidAmount);
-        rowNode.setDataValue("ItemTotalWight", outstandingAmount);
+    if (!rowNode.data) {
+        toast.warning("Selected grid row is no longer available.");
+        return;
+    }
 
-        if (rowNode.data.purchaseAmt == null || rowNode.data.purchaseAmt === "") {
-            rowNode.setDataValue("purchaseAmt", 0);
-        }
+    // Map the popup fields to the Payment grid fields.
+    const invoiceNo = isVendor
+        ? (invoice.TransactionNo ?? invoice.transaction_no ?? invoice.bill_no)
+        : (invoice.bill_no ?? invoice.BillNo ?? invoice.TransactionNo);
 
-        setOpenPurchaseHelp(false);
-        setOpenSalesHelp(false);
-        setSelectedInvoiceRow(null);
+    const invoiceDate =
+        invoice.bill_date ??
+        invoice.Invoice_Date ??
+        invoice.TransactionDate ??
+        "";
+
+    const invoiceAmount = Number(
+        invoice.bill_amt ??
+        invoice.TotalAmount ??
+        invoice.total_amount ??
+        invoice.Invoice_Amount ??
+        invoice.Amount ??
+        0
+    );
+
+    const paidAmount = Number(
+        invoice.paid_amount ??
+        invoice.PaidAmount ??
+        invoice.Previous_Paid_Amount ??
+        0
+    );
+
+    const outstandingAmount = Math.max(
+        0,
+        Number(
+            invoice.OutstandingAmount ??
+            invoice.outstanding_amount ??
+            (invoiceAmount - paidAmount)
+        )
+    );
+
+    // Update the selected AG Grid row.
+    const updatedRow = {
+        ...rowNode.data,
+        Invoice_ID: invoiceNo ?? "",
+        Invoice_Date: invoiceDate,
+        Invoice_Amount: invoiceAmount,
+        Previous_Paid_Amount: paidAmount,
+        Outstanding_Amount: outstandingAmount,
+        Adjust_Amount: 0,
+        Keyfield: invoice.key_field ?? invoice.Keyfield ?? ""
     };
+
+    rowNode.setData(updatedRow);
+
+    // IMPORTANT: Also update React state because savePaymentDetails()
+    // reads rowData, not the AG Grid row directly.
+    const rowIndex = rowNode.rowIndex;
+
+    setRowData((previousRows) =>
+        previousRows.map((row, index) =>
+            index === rowIndex
+                ? updatedRow
+                : row
+        )
+    );
+
+    console.log("Updated invoice row:", updatedRow);
+
+    setOpenPurchaseHelp(false);
+    setOpenSalesHelp(false);
+    setSelectedInvoiceRow(null);
+};
 
     const handlePurchaseDataSelect = (selectedData) => {
         const invoice = Array.isArray(selectedData) ? selectedData[0] : selectedData;
@@ -455,9 +524,41 @@ function Payment() {
             return false;
         }
 
-        params.data.ItemTotalWight = newValue;
-        params.data.purchaseAmt = newValue;
-        params.data.Qty = newValue;
+        params.data.Previous_Paid_Amount = newValue;
+        return true;
+    }
+
+    function Outstanding_AmountValueSetter(params) {
+        const newValue = parseFloat(params.newValue);
+
+        if (isNaN(newValue) || params.newValue.toString().trim() === '' || params.newValue.toString().match(/[^0-9.]/)) {
+            toast.warning("Please enter a valid numeric quantity.");
+            return false;
+        }
+
+        if (newValue < 0) {
+            toast.warning("Quantity cannot be negative.");
+            return false;
+        }
+
+        params.data.Outstanding_Amount = newValue;
+        return true;
+    }
+
+    function Adjust_AmountValueSetter(params) {
+        const newValue = parseFloat(params.newValue);
+
+        if (isNaN(newValue) || params.newValue.toString().trim() === '' || params.newValue.toString().match(/[^0-9.]/)) {
+            toast.warning("Please enter a valid numeric quantity.");
+            return false;
+        }
+
+        if (newValue < 0) {
+            toast.warning("Quantity cannot be negative.");
+            return false;
+        }
+
+        params.data.Adjust_Amount = newValue;
         return true;
     }
 
@@ -485,7 +586,7 @@ function Payment() {
         },
         {
             headerName: "Invoice No",
-            field: "itemName",
+            field: "Invoice_ID",
             editable: false,
             filter: true,
             sortable: false,
@@ -514,7 +615,7 @@ function Payment() {
         },
         {
             headerName: 'Invoice Amount',
-            field: 'UOM_ID',
+            field: 'Invoice_Amount',
             editable: false,
             filter: true,
             sortable: false,
@@ -522,7 +623,7 @@ function Payment() {
         },
         {
             headerName: 'Paid',
-            field: 'Qty',
+            field: 'Previous_Paid_Amount',
             editable: true,
             filter: true,
             sortable: false,
@@ -531,22 +632,30 @@ function Payment() {
         },
         {
             headerName: 'Outstanding',
-            field: 'ItemTotalWight',
+            field: 'Outstanding_Amount',
             editable: true,
             filter: true,
             sortable: false,
-            valueSetter: qtyValueSetter,
+            valueSetter: Outstanding_AmountValueSetter,
             cellEditorParams: { maxLength: 10 }
         },
         {
             headerName: 'Adjustment Amount',
-            field: 'purchaseAmt',
+            field: 'Adjust_Amount',
             editable: true,
             filter: true,
             sortable: false,
-            valueSetter: qtyValueSetter,
+            valueSetter: Adjust_AmountValueSetter,
             cellEditorParams: { maxLength: 18 }
         },
+        {
+            headerName: 'KeyField',
+            field: 'Keyfield',
+            editable: false,
+            filter: true,
+            sortable: false,
+            hide: true
+        }
     ];
 
     const columnDefsTax = [
@@ -559,44 +668,31 @@ function Payment() {
         { headerName: 'Keyfield', field: 'keyfield', sortable: false, editable: false, hide: true }
     ];
 
+   // 1. Header Field Validation
     const handleSaveButtonClick = async () => {
-        if (!noteType || !transactionDate || !partyType || !partyName || !refType || !total || !totalTax || !totalAmount) {
-            toast.warning("Error: Missing required fields.");
-            setError(true);
-            return;
-        }
-
-        if (rowData.length === 0 || rowDataTax.length === 0) {
-            toast.warning("No item details or tax details found to save.");
-            return;
-        }
-
         setError(false);
         setLoading(true);
 
         try {
+            // 1. Construct Header Data Payload
             const headerPayload = {
-                Note_Type: noteType,
-                Note_Date: transactionDate,
+                Payment_Type: paymentType,
+                Payment_Date: transactionDate,
                 Party_Type: partyType,
                 Party_ID: partyName,
-                Reference_Type: refType,
-                Reference_ID: keyfield,
-                Reference_Invoice_No: refTransactionNumber,
-                Reference_Invoice_Date: refTransactionDate,
-                Reason_ID: 'Payment',
-                Reference_No: refNo,
-                Sub_Total: total,
-                Tax_Amount: totalTax,
-                Rounded_off: roundDifference,
-                Total_Amount: totalAmount,
+                Payment_Mode: paymentMode,
+                Keyfield: keyfield,
+                Account_ID: bankCashAccount,
+                Reference_No: refTransactionNumber,
+                Reference_Date: refTransactionDate,
+                Amount: amount,
                 Narration: narration,
                 company_code: sessionStorage.getItem("selectedCompanyCode"),
                 location_code: sessionStorage.getItem("selectedLocationCode") || "LOC01",
                 created_by: sessionStorage.getItem("selectedUserCode")
             };
 
-            const response = await fetch(`${config.apiBaseUrl}/Debit_Credit_NoteInsert`, {
+            const response = await fetch(`${config.apiBaseUrl}/PaymentHdrInsert`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(headerPayload)
@@ -604,11 +700,17 @@ function Payment() {
 
             if (response.ok) {
                 const result = await response.json();
-                const KeyfieldHeader = result.Keyfield;
-                const noteNo = result.Note_No;
 
-                setTransactionNumber(noteNo);
-                toast.success("Payment Note saved successfully!");
+                // Extract generated Keyfield and Payment_ID from backend response
+                const keyfieldHeader = result.Keyfield;
+                const paymentId = result.Payment_ID;
+
+                setTransactionNumber(paymentId || "");
+
+                // 2. Save Details directly without validations
+                await savePaymentDetails(paymentId, keyfieldHeader);
+
+                toast.success("Payment Note and Details saved successfully!");
                 setShowExcelButton(true);
             } else {
                 const errorResponse = await response.json();
@@ -622,6 +724,41 @@ function Payment() {
         }
     };
 
+    // SAVE PAYMENT DETAILS FUNCTION (Without Validations)
+    const savePaymentDetails = async (paymentId, keyfieldHeader) => {
+        try {
+            for (const row of (rowData || [])) {
+                const detailPayload = {
+                    Payment_ID: paymentId,
+                    Invoice_ID: row.Invoice_ID ?? row.invoice_ID ?? row.InvoiceId ?? "",
+                    Invoice_Date: row.Invoice_Date ?? null,
+                    Invoice_Amount: row.Invoice_Amount ?? 0,
+                    Previous_Paid_Amount: row.Previous_Paid_Amount ?? 0,
+                    Outstanding_Amount: row.Outstanding_Amount ?? 0,
+                    Adjust_Amount: row.Adjust_Amount ?? 0,
+                    Keyfield_Header: keyfieldHeader,
+                    company_code: sessionStorage.getItem("selectedCompanyCode"),
+                    location_code: sessionStorage.getItem("selectedLocationCode") || "LOC01",
+                    Created_By: sessionStorage.getItem("selectedUserCode")
+                };
+
+                const response = await fetch(`${config.apiBaseUrl}/PaymentDetailsInsert`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(detailPayload)
+                });
+
+                if (!response.ok) {
+                    const errorResponse = await response.json();
+                    console.error("Detail Insert Error:", errorResponse);
+                }
+            }
+        } catch (error) {
+            console.error("Error saving details:", error);
+            toast.error("Error saving payment details: " + error.message);
+        }
+    };
+
     const handleTransactionNoKeyDown = (e) => {
         if (e.key === "Enter") {
             e.preventDefault();
@@ -629,24 +766,24 @@ function Payment() {
                 toast.warning("Please enter a Transaction Number");
                 return;
             }
-            fetchDebitCreditNoteData(transactionNumber.trim());
+            fetchPaymentData(transactionNumber.trim());
         }
     };
 
-    const handleDebitCreditData = (selectedData) => {
+    const handlePaymentData = (selectedData) => {
         if (selectedData && selectedData.length > 0) {
             const item = selectedData[0];
             setTransactionNumber(item.TransactionNo);
-            fetchDebitCreditNoteData(item.TransactionNo);
+            fetchPaymentData(item.TransactionNo);
         }
     };
 
-    const fetchDebitCreditNoteData = async (code) => {
+    const fetchPaymentData = async (code) => {
         if (!code) return;
         setLoading(true);
 
         try {
-            const response = await fetch(`${config.apiBaseUrl}/getDebitCreditNoteData`, {
+            const response = await fetch(`${config.apiBaseUrl}/getPaymentData`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ transaction_no: code, company_code: sessionStorage.getItem("selectedCompanyCode") }),
@@ -1283,7 +1420,7 @@ function Payment() {
                     <SalesHdrPopup open={openSalesHelp} handleClose={() => setOpenSalesHelp(false)} handleData={handleSalesDataSelect} selectedPartyCode={partyName || ""} />
                     <PurchaseReturnView open={openPurchaseReturnHelp} handleClose={() => setOpenPurchaseReturnHelp(false)} handleItemView={() => {}} selectedPartyCode={partyName || ""} />
                     <SalesRetrunView open={openSalesReturnHelp} handleClose={() => setOpenSalesReturnHelp(false)} handleDataView={() => {}} selectedPartyCode={partyName || ""} />
-                    <DebitCrediNoteHelp open={openDebitCreditNoteHelp} handleClose={() => setOpenDebitCreditNoteHelp(false)} handleDebitCreditData={handleDebitCreditData} />
+                    <DebitCrediNoteHelp open={openDebitCreditNoteHelp} handleClose={() => setOpenDebitCreditNoteHelp(false)} handlePaymentData={handlePaymentData} />
                     <PurchaseVendorPopup open={openVendorPartyHelp} handleClose={() => setOpenVendorPartyHelp(false)} handleVendor={handleVendor} />
                     <SalesVendorPopup open={openCustomerPartyHelp} handleClose={() => setOpenCustomerPartyHelp(false)} handleVendor={handleCustomer} />
 
