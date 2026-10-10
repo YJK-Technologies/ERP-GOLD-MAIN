@@ -320,6 +320,7 @@ function CurrencyInput({}) {
                     <input
                       class="exp-input-field form-control"
                       type="text"
+                      title="Please fill the Currency Symbol here"
                       value={Currency_Symbol}
                       onChange={(e) => setCurrencySymbol(e.target.value)}
                       maxLength={5}
@@ -340,6 +341,7 @@ function CurrencyInput({}) {
                     <input
                       class="exp-input-field form-control"
                       type="number"
+                      title="Please fill the Decimal Places here"
                       value={Decimal_Places}
                       onChange={(e) => setDecimalPlaces(e.target.value.replace(/\D/g, "").slice(0, 2))}
                       ref={refDecimal}
@@ -356,6 +358,7 @@ function CurrencyInput({}) {
                         Currency Type<span className="text-danger">*</span></label>
                       </div>
                     </div>
+                    <div title="Select the Currency Type">
                     <Select
                       value={selectedCurrencyType}
                       onChange={handleChangeCurrencyType}
@@ -373,6 +376,7 @@ function CurrencyInput({}) {
                         }),
                       }}
                     />
+                    </div>
                   </div>
                 </div>
 
