@@ -520,6 +520,7 @@ function CurrencyMaster() {
                 className="exp-input-field form-control"
                 type="text"
                 placeholder=""
+                title="Please fill the Currency Code here"
                 value={Currency_Code}
                 onChange={(e) => setCurrencyCode(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
@@ -535,6 +536,7 @@ function CurrencyMaster() {
                 className="exp-input-field form-control"
                 type="text"
                 placeholder=""
+                title="Please fill the Currency Symbol here"
                 value={Currency_Symbol}
                 onChange={(e) => setCurrencySymbol(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
@@ -553,6 +555,7 @@ function CurrencyMaster() {
               <input
                 class="exp-input-field form-control"
                 type="number"
+                title="Please fill the Decimal Places here"
                 value={Decimal_Places}
                 onChange={(e) => setDecimalPlaces(e.target.value.replace(/\D/g, "").slice(0, 2))}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
@@ -563,10 +566,9 @@ function CurrencyMaster() {
           <div className="col-md-3 form-group mb-2">
             <div class="exp-form-floating">
               <div class="d-flex justify-content-start">
-                <div>
                   <label class="exp-form-labels" >Currency Type</label>
-                </div>
               </div>
+              <div title="Select the Currency Type">
               <Select
                 value={selectedCurrencyType}
                 onChange={handleChangeCurrencyType}
@@ -578,6 +580,7 @@ function CurrencyMaster() {
                 isClearable
                 styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
               />
+              </div>
             </div>
           </div>
 
