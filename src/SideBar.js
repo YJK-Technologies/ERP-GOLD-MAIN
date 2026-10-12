@@ -947,6 +947,16 @@ const Sidebar = () => {
               </Link>
             )}
           </div>
+          <div className=" ms-3">
+            {screenType.includes("CurrExeRate") && (
+              <Link to="/CurrExeRate" className="nav-link" title="Currency Exchange Rate">
+                <div class="menu-item">
+                  <BuildingFill size={18} className="me-3" />
+                  <span className={collapsed ? "hidden" : ""}> Currency Exchange Rate</span>
+                </div>
+              </Link>
+            )}
+          </div>
 
         </div>
         <div className="menu-item" onClick={toggleAccountCollapse} title="Accounts">
