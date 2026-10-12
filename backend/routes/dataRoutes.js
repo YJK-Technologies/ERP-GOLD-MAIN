@@ -1030,6 +1030,13 @@ router.post("/Payment_hdrLoopDelete", dataController.Payment_hdrLoopDelete)
 router.post("/getPaymentSearch", dataController.getPaymentSearch)
 router.post("/Payment_hdrUpdate", dataController.Payment_hdrUpdate)
 router.post("/Payment_hdrDelete", dataController.Payment_hdrDelete)
+router.post("/getDeletedPaymentSearch", dataController.getDeletedPaymentSearch)
+router.post("/getDeletedPaymentData", dataController.getDeletedPaymentData)
+router.post("/currencyexchangerateSC", dataController.currencyexchangerateSC)
+router.post("/CurrencyExchangeRateInsert", dataController.CurrencyExchangeRateInsert)
+router.post("/CurrencyExchangeRateUpdate", dataController.CurrencyExchangeRateUpdate)
+router.post("/saveEditedExchangeRateData", dataController.saveEditedExchangeRateData)
+router.post("/deleteExchangeRate", dataController.deleteExchangeRate)
 
 
 module.exports = router;
