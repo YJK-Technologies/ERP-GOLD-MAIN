@@ -131,7 +131,7 @@ const [rowData, setRowData] = useState([
     const [open1, setOpen1] = useState(false);
 
     const permissions = JSON.parse(sessionStorage.getItem('permissions')) || [];
-    const DebitCreditNotePermission = permissions
+    const PaymentPermission = permissions
         .filter(permission => permission.screen_type === 'DebitCreditNote')
         .map(permission => permission.permission_type.toLowerCase());
 
@@ -1011,7 +1011,8 @@ setPartyName(savedPartyCode);
 };
 
     const handleExcelDownload = () => {
-        const filteredRowData = rowData.filter(row => (row.Qty > 0) && (row.TotalItemAmount > 0 || row.purchaseAmt > 0));
+        // Filter valid row data where invoice ID or adjustment amount is present
+        const filteredRowData = rowData.filter(row => row.Invoice_ID && row.Invoice_ID.trim() !== "");
         const filteredRowDataTax = rowDataTax.filter(taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0);
 
         const mapDataToHeaders = (dataList, colDefs) => {
@@ -1026,23 +1027,24 @@ setPartyName(savedPartyCode);
         };
 
         const formattedItemDetails = mapDataToHeaders(filteredRowData, columnDefs);
-        const formattedTaxDetails = mapDataToHeaders(filteredRowDataTax, columnDefsTax);
+        // const formattedTaxDetails = mapDataToHeaders(filteredRowDataTax, columnDefsTax);
 
         const headerData = [{
-            "Payment Type": partyType,
-            "Vendor / Customer Name": partyName,
+            "Payment Type": paymentType,
+            "Party Type": partyType,
+            "Party Code / Name": partyCode ? `${partyCode} - ${partyNameDisplay}` : partyName,
             "Payment Mode": paymentMode,
             "Bank / Cash Account": bankCashAccount,
-            "Ref Transaction No": refTransactionNumber,
-            "Ref Transaction Date": refTransactionDate,
+            "Reference No": refTransactionNumber,
+            "Reference Date": refTransactionDate,
             "Transaction Date": transactionDate,
             "Transaction No": transactionNumber,
             "Remarks": narration,
-            "Total Amount": totalAmount
+            "Total Amount": amount
         }];
 
         const headerSheet = XLSX.utils.aoa_to_sheet([
-            ["Payment Voucher"],
+            ["Payment"],
             [`Company Name : ${sessionStorage.getItem("selectedCompanyName") || ""}`],
             [],
         ]);
@@ -1055,12 +1057,12 @@ setPartyName(savedPartyCode);
         ];
 
         const rowDataSheet = XLSX.utils.json_to_sheet(formattedItemDetails);
-        const rowDataTaxSheet = XLSX.utils.json_to_sheet(formattedTaxDetails);
+        // const rowDataTaxSheet = XLSX.utils.json_to_sheet(formattedTaxDetails);
 
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
-        XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Note Details");
-        XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Tax Details");
+        XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Invoice Details");
+        // XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Tax Details");
 
         const fileName = `Payment_${transactionNumber || "Data"}.xlsx`;
         XLSX.writeFile(workbook, fileName);
@@ -1434,25 +1436,25 @@ const handleDeleteButtonClick = async () => {
                                     />
                                 </div>
 
-                                {saveButtonVisible && ['add', 'all permission'].some(permission => DebitCreditNotePermission.includes(permission)) && (
+                                {saveButtonVisible && ['add', 'all permission'].some(permission => PaymentPermission.includes(permission)) && (
                                     <addbutton type="button" className="purbut" title="Save Note" onClick={handleSaveButtonClick}>
                                         <i className="fa-regular fa-floppy-disk"></i>
                                     </addbutton>
                                 )}
 
-                                {updateButtonVisible && ['update', 'all permission'].some(permission => DebitCreditNotePermission.includes(permission)) && (
+                                {updateButtonVisible && ['update', 'all permission'].some(permission => PaymentPermission.includes(permission)) && (
                                     <addbutton type="button" className="purbut" title="Update Note" onClick={handleUpdateButtonClick}>
                                         <i className="fa-solid fa-floppy-disk"></i>
                                     </addbutton>
                                 )}
 
-                                {delButtonVisible && ['delete', 'all permission'].some(permission => DebitCreditNotePermission.includes(permission)) && (
+                                {delButtonVisible && ['delete', 'all permission'].some(permission => PaymentPermission.includes(permission)) && (
                                     <delbutton type="button" className="purbut" title="Delete Note" onClick={handleDeleteButtonClick}>
                                         <i className="fa-solid fa-trash"></i>
                                     </delbutton>
                                 )}
 
-                                {printButtonVisible && ['all permission', 'view'].some(permission => DebitCreditNotePermission.includes(permission)) && (
+                                {printButtonVisible && ['all permission', 'view'].some(permission => PaymentPermission.includes(permission)) && (
                                     <printbutton type="button" className="purbut" title="Print PDF">
                                         <i className="fa-solid fa-file-pdf"></i>
                                     </printbutton>
