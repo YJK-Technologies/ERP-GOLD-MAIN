@@ -118,7 +118,7 @@ const [rowData, setRowData] = useState([
     const [selectedBankCashAccount, setSelectedBankCashAccount] = useState('');
     const [bankCashAccount, setBankCashAccount] = useState('');
 
-    const [amount, setAmount] = useState('');
+    const [amount, setAmount] = useState(0);
 
     const [additionalData, setAdditionalData] = useState({
         modified_by: '',
@@ -696,6 +696,26 @@ const [rowData, setRowData] = useState([
 
    // 1. Header Field Validation
     const handleSaveButtonClick = async () => {
+        if (
+                    !amount ||
+                    !bankCashAccount ||
+                    !paymentMode ||
+                    !partyType ||
+                    !paymentType
+                ) {
+                    toast.warning("Error: Missing required fields.");
+                    setError(true);
+                    return;
+                }
+
+                const invalidRows = rowData.filter(
+                            (row) => row.Invoice_ID && (!row.Adjust_Amount || row.Adjust_Amount <= 0)
+                        );
+                        if (invalidRows.length > 0) {
+                            toast.warning("Invoice ID is present but Adjust Amount is missing or zero.");
+                            return;
+                        }
+
         setError(false);
         setLoading(true);
 
@@ -756,7 +776,7 @@ const [rowData, setRowData] = useState([
             for (const row of (rowData || [])) {
                 const detailPayload = {
                     Payment_ID: paymentId,
-                    Invoice_ID: row.Invoice_ID ?? row.invoice_ID ?? row.InvoiceId ?? "",
+                    Invoice_ID: row.Invoice_ID,
                     Invoice_Date: row.Invoice_Date ?? null,
                     Invoice_Amount: row.Invoice_Amount ?? 0,
                     Previous_Paid_Amount: row.Previous_Paid_Amount ?? 0,
@@ -1049,6 +1069,28 @@ setPartyName(savedPartyCode);
     
 
 const handleUpdateButtonClick = async () => {
+
+    if (
+                    !transactionNumber ||
+                    !amount ||
+                    !bankCashAccount ||
+                    !paymentMode ||
+                    !partyType ||
+                    !paymentType
+                ) {
+                    toast.warning("Error: Missing required fields.");
+                    setError(true);
+                    return;
+                }
+
+                const invalidRows = rowData.filter(
+                            (row) => row.Invoice_ID && (!row.Adjust_Amount || row.Adjust_Amount <= 0)
+                        );
+                        if (invalidRows.length > 0) {
+                            toast.warning("Invoice ID is present but Adjust Amount is missing or zero.");
+                            return;
+                        }
+
     setError(false);
     setLoading(true);
 
@@ -1579,17 +1621,26 @@ const handleDeleteButtonClick = async () => {
                             </div>
 
                             <div className="col-md-3 form-group mb-2">
-                                <label htmlFor="refNo">Amount</label>
-                                <div className="exp-form-floating">
-                                    <input
-                                        className="exp-input-field form-control"
-                                        id="refNo"
-                                        title="Enter Amount"
-                                        value={amount}
-                                        onChange={(e) => setAmount(e.target.value)}
-                                    />
-                                </div>
-                            </div>
+    <label htmlFor="refNo">Amount</label>
+    <div className="exp-form-floating">
+        <input
+            type="number"
+            className="exp-input-field form-control"
+            id="refNo"
+            title="Enter Amount"
+            placeholder="Enter Amount"
+            value={amount}
+            min="0"
+            step="0.01"
+            onChange={(e) => {
+                const value = e.target.value;
+                if (value === "" || Number(value) >= 0) {
+                    setAmount(value);
+                }
+            }}
+        />
+    </div>
+</div>
 
                             <div className="col-md-6 form-group mb-2">
                                 <label htmlFor="narration">Remarks</label>
