@@ -204,6 +204,8 @@ import DebitCreditNote from './DebitCreditNote.js';
 import Payment from './Payment.js';
 import CurrencyMaster from './CurrencyMaster.js';
 import CurrencyInput from './CurrencyInput.js';
+import CurrExeRate from './CurrExeRate.js';
+import CurrExeRateInput from './CurrExeRateInput.js';
 
 function Main() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -450,6 +452,8 @@ function Main() {
      { path: "/Payment", component: <Payment /> },
      { path: "/CurrencyMaster", component: <CurrencyMaster /> },
      { path: "/CurrencyInput", component: <CurrencyInput /> },
+     { path: "/CurrExeRate", component: <CurrExeRate /> },
+     { path: "/CurrExeRateInput", component: <CurrExeRateInput /> },
 
     
 
