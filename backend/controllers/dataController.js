@@ -31749,6 +31749,125 @@ const Payment_hdrLoopDelete = async (req, res) => {
 };
 //Code ended by  SakthiGanesh J on 10-10-2026
 
+//Code added by Dinesh Gokul on 12-10-2026
+const getDeletedPaymentSearch = async (req, res) => {
+  const {
+    Payment_ID,
+    Payment_Type,
+    Party_Type,
+    Party_ID,
+    Payment_Mode,
+    Account_ID,
+    Reference_No,
+    Status,
+    Payment_Date_From,
+    Payment_Date_To,
+    Reference_Date_From,
+    Reference_Date_To,
+    Amount_From,
+    Amount_To,
+    company_code,
+    location_code,
+  } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "DSC")
+      .input("Payment_ID", sql.NVarChar, Payment_ID || null)
+      .input("Payment_Type", sql.NVarChar, Payment_Type || null)
+      .input("Party_Type", sql.NVarChar, Party_Type || null)
+      .input("Party_ID", sql.NVarChar, Party_ID || null)
+      .input("Payment_Mode", sql.NVarChar, Payment_Mode || null)
+      .input("Account_ID", sql.NVarChar, Account_ID || null)
+      .input("Reference_No", sql.NVarChar, Reference_No || null)
+      .input("Status", sql.NVarChar, Status || null)
+      .input("Payment_Date_From", sql.Date, Payment_Date_From ? Payment_Date_From : null)
+      .input("Payment_Date_To", sql.Date, Payment_Date_To ? Payment_Date_To : null)
+      .input("Reference_Date_From", sql.Date, Reference_Date_From ? Reference_Date_From : null)
+      .input("Reference_Date_To", sql.Date, Reference_Date_To ? Reference_Date_To : null)
+      .input("Amount_From", sql.Decimal(18, 2), (Amount_From !== "" && Amount_From != null) ? Number(Amount_From) : null)
+      .input("Amount_To", sql.Decimal(18, 2), (Amount_To !== "" && Amount_To != null) ? Number(Amount_To) : null)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .query(`
+        EXEC dbo.sp_Payment_hdr
+          @mode = @mode,
+          @Payment_ID = @Payment_ID,
+          @Payment_Date = NULL,
+          @Payment_Type = @Payment_Type,
+          @Party_Type = @Party_Type,
+          @Party_ID = @Party_ID,
+          @Payment_Mode = @Payment_Mode,
+          @Account_ID = @Account_ID,
+          @Reference_No = @Reference_No,
+          @Reference_Date = NULL,
+          @Amount = 0,
+          @Narration = '',
+          @Status = @Status,
+          @GL_Status = '',
+          @BillNo_match = '',
+          @Adjusted_Amount = 0,
+          @Unadjusted_Amount = 0,
+          @Payment_Date_From = @Payment_Date_From,
+          @Payment_Date_To = @Payment_Date_To,
+          @Reference_Date_From = @Reference_Date_From,
+          @Reference_Date_To = @Reference_Date_To,
+          @Amount_From = @Amount_From,
+          @Amount_To = @Amount_To,
+          @company_code = @company_code,
+          @location_code = @location_code,
+          @Keyfield = '',
+          @created_by = '',
+          @created_date = NULL,
+          @modified_by = '',
+          @modified_date = NULL
+      `);
+
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json("Data not found");
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: err.message || "Internal Server Error",
+    });
+  }
+};
+
+const getDeletedPaymentData = async (req, res) => {
+  const { transaction_no, company_code } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "DPAY")
+      .input("transaction_no", sql.NVarChar, transaction_no)
+      .input("company_code", sql.NVarChar, company_code)
+      .query(`EXEC sp_getdata_test @mode,@transaction_no,@company_code,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+
+    if (result.recordsets && result.recordsets.length > 0 && result.recordsets[0].length > 0) {
+      const data = {
+        header: result.recordsets[0],
+        detail: result.recordsets[1] || [],
+        taxdetail: result.recordsets[2] || []  
+      };
+      res.status(200).json(data); // 200 OK if data is found
+    } else {
+      res.status(404).json("Data not found"); // 404 Not Found if no data is found
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+//Code ended by Dinesh Gokul on 12-10-2026
+
 module.exports = {
   login,
   forgetPassword,
@@ -32757,6 +32876,8 @@ module.exports = {
   Payment_hdrDelete,
   Payment_hdrLoopInsert,
   Payment_hdrLoopUpdate,
-  Payment_hdrLoopDelete
+  Payment_hdrLoopDelete,
+  getDeletedPaymentSearch,
+  getDeletedPaymentData
 
 };
