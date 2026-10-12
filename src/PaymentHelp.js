@@ -395,7 +395,7 @@ export default function PaymentHelp({ open, handleClose, handlePaymentData }) {
             </div>
 
             {/* 8. Status */}
-            <div className="col-md-3 mb-2">
+            {/* <div className="col-md-3 mb-2">
                 <Select
                     value={selectedStatus}
                     onChange={handleChangeStatus}
@@ -403,7 +403,7 @@ export default function PaymentHelp({ open, handleClose, handlePaymentData }) {
                     className="exp-input-field"
                     placeholder="Status"
                 />
-            </div>
+            </div> */}
 
             {/* 9. Payment Date From & To */}
             <div className="col-md-3 mb-2">
