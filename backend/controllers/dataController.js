@@ -31748,6 +31748,199 @@ const Payment_hdrLoopDelete = async (req, res) => {
   }
 };
 //Code ended by  SakthiGanesh J on 10-10-2026
+//Code ended by  SakthiGanesh J on 10-12-2026
+const currencyexchangerateSC = async (req, res) => {
+  const { Exchange_Rate_ID, From_Currency_ID, To_Currency_ID, Exchange_Rate, Effective_Date, Status, Keyfield, Effective_Date_From, Effective_Date_To, company_code, location_code,
+  } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "SC")
+      .input("Exchange_Rate_ID", sql.Int, Exchange_Rate_ID || null)
+      .input("From_Currency_ID", sql.Int, From_Currency_ID || null)
+      .input("To_Currency_ID", sql.Int, To_Currency_ID || null)
+      .input("Exchange_Rate", sql.Decimal(18, 6), Exchange_Rate || null)
+      .input("Effective_Date", sql.Date, Effective_Date || null)
+      .input("Status", sql.NVarChar, Status === "All" ? "" : Status || "")
+      .input("Keyfield", sql.NVarChar, Keyfield || "")
+      .input("Effective_Date_From", sql.Date, Effective_Date_From || null)
+      .input("Effective_Date_To", sql.Date, Effective_Date_To || null)
+      .input("company_code", sql.NVarChar, company_code || "")
+      .input("location_code", sql.NVarChar, location_code || "")
+      .input("created_by", sql.NVarChar, "")
+      .input("created_date", sql.DateTime, null)
+      .input("modified_by", sql.NVarChar, "")
+      .input("modified_date", sql.DateTime, null)
+      .query(` EXEC sp_Currency_Exchange_Rate @mode, @Exchange_Rate_ID, @From_Currency_ID, @To_Currency_ID, 
+          @Exchange_Rate, @Effective_Date, @Status, @Keyfield, @Effective_Date_From, @Effective_Date_To, @company_code, @location_code, 
+          @created_by, @created_date, @modified_by, @modified_date`);
+
+    if (result.recordset && result.recordset.length > 0) {
+      const formattedData = result.recordset.map((row) => ({
+        ...row,
+        Effective_Date: row.Effective_Date
+          ? new Date(row.Effective_Date).toISOString().split("T")[0]
+          : null,
+      }));
+
+      res.status(200).json(formattedData);
+    } else {
+      res.status(404).json("Data not found");
+    }
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const CurrencyExchangeRateInsert = async (req, res) => {
+  const { From_Currency_ID, To_Currency_ID, Exchange_Rate, Effective_Date, Status, Keyfield, company_code, location_code, created_by,
+  } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "I")
+      .input("Exchange_Rate_ID", sql.Int, null)
+      .input("From_Currency_ID", sql.Int, From_Currency_ID || null)
+      .input("To_Currency_ID", sql.Int, To_Currency_ID || null)
+      .input("Exchange_Rate", sql.Decimal(18, 6), Exchange_Rate || null)
+      .input("Effective_Date", sql.Date, Effective_Date || null)
+      .input("Status", sql.NVarChar, Status || "")
+      .input("Keyfield", sql.NVarChar, Keyfield || "")
+      .input("Effective_Date_From", sql.Date, null)
+      .input("Effective_Date_To", sql.Date, null)
+      .input("company_code", sql.NVarChar, company_code || "")
+      .input("location_code", sql.NVarChar, location_code || "")
+      .input("created_by", sql.NVarChar, created_by || "")
+      .input("created_date", sql.DateTime, null)
+      .input("modified_by", sql.NVarChar, "")
+      .input("modified_date", sql.DateTime, null)
+      .query(`EXEC sp_Currency_Exchange_Rate @mode, @Exchange_Rate_ID, @From_Currency_ID, @To_Currency_ID, 
+          @Exchange_Rate, @Effective_Date, @Status, @Keyfield, @Effective_Date_From, @Effective_Date_To, @company_code, @location_code, 
+          @created_by, @created_date, @modified_by, @modified_date`);
+
+    return res.status(200).json({
+      success: true,
+      message: "Data inserted successfully",
+      data: result.recordset ? result.recordset[0] : null,
+    });
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const CurrencyExchangeRateUpdate = async (req, res) => {
+  const { Exchange_Rate_ID, From_Currency_ID, To_Currency_ID, Exchange_Rate, Effective_Date, Status, Keyfield, company_code, location_code, modified_by,
+  } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+    await pool
+      .request()
+      .input("mode", sql.NVarChar, "U")
+      .input("Exchange_Rate_ID", sql.Int, Exchange_Rate_ID)
+      .input("From_Currency_ID", sql.Int, From_Currency_ID || null)
+      .input("To_Currency_ID", sql.Int, To_Currency_ID || null)
+      .input("Exchange_Rate", sql.Decimal(18, 6), Exchange_Rate || null)
+      .input("Effective_Date", sql.Date, Effective_Date || null)
+      .input("Status", sql.NVarChar, Status || "")
+      .input("Keyfield", sql.NVarChar, Keyfield || "")
+      .input("Effective_Date_From", sql.Date, null)
+      .input("Effective_Date_To", sql.Date, null)
+      .input("company_code", sql.NVarChar, company_code || "")
+      .input("location_code", sql.NVarChar, location_code || "")
+      .input("created_by", sql.NVarChar, "")
+      .input("created_date", sql.DateTime, null)
+      .input("modified_by", sql.NVarChar, modified_by || "")
+      .input("modified_date", sql.DateTime, null)
+      .query(`EXEC sp_Currency_Exchange_Rate @mode, @Exchange_Rate_ID, @From_Currency_ID, @To_Currency_ID, 
+          @Exchange_Rate, @Effective_Date, @Status, @Keyfield, @Effective_Date_From, @Effective_Date_To, @company_code, @location_code, 
+          @created_by, @created_date, @modified_by, @modified_date
+      `);
+
+    res.status(200).json("Edited data saved successfully");
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const saveEditedExchangeRateData = async (req, res) => {
+  const editedData = req.body.editedData;
+  if (!editedData || !editedData.length) {
+    res.status(400).json("Invalid or empty editedData array.");
+    return;
+  }
+
+  try {
+    const pool = await connection.connectToDatabase();
+    for (const updatedRow of editedData) {
+      await pool
+        .request()
+        .input("mode", sql.NVarChar, "U")
+        .input("Exchange_Rate_ID", sql.Int, updatedRow.Exchange_Rate_ID)
+        .input("From_Currency_ID", sql.Int, updatedRow.From_Currency_ID || null)
+        .input("To_Currency_ID", sql.Int, updatedRow.To_Currency_ID || null)
+        .input("Exchange_Rate", sql.Decimal(18, 6), updatedRow.Exchange_Rate || null)
+        .input("Effective_Date", sql.Date, updatedRow.Effective_Date || null)
+        .input("Status", sql.NVarChar, updatedRow.Status || "")
+        .input("Keyfield", sql.NVarChar, updatedRow.Keyfield || "")
+        .input("Effective_Date_From", sql.Date, null)
+        .input("Effective_Date_To", sql.Date, null)
+        .input("company_code", sql.NVarChar, updatedRow.company_code || "")
+        .input("location_code", sql.NVarChar, updatedRow.location_code || "")
+        .input("created_by", sql.NVarChar, updatedRow.created_by || "")
+        .input("created_date", sql.DateTime, null)
+        .input("modified_by", sql.NVarChar, req.headers["modified-by"] || "")
+        .input("modified_date", sql.DateTime, null)
+        .query(`
+          EXEC sp_Currency_Exchange_Rate 
+            @mode, @Exchange_Rate_ID, @From_Currency_ID, @To_Currency_ID, 
+            @Exchange_Rate, @Effective_Date, @Status, @Keyfield, 
+            @Effective_Date_From, @Effective_Date_To, @company_code, @location_code, 
+            @created_by, @created_date, @modified_by, @modified_date
+        `);
+    }
+    res.status(200).json("Edited data saved successfully");
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const deleteExchangeRate = async (req, res) => {
+  const Exchange_Rate_IDsToDelete = req.body.Exchange_Rate_IDs;
+
+  if (!Exchange_Rate_IDsToDelete || !Exchange_Rate_IDsToDelete.length) {
+    res.status(400).json("Invalid or empty Exchange_Rate_IDs array.");
+    return;
+  }
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    for (const Exchange_Rate_ID of Exchange_Rate_IDsToDelete) {
+      await pool
+        .request()
+        .input("mode", sql.NVarChar, "D")
+        .input("Exchange_Rate_ID", sql.Int, Exchange_Rate_ID)
+        .input("modified_by", sql.NVarChar, req.headers["modified-by"] || "")
+        .query(`EXEC sp_Currency_Exchange_Rate @mode, @Exchange_Rate_ID, NULL, NULL, NULL, NULL, '', '', 
+            NULL, NULL, '', '', '', NULL, @modified_by, NULL`);
+    }
+
+    res.status(200).json("Currency Exchange Rates deleted successfully");
+  } catch (err) {
+    console.error("Error during delete:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+//Code ended by  SakthiGanesh J on 10-12-2026
 
 module.exports = {
   login,
@@ -32757,6 +32950,11 @@ module.exports = {
   Payment_hdrDelete,
   Payment_hdrLoopInsert,
   Payment_hdrLoopUpdate,
-  Payment_hdrLoopDelete
+  Payment_hdrLoopDelete,
+  currencyexchangerateSC,
+  CurrencyExchangeRateInsert,
+  CurrencyExchangeRateUpdate,
+  saveEditedExchangeRateData,
+  deleteExchangeRate
 
 };
