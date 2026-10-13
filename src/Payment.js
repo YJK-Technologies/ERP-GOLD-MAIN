@@ -290,14 +290,14 @@ function Payment() {
   const filteredOptionCode =
     partyType === "Vendor"
       ? vendorCodeDrop.map((opt) => ({
-          value: opt.vendor_code,
-          label: `${opt.vendor_code} - ${opt.vendor_name}`,
-        }))
+        value: opt.vendor_code,
+        label: `${opt.vendor_code} - ${opt.vendor_name}`,
+      }))
       : partyType === "Customer"
         ? customerCodeDrop.map((opt) => ({
-            value: opt.customer_code,
-            label: `${opt.customer_code} - ${opt.customer_name}`,
-          }))
+          value: opt.customer_code,
+          label: `${opt.customer_code} - ${opt.customer_name}`,
+        }))
         : [];
   const filteredOptionScreens = screensDrop.map((opt) => ({
     value: opt.attributedetails_name,
@@ -517,26 +517,26 @@ function Payment() {
 
     const invoiceAmount = Number(
       invoice.bill_amt ??
-        invoice.TotalAmount ??
-        invoice.total_amount ??
-        invoice.Invoice_Amount ??
-        invoice.Amount ??
-        0,
+      invoice.TotalAmount ??
+      invoice.total_amount ??
+      invoice.Invoice_Amount ??
+      invoice.Amount ??
+      0,
     );
 
     const paidAmount = Number(
       invoice.paid_amount ??
-        invoice.PaidAmount ??
-        invoice.Previous_Paid_Amount ??
-        0,
+      invoice.PaidAmount ??
+      invoice.Previous_Paid_Amount ??
+      0,
     );
 
     const outstandingAmount = Math.max(
       0,
       Number(
         invoice.OutstandingAmount ??
-          invoice.outstanding_amount ??
-          invoiceAmount - paidAmount,
+        invoice.outstanding_amount ??
+        invoiceAmount - paidAmount,
       ),
     );
 
@@ -609,19 +609,19 @@ function Payment() {
       updatedRowData.length
         ? updatedRowData
         : [
-            {
-              serialNumber: 1,
-              itemCode: "",
-              itemName: "",
-              unitWeight: "",
-              warehouse: "",
-              purchaseQty: "",
-              ItemTotalWight: "",
-              purchaseAmt: "",
-              TotalTaxAmount: "",
-              TotalItemAmount: "",
-            },
-          ],
+          {
+            serialNumber: 1,
+            itemCode: "",
+            itemName: "",
+            unitWeight: "",
+            warehouse: "",
+            purchaseQty: "",
+            ItemTotalWight: "",
+            purchaseAmt: "",
+            TotalTaxAmount: "",
+            TotalItemAmount: "",
+          },
+        ],
     );
   };
 
@@ -1054,9 +1054,9 @@ function Payment() {
         setSelectedPaymentType(
           paymentTypeValue
             ? {
-                value: paymentTypeValue,
-                label: paymentTypeValue,
-              }
+              value: paymentTypeValue,
+              label: paymentTypeValue,
+            }
             : null,
         );
 
@@ -1069,9 +1069,9 @@ function Payment() {
         setSelectedPartyType(
           savedPartyType
             ? {
-                value: savedPartyType,
-                label: savedPartyType,
-              }
+              value: savedPartyType,
+              label: savedPartyType,
+            }
             : null,
         );
 
@@ -1093,9 +1093,9 @@ function Payment() {
         setSelectedPaymentMode(
           headerItem.Payment_Mode
             ? {
-                value: headerItem.Payment_Mode,
-                label: headerItem.Payment_Mode,
-              }
+              value: headerItem.Payment_Mode,
+              label: headerItem.Payment_Mode,
+            }
             : null,
         );
 
@@ -1104,9 +1104,9 @@ function Payment() {
         setSelectedBankCashAccount(
           headerItem.Account_ID != null
             ? {
-                value: headerItem.Account_ID,
-                label: String(headerItem.Account_ID),
-              }
+              value: headerItem.Account_ID,
+              label: String(headerItem.Account_ID),
+            }
             : null,
         );
 
@@ -1403,7 +1403,7 @@ function Payment() {
         } catch (error) {
           toast.error(
             error.message ||
-              "An error occurred while deleting the Payment Voucher.",
+            "An error occurred while deleting the Payment Voucher.",
           );
         } finally {
           setLoading(false);
@@ -1804,7 +1804,7 @@ function Payment() {
               <div className="col-md-3 form-group mb-2">
                 <label
                   htmlFor="paymentType"
-                  className={`exp-form-labels ${error && !paymentType ? "red" : ""}`}
+                  className={`${error && !paymentType ? "red" : ""}`}
                 >
                   Payment Type<span className="text-danger">*</span>
                 </label>
@@ -1825,7 +1825,7 @@ function Payment() {
               <div className="col-md-3 form-group mb-2">
                 <label
                   htmlFor="partyType"
-                  className={`exp-form-labels ${error && !partyType ? "red" : ""}`}
+                  className={`${error && !partyType ? "red" : ""}`}
                 >
                   Vendor / Customer Type<span className="text-danger">*</span>
                 </label>
@@ -2038,7 +2038,7 @@ function Payment() {
                   className={`"toggle-btn"  ${activeTable === "myTable" ? "active" : ""}`}
                   onClick={() => handleToggleTable("myTable")}
                 >
-                  Item Details
+                  Invoice Details
                 </purButton>
                 {/* <purButton
                                     type="button"
@@ -2085,12 +2085,12 @@ function Payment() {
           <PurchaseItemPopup
             open={open}
             handleClose={() => setOpen(false)}
-            handleItem={() => {}}
+            handleItem={() => { }}
           />
           <PurchaseWarehousePopup
             open={open1}
             handleClose={() => setOpen1(false)}
-            handleWarehouse={() => {}}
+            handleWarehouse={() => { }}
           />
           <PurchasePopup
             open={openPurchaseHelp}
@@ -2107,13 +2107,13 @@ function Payment() {
           <PurchaseReturnView
             open={openPurchaseReturnHelp}
             handleClose={() => setOpenPurchaseReturnHelp(false)}
-            handleItemView={() => {}}
+            handleItemView={() => { }}
             selectedPartyCode={partyName || ""}
           />
           <SalesRetrunView
             open={openSalesReturnHelp}
             handleClose={() => setOpenSalesReturnHelp(false)}
-            handleDataView={() => {}}
+            handleDataView={() => { }}
             selectedPartyCode={partyName || ""}
           />
           <PaymentHelp
@@ -2365,7 +2365,7 @@ function Payment() {
                   className={`"toggle-btn" ${activeTable === "myTable" ? "active" : ""}`}
                   onClick={() => handleToggleTable("myTable")}
                 >
-                  Item Details
+                  Invoice Details
                 </purButton>
               </div>
             </div>

@@ -435,11 +435,11 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                             </div>
                           </div>
                           <div className="col-sm mb-2">
-                            <div title="Select a Our Brand">
+                            <div title="Select a Our Status">
                               <Select
                                 id="status"
                                 type="text"
-                                placeholder='status'
+                                placeholder='Status'
                                 value={selectedStatus}
                                 onChange={handleStatusChange}
                                 options={filteredOptionStatus}
@@ -585,7 +585,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                             <Select
                               id="status"
                               type="text"
-                              placeholder='status'
+                              placeholder='Status'
                               value={selectedStatus}
                               onChange={handleStatusChange}
                               options={filteredOptionStatus}
