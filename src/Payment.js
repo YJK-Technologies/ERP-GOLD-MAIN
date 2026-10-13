@@ -1847,12 +1847,13 @@ function Payment() {
               </div>
 
               <div className="col-md-3 form-group mb-2">
-                <label
+                {/* <label
                   htmlFor="partyCode"
                   className={`${error && !partyCode ? "red" : ""}`}
                 >
                   Vendor / Customer Code<span className="text-danger">*</span>
-                </label>
+                </label> */}
+                <label htmlFor="transactionNumber">Vendor / Customer Code</label>
                 <div
                   className="exp-form-floating"
                   title="Enter Vendor / Customer Code"
@@ -1883,12 +1884,13 @@ function Payment() {
               </div>
 
               <div className="col-md-3 form-group mb-2">
-                <label
+                {/* <label
                   htmlFor="partyName"
                   className={`${error && !partyName ? "red" : ""}`}
                 >
                   Vendor / Customer Name<span className="text-danger">*</span>
-                </label>
+                </label> */}
+                <label htmlFor="transactionNumber">Vendor / Customer Name</label>
                 <div
                   className="exp-form-floating"
                   title="Vendor / Customer Name"
@@ -1983,7 +1985,13 @@ function Payment() {
               </div>
 
               <div className="col-md-3 form-group mb-2">
-                <label htmlFor="refNo">Amount</label>
+                {/* <label htmlFor="refNo">Amount</label> */}
+                <label
+                  htmlFor="reason"
+                  className={`${error && !amount ? "red" : ""}`}
+                >
+                  Amount<span className="text-danger">*</span>
+                </label>
                 <div className="exp-form-floating">
                   <input
                     type="number"
