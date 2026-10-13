@@ -154,10 +154,11 @@ function CurrencyExchangeRate() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            Exchange_Rate_ID,
+            Exchange_Rate_ID: Exchange_Rate_ID ? Number(Exchange_Rate_ID) : null,
             From_Currency_ID,
             To_Currency_ID,
-            Exchange_Rate,
+            // Exchange_Rate,
+            Exchange_Rate: Exchange_Rate ? Number(Exchange_Rate) : null,
             Effective_Date,
             Effective_Date_From,
             Effective_Date_To,
@@ -725,18 +726,25 @@ function CurrencyExchangeRate() {
               <label htmlFor="erid" className="exp-form-labels">
                 Exchange Rate ID
               </label>
-              <input
-                id="erid"
-                className="exp-input-field form-control"
-                type="text"
-                placeholder=""
-                required
-                title="Please fill the Exchange Rate ID here"
-                value={Exchange_Rate_ID}
-                onChange={(e) => setExchangeRateId(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                maxLength={20}
-              />
+<input
+  id="erid"
+  className="exp-input-field form-control"
+  type="number"
+  step="1"
+  min="0"
+  placeholder=""
+  required
+  title="Please fill the Exchange Rate ID here"
+  value={Exchange_Rate_ID}
+  onChange={(e) => {
+    const value = e.target.value;
+
+    if (value === "" || /^\d+$/.test(value)) {
+      setExchangeRateId(value);
+    }
+  }}
+  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+/>
             </div>
           </div>
 
