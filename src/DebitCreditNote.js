@@ -3115,7 +3115,8 @@ function DebitCreditNote() {
                         <div className="row ms-3 me-3 mb-3">
                             <div className="col-md-3 form-group mb-2">
                                 <div className="exp-form-floating">
-                                    <label className={`${error && !total ? 'red' : ''}`}>Taxable Amount<span className="text-danger">*</span></label>
+                                    {/* <label className={`${error && !total ? 'red' : ''}`}>Taxable Amount<span className="text-danger">*</span></label> */}
+                                    <label className="exp-form-labels">Taxable Amount</label>
                                     <input
                                         id="totalPurchaseAmount"
                                         className="exp-input-field form-control input"
@@ -3128,7 +3129,8 @@ function DebitCreditNote() {
                             </div>
                             <div className="col-md-3 form-group mb-2">
                                 <div className="exp-form-floating">
-                                    <label className={`${error && !totalTax ? 'red' : ''}`}>Total Tax Amount<span className="text-danger">*</span></label>
+                                    {/* <label className={`${error && !totalTax ? 'red' : ''}`}>Total Tax Amount<span className="text-danger">*</span></label> */}
+                                    <label className="exp-form-labels">Total Tax Amount</label>
                                     <input
                                         id="totalTaxAmount"
                                         title="Total Calculated Tax Amount"
@@ -3154,7 +3156,8 @@ function DebitCreditNote() {
                             </div>
                             <div className="col-md-3 form-group mb-2">
                                 <div className="exp-form-floating">
-                                    <label className={`${error && !totalAmount ? 'red' : ''}`}>Total Amount<span className="text-danger">*</span></label>
+                                    {/* <label className={`${error && !totalAmount ? 'red' : ''}`}>Total Amount<span className="text-danger">*</span></label> */}
+                                    <label className="exp-form-labels">Total Amount</label>
                                     <input
                                         id="totalBillAmount"
                                         title="Final Total Amount"
