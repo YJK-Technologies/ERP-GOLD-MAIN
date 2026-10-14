@@ -262,20 +262,25 @@ function CurrencyExchangeRate() {
       },
     },
     {
-      headerName: "Exchange Rate",
-      field: "Exchange_Rate",
-      editable: true,
-      cellStyle: { textAlign: "right" },
-      valueSetter: (params) => {
-        const newValue = params.newValue?.toString().trim();
-        const isValid = /^\d*(\.\d*)?$/.test(newValue);
-        if (isValid) {
-          params.data.Exchange_Rate = newValue;
-          return true;
-        }
-        return false;
-      },
-    },
+  headerName: "Exchange Rate",
+  field: "Exchange_Rate",
+  editable: true,
+  cellStyle: { textAlign: "right" },
+
+  valueSetter: (params) => {
+    const newValue = params.newValue?.toString().trim();
+
+    // Allow digits and an optional decimal point
+    const isValid = /^\d*\.?\d*$/.test(newValue);
+
+    if (isValid && newValue !== "" && newValue !== ".") {
+      params.data.Exchange_Rate = newValue;
+      return true;
+    }
+
+    return false;
+  },
+},
     {
       headerName: "Effective Date",
       field: "Effective_Date",
@@ -808,7 +813,7 @@ function CurrencyExchangeRate() {
             </div>
           </div>
 
-          <div className="col-md-3 form-group">
+          {/* <div className="col-md-3 form-group">
             <div className="exp-form-floating">
               <label htmlFor="effdate" className="exp-form-labels">
                 Effective Date
@@ -825,7 +830,7 @@ function CurrencyExchangeRate() {
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               />
             </div>
-          </div>
+          </div> */}
 
           <div className="col-md-3 form-group">
             <div className="exp-form-floating">
