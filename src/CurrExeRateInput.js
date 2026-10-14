@@ -252,7 +252,7 @@ function CurrencyExchangeRateInput({}) {
               <h1 align="left" className="purbut">
                 {mode === "update"
                   ? "Update Currency Exchange Rate Details"
-                  : "Currency Exchange Rate Details"}
+                  : "Add Currency Exchange Rate Details"}
               </h1>
               <h1 align="left" className="fs-4 mobileview">
                 {mode === "update"
