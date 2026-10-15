@@ -120,6 +120,158 @@ function Payment() {
 
   const [amount, setAmount] = useState(0);
 
+  // --- ACCOUNT POSTING & SCREEN IMPACT STATES ---
+  const [showPostingGrid, setShowPostingGrid] = useState(false);
+
+  const [postingRowData, setPostingRowData] = useState([
+    // 1. Screens directly affected by a Payment
+    {
+      serialNumber: 1,
+      category: "Direct Impact",
+      screen: "Payment",
+      impact: "Direct",
+      description: "Stores the payment header, payment details, account, party and amount.",
+    },
+    {
+      serialNumber: 2,
+      category: "Direct Impact",
+      screen: "Chart of Accounts",
+      impact: "Direct / balance impact",
+      description: "The selected bank, cash, supplier or customer ledger accounts are used for accounting entries. The account master itself normally is not modified.",
+    },
+    {
+      serialNumber: 3,
+      category: "Direct Impact",
+      screen: "Journal",
+      impact: "Accounting impact",
+      description: "The payment should generate debit and credit entries in the accounting ledger. A separate Journal screen may or may not be used to display them.",
+    },
+    {
+      serialNumber: 4,
+      category: "Direct Impact",
+      screen: "Purchase",
+      impact: "Outstanding impact",
+      description: "When paying a supplier against a purchase invoice, its outstanding balance decreases.",
+    },
+    {
+      serialNumber: 5,
+      category: "Direct Impact",
+      screen: "Invoice",
+      impact: "Outstanding impact",
+      description: "When a payment settles an invoice, the amount due should decrease. This depends on whether Invoice represents a sales invoice, purchase invoice, or both in your ERP.",
+    },
+    // 2. Other screens affected depending on the transaction
+    {
+      serialNumber: 6,
+      category: "Conditional Impact",
+      screen: "Debit / Credit Note",
+      impact: "Conditional (Allocation)",
+      description: "If the payment settles an amount arising from a debit or credit note, according to your allocation rules.",
+    },
+    {
+      serialNumber: 7,
+      category: "Conditional Impact",
+      screen: "Purchase Return",
+      impact: "Conditional (Supplier Refund)",
+      description: "If a supplier refund or adjustment relates to a purchase return.",
+    },
+    {
+      serialNumber: 8,
+      category: "Conditional Impact",
+      screen: "Sales Return",
+      impact: "Conditional (Customer Refund)",
+      description: "If a customer refund or adjustment relates to a sales return.",
+    },
+    {
+      serialNumber: 9,
+      category: "Conditional Impact",
+      screen: "Pending Customer",
+      impact: "Conditional (Customer Balance)",
+      description: "If this screen tracks customer outstanding balances and the payment is a customer receipt or refund.",
+    },
+    {
+      serialNumber: 10,
+      category: "Conditional Impact",
+      screen: "Standard Account",
+      impact: "Setup / Mapping",
+      description: "If this screen defines standard ledger mappings used to determine the accounts for payment postings. Normally, no record is inserted here for each payment.",
+    },
+    {
+      serialNumber: 11,
+      category: "Conditional Impact",
+      screen: "User Account Group",
+      impact: "Permissions Only",
+      description: "Only if it controls the user's permissions or account access; a normal payment does not modify its data.",
+    },
+    {
+      serialNumber: 12,
+      category: "Conditional Impact",
+      screen: "Base Account",
+      impact: "Classification",
+      description: "Usually no direct change. It may influence account classification or ledger setup.",
+    },
+    {
+      serialNumber: 13,
+      category: "Conditional Impact",
+      screen: "Asset Allocation",
+      impact: "Conditional (Asset Workflow)",
+      description: "Only if the payment is specifically associated with an asset purchase or allocation workflow.",
+    },
+  ]);
+
+  const columnDefsPosting = [
+    {
+      headerName: "S.No",
+      field: "serialNumber",
+      maxWidth: 80,
+      sortable: false,
+      editable: false,
+    },
+    {
+      headerName: "Effect Type",
+      field: "category",
+      minWidth: 160,
+      maxWidth: 180,
+      filter: true,
+      sortable: true,
+      editable: false,
+      cellStyle: (params) => ({
+        fontWeight: "600",
+        color: params.value === "Direct Impact" ? "#0d6efd" : "#6c757d",
+      }),
+    },
+    {
+      headerName: "Screen",
+      field: "screen",
+      minWidth: 180,
+      maxWidth: 220,
+      filter: true,
+      sortable: true,
+      editable: false,
+      cellStyle: { fontWeight: "bold" },
+    },
+    {
+      headerName: "Impact / Trigger",
+      field: "impact",
+      minWidth: 220,
+      maxWidth: 260,
+      filter: true,
+      sortable: true,
+      editable: false,
+    },
+    {
+      headerName: "Reason / When it is affected",
+      field: "description",
+      flex: 1,
+      minWidth: 350,
+      filter: true,
+      sortable: false,
+      editable: false,
+      wrapText: true,
+      autoHeight: true,
+    },
+  ];
+
   const [additionalData, setAdditionalData] = useState({
     modified_by: "",
     created_by: "",
@@ -2131,6 +2283,55 @@ function Payment() {
             handleClose={() => setOpenCustomerPartyHelp(false)}
             handleVendor={handleCustomer}
           />
+
+          {/* Account Postings & Affected Screens Collapsible Section */}
+          <div
+            className="shadow-lg p-2 bg-body-tertiary rounded mt-2 pt-2 pb-2"
+            align="left"
+          >
+            <div className="d-flex justify-content-between align-items-center">
+              <div className="d-flex align-items-center ms-3">
+                <h6 className="mb-0 fw-bold">
+                  Account Posting & Affected Screens Details
+                </h6>
+              </div>
+              <div className="d-flex me-4">
+                <icon
+                  type="button"
+                  className="popups-btn"
+                  title={
+                    showPostingGrid
+                      ? "Hide Posting Details"
+                      : "Show Posting Details"
+                  }
+                  onClick={() => setShowPostingGrid(!showPostingGrid)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <FontAwesomeIcon icon={showPostingGrid ? faMinus : faPlus} />
+                </icon>
+              </div>
+            </div>
+
+            {showPostingGrid && (
+              <div className="mt-3">
+                <div
+                  className="ag-theme-alpine"
+                  style={{ height: 350, width: "100%" }}
+                >
+                  <AgGridReact
+                    columnDefs={columnDefsPosting}
+                    rowData={postingRowData}
+                    defaultColDef={{
+                      editable: false,
+                      resizable: true,
+                      filter: true,
+                    }}
+                    animateRows={true}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
 
           <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
             <div className="row ms-2">
