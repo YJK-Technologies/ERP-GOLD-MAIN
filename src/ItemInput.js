@@ -12,7 +12,7 @@ import LoadingScreen from "./Loading";
 
 const config = require("./Apiconfig");
 
-function ItemInput({}) {
+function ItemInput({ }) {
   const [Item_code, setItem_code] = useState("");
   const inputRef = useRef(null);
   const [Item_variant, setItem_variant] = useState("");
@@ -519,9 +519,9 @@ function ItemInput({}) {
 
   const filteredOptionOthertaxitemsales = Array.isArray(Othersaltaxdrop)
     ? Othersaltaxdrop.map((option) => ({
-        value: option.Other_Sales_tax_type,
-        label: option.Other_Sales_tax_type, // Concatenate ApprovedBy and EmployeeId with ' - '
-      }))
+      value: option.Other_Sales_tax_type,
+      label: option.Other_Sales_tax_type, // Concatenate ApprovedBy and EmployeeId with ' - '
+    }))
     : [];
 
   const filteredOptiontaxitempur = purtaxdrop.map((option) => ({
@@ -602,7 +602,8 @@ function ItemInput({}) {
       !MRPprice ||
       !status
     ) {
-      setError(" ");
+      toast.warning("Error: Missing required fields.");
+      setError("true");
       return;
     }
     setLoading(true);
@@ -733,7 +734,8 @@ function ItemInput({}) {
       !MRPprice ||
       !selectedStatus
     ) {
-      setError(" ");
+      toast.warning("Error: Missing required fields.");
+      setError("true");
       return;
     }
     setLoading(true);
@@ -1429,7 +1431,7 @@ function ItemInput({}) {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
                     <div>
