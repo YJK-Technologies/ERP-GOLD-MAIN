@@ -280,13 +280,12 @@ function WareHouseInput({ }) {
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label for="state" class="exp-form-labels">
-                          Warehouse Code
-
-                        </label>
-                      </div>
-                      <div>
-                        <span className="text-danger">*</span>
+                        <label
+                  htmlFor="partyType"
+                  className={`${error && !warehouse_code ? "red" : ""}`}
+                >
+                  Warehouse Code<span className="text-danger">*</span>
+                </label>
                       </div>
                     </div><input
                       id="whcode"
@@ -300,9 +299,7 @@ function WareHouseInput({ }) {
                       ref={WarehouseCode}
                       readOnly={mode === "update"}
                       onKeyDown={(e) => handleKeyDown(e, WarehouseName, WarehouseCode)}
-                    />            {error && !warehouse_code && <div className="text-danger">WareHouse Code should not be blank</div>}
-
-
+                    />            
                   </div>
                 </div>
 
@@ -310,13 +307,12 @@ function WareHouseInput({ }) {
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label for="state" class="exp-form-labels">
-                          Warehouse Name
-
-                        </label>
-                      </div>
-                      <div>
-                        <span className="text-danger">*</span>
+                        <label
+                  htmlFor="partyType"
+                  className={`${error && !warehouse_name ? "red" : ""}`}
+                >
+                  Warehouse Name<span className="text-danger">*</span>
+                </label>
                       </div>
                     </div><input
                       id="whname"
@@ -329,9 +325,7 @@ function WareHouseInput({ }) {
                       onChange={(e) => setWarehouse_Name(e.target.value)}
                       ref={WarehouseName}
                       onKeyDown={(e) => handleKeyDown(e, Status, WarehouseName)}
-                    />            {error && !warehouse_name && <div className="text-danger">WareHouse Name should not be blank</div>}
-
-
+                    />   
                   </div>
                 </div>
 
@@ -339,13 +333,12 @@ function WareHouseInput({ }) {
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label for="state" class="exp-form-labels">
-                          Status
-
-                        </label>
-                      </div>
-                      <div>
-                        <span className="text-danger">*</span>
+                        <label
+                  htmlFor="partyType"
+                  className={`${error && !status ? "red" : ""}`}
+                >
+                  Status<span className="text-danger">*</span>
+                </label>
                       </div>
                     </div>
  <div title="Select the Status">       
@@ -359,28 +352,18 @@ function WareHouseInput({ }) {
                       ref={Status}
                       onKeyDown={(e) => handleKeyDown(e, LocatioN, Status)}
                     />
-                    {error && !status && <div className="text-danger"> Status should not be blank</div>}
-
                   </div>
                 </div>   </div>
-
-
-
-
-
-
-
                 <div className="col-md-3 form-group">
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label for="state" class="exp-form-labels">
-                          Location No
-
-                        </label>
-                      </div>
-                      <div>
-                        <span className="text-danger">*</span>
+                        <label
+                  htmlFor="partyType"
+                  className={`${error && !location_no ? "red" : ""}`}
+                >
+                  Location No<span className="text-danger">*</span>
+                </label>
                       </div>
                     </div>
 <div title="Select the Location No">     
@@ -402,10 +385,6 @@ function WareHouseInput({ }) {
                         }
                       }}
                     />
-                    {error && !location_no && <div className="text-danger"> Location No should not be blank</div>}
-
-
-
                   </div>
                 </div>    </div>
 

@@ -388,13 +388,13 @@ function VenDetInput({ }) {
   };
 
   const handleNavigate = () => {
-  navigate("/Vendor", {
-    state: {
-      preservedRowData: location.state?.preservedRowData,
-      preservedInputs: location.state?.preservedInputs
-    }
-  });
-};
+    navigate("/Vendor", {
+      state: {
+        preservedRowData: location.state?.preservedRowData,
+        preservedInputs: location.state?.preservedInputs
+      }
+    });
+  };
 
   const handleInsert = async () => {
     if (
@@ -616,7 +616,7 @@ function VenDetInput({ }) {
                     </div>
 
                     <div className="input-group" title="Select the Code">
-                
+
                       <Select
                         id="venco"
                         value={selectedCode}
@@ -628,10 +628,10 @@ function VenDetInput({ }) {
                         ref={code}
                         onKeyDown={(e) => handleKeyDown(e, Address1, code)}
                       /><button onClick={handleClickOpen} class="vendorhdrcode position-absolute me-5 pt-2" required title="Add Header"><i class="fa-solid fa-plus"></i></button>
-                    
+
+                    </div>
                   </div>
-                </div>     
-                 </div>
+                </div>
 
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
@@ -670,7 +670,7 @@ function VenDetInput({ }) {
                       maxLength={250}
                       ref={Address2}
                       onKeyDown={(e) => handleKeyDown(e, Address3, Address2)}
-                    /> 
+                    />
                   </div>
                 </div>
 
@@ -722,19 +722,19 @@ function VenDetInput({ }) {
                         City<span className="text-danger">*</span>
                       </label></div>
                     </div>
-                    <div title="Select the City">  
-                    <Select
-                      id="city"
-                      value={selectedCity}
-                      onChange={handleChangeCity}
-                      options={filteredOptionCity}
-                      className="exp-input-field"
-                      placeholder=""
-                      ref={City}
-                      onKeyDown={(e) => handleKeyDown(e, State, City)}
-                    />
+                    <div title="Select the City">
+                      <Select
+                        id="city"
+                        value={selectedCity}
+                        onChange={handleChangeCity}
+                        options={filteredOptionCity}
+                        className="exp-input-field"
+                        placeholder=""
+                        ref={City}
+                        onKeyDown={(e) => handleKeyDown(e, State, City)}
+                      />
+                    </div>
                   </div>
-                </div>     
                 </div>
 
                 <div className="col-md-3 form-group mb-2">
@@ -745,19 +745,19 @@ function VenDetInput({ }) {
                         State<span className="text-danger">*</span>
                       </label></div>
                     </div>
-                   <div title="Select the State">       
-                    <Select
-                      id="state"
-                      value={selectedState}
-                      onChange={handleChangeState}
-                      options={filteredOptionState}
-                      className="exp-input-field"
-                      placeholder=""
-                      ref={State}
-                      onKeyDown={(e) => handleKeyDown(e, Country, State)}
-                    />
-                  </div>
-                </div>  </div>
+                    <div title="Select the State">
+                      <Select
+                        id="state"
+                        value={selectedState}
+                        onChange={handleChangeState}
+                        options={filteredOptionState}
+                        className="exp-input-field"
+                        placeholder=""
+                        ref={State}
+                        onKeyDown={(e) => handleKeyDown(e, Country, State)}
+                      />
+                    </div>
+                  </div>  </div>
 
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
@@ -767,19 +767,19 @@ function VenDetInput({ }) {
                       </label>
                       </div>
                     </div>
-                    <div title="Select the Country">    
-                    <Select
-                      id="country"
-                      value={selectedCountry}
-                      onChange={handleChangeCountry}
-                      options={filteredOptionCountry}
-                      className="exp-input-field"
-                      placeholder=""
-                      ref={Country}
-                      onKeyDown={(e) => handleKeyDown(e, Imex, Country)}
-                    />
-                  </div>
-                </div>  </div>
+                    <div title="Select the Country">
+                      <Select
+                        id="country"
+                        value={selectedCountry}
+                        onChange={handleChangeCountry}
+                        options={filteredOptionCountry}
+                        className="exp-input-field"
+                        placeholder=""
+                        ref={Country}
+                        onKeyDown={(e) => handleKeyDown(e, Imex, Country)}
+                      />
+                    </div>
+                  </div>  </div>
 
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
@@ -840,23 +840,37 @@ function VenDetInput({ }) {
                   </div>
                 </div>
                 <div className="col-md-3 form-group mb-2">
-                  <div class="exp-form-floating">
-                    <div class="d-flex justify-content-start">
-                      <div><label for="rid" className={`${error && !vendor_mobile_no ? 'text-danger' : ''}`}>
-                        Mobile No<span className="text-danger">*</span>
-                      </label></div>
-                    </div><input
+                  <div className="exp-form-floating">
+                    <div className="d-flex justify-content-start">
+                      <div>
+                        <label
+                          htmlFor="mobno"
+                          className={`${error && !vendor_mobile_no ? 'text-danger' : ''}`}
+                        >
+                          Mobile No<span className="text-danger">*</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    <input
                       id="mobno"
-                      class="exp-input-field form-control"
-                      type="number"
+                      className="exp-input-field form-control"
+                      type="tel"
                       placeholder=""
-                      required title="Please enter the mobile number"
+                      required
+                      title="Please enter a mobile number with a maximum of 15 digits"
                       value={vendor_mobile_no}
-                      onChange={(e) => setvendor_mobile_no(e.target.value)}
-                      maxLength={20}
+                      onChange={(e) => {
+                        const value = e.target.value;
+
+                        if (/^\+?\d{0,15}$/.test(value)) {
+                          setvendor_mobile_no(value);
+                        }
+                      }}
+                      maxLength={16}
                       ref={Mobile}
                       onKeyDown={(e) => handleKeyDown(e, FaxNo, Mobile)}
-                    />            
+                    />
                   </div>
                 </div>
                 <div className="col-md-3 form-group mb-2">
@@ -896,27 +910,43 @@ function VenDetInput({ }) {
                       maxLength={250}
                       ref={Email}
                       onKeyDown={(e) => handleKeyDown(e, Credit, Email)}
-                    />            
+                    />
                   </div>
                 </div>
                 <div className="col-md-3 form-group mb-2">
-                  <div class="exp-form-floating">
-                    <div class="d-flex justify-content-start">
-                      <div><label for="rid" className={`${error && !vendor_credit_limit ? 'text-danger' : ''}`}>
-                        Credit Limit<span className="text-danger">*</span>
-                      </label></div>
-                    </div><input
+                  <div className="exp-form-floating">
+                    <div className="d-flex justify-content-start">
+                      <div>
+                        <label
+                          htmlFor="vencre"
+                          className={`${error && (vendor_credit_limit === '' || vendor_credit_limit === null) ? 'text-danger' : ''}`}
+                        >
+                          Credit Limit<span className="text-danger">*</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    <input
                       id="vencre"
-                      class="exp-input-field form-control"
+                      className="exp-input-field form-control"
                       type="number"
                       placeholder=""
-                      required title="Please enter the credit limit"
+                      required
+                      title="Please enter the credit limit"
                       value={vendor_credit_limit}
-                      onChange={(e) => setvendor_credit_limit(e.target.value)}
-                      maxLength={18}
+                      onChange={(e) => {
+                        const value = e.target.value;
+
+                        if (value === '' || /^\d{0,11}(\.\d{0,3})?$/.test(value)) {
+                          setvendor_credit_limit(value);
+                        }
+                      }}
+                      min="0"
+                      max="99999999999.999"
+                      step="0.001"
                       ref={Credit}
                       onKeyDown={(e) => handleKeyDown(e, TRansport, Credit)}
-                    />           
+                    />
                   </div>
                 </div>
                 <div className="col-md-3 form-group mb-2">
@@ -924,62 +954,62 @@ function VenDetInput({ }) {
                     <label for="ventrans" class="exp-form-labels">
                       Transport Code
                     </label>
-                    <div title="Select the Transport Code">        
+                    <div title="Select the Transport Code">
 
-                    <Select
-                      id="ventrans"
-                      value={selectedTransport}
-                      onChange={handleChangeTransport}
-                      options={filteredOptionTransaction}
-                      className="exp-input-field"
-                      placeholder=""
-                      ref={TRansport}
-                      onKeyDown={(e) => handleKeyDown(e, Sales, TRansport)}
-                    />
+                      <Select
+                        id="ventrans"
+                        value={selectedTransport}
+                        onChange={handleChangeTransport}
+                        options={filteredOptionTransaction}
+                        className="exp-input-field"
+                        placeholder=""
+                        ref={TRansport}
+                        onKeyDown={(e) => handleKeyDown(e, Sales, TRansport)}
+                      />
 
-                  </div>
-                </div>    </div>
+                    </div>
+                  </div>    </div>
 
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
                     <label for="vensales" class="exp-form-labels">
                       Salesman Code
                     </label>
- <div title="Select the Salesman Code">    
-                    <Select
-                      id="vensales"
-                      value={selectedSales}
-                      onChange={handleChangeSales}
-                      options={filteredOptionSales}
-                      className="exp-input-field"
-                      placeholder=""
-                      ref={Sales}
-                      onKeyDown={(e) => handleKeyDown(e, Broker, Sales)}
-                    />
+                    <div title="Select the Salesman Code">
+                      <Select
+                        id="vensales"
+                        value={selectedSales}
+                        onChange={handleChangeSales}
+                        options={filteredOptionSales}
+                        className="exp-input-field"
+                        placeholder=""
+                        ref={Sales}
+                        onKeyDown={(e) => handleKeyDown(e, Broker, Sales)}
+                      />
 
-                  </div>
-                </div> </div>
+                    </div>
+                  </div> </div>
 
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
                     <label for="venbro" class="exp-form-labels">
                       Broker Code
                     </label>
-                    <div title="Select the Broker Code">   
+                    <div title="Select the Broker Code">
 
-                    <Select
-                      id="venbro"
-                      value={selectedBroker}
-                      onChange={handleChangeBroker}
-                      options={filteredOptionBroker}
-                      className="exp-input-field"
-                      placeholder=""
-                      ref={Broker}
-                      onKeyDown={(e) => handleKeyDown(e, Week, Broker)}
-                    />
+                      <Select
+                        id="venbro"
+                        value={selectedBroker}
+                        onChange={handleChangeBroker}
+                        options={filteredOptionBroker}
+                        className="exp-input-field"
+                        placeholder=""
+                        ref={Broker}
+                        onKeyDown={(e) => handleKeyDown(e, Week, Broker)}
+                      />
 
-                  </div>
-                </div>  </div>
+                    </div>
+                  </div>  </div>
 
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
@@ -1005,23 +1035,23 @@ function VenDetInput({ }) {
                     <label for="ventrans" class="exp-form-labels">
                       Office Type
                     </label>
-                     <div title="Select the Office Type "> 
-                    <Select
-                    
-                      id="officeType"
-                      value={selectedOffice}
-                      onChange={handleChangeOffice}
-                      options={filteredOptionOffice}
-                      className="exp-input-field"
-                      placeholder=""
-                      ref={OfficeT}
-                      onKeyDown={(e) => handleKeyDown(e, Contact, OfficeT)}
-                    />
+                    <div title="Select the Office Type ">
+                      <Select
 
+                        id="officeType"
+                        value={selectedOffice}
+                        onChange={handleChangeOffice}
+                        options={filteredOptionOffice}
+                        className="exp-input-field"
+                        placeholder=""
+                        ref={OfficeT}
+                        onKeyDown={(e) => handleKeyDown(e, Contact, OfficeT)}
+                      />
+
+                    </div>
                   </div>
                 </div>
-                  </div>
-                  <div className="col-md-3 form-group mb-2">
+                <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
                     <label for="ventrans" class="exp-form-labels">
                       Contact Person
@@ -1045,7 +1075,7 @@ function VenDetInput({ }) {
                     />
 
                   </div>
-                </div> 
+                </div>
                 {/* <div className="col-md-3 form-group  mb-2">
         {mode === "create" ? (
                 <div class="exp-form-floating">

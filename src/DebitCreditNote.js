@@ -2445,7 +2445,8 @@ function DebitCreditNote() {
                 Reference_Type: refType,
                 Reference_ID: keyfield,
                 Reference_Invoice_No: refTransactionNumber,
-                Reference_Invoice_Date: refTransactionDate,
+                // Reference_Invoice_Date: refTransactionDate,
+                Reference_Invoice_Date: refTransactionDate || null,
                 Reason_ID: reason,
                 Reference_No: refNo,
                 Sub_Total: total,
@@ -3167,7 +3168,7 @@ function DebitCreditNote() {
                             <div className="row ms-3 me-3">
                                {showDropdown && (
                                  <div className="col-md-3 form-group mb-2">
-                                   <label for="" className={`${error && !status ? 'red' : ''}`}>Status</label>
+                                   <label for="" className={`${error && !selectedStatus ? 'red' : ''}`}>Status</label>
                                    <span className="text-danger">*</span>
                                    <div title="Select an option">
                                    <div class="exp-form-floating">
