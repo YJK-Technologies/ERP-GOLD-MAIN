@@ -1037,6 +1037,11 @@ router.post("/CurrencyExchangeRateInsert", dataController.CurrencyExchangeRateIn
 router.post("/CurrencyExchangeRateUpdate", dataController.CurrencyExchangeRateUpdate)
 router.post("/saveEditedExchangeRateData", dataController.saveEditedExchangeRateData)
 router.post("/deleteExchangeRate", dataController.deleteExchangeRate)
+router.post("/DnCnauthstatus", dataController.DnCnauthstatus)
+router.post("/DebitCreditNoteAuth", dataController.DebitCreditNoteAuth)
+router.post("/DebitCreditNoteDetailAuth", dataController.DebitCreditNoteDetailAuth)
+router.post("/DebitCreditNoteTaxDetailAuth", dataController.DebitCreditNoteTaxDetailAuth)
+router.post("/getauthorization", dataController.getauthorization)
 
 
 module.exports = router;

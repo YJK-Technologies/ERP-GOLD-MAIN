@@ -56,6 +56,7 @@ function DebitCreditNote() {
     const [global, setGlobal] = useState(null);
     const [globalItem, setGlobalItem] = useState(null);
     const [saveButtonVisible, setSaveButtonVisible] = useState(true);
+    const [authButtonVisible, setAuthButtonVisible] = useState(false);
     const [updateButtonVisible, setUpdateButtonVisible] = useState(false);
     const [printButtonVisible, setPrintButtonVisible] = useState(false);
     const [delButtonVisible, setDelButtonVisible] = useState(false);
@@ -63,6 +64,7 @@ function DebitCreditNote() {
     const [financialYearStart, setFinancialYearStart] = useState('');
     const [financialYearEnd, setFinancialYearEnd] = useState('');
     const [screensDrop, setScreensDrop] = useState([]);
+    const [authorizationDrop, setauthorizationDrop] = useState([]);
     const [selectedscreens, setSelectedscreens] = useState(null);
     const [Screens, setScreens] = useState('Add');
 
@@ -79,6 +81,7 @@ function DebitCreditNote() {
 
     const [partyTypeDrop, setPartyTypeDrop] = useState([])
     const [selectedPartyType, setSelectedPartyType] = useState('');
+    const [selectedauthorization, setselectedauthorization] = useState('');
     const [partyType, setPartyType] = useState('');
 
     const [refTypeDrop, setRefTypeDrop] = useState([])
@@ -101,6 +104,163 @@ function DebitCreditNote() {
 
     const [openVendorPartyHelp, setOpenVendorPartyHelp] = useState(false);
     const [openCustomerPartyHelp, setOpenCustomerPartyHelp] = useState(false);
+
+    const [selectedStatus, setSelectedStatus] = useState(null);
+    const [status, setStatus] = useState([]);
+
+    const [showDropdown, setShowDropdown] = useState(false);
+
+      // --- ACCOUNT POSTING & SCREEN IMPACT STATES ---
+      const [showPostingGrid, setShowPostingGrid] = useState(false);
+    
+      const [postingRowData, setPostingRowData] = useState([
+        // 1. Screens directly affected by a Payment
+        {
+          serialNumber: 1,
+          category: "Direct Impact",
+          screen: "Payment",
+          impact: "Direct",
+          description: "Stores the payment header, payment details, account, party and amount.",
+        },
+        {
+          serialNumber: 2,
+          category: "Direct Impact",
+          screen: "Chart of Accounts",
+          impact: "Direct / balance impact",
+          description: "The selected bank, cash, supplier or customer ledger accounts are used for accounting entries. The account master itself normally is not modified.",
+        },
+        {
+          serialNumber: 3,
+          category: "Direct Impact",
+          screen: "Journal",
+          impact: "Accounting impact",
+          description: "The payment should generate debit and credit entries in the accounting ledger. A separate Journal screen may or may not be used to display them.",
+        },
+        {
+          serialNumber: 4,
+          category: "Direct Impact",
+          screen: "Purchase",
+          impact: "Outstanding impact",
+          description: "When paying a supplier against a purchase invoice, its outstanding balance decreases.",
+        },
+        {
+          serialNumber: 5,
+          category: "Direct Impact",
+          screen: "Invoice",
+          impact: "Outstanding impact",
+          description: "When a payment settles an invoice, the amount due should decrease. This depends on whether Invoice represents a sales invoice, purchase invoice, or both in your ERP.",
+        },
+        // 2. Other screens affected depending on the transaction
+        {
+          serialNumber: 6,
+          category: "Conditional Impact",
+          screen: "Debit / Credit Note",
+          impact: "Conditional (Allocation)",
+          description: "If the payment settles an amount arising from a debit or credit note, according to your allocation rules.",
+        },
+        {
+          serialNumber: 7,
+          category: "Conditional Impact",
+          screen: "Purchase Return",
+          impact: "Conditional (Supplier Refund)",
+          description: "If a supplier refund or adjustment relates to a purchase return.",
+        },
+        {
+          serialNumber: 8,
+          category: "Conditional Impact",
+          screen: "Sales Return",
+          impact: "Conditional (Customer Refund)",
+          description: "If a customer refund or adjustment relates to a sales return.",
+        },
+        {
+          serialNumber: 9,
+          category: "Conditional Impact",
+          screen: "Pending Customer",
+          impact: "Conditional (Customer Balance)",
+          description: "If this screen tracks customer outstanding balances and the payment is a customer receipt or refund.",
+        },
+        {
+          serialNumber: 10,
+          category: "Conditional Impact",
+          screen: "Standard Account",
+          impact: "Setup / Mapping",
+          description: "If this screen defines standard ledger mappings used to determine the accounts for payment postings. Normally, no record is inserted here for each payment.",
+        },
+        {
+          serialNumber: 11,
+          category: "Conditional Impact",
+          screen: "User Account Group",
+          impact: "Permissions Only",
+          description: "Only if it controls the user's permissions or account access; a normal payment does not modify its data.",
+        },
+        {
+          serialNumber: 12,
+          category: "Conditional Impact",
+          screen: "Base Account",
+          impact: "Classification",
+          description: "Usually no direct change. It may influence account classification or ledger setup.",
+        },
+        {
+          serialNumber: 13,
+          category: "Conditional Impact",
+          screen: "Asset Allocation",
+          impact: "Conditional (Asset Workflow)",
+          description: "Only if the payment is specifically associated with an asset purchase or allocation workflow.",
+        },
+      ]);
+    
+      const columnDefsPosting = [
+        {
+          headerName: "S.No",
+          field: "serialNumber",
+          maxWidth: 80,
+          sortable: false,
+          editable: false,
+        },
+        {
+          headerName: "Effect Type",
+          field: "category",
+          minWidth: 160,
+          maxWidth: 180,
+          filter: true,
+          sortable: true,
+          editable: false,
+          cellStyle: (params) => ({
+            fontWeight: "600",
+            color: params.value === "Direct Impact" ? "#0d6efd" : "#6c757d",
+          }),
+        },
+        {
+          headerName: "Screen",
+          field: "screen",
+          minWidth: 180,
+          maxWidth: 220,
+          filter: true,
+          sortable: true,
+          editable: false,
+          cellStyle: { fontWeight: "bold" },
+        },
+        {
+          headerName: "Impact / Trigger",
+          field: "impact",
+          minWidth: 220,
+          maxWidth: 260,
+          filter: true,
+          sortable: true,
+          editable: false,
+        },
+        {
+          headerName: "Reason / When it is affected",
+          field: "description",
+          flex: 1,
+          minWidth: 350,
+          filter: true,
+          sortable: false,
+          editable: false,
+          wrapText: true,
+          autoHeight: true,
+        },
+      ];
 
     const [additionalData, setAdditionalData] = useState({
         modified_by: '',
@@ -318,6 +478,23 @@ function DebitCreditNote() {
     }, []);
 
     useEffect(() => {
+        fetch(`${config.apiBaseUrl}/getauthorization`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                company_code: sessionStorage.getItem("selectedCompanyCode"),
+            }),
+        })
+            .then((response) => response.json())
+            .then((data) => setauthorizationDrop(data))
+            .catch((error) =>
+                console.error("Error fetching events:", error)
+            );
+    }, []);
+
+    useEffect(() => {
         const savedScreen = sessionStorage.getItem('DebitCreditScreenSelection');
         if (savedScreen) {
             setSelectedscreens({ value: savedScreen, label: savedScreen === 'Add' ? 'Add' : 'Delete' });
@@ -342,6 +519,7 @@ function DebitCreditNote() {
                 }))
                 : [];
     const filteredOptionScreens = screensDrop.map((opt) => ({ value: opt.attributedetails_name, label: opt.attributedetails_name }));
+    const filteredOptionauthorization = authorizationDrop.map((opt) => ({ value: opt.attributedetails_name, label: opt.attributedetails_name }));
     const filteredOptionPartyType = partyTypeDrop.map((opt) => ({ value: opt.attributedetails_name, label: opt.attributedetails_name }));
     const filteredOptionRefType = refTypeDrop.map((opt) => ({ value: opt.attributedetails_name, label: opt.attributedetails_name }));
 
@@ -394,6 +572,11 @@ function DebitCreditNote() {
 
     const handleChangePartyType = (selectedOption) => {
         setSelectedPartyType(selectedOption);
+        setPartyType(selectedOption ? selectedOption.value : "");
+    };
+
+    const handleChangeauthorization = (selectedOption) => {
+        setselectedauthorization(selectedOption);
         setPartyType(selectedOption ? selectedOption.value : "");
     };
 
@@ -1902,6 +2085,7 @@ function DebitCreditNote() {
                 return;
             }
             fetchDebitCreditNoteData(transactionNumber.trim());
+            TransactionStatus(transactionNumber)
         }
     };
 
@@ -1910,6 +2094,7 @@ function DebitCreditNote() {
             const item = selectedData[0];
             setTransactionNumber(item.TransactionNo);
             // Fetch full transaction details using your existing handleRefNo
+            TransactionStatus(item.TransactionNo);
             fetchDebitCreditNoteData(item.TransactionNo);
         }
     };
@@ -1946,6 +2131,8 @@ function DebitCreditNote() {
             setShowExcelButton(true);
             setSaveButtonVisible(false);
             setUpdateButtonVisible(true);
+            setAuthButtonVisible(true);
+            setShowDropdown(true);
             setDelButtonVisible(true);
             setPrintButtonVisible(true);
 
@@ -2685,6 +2872,139 @@ function DebitCreditNote() {
         }
     };
 
+      const TransactionStatus = async (transactionNo) => {
+        try {
+          const response = await fetch(`${config.apiBaseUrl}/DnCnauthstatus`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              Note_No: transactionNo,
+              company_code: sessionStorage.getItem('selectedCompanyCode')
+            })
+          });
+          if (response.ok) {
+            const searchData = await response.json();
+            if (Array.isArray(searchData)) {
+              const formattedOptions = searchData.map(item => ({
+                value: item.descriptions,
+                label: item.attributedetails_name
+              }));
+              setStatus(formattedOptions);
+              console.log(searchData);
+            } else {
+              console.log("Data fetched is not in expected array format");
+            }
+          } else {
+            console.log("Failed to fetch some data");
+          }
+        } catch (error) {
+          console.error("Error executing API calls:", error);
+        }
+      };
+    
+      const handleChangeStatus = (selected) => {
+        setSelectedStatus(selected);
+        console.log("Selected option:", selected);
+      };
+
+    const handleAuthorizedButtonClick = async () => {
+  if (!selectedStatus?.value || !transactionNumber) {
+    setError(" ");
+    toast.warning("Error: Missing required fields");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const headerResponse = await AuthorizedHeader();
+    const detailsResponse = await AuthorizedDetails();
+    const taxDetailsResponse = await AuthorizedTaxDetails();
+
+    if (headerResponse && detailsResponse && taxDetailsResponse) {
+      toast.success("Debit/Credit Note Status Updated Successfully");
+    }
+  } catch (error) {
+    toast.error("Error updating authorization: " + error.message);
+  } finally {
+    setLoading(false);
+  }
+    };
+
+    const AuthorizedHeader = async () => {
+  const response = await fetch(`${config.apiBaseUrl}/DebitCreditNoteAuth`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      note_no: transactionNumber,
+      company_code: sessionStorage.getItem("selectedCompanyCode"),
+      location_code: sessionStorage.getItem("selectedLocationCode"),
+      authroization_status: selectedStatus.value,
+      modified_by: sessionStorage.getItem("selectedUserCode"),
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to authorize Debit/Credit Note Header");
+  }
+
+  return true;
+    };
+
+    const AuthorizedDetails = async () => {
+  const response = await fetch(
+    `${config.apiBaseUrl}/DebitCreditNoteDetailAuth`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        Note_ID: transactionNumber,
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
+        authroization_status: selectedStatus.value,
+        modified_by: sessionStorage.getItem("selectedUserCode"),
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to authorize Debit/Credit Note Details");
+  }
+
+  return true;
+    };
+
+    const AuthorizedTaxDetails = async () => {
+  const response = await fetch(
+    `${config.apiBaseUrl}/DebitCreditNoteTaxDetailAuth`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        Note_ID: transactionNumber,
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
+        authroization_status: selectedStatus.value,
+        modified_by: sessionStorage.getItem("selectedUserCode"),
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to authorize Debit/Credit Note Tax Details");
+  }
+
+  return true;
+    };
+
     return (
         <div>
             {Screens === 'Add' ? (
@@ -2782,6 +3102,25 @@ function DebitCreditNote() {
                                     </addbutton>
                                 )}
 
+                                {authButtonVisible && (
+                                    <div className="exp-form-floating" style={{ minWidth: '160px' }} title="Select Screen Action">
+                                    <Select
+                                        id="returnType"
+                                        className="exp-input-field"
+                                        // placeholder="Select Screen"
+                                        value={selectedauthorization}
+                                        onChange={handleChangeauthorization}
+                                        options={filteredOptionauthorization}
+                                        styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                                    />
+                                </div>
+                                )}
+                                {authButtonVisible && (
+                                    <savebutton className="purbut" onClick={handleAuthorizedButtonClick} >
+                                       <i class="fa-solid fa-check"></i>
+                                     </savebutton>
+                                )}
+
                                 {updateButtonVisible && ['update', 'all permission'].some(permission => DebitCreditNotePermission.includes(permission)) && (
                                     <addbutton type="button" className="purbut" title="Update Note" onClick={handleUpdateButtonClick}>
                                         <i className="fa-solid fa-floppy-disk"></i>
@@ -2823,13 +3162,32 @@ function DebitCreditNote() {
                     </div>
 
                     <div className="shadow-lg p-2 bg-body-tertiary rounded mb-2 mt-2">
-                        <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
-
 
                             {/* CENTER SECTION: Note Type Dropdown & Note No Label */}
                             <div className="row ms-3 me-3">
+                               {showDropdown && (
+                                 <div className="col-md-3 form-group mb-2">
+                                   <label for="" className={`${error && !status ? 'red' : ''}`}>Status</label>
+                                   <span className="text-danger">*</span>
+                                   <div title="Select an option">
+                                   <div class="exp-form-floating">
+                                     <Select
+                                       id="returnType"
+                                       className="exp-input-field"
+                                       placeholder="Select an option"
+                                       options={status}
+                                       value={selectedStatus}
+                                       onChange={handleChangeStatus}
+                                       getOptionLabel={(option) => option.label || ""}
+                                       getOptionValue={(option) => option.value || ""}
+                                       styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                                     />
+                                     </div>
+                                   </div>
+                                 </div>
+                               )}
 
-                                <div className="col-md-4 form-group mb-2">
+                                <div className="col-md-3 form-group mb-2">
                                     <label htmlFor="transactionNumber">Transaction No</label>
                                     <div className="exp-form-floating">
                                         <div className="d-flex justify-content-end">
@@ -2855,7 +3213,7 @@ function DebitCreditNote() {
                                 </div>
 
                                 {/* 2. Note Date */}
-                                <div className="col-md-4 form-group mb-2">
+                                <div className="col-md-3 form-group mb-2">
                                     <div className="exp-form-floating">
                                         <label htmlFor="transactionDate" className={`${error && !transactionDate ? 'red' : ''}`}>Date<span className="text-danger">*</span></label>
                                         <input
@@ -2874,7 +3232,7 @@ function DebitCreditNote() {
                                 </div>
 
                                 {/* 1. Note Type */}
-                                <div className="col-md-4 form-group mb-2">
+                                <div className="col-md-3 form-group mb-2">
                                     <label htmlFor="noteType" className={`${error && !noteType ? 'red' : ''}`}>Note Type<span className="text-danger">*</span></label>
                                     <div style={{ minWidth: '180px' }} title="Select Note Type (Debit / Credit)">
                                         <Select
@@ -2891,7 +3249,6 @@ function DebitCreditNote() {
 
                             </div>
                         </div>
-                    </div>
 
                     {/* ================= FORM INPUT FIELDS SECTION ================= */}
                     <div className="shadow-lg p-1 bg-body-tertiary rounded pt-3 pb-4" align="left">
@@ -3240,6 +3597,56 @@ function DebitCreditNote() {
                         handleClose={() => setOpenCustomerPartyHelp(false)}
                         handleVendor={handleCustomer}
                     />
+
+                                        {/* Account Postings & Affected Screens Collapsible Section */}
+                    <div
+                      className="shadow-lg p-2 bg-body-tertiary rounded mt-2 pt-2 pb-2"
+                      align="left"
+                    >
+                      <div className="d-flex justify-content-between align-items-center">
+                        <div className="d-flex align-items-center ms-3">
+                          <h6 className="mb-0 fw-bold">
+                            Account Posting & Affected Screens Details
+                          </h6>
+                        </div>
+                        <div className="d-flex me-4">
+                          <icon
+                            type="button"
+                            className="popups-btn"
+                            title={
+                              showPostingGrid
+                                ? "Hide Posting Details"
+                                : "Show Posting Details"
+                            }
+                            onClick={() => setShowPostingGrid(!showPostingGrid)}
+                            style={{ cursor: "pointer" }}
+                          >
+                            <FontAwesomeIcon icon={showPostingGrid ? faMinus : faPlus} />
+                          </icon>
+                        </div>
+                      </div>
+                    
+                      {showPostingGrid && (
+                        <div className="mt-3">
+                          <div
+                            className="ag-theme-alpine"
+                            style={{ height: 350, width: "100%" }}
+                          >
+                            <AgGridReact
+                              columnDefs={columnDefsPosting}
+                              rowData={postingRowData}
+                              defaultColDef={{
+                                editable: false,
+                                resizable: true,
+                                filter: true,
+                              }}
+                              animateRows={true}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
                     <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
                         <div className="row ms-2">
                             <div className="d-flex justify-content-start">
@@ -3517,6 +3924,8 @@ function DebitCreditNote() {
                         handleClose={() => setOpenDelDebitCreditNoteHelp(false)}
                         handleDeleteDebitCreditData={handleDeleteDebitCreditData}
                     />
+
+
                     <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
                         <div className="row ms-2">
                             <div className="d-flex justify-content-start">
