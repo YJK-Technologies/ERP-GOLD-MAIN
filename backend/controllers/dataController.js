@@ -30057,7 +30057,7 @@ const Debit_Credit_Note_DetailInsert = async (req, res) => {
       .input("company_code", sql.NVarChar, company_code)
       .input("location_code", sql.NVarChar, location_code)
       .input("created_by", sql.NVarChar, created_by)
-      .query(`EXEC sp_Debit_Credit_Note_Detail_test @mode, @Note_ID, @Item_ID, @Item_Code, @Item_Name, @UOM_ID, @Qty, @Rate, @Amount, @Tax_Amount, @Warehouse_ID, @Keyfield_header, 0, @Keyfield, '', @company_code, @location_code, @created_by, '', '', ''`);
+      .query(`EXEC sp_Debit_Credit_Note_Detail @mode, @Note_ID, @Item_ID, @Item_Code, @Item_Name, @UOM_ID, @Qty, @Rate, @Amount, @Tax_Amount, @Warehouse_ID, @Keyfield_header, 0, @Keyfield, '', @company_code, @location_code, @created_by, '', '', ''`);
 
     res.status(200).json({ success: true, message: "Debit Credit Note Detail inserted successfully" });
   } catch (err) {
@@ -30089,7 +30089,7 @@ const Debit_Credit_Note_DetailUpdate = async (req, res) => {
       .input("company_code", sql.NVarChar, company_code)
       .input("location_code", sql.NVarChar, location_code)
       .input("modified_by", sql.NVarChar, modified_by)
-      .query(`EXEC sp_Debit_Credit_Note_Detail_test @mode, @Note_ID, @Item_ID, @Item_Code, @Item_Name, @UOM_ID, @Qty, @Rate, @Amount, @Total_Amount, @Warehouse_ID, @Keyfield_header, @SNo, @Keyfield, '', @company_code, @location_code, '', '', @modified_by, ''`);
+      .query(`EXEC sp_Debit_Credit_Note_Detail @mode, @Note_ID, @Item_ID, @Item_Code, @Item_Name, @UOM_ID, @Qty, @Rate, @Amount, @Total_Amount, @Warehouse_ID, @Keyfield_header, @SNo, @Keyfield, '', @company_code, @location_code, '', '', @modified_by, ''`);
 
     res.status(200).json({ success: true, message: "Debit Credit Note Detail updated successfully" });
   } catch (err) {
@@ -30108,7 +30108,7 @@ const Debit_Credit_Note_DetailDelete = async (req, res) => {
       .input("company_code", sql.NVarChar, company_code)
       .input("Note_ID", sql.NVarChar, Note_ID)
       .input("location_code", sql.NVarChar, location_code)
-      .query(`EXEC sp_Debit_Credit_Note_Detail_test @mode, @Note_ID, 0, '', '', 0, 0, 0, 0, 0, '', '', 0, '', '', @company_code, @location_code, '', '', '', ''`);
+      .query(`EXEC sp_Debit_Credit_Note_Detail @mode, @Note_ID, 0, '', '', 0, 0, 0, 0, 0, '', '', 0, '', '', @company_code, @location_code, '', '', '', ''`);
 
     res.status(200).json({ success: true, message: "Debit Credit Note Detail deleted successfully" });
   } catch (err) {
@@ -30144,7 +30144,7 @@ const Debit_Credit_Note_DetailLoopInsert = async (req, res) => {
         .input("location_code", sql.NVarChar, item.location_code)
         .input("created_by", sql.NVarChar, item.created_by)
         .input("created_date", sql.DateTime, item.created_date)
-        .query(`EXEC sp_Debit_Credit_Note_Detail_test @mode, @Note_ID, @Item_ID, @Item_Code, @Item_Name, @UOM_ID, @Qty, @Rate, @Amount, @Tax_Amount, @Warehouse_ID, @Keyfield_header, 0, @Keyfield, '', @company_code, @location_code, @created_by, @created_date, '', ''`);
+        .query(`EXEC sp_Debit_Credit_Note_Detail @mode, @Note_ID, @Item_ID, @Item_Code, @Item_Name, @UOM_ID, @Qty, @Rate, @Amount, @Tax_Amount, @Warehouse_ID, @Keyfield_header, 0, @Keyfield, '', @company_code, @location_code, @created_by, @created_date, '', ''`);
     }
     res.status(200).json("Debit_Credit_Note_Detail data inserted successfully");
   } catch (err) {
@@ -30181,7 +30181,7 @@ const Debit_Credit_Note_DetailLoopUpdate = async (req, res) => {
         .input("location_code", sql.NVarChar, item.location_code)
         .input("modified_by", sql.NVarChar, item.modified_by)
         .input("modified_date", sql.DateTime, item.modified_date)
-        .query(`EXEC sp_Debit_Credit_Note_Detail_test @mode, @Note_ID, @Item_ID, @Item_Code, @Item_Name, @UOM_ID, @Qty, @Rate, @Amount, @Tax_Amount, @Warehouse_ID, @Keyfield_header, @SNo, @Keyfield, '', @company_code, @location_code, '', '', @modified_by, @modified_date`);
+        .query(`EXEC sp_Debit_Credit_Note_Detail @mode, @Note_ID, @Item_ID, @Item_Code, @Item_Name, @UOM_ID, @Qty, @Rate, @Amount, @Tax_Amount, @Warehouse_ID, @Keyfield_header, @SNo, @Keyfield, '', @company_code, @location_code, '', '', @modified_by, @modified_date`);
     }
     res.status(200).json("Debit_Credit_Note_Detail data updated successfully");
   } catch (err) {
@@ -30206,7 +30206,7 @@ const Debit_Credit_Note_DetailLoopDelete = async (req, res) => {
         .input("company_code", sql.NVarChar, item.company_code)
         .input("Keyfield", sql.NVarChar, item.Keyfield)
         .input("location_code", sql.NVarChar, item.location_code)
-        .query(`EXEC sp_Debit_Credit_Note_Detail_test @mode, '', 0, '', '', '', 0, 0, 0, 0, '', @Keyfield_header, @SNo, @Keyfield, '', @company_code, @location_code, '', '', '', ''`);
+        .query(`EXEC sp_Debit_Credit_Note_Detail @mode, '', 0, '', '', '', 0, 0, 0, 0, '', @Keyfield_header, @SNo, @Keyfield, '', @company_code, @location_code, '', '', '', ''`);
     }
     res.status(200).json("Debit_Credit_Note_Detail data deleted successfully");
   } catch (err) {
@@ -32134,7 +32134,7 @@ const DebitCreditNoteDetailAuth = async (req, res) => {
       .input("location_code", sql.NVarChar, location_code)
       .input("modified_by", sql.NVarChar, modified_by)
       .input("authroization_status", sql.NVarChar, authroization_status)
-      .query(`EXEC sp_Debit_Credit_Note_Detail_test @mode, @Note_ID, 0, '', '', 0, 0, 0, 0, 0, '', '', 0,
+      .query(`EXEC sp_Debit_Credit_Note_Detail @mode, @Note_ID, 0, '', '', 0, 0, 0, 0, 0, '', '', 0,
           '', @authroization_status, @company_code, @location_code, '', NULL, @modified_by, NULL `);
 
     if (result.recordset && result.recordset.length > 0) {
@@ -32164,7 +32164,7 @@ const DebitCreditNoteTaxDetailAuth = async (req, res) => {
       .input("company_code", sql.NVarChar, company_code)
       .input("location_code", sql.NVarChar, location_code)
       .input("modified_by", sql.NVarChar, modified_by)
-      .query(`EXEC sp_TaxDetailsTable_test @mode, @Note_ID, '', '', 0, 0, '', 0, '', 0, 0, '', '',
+      .query(`EXEC sp_TaxDetailsTable @mode, @Note_ID, '', '', 0, 0, '', 0, '', 0, 0, '', '',
           @authroization_status, @company_code, @location_code, '', NULL, @modified_by, NULL `)
     if (result.recordset && result.recordset.length > 0) {
       res.status(200).json(result.recordset);
