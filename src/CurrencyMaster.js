@@ -28,6 +28,7 @@ function CurrencyMaster() {
   // Dropdown states
   const [statusdrop, setStatusdrop] = useState([]);
   const [statusgriddrop, setStatusGriddrop] = useState([]);
+  const [currencyTypegriddrop, setCurrencyTypeGriddrop] = useState([]);
   
   // Field states for search criteria
   const [Currency_Code, setCurrencyCode] = useState("");
@@ -78,20 +79,55 @@ function CurrencyMaster() {
     }
   }, [location.state]);
 
-    useEffect(() => {
-      const company_code = sessionStorage.getItem("selectedCompanyCode");
+    // useEffect(() => {
+    //   const company_code = sessionStorage.getItem("selectedCompanyCode");
   
-      fetch(`${config.apiBaseUrl}/CurrencyType`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ company_code }),
-      })
-        .then((response) => response.json())
-        .then((data) => setTypeDrop(Array.isArray(data) ? data : []))
-        .catch((error) =>
-          console.error("Error fetching Currency Type:", error)
-        );
-    }, []);
+    //   fetch(`${config.apiBaseUrl}/CurrencyType`, {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify({ company_code }),
+    //   })
+    //     .then((response) => response.json())
+    //     .then((data) => setTypeDrop(Array.isArray(data) ? data : []))
+    //     .catch((error) =>
+    //       console.error("Error fetching Currency Type:", error)
+    //     );
+    // }, []);
+
+    
+
+
+useEffect(() => {
+  const company_code = sessionStorage.getItem("selectedCompanyCode");
+
+  fetch(`${config.apiBaseUrl}/CurrencyType`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ company_code }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      const currencyTypes = Array.isArray(data) ? data : [];
+
+      setTypeDrop(currencyTypes);
+
+      const currencyOptions = currencyTypes.map(
+        (item) => item.attributedetails_name
+      );
+
+      console.log("Currency options:", currencyOptions);
+
+      setCurrencyTypeGriddrop(currencyOptions);
+    })
+    .catch((error) =>
+      console.error("Error fetching Currency Type:", error)
+    );
+}, []);
+
+
+
   
     const filteredOptionCurrencyType = typeDrop.map((option) => ({
       value: option.attributedetails_name,
@@ -251,13 +287,25 @@ function CurrencyMaster() {
       //   return false;
       // }
     },
-    {
-      headerName: "Currency Type",
-      field: "Currency_Type",
-      editable: true,
-      cellStyle: { textAlign: "left" },
-      cellEditorParams: { maxLength: 50 },
-    },
+    // {
+    //   headerName: "Currency Type",
+    //   field: "Currency_Type",
+    //   editable: true,
+    //   cellStyle: { textAlign: "left" },
+    //   cellEditorParams: { maxLength: 50 },
+    // },
+    
+{
+  headerName: "Currency Type",
+  field: "Currency_Type",
+  editable: true,
+  cellStyle: { textAlign: "left" },
+  cellEditor: "agSelectCellEditor",
+  cellEditorParams: {
+    values: currencyTypegriddrop,
+  },
+},
+
     {
       headerName: "Status",
       field: "Status",
