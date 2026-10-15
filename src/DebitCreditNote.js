@@ -56,6 +56,7 @@ function DebitCreditNote() {
     const [global, setGlobal] = useState(null);
     const [globalItem, setGlobalItem] = useState(null);
     const [saveButtonVisible, setSaveButtonVisible] = useState(true);
+    const [authButtonVisible, setAuthButtonVisible] = useState(false);
     const [updateButtonVisible, setUpdateButtonVisible] = useState(false);
     const [printButtonVisible, setPrintButtonVisible] = useState(false);
     const [delButtonVisible, setDelButtonVisible] = useState(false);
@@ -63,6 +64,7 @@ function DebitCreditNote() {
     const [financialYearStart, setFinancialYearStart] = useState('');
     const [financialYearEnd, setFinancialYearEnd] = useState('');
     const [screensDrop, setScreensDrop] = useState([]);
+    const [authorizationDrop, setauthorizationDrop] = useState([]);
     const [selectedscreens, setSelectedscreens] = useState(null);
     const [Screens, setScreens] = useState('Add');
 
@@ -79,6 +81,7 @@ function DebitCreditNote() {
 
     const [partyTypeDrop, setPartyTypeDrop] = useState([])
     const [selectedPartyType, setSelectedPartyType] = useState('');
+    const [selectedauthorization, setselectedauthorization] = useState('');
     const [partyType, setPartyType] = useState('');
 
     const [refTypeDrop, setRefTypeDrop] = useState([])
@@ -101,6 +104,12 @@ function DebitCreditNote() {
 
     const [openVendorPartyHelp, setOpenVendorPartyHelp] = useState(false);
     const [openCustomerPartyHelp, setOpenCustomerPartyHelp] = useState(false);
+
+    const [selectedStatus, setSelectedStatus] = useState(null);
+    const [status, setStatus] = useState([]);
+
+    const [showDropdown, setShowDropdown] = useState(false);
+    
 
     const [additionalData, setAdditionalData] = useState({
         modified_by: '',
@@ -318,6 +327,23 @@ function DebitCreditNote() {
     }, []);
 
     useEffect(() => {
+        fetch(`${config.apiBaseUrl}/getauthorization`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                company_code: sessionStorage.getItem("selectedCompanyCode"),
+            }),
+        })
+            .then((response) => response.json())
+            .then((data) => setauthorizationDrop(data))
+            .catch((error) =>
+                console.error("Error fetching events:", error)
+            );
+    }, []);
+
+    useEffect(() => {
         const savedScreen = sessionStorage.getItem('DebitCreditScreenSelection');
         if (savedScreen) {
             setSelectedscreens({ value: savedScreen, label: savedScreen === 'Add' ? 'Add' : 'Delete' });
@@ -342,6 +368,7 @@ function DebitCreditNote() {
                 }))
                 : [];
     const filteredOptionScreens = screensDrop.map((opt) => ({ value: opt.attributedetails_name, label: opt.attributedetails_name }));
+    const filteredOptionauthorization = authorizationDrop.map((opt) => ({ value: opt.attributedetails_name, label: opt.attributedetails_name }));
     const filteredOptionPartyType = partyTypeDrop.map((opt) => ({ value: opt.attributedetails_name, label: opt.attributedetails_name }));
     const filteredOptionRefType = refTypeDrop.map((opt) => ({ value: opt.attributedetails_name, label: opt.attributedetails_name }));
 
@@ -394,6 +421,11 @@ function DebitCreditNote() {
 
     const handleChangePartyType = (selectedOption) => {
         setSelectedPartyType(selectedOption);
+        setPartyType(selectedOption ? selectedOption.value : "");
+    };
+
+    const handleChangeauthorization = (selectedOption) => {
+        setselectedauthorization(selectedOption);
         setPartyType(selectedOption ? selectedOption.value : "");
     };
 
@@ -1902,6 +1934,7 @@ function DebitCreditNote() {
                 return;
             }
             fetchDebitCreditNoteData(transactionNumber.trim());
+            TransactionStatus(transactionNumber)
         }
     };
 
@@ -1910,6 +1943,7 @@ function DebitCreditNote() {
             const item = selectedData[0];
             setTransactionNumber(item.TransactionNo);
             // Fetch full transaction details using your existing handleRefNo
+            TransactionStatus(item.TransactionNo);
             fetchDebitCreditNoteData(item.TransactionNo);
         }
     };
@@ -1946,6 +1980,8 @@ function DebitCreditNote() {
             setShowExcelButton(true);
             setSaveButtonVisible(false);
             setUpdateButtonVisible(true);
+            setAuthButtonVisible(true);
+            setShowDropdown(true);
             setDelButtonVisible(true);
             setPrintButtonVisible(true);
 
@@ -2685,6 +2721,139 @@ function DebitCreditNote() {
         }
     };
 
+      const TransactionStatus = async (transactionNo) => {
+        try {
+          const response = await fetch(`${config.apiBaseUrl}/DnCnauthstatus`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              Note_No: transactionNo,
+              company_code: sessionStorage.getItem('selectedCompanyCode')
+            })
+          });
+          if (response.ok) {
+            const searchData = await response.json();
+            if (Array.isArray(searchData)) {
+              const formattedOptions = searchData.map(item => ({
+                value: item.descriptions,
+                label: item.attributedetails_name
+              }));
+              setStatus(formattedOptions);
+              console.log(searchData);
+            } else {
+              console.log("Data fetched is not in expected array format");
+            }
+          } else {
+            console.log("Failed to fetch some data");
+          }
+        } catch (error) {
+          console.error("Error executing API calls:", error);
+        }
+      };
+    
+      const handleChangeStatus = (selected) => {
+        setSelectedStatus(selected);
+        console.log("Selected option:", selected);
+      };
+
+    const handleAuthorizedButtonClick = async () => {
+  if (!selectedStatus?.value || !transactionNumber) {
+    setError(" ");
+    toast.warning("Error: Missing required fields");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const headerResponse = await AuthorizedHeader();
+    const detailsResponse = await AuthorizedDetails();
+    const taxDetailsResponse = await AuthorizedTaxDetails();
+
+    if (headerResponse && detailsResponse && taxDetailsResponse) {
+      toast.success("Debit/Credit Note Status Updated Successfully");
+    }
+  } catch (error) {
+    toast.error("Error updating authorization: " + error.message);
+  } finally {
+    setLoading(false);
+  }
+    };
+
+    const AuthorizedHeader = async () => {
+  const response = await fetch(`${config.apiBaseUrl}/DebitCreditNoteAuth`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      note_no: transactionNumber,
+      company_code: sessionStorage.getItem("selectedCompanyCode"),
+      location_code: sessionStorage.getItem("selectedLocationCode"),
+      authroization_status: selectedStatus.value,
+      modified_by: sessionStorage.getItem("selectedUserCode"),
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to authorize Debit/Credit Note Header");
+  }
+
+  return true;
+    };
+
+    const AuthorizedDetails = async () => {
+  const response = await fetch(
+    `${config.apiBaseUrl}/DebitCreditNoteDetailAuth`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        Note_ID: transactionNumber,
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
+        authroization_status: selectedStatus.value,
+        modified_by: sessionStorage.getItem("selectedUserCode"),
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to authorize Debit/Credit Note Details");
+  }
+
+  return true;
+    };
+
+    const AuthorizedTaxDetails = async () => {
+  const response = await fetch(
+    `${config.apiBaseUrl}/DebitCreditNoteTaxDetailAuth`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        Note_ID: transactionNumber,
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
+        authroization_status: selectedStatus.value,
+        modified_by: sessionStorage.getItem("selectedUserCode"),
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to authorize Debit/Credit Note Tax Details");
+  }
+
+  return true;
+    };
+
     return (
         <div>
             {Screens === 'Add' ? (
@@ -2782,6 +2951,25 @@ function DebitCreditNote() {
                                     </addbutton>
                                 )}
 
+                                {authButtonVisible && (
+                                    <div className="exp-form-floating" style={{ minWidth: '160px' }} title="Select Screen Action">
+                                    <Select
+                                        id="returnType"
+                                        className="exp-input-field"
+                                        // placeholder="Select Screen"
+                                        value={selectedauthorization}
+                                        onChange={handleChangeauthorization}
+                                        options={filteredOptionauthorization}
+                                        styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                                    />
+                                </div>
+                                )}
+                                {authButtonVisible && (
+                                    <savebutton className="purbut" onClick={handleAuthorizedButtonClick} >
+                                       <i class="fa-solid fa-check"></i>
+                                     </savebutton>
+                                )}
+
                                 {updateButtonVisible && ['update', 'all permission'].some(permission => DebitCreditNotePermission.includes(permission)) && (
                                     <addbutton type="button" className="purbut" title="Update Note" onClick={handleUpdateButtonClick}>
                                         <i className="fa-solid fa-floppy-disk"></i>
@@ -2828,8 +3016,29 @@ function DebitCreditNote() {
 
                             {/* CENTER SECTION: Note Type Dropdown & Note No Label */}
                             <div className="row ms-3 me-3">
+                               {showDropdown && (
+                                 <div className="col-md-3 form-group mb-2">
+                                   <label for="" className={`${error && !status ? 'red' : ''}`}>Status</label>
+                                   <span className="text-danger">*</span>
+                                   <div title="Select an option">
+                                   <div class="exp-form-floating">
+                                     <Select
+                                       id="returnType"
+                                       className="exp-input-field"
+                                       placeholder="Select an option"
+                                       options={status}
+                                       value={selectedStatus}
+                                       onChange={handleChangeStatus}
+                                       getOptionLabel={(option) => option.label || ""}
+                                       getOptionValue={(option) => option.value || ""}
+                                       styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                                     />
+                                     </div>
+                                   </div>
+                                 </div>
+                               )}
 
-                                <div className="col-md-4 form-group mb-2">
+                                <div className="col-md-3 form-group mb-2">
                                     <label htmlFor="transactionNumber">Transaction No</label>
                                     <div className="exp-form-floating">
                                         <div className="d-flex justify-content-end">
@@ -2855,7 +3064,7 @@ function DebitCreditNote() {
                                 </div>
 
                                 {/* 2. Note Date */}
-                                <div className="col-md-4 form-group mb-2">
+                                <div className="col-md-3 form-group mb-2">
                                     <div className="exp-form-floating">
                                         <label htmlFor="transactionDate" className={`${error && !transactionDate ? 'red' : ''}`}>Date<span className="text-danger">*</span></label>
                                         <input
@@ -2874,7 +3083,7 @@ function DebitCreditNote() {
                                 </div>
 
                                 {/* 1. Note Type */}
-                                <div className="col-md-4 form-group mb-2">
+                                <div className="col-md-3 form-group mb-2">
                                     <label htmlFor="noteType" className={`${error && !noteType ? 'red' : ''}`}>Note Type<span className="text-danger">*</span></label>
                                     <div style={{ minWidth: '180px' }} title="Select Note Type (Debit / Credit)">
                                         <Select

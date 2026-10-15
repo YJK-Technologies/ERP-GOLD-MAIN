@@ -15262,7 +15262,6 @@ const PurchaseAuthHdr = async (req, res) => {
   }
 };
 
-
 const PurchaseAuthDetail = async (req, res) => {
   const { company_code, transaction_no, authroization_status } = req.body;
 
@@ -15289,8 +15288,6 @@ NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     });
   }
 };
-
-
 
 const PurchaseAuthTaxDetail = async (req, res) => {
   const { company_code, transaction_no, authroization_status } = req.body;
@@ -29855,7 +29852,7 @@ const Debit_Credit_NoteInsert = async (req, res) => {
       .input("company_code", sql.NVarChar, company_code)
       .input("location_code", sql.NVarChar, location_code)
       .input("created_by", sql.NVarChar, created_by)
-      .query(`EXEC sp_Debit_Credit_Note_test @mode, @Note_Type, @Note_No, @Note_Date, @Party_Type, @Party_ID, @Reference_Type, @Reference_ID, @Reference_Invoice_No, @Reference_Invoice_Date, @Reason_ID, @Reference_No, @Sub_Total, @Tax_Amount, @Rounded_off, @Total_Amount, @Narration, @Status, @GL_Status, @Keyfield, '', '', '', '', @company_code, @location_code, @created_by, '', '', ''`);
+      .query(`EXEC sp_Debit_Credit_Note @mode, @Note_Type, @Note_No, @Note_Date, @Party_Type, @Party_ID, @Reference_Type, @Reference_ID, @Reference_Invoice_No, @Reference_Invoice_Date, @Reason_ID, @Reference_No, @Sub_Total, @Tax_Amount, @Rounded_off, @Total_Amount, @Narration, @Status, @GL_Status, @Keyfield, '', '', '', '', '', @company_code, @location_code, @created_by, '', '', ''`);
 
     const generatedData = result.recordset ? result.recordset[0] : {};
 
@@ -29901,7 +29898,7 @@ const Debit_Credit_NoteUpdate = async (req, res) => {
       .input("company_code", sql.NVarChar, company_code)
       .input("location_code", sql.NVarChar, location_code)
       .input("modified_by", sql.NVarChar, modified_by)
-      .query(`EXEC sp_Debit_Credit_Note_test @mode, @Note_Type, @Note_No, @Note_Date, @Party_Type, @Party_ID, @Reference_Type, @Reference_ID, @Reference_Invoice_No, @Reference_Invoice_Date, @Reason_ID, @Reference_No, @Sub_Total, @Tax_Amount, @Rounded_off, @Total_Amount, @Narration, @Status, @GL_Status, @Keyfield, '', '', '', '', @company_code, @location_code, '', '', @modified_by, ''`);
+      .query(`EXEC sp_Debit_Credit_Note @mode, @Note_Type, @Note_No, @Note_Date, @Party_Type, @Party_ID, @Reference_Type, @Reference_ID, @Reference_Invoice_No, @Reference_Invoice_Date, @Reason_ID, @Reference_No, @Sub_Total, @Tax_Amount, @Rounded_off, @Total_Amount, @Narration, @Status, @GL_Status, @Keyfield, '', '', '', '', '', @company_code, @location_code, '', '', @modified_by, ''`);
 
     res.status(200).json({ success: true, message: "Debit Credit Note updated successfully" });
   } catch (err) {
@@ -29920,7 +29917,7 @@ const Debit_Credit_NoteDelete = async (req, res) => {
       .input("Note_No", sql.NVarChar, Note_No)
       .input("company_code", sql.NVarChar, company_code)
       .input("location_code", sql.NVarChar, location_code)
-      .query(`EXEC sp_Debit_Credit_Note_test @mode, '', @Note_No, '', '', '', '', '', '', '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', @company_code, @location_code, '', '', '', ''`);
+      .query(`EXEC sp_Debit_Credit_Note @mode, '', @Note_No, '', '', '', '', '', '', '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '', '', @company_code, @location_code, '', '', '', ''`);
 
     res.status(200).json({ success: true, message: "Debit Credit Note deleted successfully" });
   } catch (err) {
@@ -29963,7 +29960,7 @@ const Debit_Credit_NoteLoopInsert = async (req, res) => {
         .input("location_code", sql.NVarChar, item.location_code)
         .input("created_by", sql.NVarChar, item.created_by)
         .input("created_date", sql.DateTime, item.created_date)
-        .query(`EXEC sp_Debit_Credit_Note_test @mode, @Note_Type, @Note_No, @Note_Date, @Party_Type, @Party_ID, @Reference_Type, @Reference_ID, @Reference_Invoice_No, @Reference_Invoice_Date, @Reason_ID, @Reference_No, @Sub_Total, @Tax_Amount, @Rounded_off, @Total_Amount, @Narration, @Status, @GL_Status, @Keyfield, '', '', '', '', @company_code, @location_code, @created_by, @created_date, '', ''`);
+        .query(`EXEC sp_Debit_Credit_Note @mode, @Note_Type, @Note_No, @Note_Date, @Party_Type, @Party_ID, @Reference_Type, @Reference_ID, @Reference_Invoice_No, @Reference_Invoice_Date, @Reason_ID, @Reference_No, @Sub_Total, @Tax_Amount, @Rounded_off, @Total_Amount, @Narration, @Status, @GL_Status, @Keyfield, '', '', '', '', '', @company_code, @location_code, @created_by, @created_date, '', ''`);
     }
     res.status(200).json("Debit_Credit_Note data inserted successfully");
   } catch (err) {
@@ -30006,7 +30003,7 @@ const Debit_Credit_NoteLoopUpdate = async (req, res) => {
         .input("location_code", sql.NVarChar, item.location_code)
         .input("modified_by", sql.NVarChar, item.modified_by)
         .input("modified_date", sql.DateTime, item.modified_date)
-        .query(`EXEC sp_Debit_Credit_Note_test @mode, @Note_Type, @Note_No, @Note_Date, @Party_Type, @Party_ID, @Reference_Type, @Reference_ID, @Reference_Invoice_No, @Reference_Invoice_Date, @Reason_ID, @Reference_No, @Sub_Total, @Tax_Amount, @Rounded_off, @Total_Amount, @Narration, @Status, @GL_Status, @Keyfield, '', '', '', '', @company_code, @location_code, '', '', @modified_by, @modified_date`);
+        .query(`EXEC sp_Debit_Credit_Note @mode, @Note_Type, @Note_No, @Note_Date, @Party_Type, @Party_ID, @Reference_Type, @Reference_ID, @Reference_Invoice_No, @Reference_Invoice_Date, @Reason_ID, @Reference_No, @Sub_Total, @Tax_Amount, @Rounded_off, @Total_Amount, @Narration, @Status, @GL_Status, @Keyfield, '', '', '', '', '', @company_code, @location_code, '', '', @modified_by, @modified_date`);
     }
     res.status(200).json("Debit_Credit_Note data updated successfully");
   } catch (err) {
@@ -30029,7 +30026,7 @@ const Debit_Credit_NoteLoopDelete = async (req, res) => {
         .input("Keyfield", sql.NVarChar, item.Keyfield)
         .input("company_code", sql.NVarChar, item.company_code)
         .input("location_code", sql.NVarChar, item.location_code)
-        .query(`EXEC sp_Debit_Credit_Note_test @mode, '', '', '', '', '', '', '', '', '', '', '', 0, 0, 0, 0, '', '', '', @Keyfield, '', '', '', '', @company_code, @location_code, '', '', '', ''`);
+        .query(`EXEC sp_Debit_Credit_Note @mode, '', '', '', '', '', '', '', '', '', '', '', 0, 0, 0, 0, '', '', '', @Keyfield, '', '', '', '','', @company_code, @location_code, '', '', '', ''`);
     }
     res.status(200).json("Debit_Credit_Note data deleted successfully");
   } catch (err) {
@@ -30060,7 +30057,7 @@ const Debit_Credit_Note_DetailInsert = async (req, res) => {
       .input("company_code", sql.NVarChar, company_code)
       .input("location_code", sql.NVarChar, location_code)
       .input("created_by", sql.NVarChar, created_by)
-      .query(`EXEC sp_Debit_Credit_Note_Detail @mode, @Note_ID, @Item_ID, @Item_Code, @Item_Name, @UOM_ID, @Qty, @Rate, @Amount, @Tax_Amount, @Warehouse_ID, @Keyfield_header, 0, @Keyfield, @company_code, @location_code, @created_by, '', '', ''`);
+      .query(`EXEC sp_Debit_Credit_Note_Detail_test @mode, @Note_ID, @Item_ID, @Item_Code, @Item_Name, @UOM_ID, @Qty, @Rate, @Amount, @Tax_Amount, @Warehouse_ID, @Keyfield_header, 0, @Keyfield, '', @company_code, @location_code, @created_by, '', '', ''`);
 
     res.status(200).json({ success: true, message: "Debit Credit Note Detail inserted successfully" });
   } catch (err) {
@@ -30092,7 +30089,7 @@ const Debit_Credit_Note_DetailUpdate = async (req, res) => {
       .input("company_code", sql.NVarChar, company_code)
       .input("location_code", sql.NVarChar, location_code)
       .input("modified_by", sql.NVarChar, modified_by)
-      .query(`EXEC sp_Debit_Credit_Note_Detail @mode, @Note_ID, @Item_ID, @Item_Code, @Item_Name, @UOM_ID, @Qty, @Rate, @Amount, @Total_Amount, @Warehouse_ID, @Keyfield_header, @SNo, @Keyfield, @company_code, @location_code, '', '', @modified_by, ''`);
+      .query(`EXEC sp_Debit_Credit_Note_Detail_test @mode, @Note_ID, @Item_ID, @Item_Code, @Item_Name, @UOM_ID, @Qty, @Rate, @Amount, @Total_Amount, @Warehouse_ID, @Keyfield_header, @SNo, @Keyfield, '', @company_code, @location_code, '', '', @modified_by, ''`);
 
     res.status(200).json({ success: true, message: "Debit Credit Note Detail updated successfully" });
   } catch (err) {
@@ -30111,7 +30108,7 @@ const Debit_Credit_Note_DetailDelete = async (req, res) => {
       .input("company_code", sql.NVarChar, company_code)
       .input("Note_ID", sql.NVarChar, Note_ID)
       .input("location_code", sql.NVarChar, location_code)
-      .query(`EXEC sp_Debit_Credit_Note_Detail @mode, @Note_ID, 0, '', '', 0, 0, 0, 0, 0, '', '', 0, '', @company_code, @location_code, '', '', '', ''`);
+      .query(`EXEC sp_Debit_Credit_Note_Detail_test @mode, @Note_ID, 0, '', '', 0, 0, 0, 0, 0, '', '', 0, '', '', @company_code, @location_code, '', '', '', ''`);
 
     res.status(200).json({ success: true, message: "Debit Credit Note Detail deleted successfully" });
   } catch (err) {
@@ -30147,7 +30144,7 @@ const Debit_Credit_Note_DetailLoopInsert = async (req, res) => {
         .input("location_code", sql.NVarChar, item.location_code)
         .input("created_by", sql.NVarChar, item.created_by)
         .input("created_date", sql.DateTime, item.created_date)
-        .query(`EXEC sp_Debit_Credit_Note_Detail @mode, @Note_ID, @Item_ID, @Item_Code, @Item_Name, @UOM_ID, @Qty, @Rate, @Amount, @Tax_Amount, @Warehouse_ID, @Keyfield_header, 0, @Keyfield, @company_code, @location_code, @created_by, @created_date, '', ''`);
+        .query(`EXEC sp_Debit_Credit_Note_Detail_test @mode, @Note_ID, @Item_ID, @Item_Code, @Item_Name, @UOM_ID, @Qty, @Rate, @Amount, @Tax_Amount, @Warehouse_ID, @Keyfield_header, 0, @Keyfield, '', @company_code, @location_code, @created_by, @created_date, '', ''`);
     }
     res.status(200).json("Debit_Credit_Note_Detail data inserted successfully");
   } catch (err) {
@@ -30184,7 +30181,7 @@ const Debit_Credit_Note_DetailLoopUpdate = async (req, res) => {
         .input("location_code", sql.NVarChar, item.location_code)
         .input("modified_by", sql.NVarChar, item.modified_by)
         .input("modified_date", sql.DateTime, item.modified_date)
-        .query(`EXEC sp_Debit_Credit_Note_Detail @mode, @Note_ID, @Item_ID, @Item_Code, @Item_Name, @UOM_ID, @Qty, @Rate, @Amount, @Tax_Amount, @Warehouse_ID, @Keyfield_header, @SNo, @Keyfield, @company_code, @location_code, '', '', @modified_by, @modified_date`);
+        .query(`EXEC sp_Debit_Credit_Note_Detail_test @mode, @Note_ID, @Item_ID, @Item_Code, @Item_Name, @UOM_ID, @Qty, @Rate, @Amount, @Tax_Amount, @Warehouse_ID, @Keyfield_header, @SNo, @Keyfield, '', @company_code, @location_code, '', '', @modified_by, @modified_date`);
     }
     res.status(200).json("Debit_Credit_Note_Detail data updated successfully");
   } catch (err) {
@@ -30209,7 +30206,7 @@ const Debit_Credit_Note_DetailLoopDelete = async (req, res) => {
         .input("company_code", sql.NVarChar, item.company_code)
         .input("Keyfield", sql.NVarChar, item.Keyfield)
         .input("location_code", sql.NVarChar, item.location_code)
-        .query(`EXEC sp_Debit_Credit_Note_Detail @mode, '', 0, '', '', '', 0, 0, 0, 0, '', @Keyfield_header, @SNo, @Keyfield, @company_code, @location_code, '', '', '', ''`);
+        .query(`EXEC sp_Debit_Credit_Note_Detail_test @mode, '', 0, '', '', '', 0, 0, 0, 0, '', @Keyfield_header, @SNo, @Keyfield, '', @company_code, @location_code, '', '', '', ''`);
     }
     res.status(200).json("Debit_Credit_Note_Detail data deleted successfully");
   } catch (err) {
@@ -30600,8 +30597,8 @@ const getDebitCreditNoteSearch = async (req, res) => {
       .input("Reference_Invoice_Date_To", sql.NVarChar, Reference_Invoice_Date_To)
       .input("company_code", sql.NVarChar, company_code)
       .input("location_code", sql.NVarChar, location_code)
-      .query(`EXEC sp_Debit_Credit_Note_test @mode, @Note_Type, @Note_No, '', @Party_Type, @Party_ID, @Reference_Type, @Reference_ID, @Reference_Invoice_No, '', @Reason_ID, @Reference_No, 0, 0, 0, @Total_Amount, @Narration, '', '', '', @Note_Date_From, 
-        @Note_Date_To, @Reference_Invoice_Date_From, @Reference_Invoice_Date_To, @company_code, @location_code, '', '', '', ''`);
+      .query(`EXEC sp_Debit_Credit_Note @mode, @Note_Type, @Note_No, '', @Party_Type, @Party_ID, @Reference_Type, @Reference_ID, @Reference_Invoice_No, '', @Reason_ID, @Reference_No, 0, 0, 0, @Total_Amount, @Narration, '', '', '', @Note_Date_From, 
+        @Note_Date_To, @Reference_Invoice_Date_From, @Reference_Invoice_Date_To, '', @company_code, @location_code, '', '', '', ''`);
 
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset); // 200 OK if data is found
@@ -30670,8 +30667,8 @@ const getDeletedDebitCreditNoteSearch = async (req, res) => {
       .input("Reference_Invoice_Date_To", sql.NVarChar, Reference_Invoice_Date_To)
       .input("company_code", sql.NVarChar, company_code)
       .input("location_code", sql.NVarChar, location_code)
-      .query(`EXEC sp_Debit_Credit_Note_test @mode, @Note_Type, @Note_No, '', @Party_Type, @Party_ID, @Reference_Type, @Reference_ID, @Reference_Invoice_No, '', @Reason_ID, @Reference_No, 0, 0, 0, @Total_Amount, @Narration, '', '', '', @Note_Date_From, 
-        @Note_Date_To, @Reference_Invoice_Date_From, @Reference_Invoice_Date_To, @company_code, @location_code, '', '', '', ''`);
+      .query(`EXEC sp_Debit_Credit_Note @mode, @Note_Type, @Note_No, '', @Party_Type, @Party_ID, @Reference_Type, @Reference_ID, @Reference_Invoice_No, '', @Reason_ID, @Reference_No, 0, 0, 0, @Total_Amount, @Narration, '', '', '', @Note_Date_From, 
+        @Note_Date_To, @Reference_Invoice_Date_From, @Reference_Invoice_Date_To, '', @company_code, @location_code, '', '', '', ''`);
 
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset); // 200 OK if data is found
@@ -32060,6 +32057,146 @@ const deleteExchangeRate = async (req, res) => {
   }
 };
 //Code ended by  SakthiGanesh J on 10-12-2026
+//Code added by  SakthiGanesh J on 10-15-2026
+const DnCnauthstatus = async (req, res) => {
+  const { company_code, Note_No } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "TS")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("Note_No", sql.NVarChar, Note_No)
+      .query(`EXEC sp_Debit_Credit_Note @mode, '', @Note_No, '', '', '', '', '', '', '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', '','', @company_code, '', '', '', '', ''`);
+
+    // Check if any records were returned
+    if (result.recordset.length === 0) {
+      return res.status(404).json("Transaction not found.");
+    }
+
+    // If the transaction exists, return a success response
+    return res.status(200).json(result.recordset);
+
+  } catch (err) {
+    console.error(err);
+    // Send the specific SQL error message if available
+    if (err.originalError && err.originalError.message) {
+      return res.status(400).json(err.originalError.message);
+    } else {
+      return res.status(500).json({
+        message: err.message || "Internal Server Error"
+      });
+    }
+  }
+};
+
+const DebitCreditNoteAuth = async (req, res) => {
+  const { company_code, location_code, note_no, authroization_status, modified_by } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "AU")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("Note_No", sql.NVarChar, note_no)
+      .input("authroization_status", sql.NVarChar, authroization_status)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("modified_by", sql.NVarChar, modified_by)
+      .query(`EXEC sp_Debit_Credit_Note @mode, '', @Note_No, NULL, '', '', '', '', '', NULL, '', '', 0, 0, 0, 0, '', '', '', '', NULL, NULL, NULL, NULL, @authroization_status, @company_code, @location_code, '', NULL, @modified_by, NULL`);
+
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json("Data not found");
+    }
+  } catch (err) {
+    console.error("Error authorizing Debit/Credit Note:", err);
+
+    res.status(500).json({
+      message: err.message || "Internal Server Error"
+    });
+  }
+};
+
+const DebitCreditNoteDetailAuth = async (req, res) => {
+  const { company_code, location_code, Note_ID, modified_by, authroization_status, } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "AU")
+      .input("Note_ID", sql.NVarChar, Note_ID)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("modified_by", sql.NVarChar, modified_by)
+      .input("authroization_status", sql.NVarChar, authroization_status)
+      .query(`EXEC sp_Debit_Credit_Note_Detail_test @mode, @Note_ID, 0, '', '', 0, 0, 0, 0, 0, '', '', 0,
+          '', @authroization_status, @company_code, @location_code, '', NULL, @modified_by, NULL `);
+
+    if (result.recordset && result.recordset.length > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json("Data not found");
+    }
+  } catch (err) {
+    console.error("Error authorizing Debit/Credit Note Detail:", err);
+
+    res.status(500).json({
+      message: err.message || "Internal Server Error",
+    });
+  }
+};
+
+const DebitCreditNoteTaxDetailAuth = async (req, res) => {
+  const { company_code, location_code, Note_ID, authroization_status, modified_by, } = req.body
+  try {
+    const pool = await connection.connectToDatabase();
+
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "AU")
+      .input("Note_ID", sql.NVarChar, Note_ID)
+      .input("authroization_status", sql.NVarChar, authroization_status)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("modified_by", sql.NVarChar, modified_by)
+      .query(`EXEC sp_TaxDetailsTable_test @mode, @Note_ID, '', '', 0, 0, '', 0, '', 0, 0, '', '',
+          @authroization_status, @company_code, @location_code, '', NULL, @modified_by, NULL `)
+    if (result.recordset && result.recordset.length > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json("Data not found");
+    }
+  } catch (err) {
+    console.error("Error authorizing Debit/Credit Note Tax Detail:", err);
+
+    res.status(500).json({
+      message: err.message || "Internal Server Error",
+    });
+  }
+};
+
+const getauthorization = async (req, res) => {
+  const { company_code } = req.body;
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("company_code", sql.NVarChar, company_code)
+      .query(
+        "EXEC sp_attribute_Info_sakthi 'F',@company_code,'authorization','','','', '','','', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL"
+      );
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error during update:", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+//Code ended by  SakthiGanesh J on 10-15-2026
 
 module.exports = {
   login,
@@ -33076,6 +33213,11 @@ module.exports = {
   CurrencyExchangeRateInsert,
   CurrencyExchangeRateUpdate,
   saveEditedExchangeRateData,
-  deleteExchangeRate
+  deleteExchangeRate,
+  DnCnauthstatus,
+  DebitCreditNoteAuth,
+  DebitCreditNoteDetailAuth,
+  DebitCreditNoteTaxDetailAuth,
+  getauthorization
 
 };
