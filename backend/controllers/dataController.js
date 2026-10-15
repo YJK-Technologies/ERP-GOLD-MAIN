@@ -30217,7 +30217,7 @@ const Debit_Credit_Note_DetailLoopDelete = async (req, res) => {
 
 const TaxDetailsTableInsert = async (req, res) => {
   const { Note_ID, Item_code, Tax_code, Tax_percentage, Tax_amount, Keyfield_header, 
-    Item_SNo, Tax_SNo, tax_acode, tax_type, company_code, location_code, created_by } = req.body;
+    Item_SNo, Tax_SNo, tax_acode, tax_type, authroization_status,company_code, location_code, created_by } = req.body;
 
   try {
     const pool = await sql.connect(dbConfig);
@@ -30233,11 +30233,12 @@ const TaxDetailsTableInsert = async (req, res) => {
       .input("Tax_SNo", sql.BigInt, Tax_SNo)
       .input("tax_acode", sql.NVarChar, tax_acode)
       .input("tax_type", sql.NVarChar, tax_type)
+      .input("authroization_status", sql.NVarChar, authroization_status)
       .input("company_code", sql.NVarChar, company_code)
       .input("location_code", sql.NVarChar, location_code)
       .input("created_by", sql.NVarChar, created_by)
       .query(`EXEC sp_TaxDetailsTable @mode, @Note_ID, @Item_code, @Tax_code, @Tax_percentage, @Tax_amount, 
-        @Keyfield_header, 0, '', @Item_SNo, @Tax_SNo, @tax_acode, @tax_type, @company_code, @location_code, @created_by, '', '', ''`);
+        @Keyfield_header, 0, '', @Item_SNo, @Tax_SNo, @tax_acode, @tax_type, @authroization_status, @company_code, @location_code, @created_by, '', '', ''`);
 
     res.status(200).json({ success: true, message: "TaxDetailsTable inserted successfully" });
   } catch (err) {
@@ -30248,7 +30249,7 @@ const TaxDetailsTableInsert = async (req, res) => {
 
 const TaxDetailsTableUpdate = async (req, res) => {
   const { Note_ID, Item_code, Tax_code, Tax_percentage, Tax_amount, Keyfield_header, SNo, 
-    Keyfield, Item_SNo, Tax_SNo, tax_acode, tax_type, company_code, location_code, modified_by } = req.body;
+    Keyfield, Item_SNo, Tax_SNo, tax_acode, tax_type, authroization_status, company_code, location_code, modified_by } = req.body;
 
   try {
     const pool = await sql.connect(dbConfig);
@@ -30266,11 +30267,12 @@ const TaxDetailsTableUpdate = async (req, res) => {
       .input("Tax_SNo", sql.BigInt, Tax_SNo)
       .input("tax_acode", sql.NVarChar, tax_acode)
       .input("tax_type", sql.NVarChar, tax_type)
+      .input("authroization_status", sql.NVarChar, authroization_status)
       .input("company_code", sql.NVarChar, company_code)
       .input("location_code", sql.NVarChar, location_code)
       .input("modified_by", sql.NVarChar, modified_by)
       .query(`EXEC sp_TaxDetailsTable @mode, @Note_ID, @Item_code, @Tax_code, @Tax_percentage, @Tax_amount, @Keyfield_header, @SNo, @Keyfield, 
-        @Item_SNo, @Tax_SNo, @tax_acode, @tax_type, @company_code, @location_code, '', '', @modified_by, ''`);
+        @Item_SNo, @Tax_SNo, @tax_acode, @tax_type, @authroization_status, @company_code, @location_code, '', '', @modified_by, ''`);
 
     res.status(200).json({ success: true, message: "TaxDetailsTable updated successfully" });
   } catch (err) {
@@ -30280,16 +30282,17 @@ const TaxDetailsTableUpdate = async (req, res) => {
 };
 
 const TaxDetailsTableDelete = async (req, res) => {
-  const { Note_ID, company_code, location_code } = req.body;
+  const { Note_ID, authroization_status, company_code, location_code } = req.body;
 
   try {
     const pool = await sql.connect(dbConfig);
     await pool.request()
       .input("mode", sql.NVarChar, "D")
       .input("Note_ID", sql.NVarChar, Note_ID)
+      .input("authroization_status", sql.NVarChar, authroization_status)
       .input("company_code", sql.NVarChar, company_code)
       .input("location_code", sql.NVarChar, location_code)
-      .query(`EXEC sp_TaxDetailsTable @mode, @Note_ID, '', '', 0, 0, '', 0, '', 0, 0, '', '', @company_code, @location_code, '', '', '', ''`);
+      .query(`EXEC sp_TaxDetailsTable @mode, @Note_ID, '', '', 0, 0, '', 0, '', 0, 0, '', '', @company_code, @authroization_status, @location_code, '', '', '', ''`);
 
     res.status(200).json({ success: true, message: "TaxDetailsTable deleted successfully" });
   } catch (err) {
@@ -30321,12 +30324,13 @@ const TaxDetailsTableLoopInsert = async (req, res) => {
         .input("Tax_SNo", sql.NVarChar, item.Tax_SNo)
         .input("tax_acode", sql.NVarChar, item.tax_acode)
         .input("tax_type", sql.NVarChar, item.tax_type)
+        .input("authroization_status", sql.NVarChar, item.authroization_status)
         .input("company_code", sql.NVarChar, item.company_code)
         .input("location_code", sql.NVarChar, item.location_code)
         .input("created_by", sql.NVarChar, item.created_by)
         .input("created_date", sql.DateTime, item.created_date)
         .query(`EXEC sp_TaxDetailsTable @mode, @Note_ID, @Item_code, @Tax_code, @Tax_percentage, @Tax_amount, @Keyfield_header, @SNo, @Keyfield, 
-          @Item_SNo, @Tax_SNo, @tax_acode, @tax_type, @company_code, @location_code, @created_by, @created_date, '', ''`);
+          @Item_SNo, @Tax_SNo, @tax_acode, @tax_type, @authroization_status, @company_code, @location_code, @created_by, @created_date, '', ''`);
     }
     res.status(200).json("TaxDetailsTable data inserted successfully");
   } catch (err) {
@@ -30358,12 +30362,13 @@ const TaxDetailsTableLoopUpdate = async (req, res) => {
         .input("Tax_SNo", sql.NVarChar, item.Tax_SNo)
         .input("tax_acode", sql.NVarChar, item.tax_acode)
         .input("tax_type", sql.NVarChar, item.tax_type)
+        .input("authroization_status", sql.NVarChar, item.authroization_status)
         .input("company_code", sql.NVarChar, item.company_code)
         .input("location_code", sql.NVarChar, item.location_code)
         .input("modified_by", sql.NVarChar, item.modified_by)
         .input("modified_date", sql.DateTime, item.modified_date)
         .query(`EXEC sp_TaxDetailsTable @mode, @Note_ID, @Item_code, @Tax_code, @Tax_percentage, @Tax_amount, @Keyfield_header, @SNo, @Keyfield, 
-          @Item_SNo, @Tax_SNo, @tax_acode, @tax_type, @company_code, @location_code, '', '', @modified_by, @modified_date`);
+          @Item_SNo, @Tax_SNo, @tax_acode, @tax_type, @authroization_status, @company_code, @location_code, '', '', @modified_by, @modified_date`);
     }
     res.status(200).json("TaxDetailsTable data updated successfully");
   } catch (err) {
@@ -30386,10 +30391,11 @@ const TaxDetailsTableLoopDelete = async (req, res) => {
         .input("Keyfield_header", sql.NVarChar, item.Keyfield_header)
         .input("SNo", sql.Int, item.SNo)
         .input("Keyfield", sql.Int, item.Keyfield)
+        .input("authroization_status", sql.NVarChar, item.authroization_status)
         .input("company_code", sql.NVarChar, item.company_code)
         .input("location_code", sql.NVarChar, item.location_code)
         .query(`EXEC sp_TaxDetailsTable @mode, '', '', '', 0, 0, @Keyfield_header, @SNo, @Keyfield, 
-          0, 0, '', '', @company_code, @location_code, '', '', '', ''`);
+          0, 0, '', '', @authroization_status, @company_code, @location_code, '', '', '', ''`);
     }
     res.status(200).json("TaxDetailsTable data deleted successfully");
   } catch (err) {
