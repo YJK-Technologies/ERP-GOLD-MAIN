@@ -404,6 +404,7 @@ export default function InventoryReceiptItemPopup({ open, handleClose, handleIte
                               placeholder="Item Name"
                               title='Please enter the item name'
                               value={Item_name}
+                              maxLength={255}
                               onChange={(e) => setItem_name(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
                               autoComplete="off"
@@ -536,6 +537,7 @@ export default function InventoryReceiptItemPopup({ open, handleClose, handleIte
                               className="exp-input-field form-control"
                               placeholder="Item Name"
                               value={Item_name}
+                              maxLength={255}
                               onChange={(e) => setItem_name(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
                               autoComplete="off"

@@ -426,6 +426,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                               title="Enter the Item Name"
                               placeholder="Item Name"
                               value={Item_name}
+                              maxLength={255}
                               onChange={(e) => setItem_name(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
                               autoComplete="off"
@@ -553,6 +554,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                               className="exp-input-field form-control"
                               placeholder="Item Name"
                               value={Item_name}
+                              maxLength={255}
                               onChange={(e) => setItem_name(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && handleSearchItem()}
                               autoComplete="off"
