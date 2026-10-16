@@ -3139,7 +3139,7 @@ function TaxInvoice() {
             filter: true,
             sortable: false
         },
-                {
+        {
             headerName: 'Discount Type',
             field: 'deletedDiscountType',
             editable: false,
