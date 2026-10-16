@@ -80,6 +80,7 @@ function TaxInvoice() {
     const [pendingStatusDrop, setPendingStatusDrop] = useState([]);
     const [pendingStatus, setPendingStatus] = useState('');
     const [selectedPendingStatus, setSelectedPendingStatus] = useState(null);
+    const [discountTypeDrop, setDiscountTypeDrop] = useState([]);
 
     const location = useLocation();
     const savedPath = sessionStorage.getItem('currentPath');
@@ -154,6 +155,24 @@ function TaxInvoice() {
             .then((response) => response.json())
             .then((data) => setScreensDrop(data))
             .catch((error) => console.error("Error fetching purchase types:", error));
+    }, []);
+
+    useEffect(() => {
+        const company_code = sessionStorage.getItem("selectedCompanyCode");
+
+        fetch(`${config.apiBaseUrl}/getDiscountType`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ company_code }),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                const discountType = data.map((option) => option.attributedetails_name);
+                setDiscountTypeDrop(discountType);
+            })
+            .catch((error) => console.error("Error fetching data:", error));
     }, []);
 
     useEffect(() => {
@@ -795,11 +814,11 @@ function TaxInvoice() {
                 const redirectInvoiceType = location.state?.invoiceType;
 
                 let invoiceToSelect;
-                if (redirectInvoiceType) { 
-                    invoiceToSelect = data.find( (item) => item.attributedetails_name === redirectInvoiceType ); 
+                if (redirectInvoiceType) {
+                    invoiceToSelect = data.find((item) => item.attributedetails_name === redirectInvoiceType);
                 }
 
-                if (!invoiceToSelect) { invoiceToSelect = data.find( (item) => item.attributedetails_name === "Tax Invoice" ) || data[0]; }
+                if (!invoiceToSelect) { invoiceToSelect = data.find((item) => item.attributedetails_name === "Tax Invoice") || data[0]; }
 
                 if (invoiceToSelect) { const invoiceTypeValue = invoiceToSelect.attributedetails_name; setselectedInvoice({ value: invoiceTypeValue, label: invoiceTypeValue, }); setInvoiceType(invoiceTypeValue); setType(invoiceTypeValue); }
             })
@@ -913,6 +932,8 @@ function TaxInvoice() {
                     tax_percentage: params.data.taxPercentage,
                     keyfield: params.data.keyField,
                     invoice_type: invoicetype,
+                    Discount_Type: params.data.discountType,
+                    Discount_Value: params.data.discountValue,
                 })
             });
 
@@ -1218,6 +1239,24 @@ function TaxInvoice() {
         {
             headerName: 'Unit Price',
             field: 'unitPrice',
+            editable: true,
+            filter: true,
+            sortable: false
+        },
+        {
+            headerName: 'Discount Type',
+            field: 'discountType',
+            editable: true,
+            filter: true,
+            sortable: false,
+            cellEditor: "agSelectCellEditor",
+            cellEditorParams: {
+                values: discountTypeDrop,
+            },
+        },
+        {
+            headerName: 'Discount Value',
+            field: 'discountValue',
             editable: true,
             filter: true,
             sortable: false
@@ -1533,7 +1572,9 @@ function TaxInvoice() {
                     unit_price: row.unitPrice,
                     tax_amt: row.taxAmount,
                     hsn_code: row.HSNCode,
-                    type: row.type
+                    type: row.type,
+                    Discount_Type: row.discountType,
+                    Discount_Value: row.discountValue,
                 };
 
                 const response = await fetch(`${config.apiBaseUrl}/addTaxInvoicedetail_list`, {
@@ -2243,6 +2284,8 @@ function TaxInvoice() {
                             type: item.type,
                             taxAmount: item.tax_amt,
                             totalAmount: item.bill_rate,
+                            discountType: item.Discount_Type,
+                            discountValue: item.Discount_Value,
                             taxType,
                             taxDetail,
                             taxPercentage,
@@ -2547,6 +2590,8 @@ function TaxInvoice() {
                         tax_amt,
                         type,
                         hsn_code,
+                        Discount_Type,
+                        Discount_Value,
                         name
                     } = item;
 
@@ -2567,6 +2612,8 @@ function TaxInvoice() {
                         type: type,
                         taxAmount: tax_amt,
                         totalAmount: bill_rate,
+                        discountType: Discount_Type,
+                        discountValue: Discount_Value,
                         taxType: taxInfo.tax_type,
                         taxPercentage: taxInfo.tax_percents.join(", "),
                         taxDetail: taxInfo.tax_names.join(", "),
@@ -3092,6 +3139,20 @@ function TaxInvoice() {
             filter: true,
             sortable: false
         },
+                {
+            headerName: 'Discount Type',
+            field: 'deletedDiscountType',
+            editable: false,
+            filter: true,
+            sortable: false,
+        },
+        {
+            headerName: 'Discount Value',
+            field: 'deletedDiscountValue',
+            editable: false,
+            filter: true,
+            sortable: false
+        },
         {
             headerName: 'Type',
             field: 'deletedType',
@@ -3339,6 +3400,8 @@ function TaxInvoice() {
                             deletedType: item.type,
                             deletedTaxAmount: item.tax_amt,
                             deletedTotalAmount: item.bill_rate,
+                            deletedDiscountType: item.Discount_Type,
+                            deletedDiscountValue: item.Discount_Value,
                         };
                     });
 
@@ -3614,6 +3677,8 @@ function TaxInvoice() {
                         tax_amt,
                         type,
                         hsn_code,
+                        Discount_Type,
+                        Discount_Value,
                         name
                     } = item;
 
@@ -3627,7 +3692,9 @@ function TaxInvoice() {
                         deletedUnitPrice: unit_price,
                         deletedType: type,
                         deletedTaxAmount: tax_amt,
-                        deletedTotalAmount: bill_rate
+                        deletedTotalAmount: bill_rate,
+                        deletedDiscountType: Discount_Type,
+                        deletedDiscountValue: Discount_Value,
                     });
                 });
                 await DeletedTaxInvoiceTerms(billno);
@@ -4330,7 +4397,7 @@ function TaxInvoice() {
                                     rowData={activeTable === 'myTable' ? rowData : rowDataTax}
                                     defaultColDef={{ editable: true, resizable: true }}
                                     onCellValueChanged={async (event) => {
-                                        if (event.colDef.field === 'qty' || event.colDef.field === 'unitPrice') {
+                                        if (event.colDef.field === 'qty' || event.colDef.field === 'unitPrice' || event.colDef.field === 'discountValue') {
                                             await TaxInvoiceItemAmountCalculation(event);
                                         }
                                         handleCellValueChanged(event);

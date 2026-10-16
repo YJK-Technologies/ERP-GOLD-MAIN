@@ -17925,7 +17925,8 @@ const getPurItemAmountCalculation = async (req, res) => {
 
 //Code Added by Harish on 22-10-2024
 const gettaxinvoiceitemamt = async (req, res) => {
-  const { company_code, type, Item_SNO, Item_code, bill_qty, Item_amt, tax_type_header, tax_name_details, tax_percentage, keyfield, invoice_type } = req.body;
+  const { company_code, type, Item_SNO, Item_code, bill_qty, Item_amt, tax_type_header, tax_name_details, tax_percentage, keyfield, 
+    invoice_type, Discount_Type, Discount_Value } = req.body;
   try {
     // Connect to the database
     const pool = await connection.connectToDatabase();
@@ -17944,7 +17945,10 @@ const gettaxinvoiceitemamt = async (req, res) => {
       .input("tax_percentage", sql.NVarChar, tax_percentage)
       .input("keyfield", sql.NVarChar, keyfield)
       .input("invoice_type", sql.NVarChar, invoice_type)
-      .query(`EXEC sp_tax_invoice_ItemAmountCalculation @mode, @company_code,@type,@Item_SNO, @Item_code, @bill_qty, @Item_amt, @tax_type_header, @tax_name_details, @tax_percentage, '', '', 0, 0,@keyfield,@invoice_type,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .input("Discount_Type", sql.NVarChar, Discount_Type)
+      .input("Discount_Value", sql.Decimal(10,2), Discount_Value)
+      .query(`EXEC sp_tax_invoice_ItemAmountCalculation_test @mode, @company_code,@type,@Item_SNO, @Item_code, @bill_qty, @Item_amt, @tax_type_header, @tax_name_details, @tax_percentage, '', '', 0, 0,@keyfield,
+        @invoice_type,@Discount_Type,@Discount_Value,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     // Send response
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset); // 200 OK if data is found
@@ -17969,7 +17973,7 @@ const gettaxinvoicetotamt = async (req, res) => {
       .input("Tax_amount", sql.NVarChar, Tax_amount)
       .input("Putchase_amount", sql.NVarChar, Putchase_amount)
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_tax_invoice_ItemAmountCalculation @mode,@company_code,'',0, '', 0, 0, '', '', '', @Tax_amount, @Putchase_amount, 0, 0,'','', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_tax_invoice_ItemAmountCalculation_test @mode,@company_code,'',0, '', 0, 0, '', '', '', @Tax_amount, @Putchase_amount, 0, 0,'','','',0, NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     // Send response
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset); // 200 OK if data is found
@@ -18264,7 +18268,7 @@ const TaxInvoiceDeldetData = async (req, res) => {
         .input("bill_no", bill_no)
         .input("invoice_type", invoice_type)
         .input("modified_by", sql.NVarChar, req.headers['modified-by'])
-        .query(`EXEC sp_tax_invoice_details_list 'D',@company_code,'',@bill_no,0,'','','','','','','',0,0,0,0,0,0,'','',@invoice_type,'',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+        .query(`EXEC sp_tax_invoice_details_list_test 'D',@company_code,'',@bill_no,0,'','','','','','','',0,0,0,0,0,0,'','',@invoice_type,'',0,'',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     } catch (error) {
       if (error.number === 547) {
         // Foreign key constraint violation
@@ -18293,7 +18297,7 @@ const getAllTaxInvoiceDetData = async (req, res) => {
       .input("mode", sql.NVarChar, "A")
       .input("company_code", sql.NVarChar, company_code)
       .input("invoice_type", sql.NVarChar, invoice_type)
-      .query(`EXEC sp_tax_invoice_details_list @mode,@company_code,'','',0,'','','','','','','',0,0,0,0,0,0,'','',@invoice_type,'',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_tax_invoice_details_list_test @mode,@company_code,'','',0,'','','','','','','',0,0,0,0,0,0,'','',@invoice_type,'',0,'',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
@@ -20968,6 +20972,8 @@ const addTaxInvoicedetail_list = async (req, res) => {
     type,
     hsn_code,
     invoice_type,
+    Discount_Type,
+    Discount_Value,
     created_by
   } = req.body;
   let pool;
@@ -20996,9 +21002,11 @@ const addTaxInvoicedetail_list = async (req, res) => {
       .input("type", sql.NVarChar, type)
       .input("hsn_code", sql.NVarChar, hsn_code)
       .input("invoice_type", sql.NVarChar, invoice_type)
+      .input("Discount_Type", sql.NVarChar, Discount_Type)
+      .input("Discount_Value", sql.Decimal(10, 2), Discount_Value)
       .input("created_by", sql.NVarChar, created_by)
-      .query(
-        `EXEC sp_tax_invoice_details_list @mode,@company_code,@bill_date,@bill_no,@SNo,@code,@name,@Description,@dely_chlno,@warehouse_code,@customer_code,@customer_name,@bill_qty,@bill_rate,@unit_price,@pay_type,@sales_type,@tax_amt,@type,@hsn_code,@invoice_type,@created_by,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_tax_invoice_details_list_test @mode,@company_code,@bill_date,@bill_no,@SNo,@code,@name,@Description,@dely_chlno,@warehouse_code,@customer_code,@customer_name,@bill_qty,@bill_rate,@unit_price,@pay_type,@sales_type,@tax_amt,@type,@hsn_code,@invoice_type,
+        @Discount_Type,@Discount_Value,@created_by,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     res.json({ success: true, message: "Data inserted successfully" });
   } catch (err) {
     console.error("Error", err);
@@ -21097,7 +21105,7 @@ const taxInvoiceBalanceAmountCalculation = async (req, res) => {
       .input("mode", sql.NVarChar, "BAC")
       .input("TotalAmount", sql.Decimal(14, 2), TotalAmount)
       .input("AdvanceAmount", sql.Decimal(14, 2), AdvanceAmount)
-      .query(`EXEC sp_tax_invoice_ItemAmountCalculation @mode,'','',0,'',0,0,'','','',0,0,@TotalAmount,@AdvanceAmount,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_tax_invoice_ItemAmountCalculation_test @mode,'','',0,'',0,0,'','','',0,0,@TotalAmount,@AdvanceAmount,'','','',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     // Send response
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset); // 200 OK if data is found
@@ -32204,6 +32212,28 @@ const getauthorization = async (req, res) => {
 };
 //Code ended by  SakthiGanesh J on 10-15-2026
 
+//Code added by pavun on 16-10-2026
+const getDiscountType = async (req, res) => {
+  const { company_code } = req.body;
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("company_code", sql.NVarChar, company_code)
+      .query(
+        "EXEC sp_attribute_Info_sakthi 'F',@company_code,'Discount Type','','','', '','','', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL"
+      );
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+//Code ended by pavun on 16-10-2026
+
+
+
 module.exports = {
   login,
   forgetPassword,
@@ -33224,6 +33254,7 @@ module.exports = {
   DebitCreditNoteAuth,
   DebitCreditNoteDetailAuth,
   DebitCreditNoteTaxDetailAuth,
-  getauthorization
+  getauthorization,
+  getDiscountType
 
 };

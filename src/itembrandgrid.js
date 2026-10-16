@@ -300,7 +300,7 @@ function ItemBrandGrid() {
       // minWidth: 150,
       // maxWidth: 150,
       cellEditorParams: {
-        maxLength: 40,
+        maxLength: 255,
       },
     },
     {
@@ -548,7 +548,7 @@ function ItemBrandGrid() {
       cellStyle: { textAlign: "center" },
       // minWidth: 150,
       cellEditorParams: {
-        maxLength: 6,
+        maxLength: 18,
       },
     },
     {
