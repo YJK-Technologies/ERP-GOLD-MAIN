@@ -944,7 +944,7 @@ function ItemInput({ }) {
                       title="Please enter the name"
                       value={Item_name}
                       onChange={(e) => setItem_name(e.target.value)}
-                      maxLength={40}
+                      maxLength={255}
                       defaultValue={0}
                       ref={nam}
                       onKeyDown={(e) => handleKeyDown(e, weigh, nam)}
@@ -1375,7 +1375,7 @@ function ItemInput({ }) {
                       title="Please enter the HSN code"
                       value={hsn}
                       onChange={(e) => sethsn(e.target.value)}
-                      maxLength={6}
+                      maxLength={18}
                       ref={HSNcode}
                       onKeyDown={(e) => handleKeyDown(e, regbrand, HSNcode)}
                     />{" "}

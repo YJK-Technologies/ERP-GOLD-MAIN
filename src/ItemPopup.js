@@ -414,7 +414,7 @@ export default function SalesItemPopup({ open, handleClose, handleItem, type, tr
                               className='exp-input-field form-control'
                               placeholder='Item Name'
                               title="Enter the Item Name"
-                              maxLength={40}
+                              maxLength={255}
                               value={Item_name}
                               onChange={(e) => setItem_name(e.target.value)}
                               autoComplete="off"
@@ -538,7 +538,7 @@ export default function SalesItemPopup({ open, handleClose, handleItem, type, tr
                               id='ItemName'
                               className='exp-input-field form-control'
                               placeholder=' Item Name'
-                              maxLength={40}
+                              maxLength={255}
                               value={Item_name}
                               onChange={(e) => setItem_name(e.target.value)}
                               autoComplete="off"
