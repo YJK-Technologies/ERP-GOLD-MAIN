@@ -2934,7 +2934,30 @@ function DebitCreditNote() {
   }
     };
 
-    const AuthorizedHeader = async () => {
+//     const AuthorizedHeader = async () => {
+//   const response = await fetch(`${config.apiBaseUrl}/DebitCreditNoteAuth`, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify({
+//       note_no: transactionNumber,
+//       company_code: sessionStorage.getItem("selectedCompanyCode"),
+//       location_code: sessionStorage.getItem("selectedLocationCode"),
+//       authroization_status: selectedStatus.value,
+//       modified_by: sessionStorage.getItem("selectedUserCode"),
+//     }),
+//   });
+
+//   if (!response.ok) {
+//     throw new Error("Failed to authorize Debit/Credit Note Header");
+//   }
+
+//   return true;
+//     };
+
+    
+const AuthorizedHeader = async () => {
   const response = await fetch(`${config.apiBaseUrl}/DebitCreditNoteAuth`, {
     method: "POST",
     headers: {
@@ -2949,12 +2972,19 @@ function DebitCreditNote() {
     }),
   });
 
+  // Read the backend response
+  const data = await response.json();
+
+  // Throw the actual backend error
   if (!response.ok) {
-    throw new Error("Failed to authorize Debit/Credit Note Header");
+    throw new Error(
+      data.message || data.error || "Failed to authorize Debit/Credit Note Header"
+    );
   }
 
   return true;
-    };
+};
+
 
     const AuthorizedDetails = async () => {
   const response = await fetch(
@@ -3098,9 +3128,9 @@ function DebitCreditNote() {
                                 </div>
 
                                 {saveButtonVisible && ['add', 'all permission'].some(permission => DebitCreditNotePermission.includes(permission)) && (
-                                    <addbutton type="button" className="purbut" title="Save Note" onClick={handleSaveButtonClick}>
+                                    <savebutton type="button" className="purbut" title="Save Note" onClick={handleSaveButtonClick}>
                                         <i className="fa-regular fa-floppy-disk"></i>
-                                    </addbutton>
+                                    </savebutton>
                                 )}
 
                                 {authButtonVisible && (
