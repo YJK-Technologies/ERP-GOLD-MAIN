@@ -76,6 +76,7 @@ function PurchaseOrder() {
   const [Screens, setScreens] = useState('');
   const [selectedscreens, setSelectedscreens] = useState(null);
   const redirectLoadedRef = useRef(false);
+  const [discountTypeDrop, setDiscountTypeDrop] = useState([]);
 
   const location = useLocation();
   const savedPath = sessionStorage.getItem('currentPath');
@@ -252,6 +253,25 @@ function PurchaseOrder() {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+      const company_code = sessionStorage.getItem("selectedCompanyCode");
+
+      fetch(`${config.apiBaseUrl}/getDiscountType`, {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ company_code }),
+      })
+          .then((response) => response.json())
+          .then((data) => {
+              const discountType = data.map((option) => option.attributedetails_name);
+              setDiscountTypeDrop(discountType);
+          })
+          .catch((error) => console.error("Error fetching data:", error));
+  }, []);
+  
 
   const columnDefsTax = [
     {
@@ -891,6 +911,8 @@ function PurchaseOrder() {
           tax_type_header: params.data.taxType,
           tax_name_details: params.data.taxDetails,
           tax_percentage: params.data.taxPer,
+          Discount_Type: params.data.discountType,
+          Discount_Value: params.data.discountValue,
           keyfield: params.data.keyField
         })
       });
@@ -1276,6 +1298,24 @@ function PurchaseOrder() {
       sortable: false
     },
     {
+    headerName: 'Discount Type',
+    field: 'discountType',
+    editable: true,
+    filter: true,
+    sortable: false,
+    cellEditor: "agSelectCellEditor",
+    cellEditorParams: {
+        values: discountTypeDrop,
+    },
+    },
+    {
+        headerName: 'Discount Value',
+        field: 'discountValue',
+        editable: true,
+        filter: true,
+        sortable: false
+    },
+    {
       headerName: 'Tax Amount',
       field: 'TotalTaxAmount',
       editable: true,
@@ -1515,6 +1555,8 @@ function PurchaseOrder() {
           bill_rate: Number(row.TotalItemAmount),
           tax_amount: Number(row.TotalTaxAmount),
           Entry_date: entryDate,
+          Discount_Type: row.discountType,
+          Discount_Value: row.discountValue,
           ItemSNo: row.serialNumber,
           vendor_code: billToData['Vendor / Customer Code'],
           vendor_name: billToData['Vendor / Customer Name'],
@@ -2137,6 +2179,8 @@ function PurchaseOrder() {
             taxType,
             taxDetails,
             taxPer,
+            discountType: item.Discount_Type,
+            discountValue: item.Discount_Value,
             keyField: `${item.ItemSNo}-${item.item_code || ''}`,
             TotalTaxAmount: parseFloat(item.tax_amount).toFixed(2),
             TotalItemAmount: parseFloat(item.bill_rate).toFixed(2),
@@ -2778,6 +2822,8 @@ function PurchaseOrder() {
             item_amt,
             tax_amount,
             bill_rate,
+            Discount_Type,
+            Discount_Value,
           } = item;
 
           const taxInfo = taxDataMap[ItemSNo] || {
@@ -2791,6 +2837,8 @@ function PurchaseOrder() {
             itemCode: item_code,
             itemName: item_name,
             purchaseQty: bill_qty,
+            discountType: Discount_Type,
+            discountValue: Discount_Value,
             TotalTaxAmount: parseFloat(tax_amount).toFixed(2),
             purchaseAmt: parseFloat(item_amt).toFixed(2),
             TotalItemAmount: parseFloat(bill_rate).toFixed(2),
@@ -2924,6 +2972,20 @@ function PurchaseOrder() {
       editable: false,
       filter: true,
       sortable: false
+    },
+    {
+        headerName: 'Discount Type',
+        field: 'deletedDiscountType',
+        editable: false,
+        filter: true,
+        sortable: false,
+    },
+    {
+        headerName: 'Discount Value',
+        field: 'deletedDiscountValue',
+        editable: false,
+        filter: true,
+        sortable: false
     },
     {
       headerName: 'Tax Amount',
@@ -3138,6 +3200,8 @@ function PurchaseOrder() {
             deletedItemName: item.item_name,
             deletedPurchaseQty: item.bill_qty,
             deletedPurchaseAmt: item.item_amt,
+            deletedDiscountType: item.Discount_Type,
+            deletedDiscountValue: item.Discount_Value,
             deletedTotalTaxAmount: parseFloat(item.tax_amount).toFixed(2),
             deletedTotalItemAmount: parseFloat(item.bill_rate).toFixed(2),
           };
@@ -3356,6 +3420,8 @@ function PurchaseOrder() {
             item_amt,
             tax_amount,
             bill_rate,
+            Discount_Type,
+            Discount_Value,
           } = item;
 
           newRowData.push({
@@ -3363,6 +3429,8 @@ function PurchaseOrder() {
             deletedItemCode: item_code,
             deletedItemName: item_name,
             deletedPurchaseQty: bill_qty,
+            deletedDiscountType: Discount_Type,
+            deletedDiscountValue: Discount_Value,
             deletedPurchaseAmt: parseFloat(item_amt).toFixed(2),
             deletedTotalTaxAmount: parseFloat(tax_amount).toFixed(2),
             deletedTotalItemAmount: parseFloat(bill_rate).toFixed(2),
@@ -3791,7 +3859,7 @@ function PurchaseOrder() {
                   rowData={activeTable === 'myTable' ? rowData : rowDataTax}
                   defaultColDef={{ editable: true, resizable: true }}
                   onCellValueChanged={async (event) => {
-                    if (event.colDef.field === 'purchaseQty' || event.colDef.field === 'purchaseAmt') {
+                    if (event.colDef.field === 'purchaseQty' || event.colDef.field === 'purchaseAmt' || event.colDef.field === 'discountValue' ) {
                       await ItemAmountCalculation(event);
                     }
                     handleCellValueChanged(event);

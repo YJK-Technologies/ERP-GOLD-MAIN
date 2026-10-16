@@ -285,7 +285,7 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
                               className='form-control'
                               title='Enter the Item Name'
                               placeholder='Item Name'
-                              maxLength={40}
+                              maxLength={255}
                               value={Item_name}
                               onChange={(e) => setItem_name(e.target.value)}
                               autoComplete='off'
@@ -410,7 +410,7 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
                               id='vendor_code'
                               className='form-control'
                               placeholder='Item Name'
-                              maxLength={40}
+                              maxLength={255}
                               value={Item_name}
                               onChange={(e) => setItem_name(e.target.value)}
                               autoComplete='off'
