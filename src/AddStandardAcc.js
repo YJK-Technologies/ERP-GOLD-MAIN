@@ -241,10 +241,12 @@ body: JSON.stringify({ company_code }),
             <div className="col-md-3 form-group ">
               <div class="exp-form-floating">
               <div class="d-flex justify-content-start">
-                 <div><label for="rid" class="exp-form-labels">
-                  Standard Account 
-                </label></div>
-                <div> <span className="text-danger">*</span></div>
+                <label
+                                    htmlFor="partyName"
+                                    className={`${error && !standard_accgroup_code ? 'red' : ''}`}
+                                >
+                                    Standard Account<span className="text-danger">*</span>
+                                </label>
                  </div> <input
                   id="stdcode"
                   class="exp-input-field form-control"
@@ -255,7 +257,7 @@ body: JSON.stringify({ company_code }),
                   onChange={(e) => setstandard_accgroup_code(e.target.value)}
                   ref={Standard}
                   onKeyDown={(e) => handleKeyDown(e, StandardAccount, Standard)}
-                />            {error && !standard_accgroup_code && <div className="text-danger">Standard Account Code should not be blank</div>}
+                />           
 
                 
               </div>
@@ -263,10 +265,12 @@ body: JSON.stringify({ company_code }),
             <div className="col-md-3 form-group ">
               <div class="exp-form-floating">
               <div class="d-flex justify-content-start">
-                 <div><label for="rid" class="exp-form-labels">
-                  Standard Account Name
-                </label></div>
-                <div> <span className="text-danger">*</span></div>
+                <label
+                                    htmlFor="partyName"
+                                    className={`${error && !standard_accgroup_name ? 'red' : ''}`}
+                                >
+                                    Standard Account Name<span className="text-danger">*</span>
+                                </label>
                  </div><input
                   id="stdname"
                   class="exp-input-field form-control"
@@ -277,7 +281,7 @@ body: JSON.stringify({ company_code }),
                   onChange={(e) => setstandard_accgroup_name(e.target.value)}
                   ref={StandardAccount}
                   onKeyDown={(e) => handleKeyDown(e, Base, StandardAccount)}
-                />            {error && !standard_accgroup_name && <div className="text-danger">Standard Account Name should not be blank</div>}
+                />            
 
                 
               </div>
@@ -287,10 +291,12 @@ body: JSON.stringify({ company_code }),
             <div className="col-md-3 form-group ">
             
               <div class="d-flex justify-content-start">
-                 <div><label for="rid" class="exp-form-labels">
-                 Base Account Code
-                </label></div>
-                <div> <span className="text-danger">*</span></div>
+                <label
+                                    htmlFor="partyName"
+                                    className={`${error && !base_accgroup_code ? 'red' : ''}`}
+                                >
+                                    Base Account Code<span className="text-danger">*</span>
+                                </label>
                  </div>
                 <div title="Select the Base Account Code">        
                 <div className="input-group">
@@ -306,7 +312,6 @@ body: JSON.stringify({ company_code }),
               /><button onClick={handleNavigateToForm} class="stahdrcode position-absolute pb-2  me-5" required title="Add Standard Code"><i class="fa-solid fa-plus"></i></button>
               </div>
               </div>
-                {error && !base_accgroup_code && <div className="text-danger">Base Account Code  should not be blank</div>}
                
               </div>
             
@@ -319,10 +324,12 @@ body: JSON.stringify({ company_code }),
             <div className="col-md-3 form-group ">
               <div class="exp-form-floating">
               <div class="d-flex justify-content-start">
-                 <div><label for="rid" class="exp-form-labels">
-                  User Account Group From 
-                </label></div>
-                <div> <span className="text-danger">*</span></div>
+                <label
+                                    htmlFor="partyName"
+                                    className={`${error && !user_accgroup_from ? 'red' : ''}`}
+                                >
+                                    User Account Group From<span className="text-danger">*</span>
+                                </label>
                  </div><input
                   id="taxpercent"
                   class="exp-input-field form-control"
@@ -341,10 +348,12 @@ body: JSON.stringify({ company_code }),
             <div className="col-md-3 form-group ">
               <div class="exp-form-floating">
               <div class="d-flex justify-content-start">
-                 <div><label for="rid" class="exp-form-labels">
-                 User Account Group To
-                </label></div>
-                <div> <span className="text-danger">*</span></div>
+                <label
+                                    htmlFor="partyName"
+                                    className={`${error && !user_accgroup_to ? 'red' : ''}`}
+                                >
+                                    User Account Group To<span className="text-danger">*</span>
+                                </label>
                  </div> <input
                   id="taxcode"
                   class="exp-input-field form-control"
@@ -363,10 +372,12 @@ body: JSON.stringify({ company_code }),
             <div className="col-md-3 form-group ">
               <div class="exp-form-floating">
               <div class="d-flex justify-content-start">
-                 <div><label for="rid" class="exp-form-labels">
-                  Status
-                </label></div>
-                <div> <span className="text-danger">*</span></div>
+                <label
+                                    htmlFor="partyName"
+                                    className={`${error && !status ? 'red' : ''}`}
+                                >
+                                    Status<span className="text-danger">*</span>
+                                </label>
                  </div>
                 <div title="Select the Status">        
                 <Select
@@ -379,7 +390,6 @@ body: JSON.stringify({ company_code }),
                 ref={Status}
                 onKeyDown={(e) => handleKeyDown(e, Delete, Status)}
               />
-                {error && !status && <div className="text-danger">Status should not be blank</div>}
 
                
               </div>
@@ -389,14 +399,12 @@ body: JSON.stringify({ company_code }),
             <div className="col-md-3 form-group">
               <div class="exp-form-floating">
               <div class="d-flex justify-content-start">
-                <div>
-                   <label for="state" class="exp-form-labels">
-                 Delete Permission
-                </label>
-                </div>
-                <div>
-                  <span className="text-danger">*</span>
-                  </div>
+                  <label
+                                    htmlFor="partyName"
+                                    className={`${error && !deletePermission ? 'red' : ''}`}
+                                >
+                                    Delete Permission<span className="text-danger">*</span>
+                                </label>  
                 </div>
                 <div title="Select the Delete Permission">        
                   <Select
@@ -410,7 +418,6 @@ body: JSON.stringify({ company_code }),
                 ref={Delete}
                 onKeyDown={(e) => handleKeyDown}
               />
-                {error && !deletePermission && <div className="text-danger">Delete Permission should not be blank</div>}
 
                 
               </div>

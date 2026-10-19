@@ -31292,7 +31292,7 @@ const Payment_hdrUpdate = async (req, res) => {
       .input("Party_Type", sql.NVarChar, Party_Type)
       .input("Party_ID", sql.NVarChar, Party_ID)
       .input("Payment_Mode", sql.NVarChar, Payment_Mode)
-      .input("Account_ID", sql.Int, Account_ID)
+      .input("Account_ID", sql.NVarChar, Account_ID)
       .input("Reference_No", sql.NVarChar, Reference_No)
       .input("Reference_Date", sql.Date, Reference_Date)
       .input("Amount", sql.Decimal(18, 2), Amount)
