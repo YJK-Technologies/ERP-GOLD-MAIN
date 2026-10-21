@@ -3265,6 +3265,7 @@ function DeliveryChallan() {
                                 <AgGridReact
                                     columnDefs={columnDefs}
                                     rowData={rowData}
+                                    getRowId={(params) => String(params.data.serialNumber)}
                                     defaultColDef={{ editable: true, resizable: true }}
                                     onCellValueChanged={async (event) => {
                                         if (event.colDef.field === 'purchaseQty' || event.colDef.field === 'unitPrice') {

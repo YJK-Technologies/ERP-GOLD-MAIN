@@ -135,16 +135,16 @@ function PurchaseOrder() {
     .filter(permission => permission.screen_type === 'PurchaseOrder')
     .map(permission => permission.permission_type.toLowerCase());
 
-    useEffect(() => {
-        const redirectDCNo = location.state?.transactionNo;
+  useEffect(() => {
+    const redirectDCNo = location.state?.transactionNo;
 
-        if (redirectDCNo && !redirectLoadedRef.current) {
-            redirectLoadedRef.current = true;
+    if (redirectDCNo && !redirectLoadedRef.current) {
+      redirectLoadedRef.current = true;
 
-            setTransactionNo(redirectDCNo);
-            handleRefNo(redirectDCNo);
-        }
-    }, [location.state]);
+      setTransactionNo(redirectDCNo);
+      handleRefNo(redirectDCNo);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     fetch(`${config.apiBaseUrl}/getDefaultoptions`, {
@@ -255,23 +255,23 @@ function PurchaseOrder() {
   }, []);
 
   useEffect(() => {
-      const company_code = sessionStorage.getItem("selectedCompanyCode");
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
-      fetch(`${config.apiBaseUrl}/getDiscountType`, {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ company_code }),
+    fetch(`${config.apiBaseUrl}/getDiscountType`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ company_code }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const discountType = data.map((option) => option.attributedetails_name);
+        setDiscountTypeDrop(discountType);
       })
-          .then((response) => response.json())
-          .then((data) => {
-              const discountType = data.map((option) => option.attributedetails_name);
-              setDiscountTypeDrop(discountType);
-          })
-          .catch((error) => console.error("Error fetching data:", error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
-  
+
 
   const columnDefsTax = [
     {
@@ -1298,22 +1298,22 @@ function PurchaseOrder() {
       sortable: false
     },
     {
-    headerName: 'Discount Type',
-    field: 'discountType',
-    editable: true,
-    filter: true,
-    sortable: false,
-    cellEditor: "agSelectCellEditor",
-    cellEditorParams: {
+      headerName: 'Discount Type',
+      field: 'discountType',
+      editable: true,
+      filter: true,
+      sortable: false,
+      cellEditor: "agSelectCellEditor",
+      cellEditorParams: {
         values: discountTypeDrop,
-    },
+      },
     },
     {
-        headerName: 'Discount Value',
-        field: 'discountValue',
-        editable: true,
-        filter: true,
-        sortable: false
+      headerName: 'Discount Value',
+      field: 'discountValue',
+      editable: true,
+      filter: true,
+      sortable: false
     },
     {
       headerName: 'Tax Amount',
@@ -2974,18 +2974,18 @@ function PurchaseOrder() {
       sortable: false
     },
     {
-        headerName: 'Discount Type',
-        field: 'deletedDiscountType',
-        editable: false,
-        filter: true,
-        sortable: false,
+      headerName: 'Discount Type',
+      field: 'deletedDiscountType',
+      editable: false,
+      filter: true,
+      sortable: false,
     },
     {
-        headerName: 'Discount Value',
-        field: 'deletedDiscountValue',
-        editable: false,
-        filter: true,
-        sortable: false
+      headerName: 'Discount Value',
+      field: 'deletedDiscountValue',
+      editable: false,
+      filter: true,
+      sortable: false
     },
     {
       headerName: 'Tax Amount',
@@ -3858,8 +3858,13 @@ function PurchaseOrder() {
                   columnDefs={activeTable === 'myTable' ? columnDefs : columnDefsTax}
                   rowData={activeTable === 'myTable' ? rowData : rowDataTax}
                   defaultColDef={{ editable: true, resizable: true }}
+                  getRowId={(params) =>
+                    activeTable === 'myTable'
+                      ? String(params.data.serialNumber)
+                      : `${params.data.ItemSNO}_${params.data.TaxSNO}`
+                  }
                   onCellValueChanged={async (event) => {
-                    if (event.colDef.field === 'purchaseQty' || event.colDef.field === 'purchaseAmt' || event.colDef.field === 'discountValue' ) {
+                    if (event.colDef.field === 'purchaseQty' || event.colDef.field === 'purchaseAmt' || event.colDef.field === 'discountValue') {
                       await ItemAmountCalculation(event);
                     }
                     handleCellValueChanged(event);
