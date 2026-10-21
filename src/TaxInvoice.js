@@ -4395,6 +4395,10 @@ function TaxInvoice() {
                                 <AgGridReact
                                     columnDefs={activeTable === 'myTable' ? columnDefs : columnDefsTax}
                                     rowData={activeTable === 'myTable' ? rowData : rowDataTax}
+                                    getRowId={(params) => activeTable === "myTable"
+                                        ? `${params.data.serialNumber}_${params.data.productItemCode}`
+                                        : `${params.data.ItemSNO}_${params.data.TaxSNO}`
+                                    }
                                     defaultColDef={{ editable: true, resizable: true }}
                                     onCellValueChanged={async (event) => {
                                         if (event.colDef.field === 'qty' || event.colDef.field === 'unitPrice' || event.colDef.field === 'discountValue') {
