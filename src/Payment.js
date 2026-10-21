@@ -1817,14 +1817,14 @@ function Payment() {
                   ["add", "all permission"].some((permission) =>
                     PaymentPermission.includes(permission),
                   ) && (
-                    <addbutton
+                    <savebutton
                       type="button"
                       className="purbut"
                       title="Save Note"
                       onClick={handleSaveButtonClick}
                     >
                       <i className="fa-regular fa-floppy-disk"></i>
-                    </addbutton>
+                    </savebutton>
                   )}
 
                 {updateButtonVisible &&

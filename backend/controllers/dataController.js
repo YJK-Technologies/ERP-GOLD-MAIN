@@ -30021,7 +30021,7 @@ const TaxDetailsTableDelete = async (req, res) => {
       .input("authroization_status", sql.NVarChar, authroization_status)
       .input("company_code", sql.NVarChar, company_code)
       .input("location_code", sql.NVarChar, location_code)
-      .query(`EXEC sp_TaxDetailsTable @mode, @Note_ID, '', '', 0, 0, '', 0, '', 0, 0, '', '', @company_code, @authroization_status, @location_code, '', '', '', ''`);
+      .query(`EXEC sp_TaxDetailsTable @mode, @Note_ID, '', '', 0, 0, '', 0, '', 0, 0, '', '', @authroization_status, @company_code, @location_code, '', '', '', ''`);
 
     res.status(200).json({ success: true, message: "TaxDetailsTable deleted successfully" });
   } catch (err) {
