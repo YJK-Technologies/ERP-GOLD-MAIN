@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "./InvoicePrint.css";
+import "./InvoicePrint.css"; // Ensure it imports the scoped 3rd template CSS
 import { ToWords } from 'to-words';
 import { useLocation } from 'react-router-dom';
 import LZString from "lz-string";
@@ -186,7 +186,7 @@ const Invoice = () => {
     );
 
     return (
-        <div>
+        <div className="template3-container">
             {itemPages.map((pageItems, pageIndex) => {
                 const isLastItemPage = pageIndex === itemPages.length - 1;
 
@@ -302,22 +302,21 @@ const Invoice = () => {
                 <div className="invoice-body-wrapper">
                     {renderCompanyHeader()}
 
-                    {/* HSN / SAC Breakdown Table with optimized column widths and formatted currency */}
                     <table className="invoiceTable w-100 border-top-0" style={{ tableLayout: "fixed" }}>
                         <thead>
                             <tr>
-                                <th rowSpan="2" style={{ width: "10%", verticalAlign: "middle" }}>HSN/SAC</th>
-                                <th rowSpan="2" style={{ width: "12%", verticalAlign: "middle" }}>Taxable Value</th>
+                                <th rowSpan="2" style={{ width: "9%", verticalAlign: "middle" }}>HSN/SAC</th>
+                                <th rowSpan="2" style={{ width: "15%", verticalAlign: "middle" }}>Taxable Value</th>
                                 <th colSpan="2" style={{ width: "18%" }}>CGST</th>
                                 <th colSpan="2" style={{ width: "18%" }}>SGST / UTGST</th>
-                                <th colSpan="2" style={{ width: "18%" }}>IGST</th>
-                                <th rowSpan="2" style={{ width: "14%", verticalAlign: "middle" }}>Total Tax Amount</th>
+                                <th colSpan="2" style={{ width: "16%" }}>IGST</th>
+                                <th rowSpan="2" style={{ width: "24%", verticalAlign: "middle" }}>Total Tax Amount</th>
                             </tr>
                             <tr>
                                 <th style={{ width: "3%" }}>Rate</th>
-                                <th style={{ width: "13%" }}>Amount</th>
+                                <th style={{ width: "15%" }}>Amount</th>
                                 <th style={{ width: "3%" }}>Rate</th>
-                                <th style={{ width: "13%" }}>Amount</th>
+                                <th style={{ width: "15%" }}>Amount</th>
                                 <th style={{ width: "3%" }}>Rate</th>
                                 <th style={{ width: "13%" }}>Amount</th>
                             </tr>
