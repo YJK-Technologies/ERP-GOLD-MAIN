@@ -1,22 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
-* {
+/* Scope all 3rd Template CSS inside .template3-container */
+.template3-container * {
     box-sizing: border-box;
 }
 
-body {
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-}
-
-.custom-text {
+.template3-container .custom-text {
     font-family: 'Poppins', sans-serif;
     font-size: 11.5px;
 }
 
 /* Strict A4 Page Layout with Uniform Height */
-.invoice-page {
+.template3-container .invoice-page {
     box-sizing: border-box;
     width: 210mm;
     height: 297mm;
@@ -32,14 +27,14 @@ body {
 }
 
 /* Header Table Styling */
-.invoice-header-table {
+.template3-container .invoice-header-table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 0;
     table-layout: fixed;
 }
 
-.invoice-header-table td {
+.template3-container .invoice-header-table td {
     font-family: 'Poppins', sans-serif;
     font-size: 10.5px;
     padding: 3px 4px;
@@ -47,15 +42,15 @@ body {
 }
 
 /* Items & HSN Table Styling */
-.invoiceTable {
+.template3-container .invoiceTable {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 0;
     table-layout: fixed;
 }
 
-.invoiceTable th,
-.invoiceTable td {
+.template3-container .invoiceTable th,
+.template3-container .invoiceTable td {
     font-family: 'Poppins', sans-serif;
     font-size: 10.5px;
     border: 1px solid #000;
@@ -65,7 +60,7 @@ body {
     word-break: break-word;
 }
 
-.invoiceTable th {
+.template3-container .invoiceTable th {
     background-color: #f2f2f2 !important;
     font-weight: bold;
     color: #000;
@@ -73,14 +68,14 @@ body {
 }
 
 /* Body wrapper to maintain vertical rhythm */
-.invoice-body-wrapper {
+.template3-container .invoice-body-wrapper {
     flex: 1;
     display: flex;
     flex-direction: column;
     overflow: hidden;
 }
 
-.invoice-continued-area {
+.template3-container .invoice-continued-area {
     flex: 1;
     display: flex;
     align-items: flex-end;
@@ -92,7 +87,7 @@ body {
     font-size: 11px;
 }
 
-.invoice-page-footer {
+.template3-container .invoice-page-footer {
     margin-top: auto;
     padding-top: 4px;
     text-align: center;
@@ -115,7 +110,7 @@ body {
         print-color-adjust: exact;
     }
 
-    .invoice-page {
+    .template3-container .invoice-page {
         width: 210mm;
         height: 297mm;
         max-height: 297mm;
@@ -127,7 +122,7 @@ body {
         overflow: hidden;
     }
 
-    .invoice-page:last-child {
+    .template3-container .invoice-page:last-child {
         break-after: auto;
         page-break-after: auto;
     }
