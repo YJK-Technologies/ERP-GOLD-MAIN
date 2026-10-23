@@ -3858,11 +3858,7 @@ function PurchaseOrder() {
                   columnDefs={activeTable === 'myTable' ? columnDefs : columnDefsTax}
                   rowData={activeTable === 'myTable' ? rowData : rowDataTax}
                   defaultColDef={{ editable: true, resizable: true }}
-                  getRowId={(params) =>
-                    activeTable === 'myTable'
-                      ? String(params.data.serialNumber)
-                      : `${params.data.ItemSNO}_${params.data.TaxSNO}`
-                  }
+                  getRowId={(params) => String(params.data.serialNumber)}
                   onCellValueChanged={async (event) => {
                     if (event.colDef.field === 'purchaseQty' || event.colDef.field === 'purchaseAmt' || event.colDef.field === 'discountValue') {
                       await ItemAmountCalculation(event);

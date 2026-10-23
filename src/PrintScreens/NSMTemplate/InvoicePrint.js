@@ -71,7 +71,7 @@ const Invoice = () => {
     }
 
     const companyLogo = processItemImages();
-const authorizedSignature = processSignatureImages();
+    const authorizedSignature = processSignatureImages();
 
     const totalAmount = parseFloat(headerData[0]?.bill_amt || 0);
     const taxAmount = parseFloat(headerData[0]?.tax_amount || 0);
