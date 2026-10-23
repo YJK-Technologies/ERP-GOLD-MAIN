@@ -82,6 +82,9 @@ function TaxInvoice() {
     const [selectedPendingStatus, setSelectedPendingStatus] = useState(null);
     const [discountTypeDrop, setDiscountTypeDrop] = useState([]);
 
+    const [defaultPrintTemplate, setDefaultPrintTemplate] = useState("TaxInvoiceTemplate1");
+    const [defaultPrintCopies, setDefaultPrintCopies] = useState(1);
+
     const location = useLocation();
     const savedPath = sessionStorage.getItem('currentPath');
     const navigate = useNavigate();
@@ -1995,7 +1998,33 @@ function TaxInvoice() {
         }
     };
 
-    const openPrintWindow = (url, headerKey, detailKey, taxKey) => {
+    const PrintHsnTaxData = async () => {
+        try {
+            const response = await fetch(`${config.apiBaseUrl}/invoiceHsnTax`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    company_code: sessionStorage.getItem('selectedCompanyCode'),
+                    transaction_no: new_running_no
+                })
+            });
+
+            if (response.ok) {
+                const searchData = await response.json();
+                return searchData;
+            } else if (response.status === 404) {
+                console.log("HSN Tax Data not found");
+            } else {
+                console.log("Bad request for HSN Tax Data");
+            }
+        } catch (error) {
+            console.error("Error fetching HSN Tax data:", error);
+        }
+    };
+
+    const openPrintWindow = (url, headerKey, detailKey, taxKey, hsnKey) => {
         const openWindow = (targetUrl) => {
             const printWindow = window.open(targetUrl, '_blank');
             if (printWindow) {
@@ -2003,22 +2032,30 @@ function TaxInvoice() {
                     sessionStorage.removeItem(headerKey);
                     sessionStorage.removeItem(detailKey);
                     sessionStorage.removeItem(taxKey);
+                    sessionStorage.removeItem(hsnKey);
                     console.log("Session storage cleared after print window closed.");
                 });
             }
         };
 
         if (url === '/TaxInvoicePrint') {
-            // Loop to open 3 windows
-            for (let i = 1; i <= 3; i++) {
-                openWindow(`${url}?page=${i}`);
+            let targetRoute = '/TaxInvoiceTemplate1';
+
+            if (defaultPrintTemplate && defaultPrintTemplate.trim() !== "") {
+                targetRoute = `/${defaultPrintTemplate.trim()}`;
+            }
+            const copiesCount = (defaultPrintCopies && !isNaN(defaultPrintCopies) && Number(defaultPrintCopies) > 0)
+                ? Number(defaultPrintCopies)
+                : 1;
+
+            for (let i = 1; i <= copiesCount; i++) {
+                openWindow(`${targetRoute}?page=${i}`);
             }
         } else {
-            // Open just one window (e.g., PerformaInvoicePrint)
+            // Foar Proforma Invoice of oare soarten, iepenje gewoan ien finster sûnder oantaasting
             openWindow(url);
         }
     };
-
 
     const generateReport = async () => {
         if (!new_running_no) {
@@ -2031,21 +2068,24 @@ function TaxInvoice() {
             const headerData = await PrintHeaderData();
             const detailData = await PrintDetailData();
             const taxData = await PrintSumTax();
+            const hsnTaxData = await PrintHsnTaxData();
 
             if (headerData && detailData && taxData) {
                 console.log("All API calls completed successfully");
 
-                let url, headerKey, detailKey, taxKey;
+                let url, headerKey, detailKey, taxKey, hsnKey;
 
                 if (invoicetype === "Tax Invoice") {
                     headerKey = 'TaxInvoiceheaderData';
                     detailKey = 'TaxInvoicedetailData';
                     taxKey = 'TaxInvoicetaxData';
+                    hsnKey = 'TaxInvoiceHsnTaxData';
                     url = '/TaxInvoicePrint';
 
                     sessionStorage.setItem(headerKey, LZString.compress(JSON.stringify(headerData)));
                     sessionStorage.setItem(detailKey, LZString.compress(JSON.stringify(detailData)));
                     sessionStorage.setItem(taxKey, LZString.compress(JSON.stringify(taxData)));
+                    sessionStorage.setItem(hsnKey, LZString.compress(JSON.stringify(hsnTaxData)));
                 }
                 else if (invoicetype === "Proforma Invoice") {
                     headerKey = 'PerformaInvoiceheaderData';
@@ -2062,7 +2102,7 @@ function TaxInvoice() {
                     return;
                 }
 
-                openPrintWindow(url, headerKey, detailKey, taxKey);
+                openPrintWindow(url, headerKey, detailKey, taxKey, hsnKey);
             }
         } catch (error) {
             console.error("Error executing API calls:", error);
@@ -3800,7 +3840,7 @@ function TaxInvoice() {
             .then((data) => {
                 if (!data || data.length === 0) return;
 
-                const { pay_type, Transaction_type } = data[0];
+                const { pay_type, Transaction_type, Print_templates, Print_copies } = data[0];
 
                 const setDefault = (type, setType, options, setSelected) => {
                     if (type) {
@@ -3811,6 +3851,19 @@ function TaxInvoice() {
 
                 setDefault(pay_type, setPayType, filteredOptionPay, setSelectedPay);
                 setDefault(Transaction_type, setSalesType, filteredOptionSales, setSelectedSales);
+
+                // --- NEW: Save Print Template and Copies from settings ---
+                if (Print_templates) {
+                    setDefaultPrintTemplate(Print_templates); // e.g., "TaxInvoiceTemplate2"
+                } else {
+                    setDefaultPrintTemplate("TaxInvoiceTemplate1");
+                }
+
+                if (Print_copies) {
+                    setDefaultPrintCopies(parseInt(Print_copies, 10) || 1);
+                } else {
+                    setDefaultPrintCopies(1);
+                }
 
             })
             .catch((error) => console.error("Error fetching data:", error));
@@ -4395,11 +4448,8 @@ function TaxInvoice() {
                                 <AgGridReact
                                     columnDefs={activeTable === 'myTable' ? columnDefs : columnDefsTax}
                                     rowData={activeTable === 'myTable' ? rowData : rowDataTax}
-                                    getRowId={(params) => activeTable === "myTable"
-                                        ? `${params.data.serialNumber}_${params.data.productItemCode}`
-                                        : `${params.data.ItemSNO}_${params.data.TaxSNO}`
-                                    }
                                     defaultColDef={{ editable: true, resizable: true }}
+                                    getRowId={(params) => params.data.keyField}
                                     onCellValueChanged={async (event) => {
                                         if (event.colDef.field === 'qty' || event.colDef.field === 'unitPrice' || event.colDef.field === 'discountValue') {
                                             await TaxInvoiceItemAmountCalculation(event);
