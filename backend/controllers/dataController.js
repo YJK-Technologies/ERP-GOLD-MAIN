@@ -31937,6 +31937,33 @@ const getDiscountType = async (req, res) => {
 };
 //Code ended by pavun on 16-10-2026
 
+//Code added by pavun on 22-10-2026
+const invoiceHsnTax = async (req, res) => {
+  const { transaction_no, company_code } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "THSN")
+      .input("transaction_no", sql.NVarChar, transaction_no)
+      .input("company_code", sql.NVarChar, company_code)
+      .query(`EXEC sp_tax_Print @mode,@transaction_no,@company_code,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+
+    // Send response
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset); // 200 OK if data is found
+    } else {
+      res.status(404).json("Data not found"); // 404 Not Found if no data is found
+    }
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+//Code ended by pavun on 22-10-2026
+
 module.exports = {
   login,
   forgetPassword,
@@ -32958,6 +32985,7 @@ module.exports = {
   DebitCreditNoteDetailAuth,
   DebitCreditNoteTaxDetailAuth,
   getauthorization,
-  getDiscountType
+  getDiscountType,
+  invoiceHsnTax
 
 };

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import "./Css/TaxInvoicePrint.css";
-import PaymentQr from "./Pictures/PaymentQr.png";
+import "../Css/TaxInvoicePrint.css";
+import PaymentQr from "../Pictures/PaymentQr.png";
 import { ToWords } from 'to-words';
 import { useLocation } from 'react-router-dom';
 import LZString from "lz-string";
