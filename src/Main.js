@@ -93,11 +93,7 @@ import Quotation from "./Quotation.js";
 import BankAccInput from "./BankAccount.js";
 import BankAccGrid from "./BankAccountGrid.js";
 import Cstock from "./CurrentStockScreen.js";
-import TaxInvoicePrint from "./PrintScreens/NSM/InvoicePrint.js";
-import QuotationPrint from "./PrintScreens/NSM/QuotePrint.js";
 import PurchaseOrder from "./PurchaseOrder.js";
-import DeliveryChallanSM from "./PrintScreens/NSM/DeliveryChallanPrint.js";
-import PurchaseOrderPrint from "./PrintScreens/NSM/PurchaseOrderPrint.js";
 import TaxInvoice from "./TaxInvoice.js";
 import Product from "./Products.js";
 import ProductDetail from "./AddProductDetails.js";
@@ -147,7 +143,7 @@ import LeaveReq from './ESSDashboard/LeaveRequest.js'
 // import DCPrint from "./PrintTemplates/DCPrint.js";
 // import DCSM from "./PrintTemplates/DCSm/PO.js";
 import GSTReport from './GSTReport/GSTReport.js';
-import PerformaInvoicePrint from './PrintScreens/NSM/ProformaPrint.js';
+import PerformaInvoicePrint from './PrintScreens/NSMTemplate/ProformaPrint.js';
 import OpeningItemAnalysis from './OpeningItemAnalysis.js';
 import DataWiseStock from './DataWiseItem/DataWiseItemStock.js';
 import PendingCustomer from './PendingCustomer.js';
@@ -206,6 +202,12 @@ import CurrencyMaster from './CurrencyMaster.js';
 import CurrencyInput from './CurrencyInput.js';
 import CurrExeRate from './CurrExeRate.js';
 import CurrExeRateInput from './CurrExeRateInput.js';
+import TaxInvoiceTemplate1 from "./PrintScreens/NSMTemplate/InvoicePrint.js";
+import TaxInvoiceTemplate2 from "./PrintScreens/SMTemplate/TaxInvoicePrint.js";
+import TaxInvoiceTemplate3 from "./PrintScreens/VRETemplate/TaxInvoicePrint.js";
+import QuotationPrint from "./PrintScreens/NSMTemplate/QuotePrint.js";
+import DeliveryChallanSM from "./PrintScreens/NSMTemplate/DeliveryChallanPrint.js";
+import PurchaseOrderPrint from "./PrintScreens/NSMTemplate/PurchaseOrderPrint.js";
 
 function Main() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -342,7 +344,7 @@ function Main() {
     { path: "/AddBankAccount", component: <BankAccInput /> },
     { path: "/BankAccount", component: <BankAccGrid /> },
     { path: "/CurrentStock", component: <Cstock /> },
-    { path: "/TaxInvoicePrint", component: <TaxInvoicePrint /> },
+    // { path: "/TaxInvoicePrint", component: <TaxInvoicePrint /> },
     { path: "/QuotationPrint", component: <QuotationPrint /> },
     { path: "/PurchaseOrder", component: <PurchaseOrder /> },
     { path: "/DCPrint", component: <DeliveryChallanSM /> },
@@ -454,9 +456,6 @@ function Main() {
      { path: "/CurrencyInput", component: <CurrencyInput /> },
      { path: "/CurrExeRate", component: <CurrExeRate /> },
      { path: "/CurrExeRateInput", component: <CurrExeRateInput /> },
-
-    
-
   ];
  
   return (
@@ -467,6 +466,9 @@ function Main() {
       <Route path="/" element={<Home />} />
       <Route path="/Login" element={<Login />} />
       <Route path="/Signup" element={<Signup />} />
+      <Route path="/TaxInvoiceTemplate1" element={<div className="px-4"><TaxInvoiceTemplate1 /></div>} />
+      <Route path="/TaxInvoiceTemplate2" element={<div className="px-4"><TaxInvoiceTemplate2 /></div>} />
+      <Route path="/TaxInvoiceTemplate3" element={<div className="px-4"><TaxInvoiceTemplate3 /></div>} />
       <Route
         path="/AccountInformation"
         element={

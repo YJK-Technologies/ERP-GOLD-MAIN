@@ -4031,10 +4031,9 @@ function Quotation() {
                 style={{ height: 437, width: "100%" }}
               >
                 <AgGridReact
-                  columnDefs={
-                    activeTable === "myTable" ? columnDefs : columnDefsTax
-                  }
+                  columnDefs={activeTable === "myTable" ? columnDefs : columnDefsTax}
                   rowData={activeTable === "myTable" ? rowData : rowDataTax}
+                  // getRowId={(params) => String(params.data.serialNumber)}
                   defaultColDef={{ editable: true, resizable: true }}
                   onCellValueChanged={async (event) => {
                     if (

@@ -1043,6 +1043,7 @@ router.post("/DebitCreditNoteDetailAuth", dataController.DebitCreditNoteDetailAu
 router.post("/DebitCreditNoteTaxDetailAuth", dataController.DebitCreditNoteTaxDetailAuth)
 router.post("/getauthorization", dataController.getauthorization)
 router.post("/getDiscountType", dataController.getDiscountType)
+router.post("/invoiceHsnTax", dataController.invoiceHsnTax)
 
 
 module.exports = router;

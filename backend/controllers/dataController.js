@@ -17668,7 +17668,7 @@ const gettaxinvoiceitemamt = async (req, res) => {
       .input("invoice_type", sql.NVarChar, invoice_type)
       .input("Discount_Type", sql.NVarChar, Discount_Type)
       .input("Discount_Value", sql.Decimal(10,2), Discount_Value)
-      .query(`EXEC sp_tax_invoice_ItemAmountCalculation_test @mode, @company_code,@type,@Item_SNO, @Item_code, @bill_qty, @Item_amt, @tax_type_header, @tax_name_details, @tax_percentage, '', '', 0, 0,@keyfield,
+      .query(`EXEC sp_tax_invoice_ItemAmountCalculation @mode, @company_code,@type,@Item_SNO, @Item_code, @bill_qty, @Item_amt, @tax_type_header, @tax_name_details, @tax_percentage, '', '', 0, 0,@keyfield,
         @invoice_type,@Discount_Type,@Discount_Value,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     // Send response
     if (result.recordset.length > 0) {
@@ -17694,7 +17694,7 @@ const gettaxinvoicetotamt = async (req, res) => {
       .input("Tax_amount", sql.NVarChar, Tax_amount)
       .input("Putchase_amount", sql.NVarChar, Putchase_amount)
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_tax_invoice_ItemAmountCalculation_test @mode,@company_code,'',0, '', 0, 0, '', '', '', @Tax_amount, @Putchase_amount, 0, 0,'','','',0, NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_tax_invoice_ItemAmountCalculation @mode,@company_code,'',0, '', 0, 0, '', '', '', @Tax_amount, @Putchase_amount, 0, 0,'','','',0, NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     // Send response
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset); // 200 OK if data is found
@@ -20826,7 +20826,7 @@ const taxInvoiceBalanceAmountCalculation = async (req, res) => {
       .input("mode", sql.NVarChar, "BAC")
       .input("TotalAmount", sql.Decimal(14, 2), TotalAmount)
       .input("AdvanceAmount", sql.Decimal(14, 2), AdvanceAmount)
-      .query(`EXEC sp_tax_invoice_ItemAmountCalculation_test @mode,'','',0,'',0,0,'','','',0,0,@TotalAmount,@AdvanceAmount,'','','',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_tax_invoice_ItemAmountCalculation @mode,'','',0,'',0,0,'','','',0,0,@TotalAmount,@AdvanceAmount,'','','',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     // Send response
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset); // 200 OK if data is found
@@ -31937,6 +31937,33 @@ const getDiscountType = async (req, res) => {
 };
 //Code ended by pavun on 16-10-2026
 
+//Code added by pavun on 22-10-2026
+const invoiceHsnTax = async (req, res) => {
+  const { transaction_no, company_code } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "THSN")
+      .input("transaction_no", sql.NVarChar, transaction_no)
+      .input("company_code", sql.NVarChar, company_code)
+      .query(`EXEC sp_tax_Print @mode,@transaction_no,@company_code,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+
+    // Send response
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset); // 200 OK if data is found
+    } else {
+      res.status(404).json("Data not found"); // 404 Not Found if no data is found
+    }
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+//Code ended by pavun on 22-10-2026
+
 module.exports = {
   login,
   forgetPassword,
@@ -32958,6 +32985,7 @@ module.exports = {
   DebitCreditNoteDetailAuth,
   DebitCreditNoteTaxDetailAuth,
   getauthorization,
-  getDiscountType
+  getDiscountType,
+  invoiceHsnTax
 
 };

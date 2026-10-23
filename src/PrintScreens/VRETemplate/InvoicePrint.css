@@ -1,0 +1,129 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+/* Scope all 3rd Template CSS inside .template3-container */
+.template3-container * {
+    box-sizing: border-box;
+}
+
+.template3-container .custom-text {
+    font-family: 'Poppins', sans-serif;
+    font-size: 11.5px;
+}
+
+/* Strict A4 Page Layout with Uniform Height */
+.template3-container .invoice-page {
+    box-sizing: border-box;
+    width: 210mm;
+    height: 297mm;
+    max-height: 297mm;
+    margin: 10px auto;
+    padding: 8mm;
+    background: #fff;
+    border: 1px solid #000;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+}
+
+/* Header Table Styling */
+.template3-container .invoice-header-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0;
+    table-layout: fixed;
+}
+
+.template3-container .invoice-header-table td {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10.5px;
+    padding: 3px 4px;
+    vertical-align: top;
+}
+
+/* Items & HSN Table Styling */
+.template3-container .invoiceTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0;
+    table-layout: fixed;
+}
+
+.template3-container .invoiceTable th,
+.template3-container .invoiceTable td {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10.5px;
+    border: 1px solid #000;
+    text-align: left;
+    padding: 3px 4px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.template3-container .invoiceTable th {
+    background-color: #f2f2f2 !important;
+    font-weight: bold;
+    color: #000;
+    text-align: center;
+}
+
+/* Body wrapper to maintain vertical rhythm */
+.template3-container .invoice-body-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.template3-container .invoice-continued-area {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    border: 1px solid #000;
+    border-top: none;
+    padding: 6px;
+    font-weight: bold;
+    font-size: 11px;
+}
+
+.template3-container .invoice-page-footer {
+    margin-top: auto;
+    padding-top: 4px;
+    text-align: center;
+    font-size: 10px;
+    border-top: 1px solid #ccc;
+}
+
+/* Print Setup for exact A4 rendering */
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 0;
+    }
+
+    html, body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .template3-container .invoice-page {
+        width: 210mm;
+        height: 297mm;
+        max-height: 297mm;
+        margin: 0;
+        padding: 8mm;
+        border: none;
+        break-after: page;
+        page-break-after: always;
+        overflow: hidden;
+    }
+
+    .template3-container .invoice-page:last-child {
+        break-after: auto;
+        page-break-after: auto;
+    }
+}
