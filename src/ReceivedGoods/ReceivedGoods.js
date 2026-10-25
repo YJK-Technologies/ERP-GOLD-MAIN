@@ -211,9 +211,9 @@ function AssetsReturn({ }) {
             itemSNo: matchedItem.item_sno,
             itemCode: matchedItem.item_code,
             itemName: matchedItem.item_name,
-            billQty: matchedItem.bill_qty,
+            billQty: matchedItem.po_qty,
             balanceQty: matchedItem.bal_qty,
-            receivedQty: matchedItem.rec_qty,
+            receivedQty: matchedItem.qty_to_receive,
             keyfield: matchedItem.keyfield,
             receiveQty: 0,
           }));
@@ -240,11 +240,17 @@ function AssetsReturn({ }) {
     const allRowsData = [];
     gridApi.forEachNode((node) => allRowsData.push(node.data));
 
-    const filteredRows = allRowsData.filter((row) => row.receiveQty > 0);
+    const filteredRows = allRowsData
+      .filter((row) => row.receiveQty > 0)
+      .map((row) => ({
+        ...row,
+        bill_no:  transactionNo,       // Ensure bill_no is passed
+        bill_date:  transactionDate, // Ensure bill_date is passed
+      }));
 
     if (filteredRows.length === 0) {
       toast.warning(
-        "No valid rows found with Received Amount greater than zero to update",
+        "No valid rows found with Received Quantity greater than zero to update",
       );
       return;
     }
