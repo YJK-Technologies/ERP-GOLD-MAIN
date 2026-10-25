@@ -84,6 +84,7 @@ function TaxInvoice() {
 
     const [defaultPrintTemplate, setDefaultPrintTemplate] = useState("TaxInvoiceTemplate1");
     const [defaultPrintCopies, setDefaultPrintCopies] = useState(1);
+    const gridApiRef = useRef(null);
 
     const location = useLocation();
     const savedPath = sessionStorage.getItem('currentPath');
@@ -943,52 +944,61 @@ function TaxInvoice() {
             if (response.ok) {
                 const searchData = await response.json();
 
+                if (!searchData || searchData.length === 0) return;
+
+                const matchedItem = searchData[0];
+
+                let updatedRow;
                 const updatedRowData = rowData.map(row => {
                     if (row.productItemCode === params.data.productItemCode &&
-                        row.serialNumber === params.data.serialNumber) {
-                        const matchedItem = searchData.find(item => {
-                            console.log("Item ID being checked:", item.id);  // Printing item.id being checked
-                            return item.id === row.id;
-                        });
-                        if (matchedItem) {
-                            return {
-                                ...row,
-                                taxAmount: matchedItem.TotalTaxAmount,
-                                totalAmount: matchedItem.TotalItemAmount
-                            };
-                        }
+                        Number(row.serialNumber) === Number(params.data.serialNumber)) {
+
+                        updatedRow = {
+                            ...row,
+                            taxAmount: matchedItem.TotalTaxAmount,
+                            totalAmount: matchedItem.TotalItemAmount
+                        };
+                        return updatedRow;
                     }
                     return row;
                 });
+
+                // AG Grid scroll maaramal irukka applyTransaction use panrom
+                if (updatedRow && gridApiRef.current) {
+                    gridApiRef.current.applyTransaction({ update: [updatedRow] });
+                }
+
                 setRowData(updatedRowData);
 
-                let updatedRowDataTaxCopy = [...rowDataTax];
+                // --- CORRECT TAX DETAILS GRID FIX ---
+                // 1. Intha current S.No-ku (e.g. S.No 2) munbu iruntha tax rows 
+                //    ellathaiyum state-la irunthu completely remove pannidalam.
+                let updatedRowDataTaxCopy = rowDataTax.filter(row =>
+                    Number(row.ItemSNO) !== Number(params.data.serialNumber)
+                );
 
+                // 2. Backend-la vantha fresh tax list-ai (CGST, SGST) 
+                //    correct frontend serialNumber-odu push panrom.
                 searchData.forEach(item => {
-                    updatedRowDataTaxCopy = updatedRowDataTaxCopy.filter(row =>
-                        !(row.ItemSNO === item.ItemSNO && row.TaxSNO === item.TaxSNO)
-                    );
-
                     const newRow = {
-                        ItemSNO: item.ItemSNO,
-                        TaxSNO: item.TaxSNO,
+                        ItemSNO: params.data.serialNumber, // Correct Row S.No (e.g., 2)
+                        TaxSNO: item.TaxSNO,               // 1, 2 etc.
                         Item_code: item.Item_code,
-                        taxDetail: item.TaxType,
+                        taxDetail: item.TaxType,           // CGST / SGST
                         TaxPercentage: item.TaxPercentage ?? 0,
                         TaxAmount: item.TaxAmount,
-                        keyfield: item.keyfield,
+                        keyfield: `${params.data.serialNumber}-${item.Item_code || ''}-${item.TaxSNO}`,
                     };
 
                     updatedRowDataTaxCopy.push(newRow);
                 });
-                updatedRowDataTaxCopy.sort((a, b) => a.ItemSNO - b.ItemSNO);
 
+                // 3. S.No basis-la sort pannikalam
+                updatedRowDataTaxCopy.sort((a, b) => Number(a.ItemSNO) - Number(b.ItemSNO));
                 setRowDataTax(updatedRowDataTaxCopy);
 
-
-
+                // Total Amount Calculation
                 const hasQty = updatedRowData.some(row => row.qty >= 0);
-
                 if (hasQty) {
                     const totalItemAmounts = updatedRowData.map(row => row.totalAmount || 0).join(',');
                     const totalTaxAmounts = updatedRowData.map(row => row.taxAmount || 0).join(',');
@@ -996,12 +1006,10 @@ function TaxInvoice() {
                     const formattedTotalItemAmounts = totalItemAmounts.endsWith(',') ? totalItemAmounts.slice(0, -1) : totalItemAmounts;
                     const formattedTotalTaxAmounts = totalTaxAmounts.endsWith(',') ? totalTaxAmounts.slice(0, -1) : totalTaxAmounts;
 
-                    await TotalAmountCalculation(formattedTotalTaxAmounts, formattedTotalItemAmounts)
-                    console.log("TotalAmountCalculation executed successfully");
-                } else {
-                    console.log("No rows with purchaseQty greater than 0 found");
+                    await TotalAmountCalculation(formattedTotalTaxAmounts, formattedTotalItemAmounts);
                 }
-                console.log("Data fetched successfully");
+
+                console.log("Data fetched and grid updated successfully");
             } else if (response.status === 404) {
                 console.log("Data not found");
             } else {
@@ -1012,7 +1020,6 @@ function TaxInvoice() {
         } catch (error) {
             console.error("Error fetching search data:", error);
             toast.error(error.message);
-
         }
     };
 
@@ -2127,7 +2134,7 @@ function TaxInvoice() {
     };
 
     const onGridReady = (params) => {
-        console.log("Grid is ready");
+        gridApiRef.current = params.api;
         const columnState = localStorage.getItem('myColumnState');
         if (columnState) {
             params.columnApi.applyColumnState({ state: JSON.parse(columnState) });
@@ -4193,7 +4200,6 @@ function TaxInvoice() {
                                             columnDefs={columnDefsTermsConditions}
                                             rowData={rowDataTerms}
                                             defaultColDef={{ editable: true, resizable: true }}
-                                            onGridReady={onGridReady}
                                             rowHeight={28}
                                             onRowClicked={handleRowClicked}
                                             onColumnMoved={onColumnMoved}
@@ -4449,7 +4455,7 @@ function TaxInvoice() {
                                     columnDefs={activeTable === 'myTable' ? columnDefs : columnDefsTax}
                                     rowData={activeTable === 'myTable' ? rowData : rowDataTax}
                                     defaultColDef={{ editable: true, resizable: true }}
-                                    getRowId={(params) => params.data.keyField}
+                                    getRowId={(params) => params.data.keyField || params.data.keyfield}
                                     onCellValueChanged={async (event) => {
                                         if (event.colDef.field === 'qty' || event.colDef.field === 'unitPrice' || event.colDef.field === 'discountValue') {
                                             await TaxInvoiceItemAmountCalculation(event);
@@ -4610,7 +4616,6 @@ function TaxInvoice() {
                                             columnDefs={deletedColumnTerms}
                                             rowData={deletedRowDataTerms}
                                             defaultColDef={{ editable: true, resizable: true }}
-                                            onGridReady={onGridReady}
                                             rowHeight={28}
                                             onRowClicked={handleRowClicked}
                                             onColumnMoved={onColumnMoved}
@@ -4770,7 +4775,6 @@ function TaxInvoice() {
                                     columnDefs={activeTable === 'myTable' ? deletedColumnDetail : deletedColumnTax}
                                     rowData={activeTable === 'myTable' ? deletedRowData : deletedRowDataTax}
                                     defaultColDef={{ editable: true, resizable: true }}
-                                    onGridReady={onGridReady}
                                     onRowClicked={handleRowClicked}
                                     onColumnMoved={onColumnMoved}
                                 />

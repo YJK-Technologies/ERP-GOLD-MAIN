@@ -8,11 +8,10 @@ import "./mobile.css";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Dropdown, DropdownButton } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
 import Select from "react-select";
-import { showConfirmationToast } from "./ToastConfirmation";
 import labels from "./Labels";
+import { showConfirmationToast } from "./ToastConfirmation";
 import LoadingScreen from "./Loading";
 
 const config = require("./Apiconfig");
@@ -772,8 +771,12 @@ setStdAccGrpdrop(statusOption);
                     options={filteredOptionStatus}
                     className="exp-input-field"
                     placeholder=""
+                    isClearable
                     classNamePrefix="react-select"
-                    styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                    styles={{menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                    option: (provided) => ({...provided,textAlign: "left", }),
+                    singleValue: (provided) => ({...provided,textAlign: "left", }),
+                    }}
                   />
                 </div>
               </div>

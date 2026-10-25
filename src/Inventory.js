@@ -3310,78 +3310,195 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
 
   };
 
-  const AuthorizedHeader = async () => {
+  const getBackendErrorMessage = async (response) => {
+    const responseText = await response.text();
+
+    if (!responseText) {
+        return `Request failed with status ${response.status}`;
+    }
+
+    try {
+        const data = JSON.parse(responseText);
+
+        return (
+            data.message ||
+            data.error ||
+            data.details ||
+            data.title ||
+            responseText
+        );
+    } catch {
+        return responseText;
+    }
+};
+
+  // const AuthorizedHeader = async () => {
     
-    try {
-      const response = await fetch(`${config.apiBaseUrl}/SalesAuthHdr`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          bill_no: billNo,
-          company_code: sessionStorage.getItem('selectedCompanyCode'),
-          authroization_status: selectedStatus.value
-        })
-      });
-      if (response.ok) {
-        console.log("Rows deleted successfully:", billNo);
-        return true
-      } else {
-        console.log("Failed to fetch some data");
-      }
-    } catch (error) {
-      console.error("Error executing API calls:", error);
-    }
-  };
+  //   try {
+  //     const response = await fetch(`${config.apiBaseUrl}/SalesAuthHdr`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json"
+  //       },
+  //       body: JSON.stringify({
+  //         bill_no: billNo,
+  //         company_code: sessionStorage.getItem('selectedCompanyCode'),
+  //         authroization_status: selectedStatus.value
+  //       })
+  //     });
+  //     if (response.ok) {
+  //       console.log("Rows deleted successfully:", billNo);
+  //       return true
+  //     } else {
+  //       console.log("Failed to fetch some data");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error executing API calls:", error);
+  //   }
+  // };
 
-  const AuthorizedDetails = async () => {
+  
+const AuthorizedHeader = async () => {
     try {
-      const response = await fetch(`${config.apiBaseUrl}/SalesAuthDetail`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          bill_no: billNo,
-          company_code: sessionStorage.getItem('selectedCompanyCode'),
-          authroization_status: selectedStatus.value
-        })
-      });
-      if (response.ok) {
-        console.log("Rows deleted successfully:", billNo);
-        return true
-      } else {
-        console.log("Failed to fetch some data");
-      }
-    } catch (error) {
-      console.error("Error executing API calls:", error);
-    }
-  };
+        const response = await fetch(`${config.apiBaseUrl}/SalesAuthHdr`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                bill_no: billNo,
+                company_code: sessionStorage.getItem("selectedCompanyCode"),
+                authroization_status: selectedStatus.value
+            })
+        });
 
-  const AuthorizedTaxDetails = async () => {
-    try {
-      const response = await fetch(`${config.apiBaseUrl}/SalesAuthTaxDetail`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          bill_no: billNo,
-          company_code: sessionStorage.getItem('selectedCompanyCode'),
-          authroization_status: selectedStatus.value
-        })
-      });
-      if (response.ok) {
-        console.log("Rows deleted successfully:", billNo);
-        return true
-      } else {
-        console.log("Failed to fetch some data");
-      }
+        if (response.ok) {
+            console.log("Rows updated successfully:", billNo);
+            return true;
+        }
+
+        const errorMessage = await getBackendErrorMessage(response);
+        toast.warning(errorMessage);
+        return false;
+
     } catch (error) {
-      console.error("Error executing API calls:", error);
+        console.error("Error executing AuthorizedHeader:", error);
+        toast.error(error.message || "Network error while authorizing sales header.");
+        return false;
     }
-  };
+};
+
+
+  // const AuthorizedDetails = async () => {
+  //   try {
+  //     const response = await fetch(`${config.apiBaseUrl}/SalesAuthDetail`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json"
+  //       },
+  //       body: JSON.stringify({
+  //         bill_no: billNo,
+  //         company_code: sessionStorage.getItem('selectedCompanyCode'),
+  //         authroization_status: selectedStatus.value
+  //       })
+  //     });
+  //     if (response.ok) {
+  //       console.log("Rows deleted successfully:", billNo);
+  //       return true
+  //     } else {
+  //       console.log("Failed to fetch some data");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error executing API calls:", error);
+  //   }
+  // };
+
+  
+const AuthorizedDetails = async () => {
+    try {
+        const response = await fetch(`${config.apiBaseUrl}/SalesAuthDetail`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                bill_no: billNo,
+                company_code: sessionStorage.getItem("selectedCompanyCode"),
+                authroization_status: selectedStatus.value
+            })
+        });
+
+        if (response.ok) {
+            console.log("Rows updated successfully:", billNo);
+            return true;
+        }
+
+        const errorMessage = await getBackendErrorMessage(response);
+        toast.warning(errorMessage);
+        return false;
+
+    } catch (error) {
+        console.error("Error executing AuthorizedDetails:", error);
+        toast.error(error.message || "Network error while authorizing sales details.");
+        return false;
+    }
+};
+
+
+  // const AuthorizedTaxDetails = async () => {
+  //   try {
+  //     const response = await fetch(`${config.apiBaseUrl}/SalesAuthTaxDetail`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json"
+  //       },
+  //       body: JSON.stringify({
+  //         bill_no: billNo,
+  //         company_code: sessionStorage.getItem('selectedCompanyCode'),
+  //         authroization_status: selectedStatus.value
+  //       })
+  //     });
+  //     if (response.ok) {
+  //       console.log("Rows deleted successfully:", billNo);
+  //       return true
+  //     } else {
+  //       console.log("Failed to fetch some data");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error executing API calls:", error);
+  //   }
+  // };
+
+  
+const AuthorizedTaxDetails = async () => {
+    try {
+        const response = await fetch(`${config.apiBaseUrl}/SalesAuthTaxDetail`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                bill_no: billNo,
+                company_code: sessionStorage.getItem("selectedCompanyCode"),
+                authroization_status: selectedStatus.value
+            })
+        });
+
+        if (response.ok) {
+            console.log("Rows updated successfully:", billNo);
+            return true;
+        }
+
+        const errorMessage = await getBackendErrorMessage(response);
+        toast.warning(errorMessage);
+        return false;
+
+    } catch (error) {
+        console.error("Error executing AuthorizedTaxDetails:", error);
+        toast.error(error.message || "Network error while authorizing sales tax details.");
+        return false;
+    }
+};
 
 
   const navigateToSalesSettings = () => {

@@ -42,18 +42,18 @@ function UserAccInput({ }) {
   // }, []);
 
   const company_code = sessionStorage.getItem('selectedCompanyCode');
-  
+
   useEffect(() => {
-  fetch(`${config.apiBaseUrl}/getStdAccGrp`, {
-  method: 'POST',
-  headers: {
-  'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({ company_code })
-  })
-  .then((data) => data.json())
-  .then((val) => setStdAccGrpdrop(val))
-  .catch((err) => console.error('Error fetching Standard Account Groups:', err));
+    fetch(`${config.apiBaseUrl}/getStdAccGrp`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ company_code })
+    })
+      .then((data) => data.json())
+      .then((val) => setStdAccGrpdrop(val))
+      .catch((err) => console.error('Error fetching Standard Account Groups:', err));
   }, []);
 
   // useEffect(() => {
@@ -62,17 +62,17 @@ function UserAccInput({ }) {
   //     .then((val) => setBaseAccDrop(val));
   // }, []);
 
-useEffect(() => {
-fetch(`${config.apiBaseUrl}/getBaseAccGrp`, {
-method: "POST",
-headers: {
-"Content-Type": "application/json",
-},
-body: JSON.stringify({ company_code }),
-})
-.then((data) => data.json())
-.then((val) => setBaseAccDrop(val));
-}, []);
+  useEffect(() => {
+    fetch(`${config.apiBaseUrl}/getBaseAccGrp`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ company_code }),
+    })
+      .then((data) => data.json())
+      .then((val) => setBaseAccDrop(val));
+  }, []);
 
 
   useEffect(() => {
@@ -216,7 +216,10 @@ body: JSON.stringify({ company_code }),
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label for="rid" class="exp-form-labels">
+                        <label
+                          htmlFor="partyName"
+                          className={`${error && !user_accgroup_code ? 'red' : ''}`}
+                        >
                           Code<span className="text-danger">*</span>
                         </label>
                       </div>
@@ -233,14 +236,16 @@ body: JSON.stringify({ company_code }),
                       ref={code}
                       onKeyDown={(e) => handleKeyDown(e, Name, code)}
                     />
-                    {error && !user_accgroup_code && <div className="text-danger">Code should not be blank</div>}
                   </div>
                 </div>
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label for="rid" class="exp-form-labels">
+                        <label
+                          htmlFor="partyName"
+                          className={`${error && !user_accgroup_name ? 'red' : ''}`}
+                        >
                           Name<span className="text-danger">*</span>
                         </label>
                       </div>
@@ -257,41 +262,48 @@ body: JSON.stringify({ company_code }),
                       ref={Name}
                       onKeyDown={(e) => handleKeyDown(e, Standard, Name)}
                     />
-                    {error && !user_accgroup_name && <div className="text-danger">Name should not be blank</div>}
                   </div>
                 </div>
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label for="rid" class="exp-form-labels">
+                        <label
+                          htmlFor="partyName"
+                          className={`${error && !standard_accgroup_code ? 'red' : ''}`}
+                        >
                           Standard Account Code<span className="text-danger">*</span>
                         </label>
                       </div>
                     </div>
-                    <div title="Select the Standard Account Code">        
-                    <div className="input-group">
-                      <Select
-                        id="city"
-                        value={selectedUserAcc}
-                        onChange={handleChangeStdAccGrp}
-                        options={filteredOptionStdAccGrp}
-                        className="exp-input-field position-relative"
-                        placeholder=""
-                        ref={Standard}
-                        onKeyDown={(e) => handleKeyDown(e, Status, Standard)}
-                      />
-                      <button onClick={handleNavigateToForm} class="userhdrcode position-absolute me-5 pb-2" required title="Add Standard Code"><i class="fa-solid fa-plus"></i></button>
+                    <div title="Select the Standard Account Code">
+                      <div className="input-group">
+                        <Select
+                          id="city"
+                          value={selectedUserAcc}
+                          onChange={handleChangeStdAccGrp}
+                          options={filteredOptionStdAccGrp}
+                          className="exp-input-field position-relative"
+                          placeholder=""
+                          ref={Standard}
+                          onKeyDown={(e) => handleKeyDown(e, Status, Standard)}
+                        />
+                        <button onClick={handleNavigateToForm} class="userhdrcode position-absolute me-5 pb-2" required title="Add Standard Code"><i class="fa-solid fa-plus"></i></button>
+                      </div>
                     </div>
-                    </div>
-                    {error && !standard_accgroup_code && <div className="text-danger">Standard Code should not be blank</div>}
                   </div>
                 </div>
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label for="rid" class="exp-form-labels">
+                        {/* <label for="rid" class="exp-form-labels">
+                          Status<span className="text-danger">*</span>
+                        </label> */}
+                        <label
+                          htmlFor="partyName"
+                          className={`${error && !status ? 'red' : ''}`}
+                        >
                           Status<span className="text-danger">*</span>
                         </label>
                       </div>
@@ -323,7 +335,6 @@ body: JSON.stringify({ company_code }),
                       ref={Status}
                       onKeyDown={(e) => handleKeyDown}
                     />
-                    {error && !status && <div className="text-danger">Status should not be blank</div>}
                   </div>
                 </div>
                 {/* <div className="col-md-3 form-group  mb-2">

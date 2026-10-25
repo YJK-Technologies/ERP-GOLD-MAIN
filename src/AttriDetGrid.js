@@ -160,6 +160,15 @@ function AttriDetGrid() {
         maxLength: 250,
       },
     },
+    {
+      headerName: "Order No",
+      field: "order_no",
+      editable: true,
+      cellStyle: { textAlign: "center" },
+      cellEditorParams: {
+        maxLength: 250,
+      },
+    },
   ];
 
   const defaultColDef = {
@@ -183,6 +192,7 @@ function AttriDetGrid() {
         "Sub Code": row.attributedetails_code,
         "Detail Name": row.attributedetails_name,
         "Description": row.descriptions,
+        "Order No": row.order_no,
       };
     });
 
