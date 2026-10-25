@@ -7,12 +7,31 @@ import "react-toastify/dist/ReactToastify.css";
 import ReceivedGoodsPopup from "./ReceivedGoodsHelp";
 import * as XLSX from "xlsx";
 import { useLocation } from 'react-router-dom';
+import Select from "react-select";
+
 const config = require("../Apiconfig");
 
 function AssetsReturn({ }) {
   const [rowData, setRowData] = useState([]);
   const [transactionDate, setTransactionDate] = useState("");
   const [transactionNo, setTransactionNo] = useState("");
+
+  const [selectedAmendment, setSelectedAmendment] = useState("");
+const [selectedDropdown, setSelectedDropdown] = useState("");
+const [status, setStatus] = useState("");
+
+const amendmentOptions = [
+  { value: "1", label: "1" },
+  { value: "2", label: "2" },
+  { value: "3", label: "3" },
+];
+
+const actionOptions = [
+  { value: "Add", label: "Add" },
+  { value: "Modify", label: "Modify" },
+  { value: "Delete", label: "Delete" },
+];
+
   const [gridApi, setGridApi] = useState(null);
   const redirectLoadedRef = useRef(false);
   const location = useLocation();
@@ -114,15 +133,15 @@ function AssetsReturn({ }) {
       editable: false,
     },
     {
-      headerName: "Bill Qty",
-      field: "billQty",
+      headerName: "PO Qty",
+      field: "po_qty",
       editable: false,
       filter: true,
       sortable: false,
     },
     {
       headerName: "Received Qty",
-      field: "receivedQty",
+      field: "receiveQty",
       editable: false,
       filter: true,
       sortable: false,
@@ -135,8 +154,8 @@ function AssetsReturn({ }) {
       sortable: false,
     },
     {
-      headerName: "Received Now",
-      field: "receiveQty",
+      headerName: "Quantity to Receive",
+      field: "qty_to_receive",
       editable: true,
       filter: true,
       sortable: false,
@@ -160,9 +179,23 @@ function AssetsReturn({ }) {
         }
 
         // Valid case
-        params.data.receiveQty = newValue;
+        params.data.qty_to_receive = newValue;
         return true;
       },
+    },
+    {
+      headerName: "Accepted Qty",
+      field: "accepted_qty",
+      editable: true,
+      filter: true,
+      sortable: false,
+    },
+    {
+      headerName: "Rejected Qty",
+      field: "rejected_qty",
+      editable: true,
+      filter: true,
+      sortable: false,
     },
     {
       headerName: "Keyfield",
@@ -211,9 +244,11 @@ function AssetsReturn({ }) {
             itemSNo: matchedItem.item_sno,
             itemCode: matchedItem.item_code,
             itemName: matchedItem.item_name,
-            billQty: matchedItem.bill_qty,
-            balanceQty: matchedItem.bal_qty,
-            receivedQty: matchedItem.rec_qty,
+            po_qty: matchedItem.po_qty,
+            bal_qty: matchedItem.bal_qty,
+            receivedQty: matchedItem.qty_to_receive,
+            accepted_qty: matchedItem.accepted_qty,
+            rejected_qty: matchedItem.rejected_qty,
             keyfield: matchedItem.keyfield,
             receiveQty: 0,
           }));
@@ -240,7 +275,7 @@ function AssetsReturn({ }) {
     const allRowsData = [];
     gridApi.forEachNode((node) => allRowsData.push(node.data));
 
-    const filteredRows = allRowsData.filter((row) => row.receiveQty > 0);
+    const filteredRows = allRowsData.filter((row) => row.qty_to_receive > 0);
 
     if (filteredRows.length === 0) {
       toast.warning(
@@ -558,6 +593,78 @@ function AssetsReturn({ }) {
                 />
               </div>
             </div>
+
+            {/* Amendment No Dropdown */}
+<div className="col-md-2 form-group mb-2">
+  <label htmlFor="amendmentDropdown" className="exp-form-labels">
+    Amendment No
+  </label>
+
+  <div className="exp-form-floating">
+    <div title="Select the Amendment No">
+      <Select
+        id="amendmentDropdown"
+        className="exp-input-field"
+        placeholder=""
+        required
+        value={selectedAmendment}
+        onChange={setSelectedAmendment}
+        options={amendmentOptions}
+        styles={{
+          menu: (provided) => ({
+            ...provided,
+            zIndex: 9999,
+          }),
+        }}
+      />
+    </div>
+  </div>
+</div>
+
+{/* Action Dropdown Without Label */}
+<div className="col-md-2 form-group mb-2">
+  <label className="exp-form-labels invisible" aria-hidden="true">
+    Action
+  </label>
+
+  <div className="exp-form-floating">
+    <div title="Select the Action">
+      <Select
+        inputId="actionDropdown"
+        aria-label="Action"
+        className="exp-input-field"
+        placeholder=""
+        value={selectedDropdown}
+        onChange={setSelectedDropdown}
+        options={actionOptions}
+        styles={{
+          menu: (provided) => ({
+            ...provided,
+            zIndex: 9999,
+          }),
+        }}
+      />
+    </div>
+  </div>
+</div>
+
+{/* Status - Display Only */}
+<div className="col-md-2 form-group mb-2">
+  <label htmlFor="status" className="exp-form-labels">
+    Status
+  </label>
+
+  <div className="exp-form-floating">
+    <input
+      id="status"
+      type="text"
+      className="exp-input-field form-control"
+      value={status}
+      placeholder=""
+      readOnly
+    />
+  </div>
+</div>
           </div>
           <div
             align="right"
