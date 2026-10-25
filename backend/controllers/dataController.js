@@ -25425,7 +25425,7 @@ const getReceivedGoods = async (req, res) => {
       .input("mode", sql.NVarChar, "SC")
       .input("company_code", sql.NVarChar, company_code)
       .input("bill_no", sql.NVarChar, bill_no)
-      .query(`EXEC sp_received_goods @mode,@company_code,@bill_no,'',0,'','',0,0,'','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_received_goods @mode,@company_code,@bill_no,'',0,'','',0,0,'',0,0,'','','','','', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
@@ -25454,9 +25454,12 @@ const updateReceivedGoods = async (req, res) => {
         .request()
         .input("mode", sql.NVarChar, "U")
         .input("company_code", sql.NVarChar, req.headers['company_code'])
+        .input("bill_no", sql.NVarChar, updatedRow.transactionNo)
+        .input("bill_date", sql.NVarChar, updatedRow.transactionDate)
         .input("keyfield", sql.NVarChar, updatedRow.keyfield)
-        .input("rec_qty", sql.Decimal(10, 2), updatedRow.receiveQty)
-        .query(`EXEC sp_received_goods @mode,@company_code,'','',0,'','',0,@rec_qty,'',@keyfield,'','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+        .input("qty_to_receive", sql.Decimal(10, 2), updatedRow.qty_to_receive)
+        // .query(`EXEC sp_received_goods @mode,@company_code,'',@bill_no,0,'','',0,@qty_to_receive,'',0,0,@keyfield,'','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+        .query(`EXEC sp_received_goods @mode,@company_code,@bill_no,@bill_date,0,'','',0,@qty_to_receive,'',0,0,@keyfield,'','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     }
     res.status(200).json("data updated successfully");
   }
@@ -25483,7 +25486,7 @@ const getReceivedGoodsReport = async (req, res) => {
       .input("pending", sql.NVarChar, pending)
       .input("start_date", sql.NVarChar, start_date)
       .input("end_date", sql.NVarChar, end_date)
-      .query(`EXEC sp_received_goods @mode,@company_code,@bill_no,'',0,@item_code,@item_name,0,0,@pending,'',@start_date,@end_date,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+      .query(`EXEC sp_received_goods @mode,@company_code,@bill_no,'',0,@item_code,@item_name,0,0,@pending,0,0,'',@start_date,@end_date,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
 `);
 
     if (result.recordset.length > 0) {
@@ -25579,7 +25582,7 @@ const getReceivedGoodsHelp = async (req, res) => {
       .input("bill_date", sql.NVarChar, bill_date)
       .input("item_name", sql.NVarChar, item_name)
       .input("item_code", sql.NVarChar, item_code)
-      .query(`EXEC sp_received_goods @mode,@company_code,@bill_no,@bill_date,0,@item_code,@item_name,0,0,'','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_received_goods @mode,@company_code,@bill_no,@bill_date,0,@item_code,@item_name,0,0,'',0,0,'','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -31964,6 +31967,32 @@ const invoiceHsnTax = async (req, res) => {
 };
 //Code ended by pavun on 22-10-2026
 
+//Code added by Dinesh Gokul on 24-10-2026
+const purchaseOrderHsnTax = async (req, res) => {
+  const { transaction_no, company_code } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "POHSN")
+      .input("transaction_no", sql.NVarChar, transaction_no)
+      .input("company_code", sql.NVarChar, company_code)
+      .query(`EXEC sp_tax_Print @mode,@transaction_no,@company_code,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+
+    // Send response
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset); // 200 OK if data is found
+    } else {
+      res.status(404).json("Data not found"); // 404 Not Found if no data is found
+    }
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+//Code ended by Dinesh Gokul on 24-10-2026
 module.exports = {
   login,
   forgetPassword,
@@ -32986,6 +33015,7 @@ module.exports = {
   DebitCreditNoteTaxDetailAuth,
   getauthorization,
   getDiscountType,
-  invoiceHsnTax
+  invoiceHsnTax,
+  purchaseOrderHsnTax
 
 };

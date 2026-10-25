@@ -1,100 +1,134 @@
 import React, { useEffect, useState } from "react";
 import "./InvoicePrint.css"; // Uses the scoped .template3-container from your CSS
 import { ToWords } from 'to-words';
+import LZString from "lz-string";
 
 // ==========================================
 // DEMO DATA (Remove after design approval)
 // ==========================================
-const demoHeaderData = [{
-    company_name: "DEMO COMPANY LTD",
-    address1: "123 Demo Street",
-    address2: "Tech Park",
-    address3: "",
-    city: "Chennai",
-    pincode: "600001",
-    company_gst_no: "33AABCD1234E1Z1",
-    contact_no: "+91-9876543210",
-    shipTo_customer_name: "Demo Company (Warehouse)",
-    shipTo_customer_addr_1: "456 Delivery Ave",
-    shipTo_customer_addr_2: "Industrial Estate",
-    shipTo_customer_addr_3: "",
-    ShipTo_customer_gst_no: "33AABCD1234E1Z1",
-    shipTo_customer_state: "Tamil Nadu",
-    billTo_customer_name: "Vendor Supplier Inc",
-    billTo_customer_addr_1: "789 Supplier Road",
-    billTo_customer_addr_2: "Business District",
-    billTo_customer_addr_3: "",
-    billTo_customer_gst_no: "27XYZAB9876C1Z2",
-    billTo_customer_state: "Maharashtra",
-    bill_no: "PO-2026-001", 
-    bill_date: "2026-10-23",
-    bill_amt: 141600.00,
-    sale_amt: 120000.00,
-    tax_amount: 21600.00,
-    roff_amt: 0.0,
-    authorisedSignatur: null 
-}];
+// const demoHeaderData = [{
+//     company_name: "DEMO COMPANY LTD",
+//     address1: "123 Demo Street",
+//     address2: "Tech Park",
+//     address3: "",
+//     city: "Chennai",
+//     pincode: "600001",
+//     company_gst_no: "33AABCD1234E1Z1",
+//     contact_no: "+91-9876543210",
+//     shipTo_customer_name: "Demo Company (Warehouse)",
+//     shipTo_customer_addr_1: "456 Delivery Ave",
+//     shipTo_customer_addr_2: "Industrial Estate",
+//     shipTo_customer_addr_3: "",
+//     ShipTo_customer_gst_no: "33AABCD1234E1Z1",
+//     shipTo_customer_state: "Tamil Nadu",
+//     billTo_customer_name: "Vendor Supplier Inc",
+//     billTo_customer_addr_1: "789 Supplier Road",
+//     billTo_customer_addr_2: "Business District",
+//     billTo_customer_addr_3: "",
+//     billTo_customer_gst_no: "27XYZAB9876C1Z2",
+//     billTo_customer_state: "Maharashtra",
+//     bill_no: "YJKT/045/26-27", 
+//     bill_date: "2026-08-25",
+//     quote_date: "1900-01-01",
+//     delivery_terms: "",
+//     bill_amt: 141600.00,
+//     sale_amt: 120000.00,
+//     tax_amount: 21600.00,
+//     roff_amt: 0.0,
+//     authorisedSignatur: null 
+// }];
 
-// Generating 8 items to demonstrate the automatic A4 pagination
-const demoDetailData = Array.from({ length: 5 }).map((_, i) => ({
-    SNo: i + 1,
-    name: `Demo Raw Material ${i + 1}`,
-    Item_BaseUOM: "Pcs",
-    hsn_code: "84713010",
-    tax_percentage: 18,
-    bill_qty: 10,
-    unit_price: 1500.00,
-    Discount_Value: 0,
-    bill_rate: 15000.00,
-    state: "Tamil Nadu"
-}));
+// Generating 5 items to demonstrate the automatic A4 pagination
+// const demoDetailData = Array.from({ length: 5 }).map((_, i) => ({
+//     SNo: i + 1,
+//     name: `Demo Raw Material ${i + 1}`,
+//     Item_BaseUOM: "Pcs",
+//     hsn_code: "84713010",
+//     tax_percentage: 18,
+//     bill_qty: 10,
+//     unit_price: 1500.00,
+//     Discount_Value: 0,
+//     bill_rate: 15000.00,
+//     state: "Tamil Nadu"
+// }));
 
-const demoTaxData = [
-    { tax_name_details: "IGST 18%", tax_amt: 21600.00 }
-];
+// const demoTaxData = [
+//     { tax_name_details: "IGST 18%", tax_amt: 21600.00 }
+// ];
 
-const demoHsnTaxData = [
-    {
-        "HSN/SAC": "84713010",
-        "Taxable Value": 120000.00,
-        "CGST Rate (%)": 0,
-        "CGST Amount": 0,
-        "SGST/UTGST Rate (%)": 0,
-        "SGST/UTGST Amount": 0,
-        "IGST Rate (%)": 18,
-        "IGST Amount": 21600.00,
-        "Total Tax Amount": 21600.00
-    }
-];
+// const demoHsnTaxData = [
+//     {
+//         "HSN/SAC": "84713010",
+//         "Taxable Value": 120000.00,
+//         "CGST Rate (%)": 0,
+//         "CGST Amount": 0,
+//         "SGST/UTGST Rate (%)": 0,
+//         "SGST/UTGST Amount": 0,
+//         "IGST Rate (%)": 18,
+//         "IGST Amount": 21600.00,
+//         "Total Tax Amount": 21600.00
+//     }
+// ];
 // ==========================================
 
 const PurchaseOrderPrint = () => {
-    // Initialized with demo data for preview
-    const [headerData, setHeaderData] = useState(demoHeaderData);
-    const [detailData, setDetailData] = useState(demoDetailData);
-    const [taxData, setTaxData] = useState(demoTaxData);
-    const [hsnTaxData, setHsnTaxData] = useState(demoHsnTaxData);
+    const [headerData, setHeaderData] = useState(null);
+    const [detailData, setDetailData] = useState(null);
+    const [taxData, setTaxData] = useState(null);
+    const [hsnTaxData, setHsnTaxData] = useState(null);
     
     const toWords = new ToWords();
 
-    useEffect(() => {
-        // UNCOMMENT THIS BLOCK TO RESTORE LIVE DATA AFTER APPROVAL
-        /*
-        const header = sessionStorage.getItem('POheaderData');
-        const detail = sessionStorage.getItem('POdetailData');
-        const tax = sessionStorage.getItem('POtaxData');
-        const hsnTax = sessionStorage.getItem('POHsnTaxData'); // Ensure this is saved in your PO workflow
+    // useEffect(() => {
+    //     const header = sessionStorage.getItem('POheaderData');
+    //     const detail = sessionStorage.getItem('POdetailData');
+    //     const tax = sessionStorage.getItem('POtaxData');
+    //     const hsnTax = sessionStorage.getItem('POHsnTaxData');
 
-        if (header && detail && tax) {
-            setHeaderData(JSON.parse(LZString.decompress(header)));
-            setDetailData(JSON.parse(LZString.decompress(detail)));
-            setTaxData(JSON.parse(LZString.decompress(tax)));
-            if (hsnTax) {
-                setHsnTaxData(JSON.parse(LZString.decompress(hsnTax)));
-            }
+    //     if (header && detail && tax) {
+    //         setHeaderData(JSON.parse(LZString.decompress(header)));
+    //         setDetailData(JSON.parse(LZString.decompress(detail)));
+    //         setTaxData(JSON.parse(LZString.decompress(tax)));
+    //         if (hsnTax) {
+    //             setHsnTaxData(JSON.parse(LZString.decompress(hsnTax)));
+    //         }
+    //     }
+    // }, []);
+
+    useEffect(() => {
+    const header = sessionStorage.getItem("POheaderData");
+    const detail = sessionStorage.getItem("POdetailData");
+    const tax = sessionStorage.getItem("POtaxData");
+    const hsnTax = sessionStorage.getItem("POHsnTaxData");
+
+    console.log("HSN Raw Session Data:", hsnTax);
+
+    const parseStoredData = (value) => {
+        if (!value) return [];
+
+        try {
+            const decompressed = LZString.decompress(value);
+            const parsed = JSON.parse(decompressed || value);
+
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (error) {
+            console.error("Error parsing stored data:", error);
+            return [];
         }
-        */
-    }, []);
+    };
+
+    if (header && detail && tax) {
+        setHeaderData(parseStoredData(header));
+        setDetailData(parseStoredData(detail));
+        setTaxData(parseStoredData(tax));
+    }
+
+    const parsedHsnData = parseStoredData(hsnTax);
+
+    console.log("HSN Parsed Data:", parsedHsnData);
+
+    setHsnTaxData(parsedHsnData);
+}, []);
 
     const bufferToBase64 = (buffer) => {
         const bytes = new Uint8Array(buffer);
@@ -133,14 +167,15 @@ const PurchaseOrderPrint = () => {
     const totalAmountInWords = `INR ${toWords.convert(totalAmount, { currency: true })}`;
     const taxAmountInWords = `INR ${toWords.convert(totalTaxAmount, { currency: true })} `;
 
+    // Updated to DD/MM/YYYY format to match your image
     const formatDate = (date) => {
         if (!date) return '';
         const d = new Date(date);
+        if (isNaN(d.getTime())) return date; // Fallback if already formatted string
         const day = String(d.getDate()).padStart(2, '0');
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        const month = months[d.getMonth()];
-        const year = String(d.getFullYear()).slice(-2);
-        return `${day}-${month}-${year}`;
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day}/${month}/${year}`;
     };
 
     const ITEMS_PER_PAGE = 6;
@@ -159,7 +194,7 @@ const PurchaseOrderPrint = () => {
             <table className="invoice-header-table border border-dark">
                 <tbody>
                     <tr>
-                        <td style={{ width: "50%", borderRight: "1px solid black" }}>
+                        <td style={{ width: "50%", borderRight: "1px solid black", verticalAlign: "top" }}>
                             <div className="p-1 border-bottom border-dark">
                                 <div className="fw-bold fs-6">{headerData[0].company_name}</div>
                                 <div>
@@ -167,82 +202,45 @@ const PurchaseOrderPrint = () => {
                                         .filter(Boolean)
                                         .join(", ")}, {headerData[0].city} - {headerData[0].pincode}<br />
                                     <strong>GSTIN/UIN:</strong> {headerData[0].company_gst_no}<br />
-                                    <strong>State Name:</strong> {detailData[0].state || "Tamil Nadu"},<br />
+                                    <strong>State Name:</strong> {detailData[0]?.state || "Tamil Nadu"},<br />
                                     <strong>Contact :</strong> {headerData[0].contact_no || "+91-99445 31549"}<br />
                                 </div>
                             </div>
                             <div className="p-1 border-bottom border-dark">
                                 <span style={{ fontSize: "9.5px" }}>Consignee (Ship to)</span>
-                                <div className="fw-bold">{headerData[0].shipTo_customer_name}</div>
+                                <div className="fw-bold">{detailData[0].ShipTo_customer_name}</div>
                                 <div>
-                                    {[headerData[0].shipTo_customer_addr_1, headerData[0].shipTo_customer_addr_2, headerData[0].shipTo_customer_addr_3].filter(Boolean).join(", ")}<br />
-                                    <strong>GSTIN/UIN :</strong> {headerData[0].ShipTo_customer_gst_no}<br />
-                                    <strong>State Name :</strong> {headerData[0].shipTo_customer_state}
+                                    {[detailData[0].ShipTo_customer_addr_1, detailData[0].ShipTo_customer_addr_2, detailData[0].ShipTo_customer_addr_3].filter(Boolean).join(", ")}<br />
+                                    <strong>GSTIN/UIN :</strong> {detailData[0].ShipTo_vendor_gst_no}<br />
+                                    <strong>State Name :</strong> {detailData[0].ship_to_state}
                                 </div>
                             </div>
                             <div className="p-1">
                                 <span style={{ fontSize: "9.5px" }}>Supplier (Bill to)</span>
-                                <div className="fw-bold">{headerData[0].billTo_customer_name}</div>
+                                <div className="fw-bold">{detailData[0].vendor_name}</div>
                                 <div>
-                                    {[headerData[0].billTo_customer_addr_1, headerData[0].billTo_customer_addr_2, headerData[0].billTo_customer_addr_3].filter(Boolean).join(", ")}<br />
-                                    <strong>GSTIN/UIN :</strong> {headerData[0].billTo_customer_gst_no}<br />
-                                    <strong>State Name :</strong> {headerData[0].billTo_customer_state}
+                                    {[detailData[0].vendor_addr_1, detailData[0].vendor_addr_2, detailData[0].vendor_addr_3].filter(Boolean).join(", ")}<br />
+                                    <strong>GSTIN/UIN :</strong> {detailData[0].vendor_gst_no}<br />
+                                    <strong>State Name :</strong> {detailData[0].state}
                                 </div>
                             </div>
                         </td>
-                        <td style={{ width: "50%", padding: 0 }}>
-                            <div className="d-flex border-bottom border-dark">
-                                <div className="p-1 border-end border-dark w-50">
-                                    <span style={{ fontSize: "9.5px" }}>PO No.</span><br />
-                                    <strong>{headerData[0].bill_no}</strong>
-                                </div>
-                                <div className="p-1 w-50">
-                                    <span style={{ fontSize: "9.5px" }}>Dated</span><br />
-                                    <strong>{formatDate(headerData[0].bill_date)}</strong>
-                                </div>
+                        <td style={{ width: "50%", padding: 0, verticalAlign: "top" }}>
+                            <div className="p-2 border-bottom border-dark" style={{ minHeight: "48px" }}>
+                                <div className="fw-bold">PO No:</div>
+                                <div>{headerData[0].transaction_no}</div>
                             </div>
-                            <div className="d-flex border-bottom border-dark">
-                                <div className="p-1 border-end border-dark w-50" style={{ minHeight: "22px" }}>
-                                    <span style={{ fontSize: "9.5px" }}>Delivery Note</span>
-                                </div>
-                                <div className="p-1 w-50" style={{ minHeight: "22px" }}>
-                                    <span style={{ fontSize: "9.5px" }}>Mode/Terms of Payment</span>
-                                </div>
+                            <div className="p-2 border-bottom border-dark" style={{ minHeight: "48px" }}>
+                                <div className="fw-bold">Date:</div>
+                                <div>{formatDate(headerData[0].Entry_date)}</div>
                             </div>
-                            <div className="d-flex border-bottom border-dark">
-                                <div className="p-1 border-end border-dark w-50" style={{ minHeight: "22px" }}>
-                                    <span style={{ fontSize: "9.5px" }}>Reference No. & Date.</span>
-                                </div>
-                                <div className="p-1 w-50" style={{ minHeight: "22px" }}>
-                                    <span style={{ fontSize: "9.5px" }}>Other References</span>
-                                </div>
+                            <div className="p-2 border-bottom border-dark" style={{ minHeight: "48px" }}>
+                                <div className="fw-bold">Quote Date:</div>
+                                <div>{formatDate(headerData[0].delivery_date) || "01/01/1900"}</div>
                             </div>
-                            <div className="d-flex border-bottom border-dark">
-                                <div className="p-1 border-end border-dark w-50" style={{ minHeight: "22px" }}>
-                                    <span style={{ fontSize: "9.5px" }}>Supplier's Ref No.</span>
-                                </div>
-                                <div className="p-1 w-50" style={{ minHeight: "22px" }}>
-                                    <span style={{ fontSize: "9.5px" }}>Dated</span>
-                                </div>
-                            </div>
-                            <div className="d-flex border-bottom border-dark">
-                                <div className="p-1 border-end border-dark w-50" style={{ minHeight: "22px" }}>
-                                    <span style={{ fontSize: "9.5px" }}>Dispatch Doc No.</span>
-                                </div>
-                                <div className="p-1 w-50" style={{ minHeight: "22px" }}>
-                                    <span style={{ fontSize: "9.5px" }}>Delivery Note Date</span>
-                                </div>
-                            </div>
-                            <div className="d-flex border-bottom border-dark">
-                                <div className="p-1 border-end border-dark w-50" style={{ minHeight: "22px" }}>
-                                    <span style={{ fontSize: "9.5px" }}>Dispatched through</span>
-                                </div>
-                                <div className="p-1 w-50" style={{ minHeight: "22px" }}>
-                                    <span style={{ fontSize: "9.5px" }}>Destination</span>
-                                </div>
-                            </div>
-                            <div className="p-1" style={{ minHeight: "24px" }}>
-                                <span style={{ fontSize: "9.5px" }}>Terms of Delivery</span>
+                            <div className="p-2" style={{ minHeight: "48px" }}>
+                                <div className="fw-bold">Delivery Terms:</div>
+                                <div>{headerData[0].Terms_Conditions || ""}</div>
                             </div>
                         </td>
                     </tr>
@@ -280,13 +278,13 @@ const PurchaseOrderPrint = () => {
                                         <tr key={idx}>
                                             <td style={{ textAlign: "center" }}>{row.SNo || (pageIndex * ITEMS_PER_PAGE + idx + 1)}</td>
                                             <td>
-                                                <strong>{row.name}</strong><br />
+                                                <strong>{row.item_name}</strong><br />
                                                 <span style={{ fontSize: "9.5px" }}>Unit UOM : {row.Item_BaseUOM || "Pcs"}</span>
                                             </td>
-                                            <td style={{ textAlign: "center" }}>{row.hsn_code}</td>
+                                            <td style={{ textAlign: "center" }}>{row.hsn}</td>
                                             <td style={{ textAlign: "center" }}>{row.tax_percentage}%</td>
                                             <td style={{ textAlign: "center" }}>{row.bill_qty}</td>
-                                            <td style={{ textAlign: "right" }}>{formatCurrency(row.unit_price)}</td>
+                                            <td style={{ textAlign: "right" }}>{formatCurrency(row.item_amt)}</td>
                                             <td style={{ textAlign: "center" }}>{row.Item_BaseUOM || "Pcs"}</td>
                                             <td style={{ textAlign: "center" }}>{row.Discount_Value}%</td>
                                             <td style={{ textAlign: "right" }}>{formatCurrency(row.bill_rate)}</td>
