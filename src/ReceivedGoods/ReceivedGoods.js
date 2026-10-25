@@ -279,7 +279,7 @@ const actionOptions = [
 
     if (filteredRows.length === 0) {
       toast.warning(
-        "No valid rows found with Received Quantity greater than zero to update",
+        "No valid rows found with Received Amount greater than zero to update",
       );
       return;
     }
