@@ -30,6 +30,7 @@
 /* Style the form fields and labels */
 .exp-input-field {
   width: 100% !important;
+  height: 30px;
   border: 1px solid var(--exp-input-field) !important;
   border-radius: 5px;
   transition: border-color 0.3s;
@@ -273,8 +274,8 @@ input[type="date"]{
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    width: 30px; 
-    height: 30px; 
+    width: 25px; 
+    height: 25px; 
     border-radius: 50%;
     transition: background-color 0.3s ease;
     cursor: pointer;
@@ -359,4 +360,25 @@ input[type="date"]{
 
  }
 
- 
+ /* apps.css or input.css la idhai add pannunga */
+.react-select__menu-list {
+  max-height: 150px !important; /* Ungalukku thevaiyana height ah ikkada code pannunga */
+}
+
+/* React Select Global Height Adjustment */
+.react-select__control {
+  min-height: 28px !important; 
+  height: 28px !important;
+}
+
+.react-select__value-container {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  height: 30px !important;
+}
+
+.react-select__indicators, 
+.react-select__indicator {
+  height: 30px !important;
+  padding: 4px !important;
+}

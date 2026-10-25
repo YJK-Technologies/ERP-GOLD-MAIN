@@ -3133,7 +3133,7 @@ const AuthorizedHeader = async () => {
                                     </savebutton>
                                 )}
 
-                                {authButtonVisible && (
+                                {/* {authButtonVisible && (
                                     <div className="exp-form-floating" style={{ minWidth: '160px' }} title="Select Screen Action">
                                     <Select
                                         id="returnType"
@@ -3145,7 +3145,7 @@ const AuthorizedHeader = async () => {
                                         styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                                     />
                                 </div>
-                                )}
+                                )} */}
                                 {authButtonVisible && (
                                     <savebutton className="purbut" onClick={handleAuthorizedButtonClick} >
                                        <i class="fa-solid fa-check"></i>

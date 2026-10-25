@@ -277,6 +277,7 @@ function PurchaseOrder() {
     {
       headerName: 'S.No',
       field: 'ItemSNO',
+      cellStyle: { textAlign: 'right' },
       maxWidth: 80,
       sortable: false,
       editable: false
@@ -284,6 +285,7 @@ function PurchaseOrder() {
     {
       headerName: 'Tax S.No',
       field: 'TaxSNO',
+      cellStyle: { textAlign: 'right' },
       maxWidth: 120,
       sortable: false,
       editable: false
@@ -307,6 +309,7 @@ function PurchaseOrder() {
       field: 'TaxPercentage',
       // minWidth: 201,
       sortable: false,
+      cellStyle: { textAlign: 'right' },
       editable: false
     },
     {
@@ -314,6 +317,7 @@ function PurchaseOrder() {
       field: 'TaxAmount',
       // minWidth: 201,
       sortable: false,
+      cellStyle: { textAlign: 'right' },
       editable: false
     },
     {
@@ -455,6 +459,110 @@ function PurchaseOrder() {
     }
   };
 
+  // const columnHeader = [
+  //   { headerName: 'Details', field: 'fieldName', maxWidth: 240, editable: false },
+  //   {
+  //     headerName: 'Bill To',
+  //     field: 'billTo',
+  //     editable: true,
+  //     cellEditorParams: {
+  //       maxLength: 250
+  //     },
+  //     onCellValueChanged: onCellValueChangedBillTo,
+  //     cellRenderer: (params) => {
+  //       const cellWidth = params.column.getActualWidth();
+  //       const isWideEnough = cellWidth > 150;
+  //       const showSearchIcon = params.data.fieldName === "Vendor / Customer Code" && isWideEnough;
+
+  //       return (
+  //         <div className="position-relative d-flex align-items-center" style={{ minHeight: '100%' }}>
+  //           <div className="flex-grow-1">
+  //             {params.editing ? (
+  //               <input
+  //                 type="text"
+  //                 className="form-control"
+  //                 value={params.value || ''}
+  //                 onChange={(e) => params.setValue(e.target.value)}
+  //                 style={{ width: '100%' }}
+  //               />
+  //             ) : (
+  //               params.value
+  //             )}
+  //           </div>
+
+  //           {showSearchIcon && (
+  //             <span
+  //               className="icon searchIcon"
+  //               style={{
+  //                 position: 'absolute',
+  //                 right: '10px',
+  //                 top: '50%',
+  //                 transform: 'translateY(-50%)',
+  //               }}
+  //               onClick={handleBillToCustomer}
+  //             >
+  //               <i className="fa fa-search"></i>
+  //             </span>
+  //           )}
+  //         </div>
+  //       );
+  //     },
+  //   },
+  //   {
+  //     headerName: 'Ship To',
+  //     field: 'shipTo',
+  //     editable: true,
+  //     cellEditorParams: {
+  //       maxLength: 250
+  //     },
+  //     onCellValueChanged: onCellValueChangedShipTo,
+  //     cellRenderer: (params) => {
+  //       const cellWidth = params.column.getActualWidth();
+  //       const isWideEnough = cellWidth > 150;
+  //       const showSearchIcon = params.data.fieldName === "Vendor / Customer Code" && isWideEnough;
+
+  //       return (
+  //         <div className="position-relative d-flex align-items-center" style={{ minHeight: '100%' }}>
+  //           <div className="flex-grow-1">
+  //             {params.editing ? (
+  //               <input
+  //                 type="text"
+  //                 className="form-control"
+  //                 value={params.value || ''}
+  //                 onChange={(e) => params.setValue(e.target.value)}
+  //                 style={{ width: '100%' }}
+  //               />
+  //             ) : (
+  //               params.value
+  //             )}
+  //           </div>
+
+  //           {showSearchIcon && (
+  //             <span
+  //               className="icon searchIcon"
+  //               style={{
+  //                 position: 'absolute',
+  //                 right: '10px',
+  //                 top: '50%',
+  //                 transform: 'translateY(-50%)',
+  //               }}
+  //               onClick={() => {
+  //                 if (party === 'Vendor') {
+  //                   handleShipToVendor();
+  //                 } else if (party === 'Customer') {
+  //                   handleShipToCustomer();
+  //                 }
+  //               }}
+  //             >
+  //               <i className="fa fa-search"></i>
+  //             </span>
+  //           )}
+  //         </div>
+  //       );
+  //     },
+  //   }
+  // ];
+
   const columnHeader = [
     { headerName: 'Details', field: 'fieldName', maxWidth: 240, editable: false },
     {
@@ -508,6 +616,7 @@ function PurchaseOrder() {
       headerName: 'Ship To',
       field: 'shipTo',
       editable: true,
+      // --------------------------------------------
       cellEditorParams: {
         maxLength: 250
       },
@@ -558,7 +667,6 @@ function PurchaseOrder() {
       },
     }
   ];
-
   const DateEditor = forwardRef((props, ref) => {
     const [value, setValue] = useState(props.value || "");
 
@@ -577,7 +685,7 @@ function PurchaseOrder() {
   });
 
   const columnNotes = [
-    { headerName: 'Details', field: 'fieldName', editable: false },
+    { headerName: 'Details', maxWidth:150, field: 'fieldName', editable: false },
     {
       headerName: "Notes",
       field: "notes",
@@ -1193,6 +1301,7 @@ function PurchaseOrder() {
     {
       headerName: 'S.No',
       field: 'serialNumber',
+      cellStyle: { textAlign: 'right' },
       maxWidth: 80,
       sortable: false,
       editable: false
@@ -1287,6 +1396,7 @@ function PurchaseOrder() {
       editable: true,
       filter: true,
       sortable: false,
+      cellStyle: { textAlign: 'right' },
       // minWidth: 150,
       valueSetter: qtyValueSetter,
     },
@@ -1295,6 +1405,7 @@ function PurchaseOrder() {
       field: 'purchaseAmt',
       editable: true,
       filter: true,
+      cellStyle: { textAlign: 'right' },
       sortable: false
     },
     {
@@ -1303,6 +1414,7 @@ function PurchaseOrder() {
       editable: true,
       filter: true,
       sortable: false,
+      cellStyle: { textAlign: 'right' },
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
         values: discountTypeDrop,
@@ -1313,12 +1425,14 @@ function PurchaseOrder() {
       field: 'discountValue',
       editable: true,
       filter: true,
+      cellStyle: { textAlign: 'right' },
       sortable: false
     },
     {
       headerName: 'Tax Amount',
       field: 'TotalTaxAmount',
       editable: true,
+      cellStyle: { textAlign: 'right' },
       filter: true,
       sortable: false
     },
@@ -1326,6 +1440,7 @@ function PurchaseOrder() {
       headerName: 'Total',
       field: 'TotalItemAmount',
       editable: true,
+      cellStyle: { textAlign: 'right' },
       filter: true,
       sortable: false,
       // minWidth: 201,
@@ -2939,6 +3054,7 @@ function PurchaseOrder() {
     {
       headerName: 'S.No',
       field: 'deletedSerialNumber',
+      cellStyle: { textAlign: 'right' },
       maxWidth: 80,
       sortable: false,
       editable: false,
@@ -2960,6 +3076,7 @@ function PurchaseOrder() {
     {
       headerName: 'Qty',
       field: 'deletedPurchaseQty',
+      cellStyle: { textAlign: 'right' },
       editable: false,
       filter: true,
       sortable: false,
@@ -2969,6 +3086,7 @@ function PurchaseOrder() {
     {
       headerName: 'Unit Price',
       field: 'deletedPurchaseAmt',
+      cellStyle: { textAlign: 'right' },
       editable: false,
       filter: true,
       sortable: false
@@ -2976,6 +3094,7 @@ function PurchaseOrder() {
     {
       headerName: 'Discount Type',
       field: 'deletedDiscountType',
+      cellStyle: { textAlign: 'right' },
       editable: false,
       filter: true,
       sortable: false,
@@ -2983,6 +3102,7 @@ function PurchaseOrder() {
     {
       headerName: 'Discount Value',
       field: 'deletedDiscountValue',
+      cellStyle: { textAlign: 'right' },
       editable: false,
       filter: true,
       sortable: false
@@ -2990,6 +3110,7 @@ function PurchaseOrder() {
     {
       headerName: 'Tax Amount',
       field: 'deletedTotalTaxAmount',
+      cellStyle: { textAlign: 'right' },
       editable: false,
       filter: true,
       sortable: false
@@ -2997,6 +3118,7 @@ function PurchaseOrder() {
     {
       headerName: 'Total',
       field: 'deletedTotalItemAmount',
+      cellStyle: { textAlign: 'right' },
       editable: false,
       filter: true,
       sortable: false,
@@ -3009,6 +3131,7 @@ function PurchaseOrder() {
     {
       headerName: 'S.No',
       field: 'deletedItemSNO',
+      cellStyle: { textAlign: 'right' },
       maxWidth: 80,
       sortable: false,
       editable: false
@@ -3016,6 +3139,7 @@ function PurchaseOrder() {
     {
       headerName: 'Tax S.No',
       field: 'deletedTaxSNO',
+      cellStyle: { textAlign: 'right' },
       maxWidth: 120,
       sortable: false,
       editable: false
@@ -3037,6 +3161,7 @@ function PurchaseOrder() {
     {
       headerName: 'Tax %',
       field: 'deletedTaxPercentage',
+      cellStyle: { textAlign: 'right' },
       // minWidth: 201,
       sortable: false,
       editable: false
@@ -3044,6 +3169,7 @@ function PurchaseOrder() {
     {
       headerName: 'Tax Amount',
       field: 'deletedTaxAmount',
+      cellStyle: { textAlign: 'right' },
       // minWidth: 201,
       sortable: false,
       editable: false
@@ -3586,17 +3712,17 @@ function PurchaseOrder() {
                       class="feather feather-settings">
                       <circle cx="12" cy="12" r="3"></circle>
                       <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 
-           1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 
-           1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 
-           1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 
-           1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 
-           1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 
-           2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09a1.65 
-           1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 
-           1 1.51h.09a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 
-           1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.09a1.65 
-           1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 
-           0-1.51 1z"/>
+                      1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 
+                      1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 
+                      1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 
+                      1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 
+                      1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 
+                      2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09a1.65 
+                      1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 
+                      1 1.51h.09a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 
+                      1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.09a1.65 
+                      1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 
+                      0-1.51 1z"/>
                     </svg>
                   </a>
                 </div>
@@ -3653,6 +3779,148 @@ function PurchaseOrder() {
               </div>
             </div>
             <div className="shadow-lg p-1 bg-body-tertiary rounded  pt-3 pb-4" align="left">
+              
+              {/* TOP ROW: Inputs & Bill To/Ship To Grid */}
+              <div className="row ms-3 me-3">
+                <div className='col-md-3'>
+                  <div className="col-md-12 form-group mb-2">
+                    <label htmlFor="party_code" className={`${deleteError && !transactionNo ? 'red' : ''}`}>Transaction No{showAsterisk && <span className="text-danger">*</span>}</label>
+                    <div className="exp-form-floating">
+                      <div className="d-flex justify-content-end">
+                        <input
+                          id="RefNo"
+                          className="exp-input-field form-control justify-content-start"
+                          type="text"
+                          placeholder=""
+                          title='Enter the Transaction No'
+                          required
+                          value={transactionNo}
+                          onChange={(e) => setTransactionNo(e.target.value)}
+                          onKeyPress={handleKeyPressRef}
+                          maxLength={50}
+                          autoComplete='off'
+                        />
+                        <div className='position-absolute mt-1 me-2'>
+                          <span className="icon searchIcon" onClick={handlePurchase}>
+                            <i className="fa fa-search"></i>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-12 form-group mb-2" >
+                    <div className="exp-form-floating" >
+                      <label htmlFor="" className={`${error && !entryDate ? 'red' : ''}`}>Transaction Date{!showAsterisk && <span className="text-danger">*</span>}</label>
+                      <input
+                        name="entryDate"
+                        id="transactionDate"
+                        className="exp-input-field form-control"
+                        type="date"
+                        placeholder=""
+                        title='Enter the Transaction Date'
+                        required
+                        min={financialYearStart}
+                        max={financialYearEnd}
+                        value={entryDate}
+                        onChange={handleDateChange}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-12 form-group mb-2" >
+                    <div className="exp-form-floating" >
+                      <label htmlFor="">Ship To</label>
+                      <div title="Select a Ship To">
+                        <Select
+                          id="status"
+                          value={selectedParty}
+                          onChange={handleChangeParty}
+                          options={filteredOptionParty}
+                          className="exp-input-field"
+                          placeholder=""
+                          classNamePrefix="react-select"
+                          styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="col-md-9">
+                  <div className="ag-theme-alpine position-relative" style={{ height: 210, width: '104%' }}>
+                    
+                    <div 
+                      style={{ 
+                        position: 'absolute', 
+                        right: '70px', 
+                        top: '5px', 
+                        zIndex: 999,
+                        cursor: 'pointer',
+                        color: '#20a13e'
+                      }} 
+                      onClick={handleSwiftButtonClick}
+                      title="Copy Bill To"
+                    >
+                      <i className="fa-regular fa-copy" style={{ fontSize: '15px' }}></i>
+                    </div>
+
+                    <AgGridReact
+                      columnDefs={columnHeader}
+                      rowData={headerRowData}
+                      defaultColDef={{ flex: 1 }}
+                      rowHeight={25}
+                      headerHeight={28}
+                    />
+                  </div>
+                </div>
+                
+                {/* SWAPPED TO TOP: Bill To / Ship To Grid */}
+                {/* <div className="col-md-9">
+                  <div align="left" class="d-flex justify-content-start" style={{ marginLeft: "35px" }} >
+                    <purButton type="button" onClick={handleSwiftButtonClick} >
+                      Copy
+                    </purButton>
+                  </div>
+                  <div className="ag-theme-alpine" style={{ height: 210, width: '100%' }}>
+                    <AgGridReact
+                      columnDefs={columnHeader}
+                      rowData={headerRowData}
+                      defaultColDef={{ flex: 1 }}
+                      rowHeight={30}
+                    />
+                  </div>
+                </div> */}
+              </div>
+
+              {/* BOTTOM ROW: Terms & Conditions and Notes */}
+              <div className="row me-2 mt-3 p-0 gx-0">
+                <div className="col-md-6">
+                  <div className="ag-theme-alpine" style={{ height: 155, width: "102%" }}>
+                    <AgGridReact
+                      columnDefs={columnDefsTermsConditions}
+                      rowData={rowDataTerms}
+                      defaultColDef={{ editable: true, flex: 1 }}
+                      onGridReady={onGridReady}
+                      rowHeight={25}
+                      headerHeight={28}
+                      onRowClicked={handleRowClicked}
+                      onColumnMoved={onColumnMoved}
+                    />
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <div className="ag-theme-alpine" style={{ height: 155, width: "102%" }}>
+                    <AgGridReact
+                      columnDefs={columnNotes}
+                      rowData={notesRowData}
+                      defaultColDef={{ editable: true, flex: 1 }}
+                      rowHeight={25}
+                      headerHeight={28}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* <div className="shadow-lg p-1 bg-body-tertiary rounded  pt-3 pb-4" align="left">
               <div className="row ms-3 me-3">
                 <div className='col-md-3'>
                   <div className="col-md-12 form-group mb-2">
@@ -3724,7 +3992,7 @@ function PurchaseOrder() {
                       rowData={rowDataTerms}
                       defaultColDef={{ editable: true, resizable: true }}
                       onGridReady={onGridReady}
-                      rowHeight={28}
+                      rowHeight={25}
                       onRowClicked={handleRowClicked}
                       onColumnMoved={onColumnMoved}
                     />
@@ -3736,7 +4004,7 @@ function PurchaseOrder() {
                       columnDefs={columnNotes}
                       rowData={notesRowData}
                       defaultColDef={{ editable: true, resizable: true }}
-                      rowHeight={28}
+                      rowHeight={25}
                     />
                   </div>
                 </div>
@@ -3748,7 +4016,7 @@ function PurchaseOrder() {
                   </purButton>
                 </div>
               </div>
-              <div className="ag-theme-alpine" style={{ height: 390, width: '100%' }}>
+              <div className="ag-theme-alpine" style={{ height: 210, width: '100%' }}>
                 <AgGridReact
                   columnDefs={columnHeader}
                   rowData={headerRowData}
@@ -3756,9 +4024,9 @@ function PurchaseOrder() {
                   rowHeight={30}
                 />
               </div>
-            </div>
+            </div> */}
             <div className="shadow-lg p-1 bg-body-tertiary rounded mt-2 pt-3 pb-4" align="left">
-              <div className='row ms-4 mb-3'>
+              <div className='row ms-3 mb-2'>
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
                     <label for="" class="exp-form-labels" className="partyName">Total Amount</label>
@@ -3772,6 +4040,7 @@ function PurchaseOrder() {
                       value={TotalPurchase}
                       onChange={(e) => setTotalPurchase(e.target.value)}
                       readOnly
+                      style={{ textAlign: 'right' }}
                     />
                   </div>
                 </div>
@@ -3789,6 +4058,7 @@ function PurchaseOrder() {
                       value={TotalTax}
                       onChange={(e) => setTotalTax(e.target.value)}
                       readOnly
+                      style={{ textAlign: 'right' }}
                     />
                   </div>
                 </div>
@@ -3806,6 +4076,7 @@ function PurchaseOrder() {
                       value={round_difference}
                       onChange={(e) => setRoundDifference(e.target.value)}
                       readOnly
+                      style={{ textAlign: 'right' }}
                     />
                   </div>
                 </div>
@@ -3823,16 +4094,23 @@ function PurchaseOrder() {
                       value={TotalBill}
                       onChange={(e) => setTotalBill(e.target.value)}
                       readOnly
+                      style={{ textAlign: 'right' }}
                     />
                   </div>
                 </div>
               </div>
-              <div class="d-flex justify-content-between ms-3" style={{ marginBlock: "", marginTop: "10px" }} >
-                <div align="left" class="d-flex justify-content-start" style={{ marginLeft: "22px" }}>
-                  <purButton type="button" className={`"toggle-btn"  ${activeTable === 'myTable' ? 'active' : ''}`} onClick={() => handleToggleTable('myTable')}>
+              {/* <div class="d-flex justify-content-between ms-3" style={{ marginBlock: "", marginTop: "10px" }} >
+                <div className="d-flex justify-content-start" style={{ marginLeft: "22px" }} >
+                  <purButton type="button"
+                    className={`toggle-btn ${activeTable === 'myTable' ? 'active' : ''}`}
+                    onClick={() => handleToggleTable('myTable')} >
                     Item Details
                   </purButton>
-                  <purButton type="button" className={`"toggle-btn" ${activeTable === 'tax' ? 'active' : ''}`} onClick={() => handleToggleTable('tax')}>
+                                
+                  <purButton type="button"
+                    className={`toggle-btn ${activeTable === 'tax' ? 'active' : ''}`}
+                    onClick={() => handleToggleTable('tax')}
+                    >
                     Tax Details
                   </purButton>
                 </div>
@@ -3852,12 +4130,48 @@ function PurchaseOrder() {
                     <FontAwesomeIcon icon={faMinus} />
                   </icon>
                 </div>
+              </div> */}
+              <div className="d-flex justify-content-between ms-3 align-items-end" style={{ marginTop: "10px" }} >
+                <div className="d-flex justify-content-start align-items-end" style={{ marginLeft: "22px" }} >
+                  <purButton 
+                    type="button"
+                    className={`toggle-btn m-0 ${activeTable === 'myTable' ? 'active' : ''}`}
+                    onClick={() => handleToggleTable('myTable')} 
+                  >
+                    Item Details
+                  </purButton>
+                                
+                  <purButton 
+                    type="button"
+                    className={`toggle-btn m-0 ${activeTable === 'tax' ? 'active' : ''}`}
+                    onClick={() => handleToggleTable('tax')}
+                  >
+                    Tax Details
+                  </purButton>
+                </div>
+                
+                <div className="d-flex justify-content-end align-items-center" style={{ marginRight: "15px" }}>
+                  <icon
+                    type="button"
+                    className="popups-btn m-0"
+                    title="Add Row"
+                    onClick={handleAddRow}>
+                    <FontAwesomeIcon icon={faPlus} />
+                  </icon>
+                  <icon
+                    type="button"
+                    className="popups-btn m-0"
+                    title="Remove Row"
+                    onClick={handleRemoveRow}>
+                    <FontAwesomeIcon icon={faMinus} />
+                  </icon>
+                </div>
               </div>
-              <div className="ag-theme-alpine" style={{ height: 437, width: "100%" }}>
+              <div className="ag-theme-alpine" style={{ height: 280, width: "102%" }}>
                 <AgGridReact
                   columnDefs={activeTable === 'myTable' ? columnDefs : columnDefsTax}
                   rowData={activeTable === 'myTable' ? rowData : rowDataTax}
-                  defaultColDef={{ editable: true, resizable: true }}
+                  defaultColDef={{ editable: true, flex: 1 }}
                   // getRowId={(params) => String(params.data.serialNumber)}
                   onCellValueChanged={async (event) => {
                     if (event.colDef.field === 'purchaseQty' || event.colDef.field === 'purchaseAmt' || event.colDef.field === 'discountValue') {
@@ -3868,6 +4182,8 @@ function PurchaseOrder() {
                   onGridReady={onGridReady}
                   onRowClicked={handleRowClicked}
                   onColumnMoved={onColumnMoved}
+                  headerHeight={28}
+                  rowHeight={25}
                 />
               </div>
             </div>
@@ -3927,6 +4243,128 @@ function PurchaseOrder() {
               </div>
             </div>
             <div className="shadow-lg p-1 bg-body-tertiary rounded  pt-3 pb-4" align="left">
+              
+              {/* TOP ROW: Inputs & Bill To/Ship To Grid */}
+              <div className="row ms-4">
+                <div className='col-md-3'>
+                  <div className="col-md-12 form-group mb-2">
+                    <label htmlFor="party_code">Transaction No</label>
+                    <div className="exp-form-floating">
+                      <div className="d-flex justify-content-end">
+                        <input
+                          id="TransactionNo"
+                          className="exp-input-field form-control justify-content-start"
+                          type="text"
+                          placeholder=""
+                          required
+                          value={TransactionNo}
+                          onChange={(e) => setTransactionno(e.target.value)}
+                          onKeyPress={handleDeletedKeyPress}
+                          maxLength={50}
+                          autoComplete='off'
+                        />
+                        <div className='position-absolute mt-1 me-2'>
+                          <span className="icon searchIcon" onClick={handleDeletedPo}>
+                            <i className="fa fa-search"></i>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-12 form-group mb-2" >
+                    <div className="exp-form-floating" >
+                      <label htmlFor="">Transaction Date</label>
+                      <input
+                        name="entryDate"
+                        id="TransactionDate"
+                        className="exp-input-field form-control"
+                        type="date"
+                        placeholder=""
+                        value={TransactionDate}
+                        onChange={(e) => setTransactionDate(e.target.value)}
+                        title='please enter the entry date'
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="col-md-9">
+                  <div className="ag-theme-alpine position-relative" style={{ height: 210, width: '102%' }}>
+                    
+                    {/* Responsive Custom Copy Icon Overlay for Deleted Screen */}
+                    <div 
+                      style={{ 
+                        position: 'absolute', 
+                        right: '70px', 
+                        top: '5px', 
+                        zIndex: 999,
+                        cursor: 'pointer',
+                        color: '#ffffff' 
+                      }} 
+                      onClick={handleSwiftButtonClick}
+                      title="Copy Bill To"
+                    >
+                      <i className="fa-regular fa-copy" style={{ fontSize: '15px' }}></i>
+                    </div>
+
+                    <AgGridReact
+                      columnDefs={deletedColumnHeader}
+                      rowData={deletedHeaderRowData}
+                      defaultColDef={{ flex: 1 }}
+                      rowHeight={25}
+                      headerHeight={28}
+                    />
+                  </div>
+                </div>
+
+                {/* SWAPPED TO TOP: Bill To / Ship To Grid */}
+                {/* <div className="col-md-9">
+                  <div align="left" class="d-flex justify-content-start" style={{ marginLeft: "35px" }} >
+                    <purButton type="button" onClick={handleSwiftButtonClick} >
+                      Copy
+                    </purButton>
+                  </div>
+                  <div className="ag-theme-alpine" style={{ height: 210, width: '100%' }}>
+                    <AgGridReact
+                      columnDefs={deletedColumnHeader}
+                      rowData={deletedHeaderRowData}
+                      defaultColDef={{ flex: 1 }}
+                      rowHeight={30}
+                    />
+                  </div>
+                </div> */}
+              </div>
+
+              {/* BOTTOM ROW: Terms & Conditions and Notes */}
+              <div className="row me-2 mt-3 p-0 gx-0">
+                <div className="col-md-6">
+                  <div className="ag-theme-alpine" style={{ height: 155, width: "100%" }}>
+                    <AgGridReact
+                      columnDefs={deletedColumnTermsConditions}
+                      rowData={deletedRowDataTerms}
+                      defaultColDef={{ editable: true, flex: 1 }}
+                      onGridReady={onGridReady}
+                      rowHeight={25}
+                      onRowClicked={handleRowClicked}
+                      onColumnMoved={onColumnMoved}
+                      headerHeight={28}
+                    />
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <div className="ag-theme-alpine" style={{ height: 155, width: "102%" }}>
+                    <AgGridReact
+                      columnDefs={deletedColumnNext}
+                      rowData={deletedNotesRowData}
+                      defaultColDef={{ editable: true, flex: 1 }}
+                      rowHeight={25}
+                      headerHeight={28}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* <div className="shadow-lg p-1 bg-body-tertiary rounded  pt-3 pb-4" align="left">
               <div className="row ms-4">
                 <div className='col-md-3'>
                   <div className="col-md-12 form-group mb-2">
@@ -3977,7 +4415,7 @@ function PurchaseOrder() {
                       rowData={deletedRowDataTerms}
                       defaultColDef={{ editable: true, resizable: true }}
                       onGridReady={onGridReady}
-                      rowHeight={28}
+                      rowHeight={25}
                       onRowClicked={handleRowClicked}
                       onColumnMoved={onColumnMoved}
                     />
@@ -3989,7 +4427,7 @@ function PurchaseOrder() {
                       columnDefs={deletedColumnNext}
                       rowData={deletedNotesRowData}
                       defaultColDef={{ editable: true, resizable: true }}
-                      rowHeight={28}
+                      rowHeight={25}
                     />
                   </div>
                 </div>
@@ -4009,7 +4447,7 @@ function PurchaseOrder() {
                   rowHeight={30}
                 />
               </div>
-            </div>
+            </div> */}
             <div className="shadow-lg p-1 bg-body-tertiary rounded mt-2 pt-3 pb-4" align="left">
               <div className='row ms-4 mb-3'>
                 <div className="col-md-3 form-group mb-2">
@@ -4024,6 +4462,7 @@ function PurchaseOrder() {
                       value={Total}
                       onChange={(e) => setTotal(e.target.value)}
                       readOnly
+                      style={{ textAlign: 'right' }}
                     />
                   </div>
                 </div>
@@ -4040,6 +4479,7 @@ function PurchaseOrder() {
                       value={Tax}
                       onChange={(e) => setTax(e.target.value)}
                       readOnly
+                      style={{ textAlign: 'right' }}
                     />
                   </div>
                 </div>
@@ -4056,6 +4496,7 @@ function PurchaseOrder() {
                       value={RoundOff}
                       onChange={(e) => setRoundOff(e.target.value)}
                       readOnly
+                      style={{ textAlign: 'right' }}
                     />
                   </div>
                 </div>
@@ -4072,6 +4513,7 @@ function PurchaseOrder() {
                       value={GrandTotal}
                       onChange={(e) => setGrandTotal(e.target.value)}
                       readOnly
+                      style={{ textAlign: 'right' }}
                     />
                   </div>
                 </div>
@@ -4088,7 +4530,7 @@ function PurchaseOrder() {
                   </div>
                 </div>
               </div>
-              <div class="d-flex justify-content-between ms-3" style={{ marginBlock: "", marginTop: "10px" }} >
+              {/* <div class="d-flex justify-content-between ms-3" style={{ marginBlock: "", marginTop: "10px" }} >
                 <div align="left" class="d-flex justify-content-start" style={{ marginLeft: "22px" }}>
                   <purButton type="button" className={`"toggle-btn"  ${activeTable === 'myTable' ? 'active' : ''}`} onClick={() => handleToggleTable('myTable')}>
                     Item Details
@@ -4111,15 +4553,36 @@ function PurchaseOrder() {
                     <FontAwesomeIcon icon={faMinus} />
                   </icon>
                 </div>
+              </div> */}
+              <div className="d-flex justify-content-between ms-4 align-items-end" style={{ marginTop: "10px" }} >
+                <div className="d-flex justify-content-start align-items-end" style={{ marginLeft: "14px" }}>
+                  <purButton
+                    type="button"
+                    className={`toggle-btn m-0 ${activeTable === 'myTable' ? 'active' : ''}`}
+                    onClick={() => handleToggleTable('myTable')}
+                  >
+                    Item Details
+                  </purButton>
+                  
+                  <purButton
+                    type="button"
+                    className={`toggle-btn m-0 ${activeTable === 'tax' ? 'active' : ''}`}
+                    onClick={() => handleToggleTable('tax')}
+                  >
+                    Tax Details
+                  </purButton>
+                </div>
               </div>
-              <div className="ag-theme-alpine" style={{ height: 437, width: "100%" }}>
+              <div className="ag-theme-alpine" style={{ height: 280, width: "102%" }}>
                 <AgGridReact
                   columnDefs={activeTable === 'myTable' ? deletedColumnDetail : deletedColumnTax}
                   rowData={activeTable === 'myTable' ? deletedRowData : deletedRowDataTax}
-                  defaultColDef={{ editable: true, resizable: true }}
+                  defaultColDef={{ editable: true, flex: 1 }}
                   onGridReady={onGridReady}
                   onRowClicked={handleRowClicked}
                   onColumnMoved={onColumnMoved}
+                  rowHeight={25}
+                  headerHeight={28}
                 />
               </div>
             </div>
