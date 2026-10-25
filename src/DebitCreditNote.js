@@ -3412,7 +3412,7 @@ const AuthorizedHeader = async () => {
                             </div>
 
                             <div className="col-md-3 form-group mb-2">
-                                <label htmlFor="reason" className={`${error && !reason ? 'red' : ''}`}>Reason<span className="text-danger">*</span></label>
+                                <label htmlFor="reason" className={`${error && !selectedReason ? 'red' : ''}`}>Reason<span className="text-danger">*</span></label>
                                 <div className="exp-form-floating" title="Select Reason for Debit/Credit Note">
                                     <Select
                                         id="reason"

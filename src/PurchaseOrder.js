@@ -1842,6 +1842,32 @@ function PurchaseOrder() {
     }
   };
 
+  const PrintHsnTaxData = async () => {
+          try {
+              const response = await fetch(`${config.apiBaseUrl}/purchaseOrderHsnTax`, {
+                  method: "POST",
+                  headers: {
+                      "Content-Type": "application/json"
+                  },
+                  body: JSON.stringify({
+                      company_code: sessionStorage.getItem('selectedCompanyCode'),
+                      transaction_no: transactionNo.toString()
+                  })
+              });
+  
+              if (response.ok) {
+                  const searchData = await response.json();
+                  return searchData;
+              } else if (response.status === 404) {
+                  console.log("HSN Tax Data not found");
+              } else {
+                  console.log("Bad request for HSN Tax Data");
+              }
+          } catch (error) {
+              console.error("Error fetching HSN Tax data:", error);
+          }
+      };
+
   const openPrintWindow = (url, headerKey, detailKey, taxKey) => {
     const printWindow = window.open(url, '_blank');
 
@@ -1867,20 +1893,23 @@ function PurchaseOrder() {
       const headerData = await PrintHeaderData();
       const detailData = await PrintDetailData();
       const taxData = await PrintSumTax();
+      const hsnTaxData = await PrintHsnTaxData();
 
       if (headerData && detailData) {
         console.log("All API calls completed successfully");
 
-        let url, headerKey, detailKey, taxKey;
+        let url, headerKey, detailKey, taxKey, hsnKey ;
 
         headerKey = 'POheaderData';
         detailKey = 'POdetailData';
         taxKey = 'POtaxData';
+        hsnKey = 'POhsnTaxData';
         url = '/PurchaseOrderPrint';
 
         sessionStorage.setItem(headerKey, LZString.compress(JSON.stringify(headerData)));
         sessionStorage.setItem(detailKey, LZString.compress(JSON.stringify(detailData)));
         sessionStorage.setItem(taxKey, LZString.compress(JSON.stringify(taxData)));
+        sessionStorage.setItem(hsnKey, LZString.compress(JSON.stringify(hsnTaxData)));
 
         // sessionStorage.setItem('POheaderData', JSON.stringify(headerData));
         // sessionStorage.setItem('POdetailData', JSON.stringify(detailData));

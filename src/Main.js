@@ -207,7 +207,7 @@ import TaxInvoiceTemplate2 from "./PrintScreens/SMTemplate/TaxInvoicePrint.js";
 import TaxInvoiceTemplate3 from "./PrintScreens/VRETemplate/TaxInvoicePrint.js";
 import QuotationPrint from "./PrintScreens/NSMTemplate/QuotePrint.js";
 import DeliveryChallanSM from "./PrintScreens/NSMTemplate/DeliveryChallanPrint.js";
-import PurchaseOrderPrint from "./PrintScreens/NSMTemplate/PurchaseOrderPrint.js";
+import PurchaseOrderPrint from "./PrintScreens/VRETemplate/PurchaseOrderPrint.js";
 
 function Main() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
