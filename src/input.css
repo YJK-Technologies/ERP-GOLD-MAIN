@@ -360,9 +360,9 @@ input[type="date"]{
 
  }
 
- /* apps.css or input.css la idhai add pannunga */
+ /* react-select css */
 .react-select__menu-list {
-  max-height: 150px !important; /* Ungalukku thevaiyana height ah ikkada code pannunga */
+  max-height: 150px !important; 
 }
 
 /* React Select Global Height Adjustment */
