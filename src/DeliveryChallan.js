@@ -74,6 +74,7 @@ function DeliveryChallan() {
     const [selectedscreens, setSelectedscreens] = useState(null);
     const [loading, setLoading] = useState(false);
     const redirectLoadedRef = useRef(false);
+    const gridApiRef = useRef(null);
 
     const location = useLocation();
     const savedPath = sessionStorage.getItem('currentPath');
@@ -658,29 +659,36 @@ function DeliveryChallan() {
                     Item_code: params.data.productItemCode,
                     bill_qty: params.data.purchaseQty,
                     purchaser_amt: params.data.unitPrice,
-                    // tax_type_header: params.data.taxType,    
-                    // tax_name_details: params.data.taxDetail,
-                    // tax_percentage: params.data.taxPercentage,
                 })
             });
 
             if (response.ok) {
                 const searchData = await response.json();
+                const matchedItem = searchData[0]; // Response-la irunthu 1st object edukkurom
 
+                if (!matchedItem) return;
+
+                let updatedRow;
                 const updatedRowData = rowData.map(row => {
-                    if (row.itemCode === params.data.itemCode && row.serialNumber === params.data.serialNumber) {
-                        const matchedItem = searchData.find(item => item.id === row.id);
-                        if (matchedItem) {
-                            return {
-                                ...row,
-                                ItemTotalWight: matchedItem.ItemTotalWight,
-                                TotalItemAmount: matchedItem.TotalItemAmount,
-                                TotalTaxAmount: matchedItem.TotalTaxAmount
-                            };
-                        }
+                    // column field 'productItemCode'-ai match seyyavendum
+                    if (row.productItemCode === params.data.productItemCode &&
+                        Number(row.serialNumber) === Number(params.data.serialNumber)) {
+
+                        updatedRow = {
+                            ...row,
+                            ItemTotalWight: matchedItem.ItemTotalWight,
+                            TotalItemAmount: matchedItem.TotalItemAmount,
+                            TotalTaxAmount: matchedItem.TotalTaxAmount
+                        };
+                        return updatedRow;
                     }
                     return row;
                 });
+
+                // AG Grid scroll position maramal irukka applyTransaction use panrom
+                if (updatedRow && gridApiRef.current) {
+                    gridApiRef.current.applyTransaction({ update: [updatedRow] });
+                }
 
                 setRowData(updatedRowData);
 
@@ -692,9 +700,6 @@ function DeliveryChallan() {
 
                     const formattedTotalItemAmounts = totalItemAmounts.endsWith(',') ? totalItemAmounts.slice(0, -1) : totalItemAmounts;
                     const formattedTotalTaxAmounts = totalTaxAmounts.endsWith(',') ? totalTaxAmounts.slice(0, -1) : totalTaxAmounts;
-
-                    console.log("formattedTotalItemAmounts", formattedTotalItemAmounts);
-                    console.log("formattedTotalTaxAmounts", formattedTotalTaxAmounts);
 
                     await TotalAmountCalculation(formattedTotalTaxAmounts, formattedTotalItemAmounts);
 
@@ -1575,7 +1580,7 @@ function DeliveryChallan() {
     };
 
     const onGridReady = (params) => {
-        console.log("Grid is ready");
+        gridApiRef.current = params.api;
         const columnState = localStorage.getItem('myColumnState');
         if (columnState) {
             params.columnApi.applyColumnState({ state: JSON.parse(columnState) });
@@ -3087,7 +3092,6 @@ function DeliveryChallan() {
                                             columnDefs={columnDefsTermsConditions}
                                             rowData={rowDataTerms}
                                             defaultColDef={{ editable: true }}
-                                            onGridReady={onGridReady}
                                             rowHeight={28}
                                             onRowClicked={handleRowClicked}
                                             onColumnMoved={onColumnMoved}
@@ -3265,7 +3269,7 @@ function DeliveryChallan() {
                                 <AgGridReact
                                     columnDefs={columnDefs}
                                     rowData={rowData}
-                                    // getRowId={(params) => String(params.data.serialNumber)}
+                                    getRowId={(params) => params.data.keyField}
                                     defaultColDef={{ editable: true, resizable: true }}
                                     onCellValueChanged={async (event) => {
                                         if (event.colDef.field === 'purchaseQty' || event.colDef.field === 'unitPrice') {
@@ -3422,7 +3426,6 @@ function DeliveryChallan() {
                                             columnDefs={deletedTermsConditions}
                                             rowData={deletedRowDataTerms}
                                             defaultColDef={{ editable: true }}
-                                            onGridReady={onGridReady}
                                             rowHeight={28}
                                             onRowClicked={handleRowClicked}
                                             onColumnMoved={onColumnMoved}
@@ -3543,7 +3546,6 @@ function DeliveryChallan() {
                                     columnDefs={deletedColumnDefs}
                                     rowData={deletedRowData}
                                     defaultColDef={{ editable: true, resizable: true }}
-                                    onGridReady={onGridReady}
                                     onRowClicked={handleRowClicked}
                                     onColumnMoved={onColumnMoved}
                                 />

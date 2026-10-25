@@ -27,9 +27,11 @@ function AttriDetInput({}) {
   const subcode = useRef(null);
   const detailname = useRef(null);
   const description = useRef(null);
+  const order_no = useRef(null);
   const [hasValueChanged, setHasValueChanged] = useState(false);
   const created_by = sessionStorage.getItem("selectedUserCode");
   const [attributeheader_name, setattributeheader_name] = useState("");
+  const [orderNo, setOrderNo] = useState("");
 
   console.log(selectedRows);
   const modified_by = sessionStorage.getItem("selectedUserCode");
@@ -47,6 +49,7 @@ function AttriDetInput({}) {
     setAttributedetails_name("");
     setDescriptions("");
     setattributeheader_name("");
+    setOrderNo("");
   };
 
   useEffect(() => {
@@ -60,6 +63,7 @@ function AttriDetInput({}) {
       setAttributedetails_name(selectedRow.attributedetails_name || "");
       setattributeheader_name(selectedRow.attributeheader_name || "");
       setDescriptions(selectedRow.descriptions || "");
+      setOrderNo(selectedRow.order_no || "");
     } else if (mode === "create") {
       clearInputFields();
     }
@@ -105,6 +109,7 @@ function AttriDetInput({}) {
           attributedetails_code,
           attributedetails_name,
           descriptions,
+          order_no : orderNo,
           created_by: sessionStorage.getItem("selectedUserCode"),
         }),
       });
@@ -192,6 +197,7 @@ function AttriDetInput({}) {
           descriptions,
           created_by,
           modified_by,
+          order_no : orderNo,
         }),
       });
       if (response.ok) {
@@ -397,6 +403,33 @@ function AttriDetInput({}) {
                         onChange={(e) => setDescriptions(e.target.value)}
                         maxLength={250}
                         ref={description}
+                        // onKeyDown={(e) => handleKeyDown(e, description)}
+                        onKeyDown={(e) =>
+                          handleKeyDown(e, order_no, description)
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-3 form-group">
+                    <div class="exp-form-floating">
+                      <div class="d-flex justify-content-start">
+                        <div>
+                          <label for="rid" class="exp-form-labels">
+                            Order No
+                          </label>
+                        </div>
+                      </div>
+                      <input
+                        id="addesc"
+                        class="exp-input-field form-control"
+                        type="text"
+                        placeholder=""
+                        required
+                        title="Please enter the description"
+                        value={orderNo}
+                        onChange={(e) => setOrderNo(e.target.value)}
+                        maxLength={250}
+                        ref={order_no}
                         // onKeyDown={(e) => handleKeyDown(e, description)}
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
