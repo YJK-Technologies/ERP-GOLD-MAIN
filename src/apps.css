@@ -371,10 +371,10 @@ transition: background-color 0.8s ease, color 0.9s ease;
 }
 
 /* code created by pavun 12/06/2024 */
-purButton {
+/* purButton {
   background: var(--but);
   color: white;
-  padding: 10px 20px;
+  padding: 5px 20px;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   box-shadow: 0.5px 0.5px 5px 0px rgb(65, 99, 126);
@@ -392,6 +392,37 @@ purButton:hover {
   cursor: pointer;
   transition: 0.8s;
   transform: scale3d(1.05);
+} */
+/* code created by Sakthi 10/25/2026 */
+purButton {
+  background: var(--but);
+  color: white;
+  padding: 3px 12px;
+  font-size: 11px;
+  height: 28px;
+  min-width: 90px;
+  box-sizing: border-box;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border: 1px solid var(--but-border);
+  font-weight: 500;
+  font-family: Poppins, sans-serif;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+purButton:hover {
+  background-color: var(--but-hover);
+  color: white;
+  opacity: 0.9;
+  transform: none;
+}
+
+purButton.active {
+  transform: none;
+  font-size: 11px;
+  padding: 3px 12px;
+  height: 28px;
 }
 
 
