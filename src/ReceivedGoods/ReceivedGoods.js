@@ -13,24 +13,139 @@ const config = require("../Apiconfig");
 
 function AssetsReturn({ }) {
   const [rowData, setRowData] = useState([]);
+  const [allReceivedGoodsRows, setAllReceivedGoodsRows] = useState([]);
   const [transactionDate, setTransactionDate] = useState("");
   const [transactionNo, setTransactionNo] = useState("");
 
   const [selectedAmendment, setSelectedAmendment] = useState("");
-const [selectedDropdown, setSelectedDropdown] = useState("");
-const [status, setStatus] = useState("");
+  const [selectedDropdown, setSelectedDropdown] = useState("");
+  const [status, setStatus] = useState("");
 
-const amendmentOptions = [
-  { value: "1", label: "1" },
-  { value: "2", label: "2" },
-  { value: "3", label: "3" },
-];
+  const [selectedscreens, setSelectedscreens] = useState(null);
+  const [Screens, setScreens] = useState('Add');
+  const [screensDrop, setScreensDrop] = useState([]);
 
-const actionOptions = [
-  { value: "Add", label: "Add" },
-  { value: "Modify", label: "Modify" },
-  { value: "Delete", label: "Delete" },
-];
+  const [amendmentNo, setAmendmentNo] = useState('');
+  const [selectedAmendmentNo, setSelectedAmendmentNo] = useState('');
+  const [amendmentNoDrop, setAmendmentNoDrop] = useState([]);
+
+  const handleChangeAmendmentNo = (selectedOption) => {
+    setSelectedAmendmentNo(selectedOption);
+
+    const selectedValue = selectedOption ? selectedOption.value : "";
+
+    setAmendmentNo(selectedValue);
+    setSelectedAmendment(selectedOption);
+
+    if (selectedValue === "") {
+      setRowData([]);
+      setStatus("");
+      return;
+    }
+
+    const filteredRows = allReceivedGoodsRows.filter(
+      (row) => String(row.amendment_no) === String(selectedValue)
+    );
+
+    console.log("Selected Amendment No:", selectedValue);
+    console.log("Filtered Amendment Rows:", filteredRows);
+
+    setRowData(filteredRows);
+    setStatus(filteredRows[0]?.status || "");
+
+    if (filteredRows.length === 0) {
+      toast.warning("No records found for selected Amendment No");
+    }
+  };
+
+  const filteredOptionAmendmentNo = amendmentNoDrop.map((option) => ({
+    value: String(option.amendment_no),
+    label: String(option.amendment_no),
+  }));
+
+  const handleChangeScreens = (selected) => {
+    setSelectedscreens(selected);
+    setScreens(selected?.value || "");
+    setScreens(selected?.value || "");
+  };
+
+  const filteredOptionScreens = (Array.isArray(screensDrop) ? screensDrop : []).map((option) => ({
+    value: option.descriptions,
+    label: option.attributedetails_name,
+  }));
+
+  const fetchAmendmentNumbers = async (billNo) => {
+    if (!billNo || !String(billNo).trim()) {
+      setAmendmentNoDrop([]);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${config.apiBaseUrl}/getAmendmentNumberDrop`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
+            bill_no: String(billNo).trim(),
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      console.log("Amendment API Response:", data);
+
+      const amendmentData = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.recordset)
+          ? data.recordset
+          : Array.isArray(data?.data)
+            ? data.data
+            : [];
+
+      setAmendmentNoDrop(amendmentData);
+
+    } catch (error) {
+      console.error("Error fetching amendment numbers:", error);
+      setAmendmentNoDrop([]);
+    }
+  };
+
+
+  useEffect(() => {
+    fetch(`${config.apiBaseUrl}/getEvent`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setScreensDrop(data);
+
+        // Automatically set a default option (e.g., "Draft" or the first record)
+        const defaultScreen =
+          data.find((item) => item.descriptions === "Draft") || data[0];
+
+        if (defaultScreen && !selectedscreens) {
+          setSelectedscreens({
+            value: defaultScreen.descriptions,
+            label: defaultScreen.attributedetails_name,
+          });
+          setScreens(defaultScreen.descriptions);
+        }
+      })
+      .catch((error) => console.error("Error fetching purchase types:", error));
+  }, []);
 
   const [gridApi, setGridApi] = useState(null);
   const redirectLoadedRef = useRef(false);
@@ -112,8 +227,8 @@ const actionOptions = [
       headerName: "Item S.No",
       field: "itemSNo",
       editable: false,
-      minWidth: 130,
-      maxWidth: 130,
+      // minWidth: 100,
+      maxWidth: 120,
       filter: true,
       sortable: false,
     },
@@ -121,6 +236,7 @@ const actionOptions = [
       headerName: "Item Code",
       field: "itemCode",
       editable: false,
+      maxWidth: 150,
       filter: true,
       sortable: false,
     },
@@ -128,6 +244,7 @@ const actionOptions = [
       headerName: "Item Name",
       field: "itemName",
       editable: false,
+      maxWidth: 220,
       filter: true,
       sortable: false,
       editable: false,
@@ -136,6 +253,7 @@ const actionOptions = [
       headerName: "PO Qty",
       field: "po_qty",
       editable: false,
+      maxWidth: 150,
       filter: true,
       sortable: false,
     },
@@ -143,13 +261,15 @@ const actionOptions = [
       headerName: "Received Qty",
       field: "receiveQty",
       editable: false,
+      maxWidth: 150,
       filter: true,
       sortable: false,
     },
     {
       headerName: "Balance Qty",
-      field: "balanceQty",
+      field: "bal_qty",
       editable: false,
+      maxWidth: 150,
       filter: true,
       sortable: false,
     },
@@ -157,6 +277,7 @@ const actionOptions = [
       headerName: "Quantity to Receive",
       field: "qty_to_receive",
       editable: true,
+      maxWidth: 180,
       filter: true,
       sortable: false,
       valueSetter: (params) => {
@@ -187,6 +308,7 @@ const actionOptions = [
       headerName: "Accepted Qty",
       field: "accepted_qty",
       editable: true,
+      maxWidth: 150,
       filter: true,
       sortable: false,
     },
@@ -194,6 +316,7 @@ const actionOptions = [
       headerName: "Rejected Qty",
       field: "rejected_qty",
       editable: true,
+      maxWidth: 150,
       filter: true,
       sortable: false,
     },
@@ -215,11 +338,95 @@ const actionOptions = [
     setTransactionDate(formattedToday);
   }, []);
 
+  const authorizeSelectedRows = async () => {
+    if (!transactionNo) {
+      toast.warning("Please select a Transaction No.");
+      return;
+    }
+
+    if (
+      amendmentNo === "" ||
+      amendmentNo === null ||
+      amendmentNo === undefined
+    ) {
+      toast.warning("Please select an Amendment No.");
+      return;
+    }
+
+    if (!selectedscreens?.value) {
+      toast.warning("Please select a Status.");
+      return;
+    }
+
+    if (!gridApi) {
+      toast.warning("Grid is not ready.");
+      return;
+    }
+
+    const allRowsData = [];
+
+    gridApi.forEachNode((node) => {
+      allRowsData.push(node.data);
+    });
+
+    if (allRowsData.length === 0) {
+      toast.warning("No rows available for authorization.");
+      return;
+    }
+
+    const editedData = allRowsData.map((row) => ({
+      transactionNo: transactionNo,
+      amendment_no: Number(amendmentNo),
+      status: Screens,
+      modified_by: sessionStorage.getItem("selectedUserCode"),
+    }));
+
+    console.log("AU Mode Payload:", editedData);
+
+    try {
+      const response = await fetch(
+        `${config.apiBaseUrl}/authorizeReceivedGoods`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
+          },
+          body: JSON.stringify({
+            editedData: editedData,
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.ok) {
+        console.log("AU Mode Response:", result);
+
+        toast.success("Received Goods authorization updated successfully.");
+
+        // Refresh grid after authorization
+        await fetchReceivedGoodsData(transactionNo);
+
+      } else {
+        toast.warning(
+          result.message || "Failed to update Received Goods authorization."
+        );
+      }
+
+    } catch (error) {
+      console.error("AU Mode Error:", error);
+      toast.error("Authorization Error: " + error.message);
+    }
+  };
+
   const fetchReceivedGoodsData = async (TransactionNo) => {
     try {
+      const billNo = String(TransactionNo || transactionNo || "").trim();
+
       const body = {
         company_code: sessionStorage.getItem("selectedCompanyCode"),
-        bill_no: transactionNo || TransactionNo,
+        bill_no: billNo,
       };
 
       const response = await fetch(`${config.apiBaseUrl}/getReceivedGoods`, {
@@ -234,9 +441,38 @@ const actionOptions = [
         const searchData = await response.json();
 
         if (searchData.length > 0) {
-          const { bill_no, bill_date } = searchData[0];
+          // Fetch amendment numbers for the selected Transaction No
+          await fetchAmendmentNumbers(searchData[0].bill_no);
+          const {
+            bill_no,
+            bill_date,
+            amendment_no,
+            status: fetchedStatus
+          } = searchData[0];
+
           setTransactionNo(bill_no);
-          // setTransactionDate(formatDate(bill_date));
+          setTransactionDate(formatDate(bill_date));
+
+          // Fetch amendment number
+          if (amendment_no !== null && amendment_no !== undefined) {
+            const amendmentValue = String(amendment_no);
+
+            const selectedOption = {
+              value: amendmentValue,
+              label: amendmentValue,
+            };
+
+            setSelectedAmendment(selectedOption);
+            setSelectedAmendmentNo(selectedOption);
+            setAmendmentNo(amendmentValue);
+          } else {
+            setSelectedAmendment(null);
+            setSelectedAmendmentNo(null);
+            setAmendmentNo("");
+          }
+
+          // Fetch status
+          setStatus(fetchedStatus || "");
 
           const newRows = searchData.map((matchedItem) => ({
             transactionNo: matchedItem.bill_no,
@@ -250,17 +486,35 @@ const actionOptions = [
             accepted_qty: matchedItem.accepted_qty,
             rejected_qty: matchedItem.rejected_qty,
             keyfield: matchedItem.keyfield,
+            amendment_no: matchedItem.amendment_no,
+            status: matchedItem.status,
+            source: matchedItem.source,
             receiveQty: 0,
           }));
-          setRowData(newRows);
-          console.log(searchData);
+          // Store every amendment record
+          setAllReceivedGoodsRows(newRows);
+
+          // Show only the initially selected amendment
+          const initialAmendment = searchData[0].amendment_no;
+
+          const initialFilteredRows = newRows.filter(
+            (row) =>
+              String(row.amendment_no) === String(initialAmendment)
+          );
+
+          setRowData(initialFilteredRows);
+
+          console.log("All Received Goods:", newRows);
+          console.log("Initially Displayed Rows:", initialFilteredRows);
         } else {
           toast.warning("Data Not found");
           setRowData([]);
+          setAllReceivedGoodsRows([]);
         }
       } else if (response.status === 404) {
         toast.warning("Data Not found");
         setRowData([]);
+        setAllReceivedGoodsRows([]);
       } else {
         const errorResponse = await response.json();
         toast.warning(errorResponse.message || "Failed to insert sales data");
@@ -275,7 +529,34 @@ const actionOptions = [
     const allRowsData = [];
     gridApi.forEachNode((node) => allRowsData.push(node.data));
 
-    const filteredRows = allRowsData.filter((row) => row.qty_to_receive > 0);
+    const filteredRows = allRowsData
+      .filter((row) => row.qty_to_receive > 0)
+      .map((row) => ({
+        ...row,
+        status: Screens,
+      }));
+
+    const invalidRows = filteredRows.filter((row) => {
+      const receiveQty = Number(row.qty_to_receive);
+      const acceptedQty = Number(row.accepted_qty);
+      const rejectedQty = Number(row.rejected_qty);
+
+      return (
+        !Number.isFinite(receiveQty) ||
+        !Number.isFinite(acceptedQty) ||
+        !Number.isFinite(rejectedQty) ||
+        acceptedQty < 0 ||
+        rejectedQty < 0 ||
+        Math.abs(receiveQty - (acceptedQty + rejectedQty)) > 0.000001
+      );
+    });
+
+    if (invalidRows.length > 0) {
+      toast.warning(
+        `Item Code: ${invalidRows[0].itemCode} - Qty to Receive must equal Accepted Qty + Rejected Qty.`
+      );
+      return;
+    }
 
     if (filteredRows.length === 0) {
       toast.warning(
@@ -296,6 +577,21 @@ const actionOptions = [
       });
 
       if (response.ok) {
+        const updatedData = await response.json();
+
+        console.log("Updated Received Goods:", updatedData);
+
+        if (Array.isArray(updatedData) && updatedData.length > 0) {
+          const latestRecord = updatedData[updatedData.length - 1];
+
+          setSelectedAmendment({
+            value: String(latestRecord.amendment_no),
+            label: String(latestRecord.amendment_no)
+          });
+
+          setStatus(latestRecord.status || "");
+        }
+
         toast.success("Data updated successfully", {
           onClose: () => fetchReceivedGoodsData(),
         });
@@ -315,6 +611,120 @@ const actionOptions = [
     setGridApi(params.api);
   };
 
+
+
+  const insertSelectedRows = async () => {
+    if (!gridApi) {
+      toast.warning("Grid is not ready.");
+      return;
+    }
+
+    if (!transactionNo || !transactionDate) {
+      toast.warning("Transaction No and Transaction Date are required.");
+      return;
+    }
+
+    // Collect ALL rows from AG Grid
+    const allRowsData = [];
+
+    gridApi.stopEditing();
+
+    gridApi.forEachNode((node) => {
+      allRowsData.push(node.data);
+    });
+
+    if (allRowsData.length === 0) {
+      toast.warning("No rows available to insert.");
+      return;
+    }
+
+    // Prepare ALL rows without filtering any row
+    const editedData = allRowsData.map((row) => ({
+      ...row,
+      transactionNo: transactionNo,
+      transactionDate: transactionDate,
+      itemSNo: row.itemSNo,
+      itemCode: row.itemCode,
+      itemName: row.itemName,
+      po_qty: Number(row.po_qty) || 0,
+      qty_to_receive: Number(row.qty_to_receive) || 0,
+      accepted_qty: Number(row.accepted_qty) || 0,
+      rejected_qty: Number(row.rejected_qty) || 0,
+      status: Screens,
+      source: row.source,
+      amendment_no: selectedAmendment?.value
+        ? Number(selectedAmendment.value)
+        : 0,
+      keyfield: row.keyfield || "",
+      created_by:
+        sessionStorage.getItem("selectedUserCode") || "",
+    }));
+
+    // Validate quantity for every row
+    const invalidRow = editedData.find((row) => {
+      return (
+        !Number.isFinite(row.qty_to_receive) ||
+        !Number.isFinite(row.accepted_qty) ||
+        !Number.isFinite(row.rejected_qty) ||
+        row.qty_to_receive < 0 ||
+        row.accepted_qty < 0 ||
+        row.rejected_qty < 0 ||
+        Math.abs(
+          row.qty_to_receive -
+          (row.accepted_qty + row.rejected_qty)
+        ) > 0.000001
+      );
+    });
+
+    if (invalidRow) {
+      toast.warning(
+        `Item Code: ${invalidRow.itemCode} - Qty to Receive must equal Accepted Qty + Rejected Qty.`
+      );
+      return;
+    }
+
+    try {
+      const company_code =
+        sessionStorage.getItem("selectedCompanyCode");
+
+      const response = await fetch(
+        `${config.apiBaseUrl}/insertReceivedGoods`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            company_code: company_code,
+          },
+          body: JSON.stringify({
+            editedData: editedData,
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.ok) {
+        console.log("All Inserted Received Goods:", result);
+
+        toast.success("All rows processed successfully", {
+          onClose: () => fetchReceivedGoodsData(transactionNo),
+        });
+      } else {
+        toast.warning(
+          result.message || "Failed to insert received goods data"
+        );
+      }
+    } catch (error) {
+      console.error("Error inserting received goods:", error);
+
+      toast.error(
+        "Error Inserting Data: " + error.message
+      );
+    }
+  };
+
+
+
   const [open, setOpen] = React.useState(false);
 
   const handlePurchase = () => {
@@ -328,6 +738,10 @@ const actionOptions = [
   const handleRGData = async (data) => {
     if (data && data.length > 0) {
       const [{ TransactionNo, EntryDate }] = data;
+
+      console.log("Selected Transaction No:", TransactionNo);
+
+      setTransactionNo(TransactionNo);
 
       await fetchReceivedGoodsData(TransactionNo);
 
@@ -479,13 +893,39 @@ const actionOptions = [
             </h1>
           </div>
           <div class="d-flex justify-content-end mb-2 me-3 ">
+            <div className="exp-form-floating" style={{ width: "200px" }}>
+              <Select
+                id="returnType"
+                className="exp-input-field col-md-6 mt-2"
+                placeholder=""
+                required
+                value={selectedscreens}
+                onChange={handleChangeScreens}
+                options={filteredOptionScreens}
+                data-tip="Please select a default warehouse"
+                styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+              />
+            </div>
             {["add", "all permission"].some((permission) =>
               purchasePermission.includes(permission),
             ) && (
                 <savebutton
                   className="purbut"
                   title="save"
-                  onClick={updateSelectedRows}
+                  onClick={() => {
+                    const selectedMode = Screens?.trim().toLowerCase();
+
+                    if (selectedMode === "draft") {
+                      insertSelectedRows();
+                    } else if (
+                      selectedMode === "authorized" ||
+                      selectedMode === "deleted" ||
+                      selectedMode === "short closed" ||
+                      selectedMode === "reversed"
+                    ) {
+                      authorizeSelectedRows();
+                    }
+                  }}
                 >
                   <i class="fa-regular fa-floppy-disk"></i>
                 </savebutton>
@@ -520,12 +960,28 @@ const actionOptions = [
                   >
                     <i class="fa-solid fa-list"></i>
                   </button>
+
                   <ul class="dropdown-menu menu">
                     <li class="iconbutton  d-flex justify-content-center text-success ">
                       {["update", "all permission"].some((permission) =>
                         purchasePermission.includes(permission),
                       ) && (
-                          <icon class="icon" onClick={updateSelectedRows}>
+                          <icon class="icon"
+                            onClick={() => {
+                              const selectedMode = Screens?.trim().toLowerCase();
+
+                              if (selectedMode === "draft") {
+                                insertSelectedRows();
+                              } else if (
+                                selectedMode === "authorized" ||
+                                selectedMode === "deleted" ||
+                                selectedMode === "short closed" ||
+                                selectedMode === "reversed"
+                              ) {
+                                authorizeSelectedRows();
+                              }
+                            }}
+                          >
                             <i class="fa-regular fa-floppy-disk"></i>
                           </icon>
                         )}
@@ -589,13 +1045,13 @@ const actionOptions = [
                   placeholder=""
                   required
                   value={transactionDate}
-                  onChange={(e) => setTransactionDate(e.target.value)}
+                // onChange={(e) => setTransactionDate(e.target.value)}
                 />
               </div>
             </div>
 
             {/* Amendment No Dropdown */}
-<div className="col-md-2 form-group mb-2">
+            {/* <div className="col-md-2 form-group mb-2">
   <label htmlFor="amendmentDropdown" className="exp-form-labels">
     Amendment No
   </label>
@@ -609,7 +1065,14 @@ const actionOptions = [
         required
         value={selectedAmendment}
         onChange={setSelectedAmendment}
-        options={amendmentOptions}
+        options={
+    selectedAmendment &&
+    !amendmentOptions.some(
+        (option) => option.value === selectedAmendment.value
+    )
+        ? [...amendmentOptions, selectedAmendment]
+        : amendmentOptions
+}
         styles={{
           menu: (provided) => ({
             ...provided,
@@ -619,52 +1082,41 @@ const actionOptions = [
       />
     </div>
   </div>
-</div>
+</div> */}
 
-{/* Action Dropdown Without Label */}
-<div className="col-md-2 form-group mb-2">
-  <label className="exp-form-labels invisible" aria-hidden="true">
-    Action
-  </label>
+            <div className="col-md-2  form-group">
+              <div class="exp-form-floating">
+                <label for="rid" class="exp-form-labels">Amendment No</label>
+                <div title="select a Amendment No">
+                  <Select
+                    id="status"
+                    value={selectedAmendmentNo}
+                    onChange={handleChangeAmendmentNo}
+                    options={filteredOptionAmendmentNo}
+                    className="exp-input-field"
+                    placeholder=""
+                  />
+                </div>
+              </div>
+            </div>
 
-  <div className="exp-form-floating">
-    <div title="Select the Action">
-      <Select
-        inputId="actionDropdown"
-        aria-label="Action"
-        className="exp-input-field"
-        placeholder=""
-        value={selectedDropdown}
-        onChange={setSelectedDropdown}
-        options={actionOptions}
-        styles={{
-          menu: (provided) => ({
-            ...provided,
-            zIndex: 9999,
-          }),
-        }}
-      />
-    </div>
-  </div>
-</div>
+            {/* Status - Display Only */}
+            <div className="col-md-2 form-group mb-2">
+              <label htmlFor="status" className="exp-form-labels">
+                Status
+              </label>
 
-{/* Status - Display Only */}
-<div className="col-md-2 form-group mb-2">
-  <label htmlFor="status" className="exp-form-labels">
-    Status
-  </label>
-
-  <div className="exp-form-floating">
-    <input
-      id="status"
-      type="text"
-      className="exp-input-field form-control"
-      value={status}
-      placeholder=""
-      readOnly
-    />
-  </div>
-</div>
+              <div className="exp-form-floating">
+                <input
+                  id="status"
+                  type="text"
+                  className="exp-input-field form-control"
+                  value={status}
+                  placeholder=""
+                  readOnly
+                />
+              </div>
+            </div>
           </div>
           <div
             align="right"
