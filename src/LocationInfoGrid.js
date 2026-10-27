@@ -330,6 +330,7 @@ function LocInfoGrid() {
       field: "pincode",
       editable: true,
       cellStyle: { textAlign: "center" },
+      cellStyle: { textAlign: 'right' },
       cellEditorParams: {
         maxLength: 150,
       },
@@ -368,6 +369,7 @@ function LocInfoGrid() {
       field: "contact_no",
       editable: true,
       cellStyle: { textAlign: "center" },
+      cellStyle: { textAlign: 'right' },
       cellEditorParams: {
         maxLength: 150,
       },
@@ -1038,6 +1040,8 @@ function LocInfoGrid() {
               pagination={true}
               paginationAutoPageSize={true}
               onRowSelected={onRowSelected}
+              headerHeight={28}
+              rowHeight={25}
             />
           </div>
         </div>

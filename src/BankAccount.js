@@ -799,6 +799,7 @@ body: JSON.stringify({ company_code }),
                         onChange={handleChangeUser}
                         options={filteredOptionUser}
                         className=""
+                        classNamePrefix="react-select"
                         placeholder=""
                         ref={User}
                         onKeyDown={(e) => handleKeyDown(e, Bank, User)}
@@ -897,6 +898,7 @@ body: JSON.stringify({ company_code }),
                         onChange={handleChangeacc}
                         options={filteredOptionAccountype}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         ref={Account}
                         onKeyDown={(e) => handleKeyDown(e, Branch, Account)}
@@ -1035,6 +1037,7 @@ body: JSON.stringify({ company_code }),
                         onChange={handleChangeCity}
                         options={filteredOptionCity}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         ref={City}
                         onKeyDown={(e) => handleKeyDown(e, State, City)}
@@ -1055,6 +1058,7 @@ body: JSON.stringify({ company_code }),
                         onChange={handleChangeState}
                         options={filteredOptionState}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         ref={State}
                         onKeyDown={(e) => handleKeyDown(e, Country, State)}
@@ -1079,6 +1083,7 @@ body: JSON.stringify({ company_code }),
                         onChange={handleChangeCountry}
                         options={filteredOptionCountry}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         ref={Country}
                         onKeyDown={(e) => handleKeyDown(e, img, Country)}
@@ -1098,6 +1103,7 @@ body: JSON.stringify({ company_code }),
                         onChange={handleChangeDefaultBank}
                         options={filteredOptionDefaultBank}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         ref={defaultbank}
                         onKeyDown={(e) => handleKeyDown(e, img, defaultbank)}

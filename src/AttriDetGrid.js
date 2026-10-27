@@ -164,7 +164,7 @@ function AttriDetGrid() {
       headerName: "Order No",
       field: "order_no",
       editable: true,
-      cellStyle: { textAlign: "center" },
+      cellStyle: { textAlign: 'right' },
       cellEditorParams: {
         maxLength: 250,
       },
@@ -682,6 +682,8 @@ function AttriDetGrid() {
               onSelectionChanged={onSelectionChanged}
               onCellValueChanged={onCellValueChanged}
               onRowSelected={onRowSelected}
+              headerHeight={28}
+              rowHeight={25}
             />
           </div>
         </div>
