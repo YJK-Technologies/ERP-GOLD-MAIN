@@ -11276,12 +11276,6 @@ const productdeletehdrData = async (req, res) => {
   }
 };
 
-
-
-
-
-
-
 //code added by AK on 27 aug 2024 // code begins
 const addPurchaseOrderheader = async (req, res) => {
   const { company_code, Entry_date, transaction_no, vendor_code,
@@ -11326,8 +11320,8 @@ const addPurchaseOrderheader = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(`EXEC sp_purchase_order_hdr @mode,@company_code, @Entry_date,@transaction_no,@vendor_code, @purchase_amount,@add_fright,@less_fright,@tax_amount,@rounded_off,@loading_charges,@cartage_paid,@other_charges,@total_amount,@tax_acc_code,@rounded_off_acc_code,
-        @loading_charges_acc_code,  @cartage_paid_acc_code, @other_charges_acc_code,@purchase_amount_acc_code,@delivery_date,@credit,@remarks,
+      .query(`EXEC sp_purchase_order_hdr_test @mode,@company_code, @Entry_date,@transaction_no,@vendor_code, @purchase_amount,@add_fright,@less_fright,@tax_amount,@rounded_off,@loading_charges,@cartage_paid,@other_charges,@total_amount,@tax_acc_code,@rounded_off_acc_code,
+        @loading_charges_acc_code,  @cartage_paid_acc_code, @other_charges_acc_code,@purchase_amount_acc_code,@delivery_date,@credit,@remarks,'',
         @created_by, @modified_by, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
@@ -11339,6 +11333,7 @@ const addPurchaseOrderheader = async (req, res) => {
     res.status(500).json({ message: err.message || 'Internal Server Error' });
   }
 };
+
 const getAllPOhdrData = async (req, res) => {
   const { company_code } = req.body;
   let pool;
@@ -11348,7 +11343,7 @@ const getAllPOhdrData = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "A")
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_purchase_order_hdr @mode,@company_code,'','','',0,0,0,0,0,0,0,0,00,'','','','','','','','','','','', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
+      .query(`EXEC sp_purchase_order_hdr_test @mode,@company_code,'','','',0,0,0,0,0,0,0,0,00,'','','','','','','','','','','','', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
 
     res.json(result.recordset);
   } catch (err) {
@@ -11370,7 +11365,7 @@ const POdeletehdrData = async (req, res) => {
         .input("company_code", sql.NVarChar, company_code)
         .input("transaction_no", sql.NVarChar, transaction_no)
         .input("modified_by", sql.NVarChar, modified_by)
-        .query(`EXEC sp_purchase_order_hdr @mode,@company_code,'',@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','','','','','','','',@modified_by, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
+        .query(`EXEC sp_purchase_order_hdr_test @mode,@company_code,'',@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','','','','','','','','',@modified_by, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
     } catch (error) {
       if (error.number === 547) {
         res.status(400).json("first delete the Purchase Order details  ");
@@ -11472,7 +11467,7 @@ const addPurchaseOrderdetail = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(`EXEC sp_purchase_order_details @mode,@company_code,@Entry_date,@transaction_no,@vendor_code, @vendor_name,@vendor_addr_1,@vendor_addr_2,@vendor_addr_3,@vendor_addr_4,@ShipTo_customer_name,@ShipTo_customer_addr_1,@ShipTo_customer_addr_2,@ShipTo_customer_addr_3,@ShipTo_customer_addr_4,@ItemSNo,
+      .query(`EXEC sp_purchase_order_details_test @mode,@company_code,@Entry_date,@transaction_no,@vendor_code, @vendor_name,@vendor_addr_1,@vendor_addr_2,@vendor_addr_3,@vendor_addr_4,@ShipTo_customer_name,@ShipTo_customer_addr_1,@ShipTo_customer_addr_2,@ShipTo_customer_addr_3,@ShipTo_customer_addr_4,@ItemSNo,
             @item_code,@item_name, @bill_qty,@bill_rate,@item_amt,@weight,@total_weight,@tax_amount,@hsn,@contact_person,@contact_number,@ship_to_contact_number,@ship_to_contact_person,@state,@country,@ship_to_state,@ship_to_country,@ShipTo_customer_code,
             @vendor_gst_no,@ShipTo_vendor_gst_no,@Discount_Type, @Discount_Value,@created_by, @modified_by, NULL, NULL, NULL, NULL, NULL, NULL, NULL,NULL`);
     {
@@ -11493,7 +11488,7 @@ const getAllPOdetData = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "A") // Insert mode
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_purchase_order_details 'A',@company_code,'','','','','','','','','','','', '','',0,'','',0,0,0,0,0,0,'','','','','','','','','','','','','',0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_purchase_order_details_test 'A',@company_code,'','','','','','','','','','','', '','',0,'','',0,0,0,0,0,0,'','','','','','','','','','','','','',0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     res.json(result.recordset);
   } catch (err) {
@@ -11514,7 +11509,7 @@ const POdeletedetData = async (req, res) => {
         .input("mode", sql.NVarChar, "D")
         .input("company_code", sql.NVarChar, company_code)
         .input("transaction_no", sql.NVarChar, transaction_no)
-        .query(`EXEC sp_purchase_order_details 'D',@company_code,'',@transaction_no,'','','','','','','','','', '','',0,'','',0,0,0,0,0,0,'','','','','','','','','','','','','',0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+        .query(`EXEC sp_purchase_order_details_test 'D',@company_code,'',@transaction_no,'','','','','','','','','', '','',0,'','',0,0,0,0,0,0,'','','','','','','','','','','','','',0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     } catch (err) {
       if (err.number === 547) {
         res.status(400).json("first delete the Purchase order details  ");
@@ -12060,7 +12055,7 @@ const getPOSearchData = async (req, res) => {
       .input("Entry_date", sql.NVarChar, Entry_date)
       .input("vendor_name", sql.NVarChar, vendor_name)
       .input("ShipTo_customer_name", sql.NVarChar, ShipTo_customer_name)
-      .query(`EXEC sp_purchase_order_details @mode,@company_code,@Entry_date,@transaction_no,'',@vendor_name,'','','','',@ShipTo_customer_name,'',
+      .query(`EXEC sp_purchase_order_details_test @mode,@company_code,@Entry_date,@transaction_no,'',@vendor_name,'','','','',@ShipTo_customer_name,'',
 '', '','',0,'','',0,0,0,0,0,0,'','','','','','','','','','','','','',0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     // Send response
@@ -23151,7 +23146,7 @@ const getDeletedPoSearchData = async (req, res) => {
       .input("Entry_date", sql.NVarChar, Entry_date)
       .input("vendor_name", sql.NVarChar, vendor_name)
       .input("ShipTo_customer_name", sql.NVarChar, ShipTo_customer_name)
-      .query(`EXEC sp_purchase_order_details @mode,@company_code,@Entry_date,@transaction_no,'',@vendor_name,'','','','',@ShipTo_customer_name,'',
+      .query(`EXEC sp_purchase_order_details_test @mode,@company_code,@Entry_date,@transaction_no,'',@vendor_name,'','','','',@ShipTo_customer_name,'',
 '', '','',0,'','',0,0,0,0,0,0,'','','','','','','','','','','','','',0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     if (result.recordset.length > 0) {
@@ -26627,7 +26622,8 @@ const Userdropdown = async (req, res) => {
 // Code Ended by Harish 22/02/25
 const updPurchaseOrderheader = async (req, res) => {
   const { company_code, Entry_date, transaction_no, vendor_code,
-    purchase_amount, add_fright, less_fright, tax_amount, rounded_off, loading_charges, cartage_paid, other_charges, total_amount, tax_acc_code, rounded_off_acc_code, loading_charges_acc_code, cartage_paid_acc_code, other_charges_acc_code, purchase_amount_acc_code, delivery_date, credit, remarks, created_by, modified_by
+    purchase_amount, add_fright, less_fright, tax_amount, rounded_off, loading_charges, cartage_paid, other_charges, total_amount, tax_acc_code, rounded_off_acc_code, 
+    loading_charges_acc_code, cartage_paid_acc_code, other_charges_acc_code, purchase_amount_acc_code, delivery_date, credit, remarks, created_by, modified_by, authroization_status
   } = req.body;
   let pool;
   try {
@@ -26657,10 +26653,11 @@ const updPurchaseOrderheader = async (req, res) => {
       .input("delivery_date", sql.Date, delivery_date)
       .input("credit", sql.NVarChar, credit)
       .input("remarks", sql.NVarChar, remarks)
+      .input("authroization_status", sql.NVarChar, authroization_status)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
-      .query(`EXEC sp_purchase_order_hdr @mode,@company_code, @Entry_date,@transaction_no,@vendor_code, @purchase_amount,@add_fright,@less_fright,@tax_amount,@rounded_off,@loading_charges,@cartage_paid,@other_charges,@total_amount,@tax_acc_code,@rounded_off_acc_code,
-          @loading_charges_acc_code,  @cartage_paid_acc_code, @other_charges_acc_code,@purchase_amount_acc_code,@delivery_date,@credit,@remarks,
+      .query(`EXEC sp_purchase_order_hdr_test @mode,@company_code, @Entry_date,@transaction_no,@vendor_code, @purchase_amount,@add_fright,@less_fright,@tax_amount,@rounded_off,@loading_charges,@cartage_paid,@other_charges,@total_amount,@tax_acc_code,@rounded_off_acc_code,
+          @loading_charges_acc_code,  @cartage_paid_acc_code, @other_charges_acc_code,@purchase_amount_acc_code,@delivery_date,@credit,@remarks,@authroization_status,
           @created_by, @modified_by, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
     res.json({ success: true, message: "Data Updated successfully" });
   } catch (err) {
@@ -31907,6 +31904,28 @@ const purchaseOrderHsnTax = async (req, res) => {
   }
 };
 //Code ended by Dinesh Gokul on 24-10-2026
+
+//Code added by pavun on 26-10-2026 
+const updateStatusPurchaseOrder = async (req, res) => {
+  const { company_code, transaction_no } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool
+      .request()
+      .input("mode", sql.NVarChar, "ASU")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("transaction_no", sql.NVarChar, transaction_no)
+      .query(`EXEC sp_purchase_order_hdr_test @mode,@company_code,'',@transaction_no,'',0,0,0,0,0,0,0,0,00,'','','','','','','','','','','','', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
+
+     res.status(200).json("Purchase order updated successfully");
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+//Code ended by pavun on 26-10-2026 
+
 module.exports = {
   login,
   forgetPassword,
@@ -32930,6 +32949,7 @@ module.exports = {
   getauthorization,
   getDiscountType,
   invoiceHsnTax,
-  purchaseOrderHsnTax
+  purchaseOrderHsnTax,
+  updateStatusPurchaseOrder
 
 };
