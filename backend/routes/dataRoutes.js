@@ -1045,6 +1045,9 @@ router.post("/getauthorization", dataController.getauthorization)
 router.post("/getDiscountType", dataController.getDiscountType)
 router.post("/invoiceHsnTax", dataController.invoiceHsnTax)
 router.post("/purchaseOrderHsnTax", dataController.purchaseOrderHsnTax)
+router.post("/insertReceivedGoods", dataController.insertReceivedGoods)
+router.post("/getAmendmentNumberDrop", dataController.getAmendmentNumberDrop)
+router.post("/authorizeReceivedGoods", dataController.authorizeReceivedGoods)
 
 
 module.exports = router;
