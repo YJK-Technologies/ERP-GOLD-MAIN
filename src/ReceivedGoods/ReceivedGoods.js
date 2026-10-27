@@ -256,6 +256,7 @@ function AssetsReturn({ }) {
       maxWidth: 150,
       filter: true,
       sortable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: "Received Qty",
@@ -264,6 +265,7 @@ function AssetsReturn({ }) {
       maxWidth: 150,
       filter: true,
       sortable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: "Balance Qty",
@@ -272,6 +274,7 @@ function AssetsReturn({ }) {
       maxWidth: 150,
       filter: true,
       sortable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: "Quantity to Receive",
@@ -280,6 +283,7 @@ function AssetsReturn({ }) {
       maxWidth: 180,
       filter: true,
       sortable: false,
+      cellStyle: { textAlign: 'right' },
       valueSetter: (params) => {
         const newValue = Number(params.newValue);
         const balanceQty = Number(params.data.balanceQty);
@@ -311,6 +315,7 @@ function AssetsReturn({ }) {
       maxWidth: 150,
       filter: true,
       sortable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: "Rejected Qty",
@@ -319,6 +324,7 @@ function AssetsReturn({ }) {
       maxWidth: 150,
       filter: true,
       sortable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: "Keyfield",
@@ -892,8 +898,8 @@ function AssetsReturn({ }) {
               Received Goods
             </h1>
           </div>
-          <div class="d-flex justify-content-end mb-2 me-3 ">
-            <div className="exp-form-floating" style={{ width: "200px" }}>
+          <div class="d-flex justify-content-end purbut me-3">
+            <div className="exp-form-floating">
               <Select
                 id="returnType"
                 className="exp-input-field col-md-6 mt-2"
@@ -902,6 +908,7 @@ function AssetsReturn({ }) {
                 value={selectedscreens}
                 onChange={handleChangeScreens}
                 options={filteredOptionScreens}
+                classNamePrefix="react-select"
                 data-tip="Please select a default warehouse"
                 styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
               />
@@ -1045,44 +1052,9 @@ function AssetsReturn({ }) {
                   placeholder=""
                   required
                   value={transactionDate}
-                // onChange={(e) => setTransactionDate(e.target.value)}
                 />
               </div>
             </div>
-
-            {/* Amendment No Dropdown */}
-            {/* <div className="col-md-2 form-group mb-2">
-  <label htmlFor="amendmentDropdown" className="exp-form-labels">
-    Amendment No
-  </label>
-
-  <div className="exp-form-floating">
-    <div title="Select the Amendment No">
-      <Select
-        id="amendmentDropdown"
-        className="exp-input-field"
-        placeholder=""
-        required
-        value={selectedAmendment}
-        onChange={setSelectedAmendment}
-        options={
-    selectedAmendment &&
-    !amendmentOptions.some(
-        (option) => option.value === selectedAmendment.value
-    )
-        ? [...amendmentOptions, selectedAmendment]
-        : amendmentOptions
-}
-        styles={{
-          menu: (provided) => ({
-            ...provided,
-            zIndex: 9999,
-          }),
-        }}
-      />
-    </div>
-  </div>
-</div> */}
 
             <div className="col-md-2  form-group">
               <div class="exp-form-floating">
@@ -1094,6 +1066,7 @@ function AssetsReturn({ }) {
                     onChange={handleChangeAmendmentNo}
                     options={filteredOptionAmendmentNo}
                     className="exp-input-field"
+                    classNamePrefix="react-select"
                     placeholder=""
                   />
                 </div>
@@ -1134,6 +1107,8 @@ function AssetsReturn({ }) {
               onGridReady={onGridReady}
               pagination={true}
               paginationAutoPageSize={true}
+              headerHeight={28}
+              rowHeight={25}
             />
           </div>
           <div>

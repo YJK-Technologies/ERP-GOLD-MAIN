@@ -20,6 +20,7 @@ const Invoice = () => {
 
         if (header && detail && tax) {
             setHeaderData(JSON.parse(LZString.decompress(header)));
+            setHeaderData(JSON.parse(LZString.decompress(header)));
             setDetailData(JSON.parse(LZString.decompress(detail)));
             setTaxData(JSON.parse(LZString.decompress(tax)));
             if (hsnTax) {
@@ -77,7 +78,7 @@ const Invoice = () => {
         return `${day}-${month}-${year}`;
     };
 
-    const ITEMS_PER_PAGE = 6;
+    const ITEMS_PER_PAGE = 10; // Updated requirement: minimum 10 rows per sheet
     const itemPages = [];
     for (let i = 0; i < detailData.length; i += ITEMS_PER_PAGE) {
         itemPages.push(detailData.slice(i, i + ITEMS_PER_PAGE));
@@ -99,7 +100,8 @@ const Invoice = () => {
                                 <div>
                                     {[headerData[0].address1, headerData[0].address2, headerData[0].address3]
                                         .filter(Boolean)
-                                        .join(", ")}, {headerData[0].city} - {headerData[0].pincode}<br />
+                                        .join(", ")}, {headerData[0].city}
+                                    {headerData[0].pincode}<br />
                                     <strong>GSTIN/UIN:</strong> {headerData[0].company_gst_no}<br />
                                     <strong>State Name:</strong> {detailData[0].state || "Tamil Nadu"},<br />
                                     <strong>Contact :</strong> {headerData[0].contact_no || "+91-99445 31549"}<br />
@@ -198,45 +200,53 @@ const Invoice = () => {
                             <table className="invoiceTable w-100 border-top-0">
                                 <thead>
                                     <tr>
-                                        <th style={{ width: "5%" }}>SI<br />No.</th>
-                                        <th style={{ width: "32%" }}>Description of Goods</th>
-                                        <th style={{ width: "10%" }}>HSN/SAC</th>
-                                        <th style={{ width: "7%" }}>GST<br />Rate</th>
-                                        <th style={{ width: "8%" }}>Quantity</th>
-                                        <th style={{ width: "10%" }}>Rate</th>
-                                        <th style={{ width: "7%" }}>Per</th>
-                                        <th style={{ width: "7%" }}>Disc. %</th>
-                                        <th style={{ width: "14%" }}>Amount</th>
+                                        <th style={{ width: "4%" }}>SI<br />No.</th>
+                                        <th style={{ width: "10%" }} >Item Code</th>
+                                        <th style={{ width: "25%" }}>Description of Goods</th>
+                                        <th style={{ width: "8%" }}>HSN/SAC</th>
+                                        <th style={{ width: "6%" }}>GST<br />Rate</th>
+                                        <th style={{ width: "6%" }}>Qty</th>
+                                        <th style={{ width: "8%" }}>Rate</th>
+                                        <th style={{ width: "5%" }}>Per</th>
+                                        <th style={{ width: "6%" }}>Disc.%</th>
+                                        <th style={{ width: "9%" }}>Net Rate</th>
+                                        <th style={{ width: "13%" }}>Amount</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {pageItems.map((row, idx) => (
-                                        <tr key={idx}>
-                                            <td style={{ textAlign: "center" }}>{row.SNo || (pageIndex * ITEMS_PER_PAGE + idx + 1)}</td>
-                                            <td>
-                                                <strong>{row.name}</strong><br />
-                                                <span style={{ fontSize: "9.5px" }}>Unit UOM : {row.Item_BaseUOM || "Pcs"}</span>
-                                            </td>
-                                            <td style={{ textAlign: "center" }}>{row.hsn_code}</td>
-                                            <td style={{ textAlign: "center" }}>{row.tax_percentage}%</td>
-                                            <td style={{ textAlign: "center" }}>{row.bill_qty}</td>
-                                            <td style={{ textAlign: "right" }}>{formatCurrency(row.unit_price)}</td>
-                                            <td style={{ textAlign: "center" }}>{row.Item_BaseUOM || "Pcs"}</td>
-                                            <td style={{ textAlign: "center" }}>{row.Discount_Value}%</td>
-                                            <td style={{ textAlign: "right" }}>{formatCurrency(row.bill_rate)}</td>
-                                        </tr>
-                                    ))}
+                                    {pageItems.map((row, idx) => {
+                                        // Calculate or fallback Net Rate / Taxable Value after discount if not explicitly provided
+                                        const unitPrice = parseFloat(row.unit_price || 0);
+                                        const discVal = parseFloat(row.Discount_Value || 0);
+                                        const taxPct = parseFloat(row.tax_percentage || 0);
+                                        const calculatedNetRate = row.net_rate || (unitPrice * (1 - discVal / 100)) / (1 + taxPct / 100);
+
+                                        return (
+                                            <tr key={idx}>
+                                                <td style={{ textAlign: "center" }}>{row.SNo || (pageIndex * ITEMS_PER_PAGE + idx + 1)}</td>
+                                                <td style={{ textAlign: "left", fontSize: "9px" }}>{row.code || row.barcode || "-"}</td>
+                                                <td>
+                                                    <strong>{row.name}</strong><br />
+                                                    <span style={{ fontSize: "9.5px" }}>Unit UOM : {row.Item_BaseUOM || "Pcs"}</span>
+                                                </td>
+                                                <td style={{ textAlign: "center" }}>{row.hsn_code}</td>
+                                                <td style={{ textAlign: "center" }}>{row.tax_percentage}%</td>
+                                                <td style={{ textAlign: "center" }}>{row.bill_qty}</td>
+                                                <td style={{ textAlign: "right" }}>{formatCurrency(unitPrice)}</td>
+                                                <td style={{ textAlign: "center" }}>{row.Item_BaseUOM || "Pcs"}</td>
+                                                <td style={{ textAlign: "center" }}>{row.Discount_Value}%</td>
+                                                <td style={{ textAlign: "right" }}>{formatCurrency(calculatedNetRate)}</td>
+                                                <td style={{ textAlign: "right" }}>{formatCurrency(row.bill_rate)}</td>
+                                            </tr>
+                                        );
+                                    })}
 
                                     {isLastItemPage && taxData && taxData.map((tRow, tIdx) => (
                                         <tr key={`tax-row-${tIdx}`}>
                                             <td></td>
-                                            <td style={{ textAlign: "right" }}><strong>Output {tRow.tax_name_details}</strong></td>
                                             <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td style={{ textAlign: "right" }}><strong>{tRow.tax_name_details.replace(/[^0-9.]/g, '')}%</strong></td>
-                                            <td></td>
-                                            <td></td>
+                                            <td style={{ textAlign: "right" }} colSpan="6"><strong>Output {tRow.tax_name_details}</strong></td>
+                                            <td style={{ textAlign: "right" }} colSpan="2"><strong>{tRow.tax_name_details.replace(/[^0-9.]/g, '')}%</strong></td>
                                             <td style={{ textAlign: "right" }}><strong>{formatCurrency(tRow.tax_amt)}</strong></td>
                                         </tr>
                                     ))}
@@ -244,13 +254,8 @@ const Invoice = () => {
                                     {isLastItemPage && roundOff !== 0 && (
                                         <tr>
                                             <td></td>
-                                            <td style={{ textAlign: "right" }}><strong>Round Off</strong></td>
                                             <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
+                                            <td style={{ textAlign: "right" }} colSpan="8"><strong>Round Off</strong></td>
                                             <td style={{ textAlign: "right" }}><strong>{roundOff < 0 ? `(-)${formatCurrency(Math.abs(roundOff))}` : formatCurrency(roundOff)}</strong></td>
                                         </tr>
                                     )}
@@ -258,13 +263,8 @@ const Invoice = () => {
                                     {isLastItemPage && (
                                         <tr>
                                             <td></td>
-                                            <td style={{ textAlign: "right" }}><strong>Sub Total / Sale Amount</strong></td>
                                             <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
+                                            <td style={{ textAlign: "right" }} colSpan="8"><strong>Sub Total / Sale Amount</strong></td>
                                             <td style={{ textAlign: "right" }}><strong>{purchaseAmountFormatted}</strong></td>
                                         </tr>
                                     )}

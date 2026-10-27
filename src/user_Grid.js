@@ -1187,6 +1187,8 @@ function UserGrid() {
               onSelectionChanged={onSelectionChanged}
               pagination={true}
               onRowSelected={onRowSelected}
+              headerHeight={28}
+              rowHeight={25}
             />
           </div>
         </div>

@@ -319,6 +319,7 @@ function AttriHdrInput({ open, handleClose }) {
                               onChange={handleChangeStatus}
                               options={filteredOptionStatus}
                               className="exp-input-field"
+                              classNamePrefix="react-select"
                               placeholder=""
                               required
                               data-tip="Please select a payment type"
@@ -527,6 +528,7 @@ function AttriHdrInput({ open, handleClose }) {
                             onChange={handleChangeStatus}
                             options={filteredOptionStatus}
                             className="exp-input-field"
+                            classNamePrefix="react-select"
                             placeholder=""
                             required
                             data-tip="Please select a payment type"
