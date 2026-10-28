@@ -323,6 +323,7 @@ export default function InvIssuedPopup({ open, handleClose, InvIssuedData }) {
                                 <Select
                                   id="issuedType"
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Transaction Type"
                                   required
                                   value={selectedIssued}
@@ -355,6 +356,8 @@ export default function InvIssuedPopup({ open, handleClose, InvIssuedData }) {
                             pagination='true'
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+                            rowHeight={25}
                           />
                         </div>
                       </div>
@@ -418,6 +421,7 @@ export default function InvIssuedPopup({ open, handleClose, InvIssuedData }) {
                                 <Select
                                   id="issuedType"
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Transaction Type"
                                   required
                                   value={selectedIssued}
@@ -448,6 +452,8 @@ export default function InvIssuedPopup({ open, handleClose, InvIssuedData }) {
                               pagination='true'
                               onSelectionChanged={handleRowSelected}
                               onRowDoubleClicked={handleRowDoubleClick}
+                              headerHeight={28}
+                              rowHeight={25}
                             />
                           </div>
                         </div>

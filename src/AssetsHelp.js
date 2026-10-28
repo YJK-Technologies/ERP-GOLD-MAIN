@@ -252,6 +252,8 @@ export default function AssetsHelp({ open, handleClose, handleAssetsHelp }) {
                             defaultColDef={defaultColDef}
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+                            rowHeight={25}
                           />
                         </div>
                       </div>
@@ -352,6 +354,8 @@ export default function AssetsHelp({ open, handleClose, handleAssetsHelp }) {
                               pagination
                               onSelectionChanged={handleRowSelected}
                               onRowDoubleClicked={handleRowDoubleClick}
+                              headerHeight={28}
+                              rowHeight={25}
                             />
                           </div>
                         </div>

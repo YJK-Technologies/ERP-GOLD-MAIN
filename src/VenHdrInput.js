@@ -245,6 +245,7 @@ function VenHdrInput({ open, handleClose }) {
                               onChange={handleChangeStatus}
                               options={filteredOptionStatus}
                               className="exp-input-field"
+                              classNamePrefix="react-select"
                               placeholder=""
                               ref={Status}
                               onKeyDown={(e) => handleKeyDown(e, PanNo, Status)}
@@ -400,6 +401,7 @@ function VenHdrInput({ open, handleClose }) {
                               onChange={handleChangeStatus}
                               options={filteredOptionStatus}
                               className="exp-input-field"
+                              classNamePrefix="react-select"
                               placeholder=""
                             />
                             {error && !status && <div className="text-danger">Status should not be blank</div>}

@@ -438,6 +438,7 @@ export default function SalesItemPopup({ open, handleClose, handleItem, type, tr
                               id="OurBrand"
                               type="text"
                               placeholder='Our Brand'
+                              classNamePrefix="react-select"
                               value={selectedItemOurBrand}
                               onChange={handleChangeItemOurBrand}
                               options={filteredOptionItemOurBrand}
@@ -448,6 +449,7 @@ export default function SalesItemPopup({ open, handleClose, handleItem, type, tr
                               id="status"
                               type="text"
                               placeholder='Status'
+                              classNamePrefix="react-select"
                               value={selectedStatus}
                               onChange={handleStatusChange}
                               options={filteredOptionStatus}
@@ -576,6 +578,7 @@ export default function SalesItemPopup({ open, handleClose, handleItem, type, tr
                             <Select
                               id="status"
                               type="text"
+                              classNamePrefix="react-select"
                               value={selectedStatus}
                               onChange={handleStatusChange}
                               options={filteredOptionStatus}

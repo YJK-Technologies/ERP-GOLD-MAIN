@@ -64,77 +64,77 @@ const UnplannedReceipt = () => {
   const [loading, setLoading] = useState(false);
   const [warehouse, setWarehouse] = useState('');
 
- //code added by Ramya  purpose of keyboard shortcut functionality
-      useEffect(() => {
-          const handleKeyDown = (e) => {
-            // 1. Ensure keys only trigger on F-keys
-            if (!['F1', 'F3', 'F4', 'F5', 'F6', 'F8'].includes(e.key)) {
-              return;
-            }
-      
-            // 2. Prevent default browser shortcut actions (e.g., F1 Help, F5 Refresh)
-            e.preventDefault();
-            e.stopPropagation();
-      
-            // 3. Prevent execution if screen is currently loading
-            if (loading) return;
-      
-            switch (e.key) {
-              case 'F1':
-                // Open Item Search Popup
-                setOpen(true); 
-                break;
-      
-  
-              case 'F3':
-                // New / Reset Sales Invoice Form
-                if (window.confirm("Start a new adjustment? Unsaved changes will be lost.")) {
-                  handleReload(); 
-                }
-                break;  
-      
-              case 'F4':
-                // Save / Complete Invoice (Same logic as Save Button)
-                handleSaveButtonClick(); 
-                break;
-      
-              case 'F5':
-                // Search Existing Invoices to Edit
-                setOpen1(true); 
-                break;
-      
-              case 'F6':
-                // Delete selected line item in AG Grid
-                if ( issuedId) {
-                  handleDeleteButtonClick();
-                } else {
-                  alert("Please save the invoice before deleting.");
-                }
-                break;
-      
-              case 'F8':
-                // Print Invoice
-                if (showExcelButton && issuedId) {
-                  generateReport();
-                } else {
-                  alert("Please save the invoice before printing.");
-                }
-                break;
-      
-              default:
-                break;
-            }
-          };
-      
-          // Attach listener
-          window.addEventListener('keydown', handleKeyDown);
-      
-          // Clean up listener on unmount
-          return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-          };
-        }, [loading, showExcelButton, issuedId, rowData]);
-      
+  //code added by Ramya  purpose of keyboard shortcut functionality
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // 1. Ensure keys only trigger on F-keys
+      if (!['F1', 'F3', 'F4', 'F5', 'F6', 'F8'].includes(e.key)) {
+        return;
+      }
+
+      // 2. Prevent default browser shortcut actions (e.g., F1 Help, F5 Refresh)
+      e.preventDefault();
+      e.stopPropagation();
+
+      // 3. Prevent execution if screen is currently loading
+      if (loading) return;
+
+      switch (e.key) {
+        case 'F1':
+          // Open Item Search Popup
+          setOpen(true);
+          break;
+
+
+        case 'F3':
+          // New / Reset Sales Invoice Form
+          if (window.confirm("Start a new adjustment? Unsaved changes will be lost.")) {
+            handleReload();
+          }
+          break;
+
+        case 'F4':
+          // Save / Complete Invoice (Same logic as Save Button)
+          handleSaveButtonClick();
+          break;
+
+        case 'F5':
+          // Search Existing Invoices to Edit
+          setOpen1(true);
+          break;
+
+        case 'F6':
+          // Delete selected line item in AG Grid
+          if (issuedId) {
+            handleDeleteButtonClick();
+          } else {
+            alert("Please save the invoice before deleting.");
+          }
+          break;
+
+        case 'F8':
+          // Print Invoice
+          if (showExcelButton && issuedId) {
+            generateReport();
+          } else {
+            alert("Please save the invoice before printing.");
+          }
+          break;
+
+        default:
+          break;
+      }
+    };
+
+    // Attach listener
+    window.addEventListener('keydown', handleKeyDown);
+
+    // Clean up listener on unmount
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [loading, showExcelButton, issuedId, rowData]);
+
   //code ended by Ramya  purpose of keyboard shortcut functionality
 
 
@@ -333,22 +333,22 @@ const UnplannedReceipt = () => {
         toast.warning('Data not found!', {
           onClose: () => {
             // const updatedRowData = rowData.map(row => {
-              setRowData(prevRowData =>
+            setRowData(prevRowData =>
               prevRowData.map(row => {
-              if (row.itemCode === params.data.itemCode) {
-                return {
-                  ...row,
-                  itemCode: '',
-                  itemName: '',
-                  unitWeight: 0,
-                  purchaseAmt: 0,
-                  taxType: '',
-                  taxDetails: '',
-                  taxPer: '',
-                  warehouse: ''
-                };
-              }
-              return row;
+                if (row.itemCode === params.data.itemCode) {
+                  return {
+                    ...row,
+                    itemCode: '',
+                    itemName: '',
+                    unitWeight: 0,
+                    purchaseAmt: 0,
+                    taxType: '',
+                    taxDetails: '',
+                    taxPer: '',
+                    warehouse: ''
+                  };
+                }
+                return row;
               })
             );
             // setRowData(updatedRowData);
@@ -596,7 +596,7 @@ const UnplannedReceipt = () => {
     setOpen1(false);
     setOpen2(false);
     setOpen3(false);
-    
+
   };
 
 
@@ -1310,7 +1310,7 @@ const UnplannedReceipt = () => {
     }
   };
 
-  
+
 
   const handleInvReceipt = () => {
     setOpen2(true);
@@ -1357,7 +1357,7 @@ const UnplannedReceipt = () => {
     }
   };
 
-  
+
 
   const InventoryReceipt = async (ReceiptID) => {
     try {
@@ -1450,79 +1450,79 @@ const UnplannedReceipt = () => {
 
   const handleExcelDownload = () => {
 
-  const filteredRowData = rowData.filter(row => row.quantityReceived > 0);
+    const filteredRowData = rowData.filter(row => row.quantityReceived > 0);
 
-  if (rowData.length === 0 || !receiptId || !receiptDate || !selectedReceipt) {
-    toast.warning("No Data Available");
-    return;
-  }
+    if (rowData.length === 0 || !receiptId || !receiptDate || !selectedReceipt) {
+      toast.warning("No Data Available");
+      return;
+    }
 
-  const headerData = [{
-    "Transaction ID": receiptId,
-    "Transaction Date": receiptDate,
-    "Transaction Type": selectedReceipt.value,
-  }];
+    const headerData = [{
+      "Transaction ID": receiptId,
+      "Transaction Date": receiptDate,
+      "Transaction Type": selectedReceipt.value,
+    }];
 
-  const transformedData = transformRowData(filteredRowData);
+    const transformedData = transformRowData(filteredRowData);
 
-  // Header Sheet
-  const headerSheet = XLSX.utils.aoa_to_sheet([
-    ["Inventory Receipt"],
-    [`Company Name : ${companyName}`],
-    [],
-  ]);
+    // Header Sheet
+    const headerSheet = XLSX.utils.aoa_to_sheet([
+      ["Inventory Receipt"],
+      [`Company Name : ${companyName}`],
+      [],
+    ]);
 
-  XLSX.utils.sheet_add_json(headerSheet, headerData, {
-    origin: "A4",
-  });
-
-  // Merge Heading
-  headerSheet["!merges"] = [
-    {
-      s: { r: 0, c: 0 }, // A1
-      e: { r: 0, c: 7 }, // H1
-    },
-    {
-      s: { r: 1, c: 0 }, // A2
-      e: { r: 1, c: 7 }, // H2
-    },
-  ];
-
-  // Details Sheet
-  const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
-
-  // Auto Fit Function
-  const autoFitColumns = (worksheet, data) => {
-    const cols = [];
-
-    data.forEach((row) => {
-      Object.keys(row).forEach((key, i) => {
-        const value = row[key] == null ? "" : row[key].toString();
-
-        cols[i] = Math.max(
-          cols[i] || key.length,
-          key.length,
-          value.length
-        );
-      });
+    XLSX.utils.sheet_add_json(headerSheet, headerData, {
+      origin: "A4",
     });
 
-    worksheet["!cols"] = cols.map(width => ({
-      wch: width + 5,
-    }));
+    // Merge Heading
+    headerSheet["!merges"] = [
+      {
+        s: { r: 0, c: 0 }, // A1
+        e: { r: 0, c: 7 }, // H1
+      },
+      {
+        s: { r: 1, c: 0 }, // A2
+        e: { r: 1, c: 7 }, // H2
+      },
+    ];
+
+    // Details Sheet
+    const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
+
+    // Auto Fit Function
+    const autoFitColumns = (worksheet, data) => {
+      const cols = [];
+
+      data.forEach((row) => {
+        Object.keys(row).forEach((key, i) => {
+          const value = row[key] == null ? "" : row[key].toString();
+
+          cols[i] = Math.max(
+            cols[i] || key.length,
+            key.length,
+            value.length
+          );
+        });
+      });
+
+      worksheet["!cols"] = cols.map(width => ({
+        wch: width + 5,
+      }));
+    };
+
+    // Apply Auto Width
+    autoFitColumns(headerSheet, headerData);
+    autoFitColumns(rowDataSheet, transformedData);
+
+    // Workbook
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
+
+    XLSX.writeFile(workbook, "Inventory_Receipt.xlsx");
   };
-
-  // Apply Auto Width
-  autoFitColumns(headerSheet, headerData);
-  autoFitColumns(rowDataSheet, transformedData);
-
-  // Workbook
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
-  XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
-
-  XLSX.writeFile(workbook, "Inventory_Receipt.xlsx");
-};
 
   const handleAddRow = () => {
     const serialNumber = rowData.length + 1;
@@ -1562,25 +1562,25 @@ const UnplannedReceipt = () => {
 
   // For default warehouse
   useEffect(() => {
-  if (!selectedWarehouse) {
-    return;
-  }
+    if (!selectedWarehouse) {
+      return;
+    }
 
-  setRowData(prevRowData =>
-    prevRowData.map(row => {
-      // Only set default warehouse if the row has no warehouse
-      if (!row.warehouse || row.warehouse.trim() === '') {
-        return {
-          ...row,
-          warehouse: selectedWarehouse.value
-        };
-      }
+    setRowData(prevRowData =>
+      prevRowData.map(row => {
+        // Only set default warehouse if the row has no warehouse
+        if (!row.warehouse || row.warehouse.trim() === '') {
+          return {
+            ...row,
+            warehouse: selectedWarehouse.value
+          };
+        }
 
-      // Keep existing warehouse value
-      return row;
-    })
-  );
-}, [selectedWarehouse]);
+        // Keep existing warehouse value
+        return row;
+      })
+    );
+  }, [selectedWarehouse]);
 
   const handlePoData = (data) => {
     console.log('Data received by handleWarehouse:', data);
@@ -1724,7 +1724,7 @@ const UnplannedReceipt = () => {
                   />
                   <div className='position-absolute mt-1 me-2'>
                     <span className="icon searchIcon"
-                    title='Inventory Receipt Help'
+                      title='Inventory Receipt Help'
                       onClick={handleInvReceipt}>
                       <i class="fa fa-search"></i>
                     </span>
@@ -1755,35 +1755,37 @@ const UnplannedReceipt = () => {
             </label>
               <div class="exp-form-floating">
                 <div title="Selecta Transaction Type">
-                <Select
-                  id="receiptType"
-                  className="exp-input-field"
-                  placeholder=""
-                  required
-                  value={selectedReceipt}
-                  onChange={handleChangeReceipt}
-                  options={filteredOptionReceipt}
-                  data-tip="Please select a transaction type"
-                  styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
-                />
-              </div>
+                  <Select
+                    id="receiptType"
+                    className="exp-input-field"
+                    classNamePrefix="react-select"
+                    placeholder=""
+                    required
+                    value={selectedReceipt}
+                    onChange={handleChangeReceipt}
+                    options={filteredOptionReceipt}
+                    data-tip="Please select a transaction type"
+                    styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                  />
+                </div>
               </div>
             </div>
             <div className="col-md-3 form-group mb-2">
               <label for="">Default Warehouse</label>
               <div class="exp-form-floating">
-                 <div title="Select a Default Warehouse">
-                <Select
-                  id="returnType"
-                  className="exp-input-field"
-                  placeholder=""
-                  required
-                  value={selectedWarehouse}
-                  onChange={handleChangeWarehouse}
-                  options={filteredOptionWarehouse}
-                  data-tip="Please select a default warehouse"
-                  styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
-                />
+                <div title="Select a Default Warehouse">
+                  <Select
+                    id="returnType"
+                    className="exp-input-field"
+                    classNamePrefix="react-select"
+                    placeholder=""
+                    required
+                    value={selectedWarehouse}
+                    onChange={handleChangeWarehouse}
+                    options={filteredOptionWarehouse}
+                    data-tip="Please select a default warehouse"
+                    styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                  />
                 </div>
               </div>
             </div>
@@ -1820,9 +1822,11 @@ const UnplannedReceipt = () => {
               rowData={rowData}
               defaultColDef={{ editable: true, resizable: true }}
               onCellValueChanged={handleCellValueChanged}
+              headerHeight={28}
+              rowHeight={25}
             />
           </div>
-        </div>  
+        </div>
       </div>
       <div>
         <InventoryReceiptItemPopup open={open} handleClose={handleClose} handleItem={handleItem} />

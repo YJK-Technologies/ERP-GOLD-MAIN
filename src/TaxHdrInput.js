@@ -395,6 +395,7 @@ function TaxHdrInput({ open, handleClose }) {
                             onChange={handleChangeTransaction}
                             options={filteredOptionTransaction}
                             className="exp-input-field"
+                            classNamePrefix="react-select"
                             placeholder=""
                             maxLength={250}
                             ref={transactionType}
@@ -419,6 +420,7 @@ function TaxHdrInput({ open, handleClose }) {
                           onChange={handleChangeTaxtype}
                           options={filteredOptionTaxtype}
                           className="exp-input-field"
+                          classNamePrefix="react-select"
                           placeholder=""
                           maxLength={18}
                           ref={taxOfType}
@@ -440,6 +442,7 @@ function TaxHdrInput({ open, handleClose }) {
                             onChange={handleChangeStatus}
                             options={filteredOptionStatus}
                             className="exp-input-field"
+                            classNamePrefix="react-select"
                             placeholder=""
                             maxLength={18}
                             ref={Status}
@@ -621,6 +624,7 @@ function TaxHdrInput({ open, handleClose }) {
                             onChange={handleChangeTransaction}
                             options={filteredOptionTransaction}
                             className="exp-input-field"
+                            classNamePrefix="react-select"
                             placeholder=""
                             maxLength={250}
                           />
@@ -642,6 +646,7 @@ function TaxHdrInput({ open, handleClose }) {
                             onChange={handleChangeStatus}
                             options={filteredOptionStatus}
                             className="exp-input-field"
+                            classNamePrefix="react-select"
                             placeholder=""
                             maxLength={18}
                           />

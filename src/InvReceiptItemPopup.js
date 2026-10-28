@@ -432,6 +432,7 @@ export default function InventoryReceiptItemPopup({ open, handleClose, handleIte
                                 onChange={handleChangeBrand}
                                 options={filteredOptionBrand}
                                 className="exp-input-field"
+                                classNamePrefix="react-select"
                                 placeholder="Our Brand"
                                 isClearable
                                 ref={ourbrand}
@@ -447,6 +448,7 @@ export default function InventoryReceiptItemPopup({ open, handleClose, handleIte
                                 onChange={handleChangeStatus}
                                 options={filteredOptionStatus}
                                 className="exp-input-field"
+                                classNamePrefix="react-select"
                                 placeholder="Status"
                                 isClearable
                               />
@@ -474,6 +476,8 @@ export default function InventoryReceiptItemPopup({ open, handleClose, handleIte
                             pagination
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+                            rowHeight={25}
                           />
                         </div>
                       </div>
@@ -564,6 +568,7 @@ export default function InventoryReceiptItemPopup({ open, handleClose, handleIte
                                 onChange={handleChangeBrand}
                                 options={filteredOptionBrand}
                                 className="exp-input-field"
+                                classNamePrefix="react-select"
                                 placeholder="Our Brand"
                                 isClearable
                                 ref={ourbrand}
@@ -579,6 +584,7 @@ export default function InventoryReceiptItemPopup({ open, handleClose, handleIte
                                 onChange={handleChangeStatus}
                                 options={filteredOptionStatus}
                                 className="exp-input-field"
+                                classNamePrefix="react-select"
                                 placeholder="Status"
                                 isClearable
                               />
@@ -606,6 +612,8 @@ export default function InventoryReceiptItemPopup({ open, handleClose, handleIte
                             pagination
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+                            rowHeight={25}
                           />
                         </div>
                       </div>

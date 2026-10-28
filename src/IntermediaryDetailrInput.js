@@ -467,6 +467,7 @@ function IntermediaryDetailInput({}) {
                         onChange={handleChangeHeader}
                         options={filteredOptionHeader}
                         className="exp-input-field position-relative"
+                        classNamePrefix="react-select"
                         placeholder=""
                         required
                         ref={code}
@@ -637,6 +638,7 @@ function IntermediaryDetailInput({}) {
                         onChange={handleChangeCity}
                         options={filteredOptionCity}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         ref={City}
                         onKeyDown={(e) => handleKeyDown(e, State, City)}
@@ -664,6 +666,7 @@ function IntermediaryDetailInput({}) {
                         onChange={handleChangeState}
                         options={filteredOptionState}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         ref={State}
                         onKeyDown={(e) => handleKeyDown(e, Country, State)}
@@ -691,6 +694,7 @@ function IntermediaryDetailInput({}) {
                         onChange={handleChangeCountry}
                         options={filteredOptionCountry}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         ref={Country}
                         onKeyDown={(e) => handleKeyDown(e, IMEx, Country)}

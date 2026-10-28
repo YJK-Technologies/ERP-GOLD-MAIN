@@ -933,6 +933,8 @@ function CurrencyExchangeRate() {
             pagination={true}
             paginationAutoPageSize={true}
             onRowSelected={onRowSelected}
+            headerHeight={28}
+            rowHeight={25}
           />
         </div>
       </div>

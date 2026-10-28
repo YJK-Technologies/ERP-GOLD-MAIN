@@ -1369,6 +1369,8 @@ function AssertAllocation({ }) {
               onCellValueChanged={async (event) => {
                 handleCellValueChanged(event);
               }}
+              headerHeight={28}
+              rowHeight={25}
             />
           </div>
           <div className="mobileview ag-theme-alpine ms-4 pe-4" style={{ height: 437, width: "100%" }}>
@@ -1376,6 +1378,8 @@ function AssertAllocation({ }) {
               columnDefs={columnDefs}
               rowData={rowData}
               defaultColDef={{ editable: true, resizable: true }}
+              headerHeight={28}
+              rowHeight={25}
               onCellValueChanged={async (event) => {
                 handleCellValueChanged(event);
               }}

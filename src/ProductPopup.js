@@ -330,7 +330,7 @@ export default function ProductPopup({ open, handleClose, ProductData }) {
                       </div>
                       <div className="row">
                         <div className="col">
-                          <div className="ag-theme-alpine" style={{ height: '400px', width: '100%' }}>
+                          <div className="ag-theme-alpine" style={{ height: 437, width: '100%' }}>
                             <AgGridReact
                               rowData={rowData}
                               columnDefs={columnDefs}
@@ -338,6 +338,8 @@ export default function ProductPopup({ open, handleClose, ProductData }) {
                               rowSelection="single"
                               pagination='true'
                               onSelectionChanged={handleRowSelected}
+                              headerHeight={28}
+                              rowHeight={25}
                             />
                           </div>
                         </div>
@@ -422,7 +424,7 @@ export default function ProductPopup({ open, handleClose, ProductData }) {
                       </div>
                       <div className="row">
                         <div className="col">
-                          <div className="ag-theme-alpine" style={{ height: '400px', width: '100%' }}>
+                          <div className="ag-theme-alpine" style={{ height: 437, width: '100%' }}>
                             <AgGridReact
                               rowData={rowData}
                               columnDefs={columnDefs}
@@ -430,6 +432,8 @@ export default function ProductPopup({ open, handleClose, ProductData }) {
                               rowSelection="single"
                               pagination='true'
                               onSelectionChanged={handleRowSelected}
+                              headerHeight={28}
+                              rowHeight={25}
                             />
                           </div>
                         </div>

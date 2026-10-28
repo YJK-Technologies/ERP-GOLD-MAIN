@@ -459,6 +459,8 @@ export default function PurchaseOrderPopup({ open, handleClose, handlePoData }) 
                             pagination='true'
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+                            rowHeight={25}
                           />
                         </div>
                       </div>
@@ -559,6 +561,8 @@ export default function PurchaseOrderPopup({ open, handleClose, handlePoData }) 
                               pagination='true'
                               onSelectionChanged={handleRowSelected}
                               onRowDoubleClicked={handleRowDoubleClick}
+                              headerHeight={28}
+                              rowHeight={25}
                             />
                           </div>
                         </div>

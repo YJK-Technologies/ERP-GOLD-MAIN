@@ -196,7 +196,6 @@ function Grid() {
   const handleChangeStatus = (selectedStatus) => {
     setSelectedStatus(selectedStatus);
     setStatus(selectedStatus ? selectedStatus.value : "");
-    setHasValueChanged(true);
   };
 
   const handleCompanyNoChange = (event) => {
