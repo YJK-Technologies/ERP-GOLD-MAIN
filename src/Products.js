@@ -1872,6 +1872,8 @@ const Product = () => {
               columnDefs={columnDefs}
               rowData={rowData}
               rowSelection="multiple"
+              headerHeight={28}
+              rowHeight={25}
               defaultColDef={{ editable: true, resizable: true }}
               onCellValueChanged={async (event) => {
                 handleCellValueChanged(event);

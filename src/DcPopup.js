@@ -484,6 +484,8 @@ export default function ItemPopup({ open, handleClose, handleDcData }) {
                             pagination='true'
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+                            rowHeight={25}
                           />
                         </div>
                       </div>
@@ -584,6 +586,8 @@ export default function ItemPopup({ open, handleClose, handleDcData }) {
                               pagination='true'
                               onSelectionChanged={handleRowSelected}
                               onRowDoubleClicked={handleRowDoubleClick}
+                              headerHeight={28}
+                              rowHeight={25}
                             />
                           </div>
                         </div>

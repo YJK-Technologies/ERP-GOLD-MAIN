@@ -1002,6 +1002,8 @@ setcode("");
               paginationAutoPageSize={true}
               onSelectionChanged={onSelectionChanged}
               onRowSelected={onRowSelected}
+              headerHeight={28}
+              rowHeight={25}
             />
           </div>
         </div>

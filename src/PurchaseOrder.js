@@ -2120,8 +2120,12 @@ function PurchaseOrder() {
       toast.warning("Error: Missing required fields");
       return;
     }
+
+    const actionLabel = selectedscreens?.label || "data";
+    const actionValue = selectedscreens?.value || "data"; 
+
     showConfirmationToast(
-      "Are you sure you want to update the data ?",
+      `Are you sure you want to ${actionLabel} the data ?`,
       async () => {
         setLoading(true);
 
@@ -2165,7 +2169,7 @@ function PurchaseOrder() {
             await savePurchaseOrderTaxDetail(transactionNo);
             await savequoDetailTerms(transactionNo);
             setShowExcelButton(true);
-            toast.success("Purchase Order Data updated Successfully");
+            toast.success(`Purchase Order Data ${actionValue} Successfully`);
           } else {
             const errorResponse = await response.json();
             console.error(errorResponse.message);
@@ -2179,7 +2183,7 @@ function PurchaseOrder() {
         }
       },
       () => {
-        toast.info("Data update cancelled.");
+        toast.info(`Data ${actionLabel} cancelled.`);
       },
     );
   };
@@ -3609,7 +3613,8 @@ function PurchaseOrder() {
                     value={selectedscreens}
                     onChange={handleChangeScreens}
                     options={filteredOptionScreens}
-                    data-tip="Please select a default warehouse"
+                    classNamePrefix="react-select"
+                    data-tip="Please select a status"
                     styles={{
                       menu: (provided) => ({ ...provided, zIndex: 9999 }),
                     }}

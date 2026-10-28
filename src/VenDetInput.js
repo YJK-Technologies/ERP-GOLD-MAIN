@@ -623,6 +623,7 @@ function VenDetInput({ }) {
                         onChange={handleChangeCode}
                         options={filteredOptionCode}
                         className="exp-input-field position-relative"
+                        classNamePrefix="react-select"
                         placeholder=""
                         maxLength={18}
                         ref={code}
@@ -729,6 +730,7 @@ function VenDetInput({ }) {
                         onChange={handleChangeCity}
                         options={filteredOptionCity}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         ref={City}
                         onKeyDown={(e) => handleKeyDown(e, State, City)}
@@ -752,6 +754,7 @@ function VenDetInput({ }) {
                         onChange={handleChangeState}
                         options={filteredOptionState}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         ref={State}
                         onKeyDown={(e) => handleKeyDown(e, Country, State)}
@@ -774,6 +777,7 @@ function VenDetInput({ }) {
                         onChange={handleChangeCountry}
                         options={filteredOptionCountry}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         ref={Country}
                         onKeyDown={(e) => handleKeyDown(e, Imex, Country)}
@@ -962,6 +966,7 @@ function VenDetInput({ }) {
                         onChange={handleChangeTransport}
                         options={filteredOptionTransaction}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         ref={TRansport}
                         onKeyDown={(e) => handleKeyDown(e, Sales, TRansport)}
@@ -982,6 +987,7 @@ function VenDetInput({ }) {
                         onChange={handleChangeSales}
                         options={filteredOptionSales}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         ref={Sales}
                         onKeyDown={(e) => handleKeyDown(e, Broker, Sales)}
@@ -1003,6 +1009,7 @@ function VenDetInput({ }) {
                         onChange={handleChangeBroker}
                         options={filteredOptionBroker}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         ref={Broker}
                         onKeyDown={(e) => handleKeyDown(e, Week, Broker)}
@@ -1043,6 +1050,7 @@ function VenDetInput({ }) {
                         onChange={handleChangeOffice}
                         options={filteredOptionOffice}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         ref={OfficeT}
                         onKeyDown={(e) => handleKeyDown(e, Contact, OfficeT)}

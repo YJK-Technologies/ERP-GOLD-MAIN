@@ -441,7 +441,7 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                             <input
                               type='text'
                               id='Vendor_code'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               title='Enter the Customer Code'
                               placeholder='Customer Code'
                               maxLength={10}
@@ -455,7 +455,7 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                             <input
                               type='text'
                               id='Variant'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               title='Enter the Customer Name'
                               placeholder='Customer Name'
                               value={customer_name}
@@ -476,6 +476,7 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                                   onChange={handleChangeStatus}
                                   options={filteredOptionStatus}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Status"
                                   isClearable
                                 />
@@ -492,6 +493,7 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                                   onChange={handleChangeState}
                                   options={filteredOptionState}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="State"
                                   isClearable
                                 />
@@ -519,6 +521,8 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                             pagination
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+              rowHeight={25}
                           />
                         </div>
                       </div>
@@ -554,7 +558,7 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                             <input
                               type='text'
                               id='Vendor_code'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               placeholder='Customer Code'
                               maxLength={10}
                               value={customer_code}
@@ -567,7 +571,7 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                             <input
                               type='text'
                               id='Variant'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               placeholder='Customer Name'
                               value={customer_name}
                               maxLength={250}
@@ -588,6 +592,7 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                                   onChange={handleChangeStatus}
                                   options={filteredOptionStatus}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Status"
                                   isClearable
                                 />
@@ -604,6 +609,7 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                                   onChange={handleChangeState}
                                   options={filteredOptionState}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="State"
                                   isClearable
                                 />
@@ -630,6 +636,8 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                               pagination
                               onSelectionChanged={handleRowSelected}
                               onRowDoubleClicked={handleRowDoubleClick}
+                              headerHeight={28}
+              rowHeight={25}
                             />
                           </div>
                         </div>

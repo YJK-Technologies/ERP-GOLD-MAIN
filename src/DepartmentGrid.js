@@ -643,6 +643,8 @@ function Department() {
               onSelectionChanged={onSelectionChanged}
               onCellValueChanged={onCellValueChanged}
               onRowSelected={onRowSelected}
+              headerHeight={28}
+              rowHeight={25}
             />
           </div>
         </div>

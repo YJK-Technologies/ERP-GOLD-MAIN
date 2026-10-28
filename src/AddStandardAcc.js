@@ -306,6 +306,7 @@ body: JSON.stringify({ company_code }),
                 onChange={handleChangebaseacc}
                 options={filteredOptionbaseacc}
                 className="exp-input-field position-relative"
+                classNamePrefix="react-select"
                 placeholder=""
                 ref={Base}
                 onKeyDown={(e) => handleKeyDown(e, Account, Base)}
@@ -386,6 +387,7 @@ body: JSON.stringify({ company_code }),
                 onChange={handleChangeStatus}
                 options={filteredOptionStatus}
                 className="exp-input-field"
+                classNamePrefix="react-select"
                 placeholder=""
                 ref={Status}
                 onKeyDown={(e) => handleKeyDown(e, Delete, Status)}
@@ -413,6 +415,7 @@ body: JSON.stringify({ company_code }),
                 onChange={handleChangeDelete}
                 options={filteredOptionDelete}
                 className="exp-input-field"
+                classNamePrefix="react-select"
                 placeholder=""
                 required
                 ref={Delete}

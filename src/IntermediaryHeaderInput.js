@@ -309,6 +309,7 @@ function IntermediaryHdrInput({ open, handleClose }) {
                             onChange={handleChangeStatus}
                             options={filteredOptionStatus}
                             className="exp-input-field"
+                            classNamePrefix="react-select"
                             placeholder=""
                             required
                             ref={Status}
@@ -357,6 +358,7 @@ function IntermediaryHdrInput({ open, handleClose }) {
                             onChange={handleChangeDelete}
                             options={filteredOptionDelete}
                             className="exp-input-field"
+                            classNamePrefix="react-select"
                             placeholder=""
                             required
                             ref={Permission}

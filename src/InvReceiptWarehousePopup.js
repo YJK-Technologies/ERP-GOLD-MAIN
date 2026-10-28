@@ -293,6 +293,7 @@ export default function InventoryReceiptWarehousePopup({ open, handleClose, hand
                                 onChange={handleChangeStatus}
                                 options={filteredOptionStatus}
                                 className="exp-input-field"
+                                classNamePrefix="react-select"
                                 placeholder="Status"
                                 isClearable
                               />
@@ -306,6 +307,7 @@ export default function InventoryReceiptWarehousePopup({ open, handleClose, hand
                                 onChange={handleChangeLocation}
                                 options={filteredOptionLocation}
                                 className="exp-input-field"
+                                classNamePrefix="react-select"
                                 placeholder="Location No"
                                 isClearable
                               />
@@ -345,6 +347,8 @@ export default function InventoryReceiptWarehousePopup({ open, handleClose, hand
                             pagination
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+                            rowHeight={25}
                           />
                         </div>
                       </div>
@@ -421,6 +425,7 @@ export default function InventoryReceiptWarehousePopup({ open, handleClose, hand
                                 onChange={handleChangeStatus}
                                 options={filteredOptionStatus}
                                 className="exp-input-field"
+                                classNamePrefix="react-select"
                                 placeholder="Status"
                                 isClearable
                               />
@@ -434,6 +439,7 @@ export default function InventoryReceiptWarehousePopup({ open, handleClose, hand
                                 onChange={handleChangeLocation}
                                 options={filteredOptionLocation}
                                 className="exp-input-field"
+                                classNamePrefix="react-select"
                                 placeholder="Location No"
                                 isClearable
                               />
@@ -471,6 +477,8 @@ export default function InventoryReceiptWarehousePopup({ open, handleClose, hand
                               pagination
                               onSelectionChanged={handleRowSelected}
                               onRowDoubleClicked={handleRowDoubleClick}
+                              headerHeight={28}
+                              rowHeight={25}
                             />
                           </div>
                         </div>

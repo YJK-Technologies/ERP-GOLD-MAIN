@@ -348,6 +348,7 @@ function WareHouseInput({ }) {
                       onChange={handleChangeStatus}
                       options={filteredOptionStatus}
                       className="exp-input-field"
+                      classNamePrefix="react-select"
                       placeholder=""
                       ref={Status}
                       onKeyDown={(e) => handleKeyDown(e, LocatioN, Status)}
@@ -373,6 +374,7 @@ function WareHouseInput({ }) {
                       onChange={handleChangeLocation}
                       options={filteredOptionLocation}
                       className="exp-input-field"
+                      classNamePrefix="react-select"
                       placeholder=""
                       ref={LocatioN}
                       onKeyDown={(e) => {

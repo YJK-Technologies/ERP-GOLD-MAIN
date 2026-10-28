@@ -429,6 +429,7 @@ export default function InventoryReturnItemPopup({ open, handleClose, handleItem
                                 onChange={handleChangeBrand}
                                 options={filteredOptionBrand}
                                 className="exp-input-field"
+                                classNamePrefix="react-select"
                                 placeholder="Our Brand"
                                 isClearable
                                 ref={ourbrand}
@@ -444,6 +445,7 @@ export default function InventoryReturnItemPopup({ open, handleClose, handleItem
                                 onChange={handleChangeStatus}
                                 options={filteredOptionStatus}
                                 className="exp-input-field"
+                                classNamePrefix="react-select"
                                 placeholder="Status"
                                 isClearable
                               />
@@ -471,6 +473,8 @@ export default function InventoryReturnItemPopup({ open, handleClose, handleItem
                             pagination
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+                            rowHeight={25}
                           />
                         </div>
                       </div>
@@ -561,6 +565,7 @@ export default function InventoryReturnItemPopup({ open, handleClose, handleItem
                                 onChange={handleChangeBrand}
                                 options={filteredOptionBrand}
                                 className="exp-input-field"
+                                classNamePrefix="react-select"
                                 placeholder="Our Brand"
                                 isClearable
                                 ref={ourbrand}
@@ -576,6 +581,7 @@ export default function InventoryReturnItemPopup({ open, handleClose, handleItem
                                 onChange={handleChangeStatus}
                                 options={filteredOptionStatus}
                                 className="exp-input-field"
+                                classNamePrefix="react-select"
                                 placeholder="Status"
                                 isClearable
                               />
@@ -602,6 +608,8 @@ export default function InventoryReturnItemPopup({ open, handleClose, handleItem
                               pagination
                               onSelectionChanged={handleRowSelected}
                               onRowDoubleClicked={handleRowDoubleClick}
+                              headerHeight={28}
+                              rowHeight={25}
                             />
                           </div>
                         </div>

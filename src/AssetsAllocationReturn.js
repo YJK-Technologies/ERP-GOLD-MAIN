@@ -1065,6 +1065,8 @@ XLSX.writeFile(
               defaultColDef={{ editable: true, resizable: true }}
               onGridReady={onGridReady}
               onColumnMoved={onColumnMoved}
+              headerHeight={28}
+              rowHeight={25}
             />
           </div>
           <div>

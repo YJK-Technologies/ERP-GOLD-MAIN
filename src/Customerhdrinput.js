@@ -239,6 +239,7 @@ function CustomerHdrInput({ open, handleClose }) {
                               onChange={handleChangeStatus}
                               options={filteredOptionStatus}
                               className="exp-input-field"
+                              classNamePrefix="react-select"
                               placeholder=""
                               ref={Status}
                               // onKeyDown={(e) => handleKeyDown(e, Status)}

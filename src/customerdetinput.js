@@ -661,6 +661,7 @@ function CustomerDetInput({ }) {
                         options={filteredOptionCode}
                         className="exp-input-field position-relative"
                         placeholder=""
+                        classNamePrefix="react-select"
                         maxLength={18}
                         ref={code}
                         onKeyDown={(e) => handleKeyDown(e, Address1, code)}
@@ -764,6 +765,7 @@ function CustomerDetInput({ }) {
                         onChange={handleChangeCity}
                         options={filteredOptionCity}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         ref={City}
                         onKeyDown={(e) => handleKeyDown(e, code, City)}
@@ -787,6 +789,7 @@ function CustomerDetInput({ }) {
                         onChange={handleChangeState}
                         options={filteredOptionState}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         ref={code}
                         onKeyDown={(e) => handleKeyDown(e, Country, code)}
@@ -810,6 +813,7 @@ function CustomerDetInput({ }) {
                         onChange={handleChangeCountry}
                         options={filteredOptionCountry}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         ref={Country}
                         onKeyDown={(e) => handleKeyDown(e, IMEx, Country)}
@@ -994,6 +998,7 @@ function CustomerDetInput({ }) {
                         onChange={handleChangeTransport}
                         options={filteredOptionTransaction}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         ref={Transport}
                         onKeyDown={(e) => handleKeyDown(e, Salesman, Transport)}
@@ -1013,6 +1018,7 @@ function CustomerDetInput({ }) {
                         onChange={handleChangeSales}
                         options={filteredOptionSales}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         ref={Salesman}
                         onKeyDown={(e) => handleKeyDown(e, Broker, Salesman)}
@@ -1032,6 +1038,7 @@ function CustomerDetInput({ }) {
                         onChange={handleChangeBroker}
                         options={filteredOptionBroker}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         ref={Broker}
                         onKeyDown={(e) => handleKeyDown(e, Weekday, Broker)}
@@ -1069,6 +1076,7 @@ function CustomerDetInput({ }) {
                         onChange={handleChangeOffice}
                         options={filteredOptionOffice}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         ref={Office}
                         onKeyDown={(e) => handleKeyDown(e, Contact, Office)}
@@ -1088,6 +1096,7 @@ function CustomerDetInput({ }) {
                         onChange={handleChangeCustomer}
                         options={filteredOptioncustomer}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         ref={Office}
                         onKeyDown={(e) => handleKeyDown(e, Contact, Office)}
