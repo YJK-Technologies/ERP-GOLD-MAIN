@@ -451,6 +451,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                                 id="ahsts"
                                 value={selectedBrand}
                                 onChange={handleChangeBrand}
+                                classNamePrefix="react-select"
                                 options={filteredOptionBrand}
                                 className="exp-input-field"
                                 placeholder="Our Brand"
@@ -465,6 +466,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                                 value={selectedStatus}
                                 onChange={handleChangeStatus}
                                 options={filteredOptionStatus}
+                                classNamePrefix="react-select"
                                 className="exp-input-field"
                                 placeholder="Status"
                                 isClearable
@@ -578,6 +580,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                                 id="ahsts"
                                 value={selectedBrand}
                                 onChange={handleChangeBrand}
+                                classNamePrefix="react-select"
                                 options={filteredOptionBrand}
                                 className="exp-input-field"
                                 placeholder="Our Brand"
@@ -590,6 +593,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                               <Select
                                 id="ahsts"
                                 value={selectedStatus}
+                                classNamePrefix="react-select"
                                 onChange={handleChangeStatus}
                                 options={filteredOptionStatus}
                                 className="exp-input-field"
