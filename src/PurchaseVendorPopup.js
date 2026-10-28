@@ -500,6 +500,7 @@ export default function PurchaseVendorPopup({ open, handleClose, handleVendor })
                                 value={selectedStatus}
                                 onChange={handleChangeStatus}
                                 options={filteredOptionStatus}
+                                classNamePrefix="react-select"
                                 className="exp-input-field"
                                 placeholder="Status"
                                 isClearable
@@ -606,6 +607,7 @@ export default function PurchaseVendorPopup({ open, handleClose, handleVendor })
                                 id="ahsts"
                                 value={selectedStatus}
                                 onChange={handleChangeStatus}
+                                classNamePrefix="react-select"
                                 options={filteredOptionStatus}
                                 className="exp-input-field"
                                 placeholder="Status"

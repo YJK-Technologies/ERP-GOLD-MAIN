@@ -3609,7 +3609,8 @@ function PurchaseOrder() {
                     value={selectedscreens}
                     onChange={handleChangeScreens}
                     options={filteredOptionScreens}
-                    data-tip="Please select a default warehouse"
+                    classNamePrefix="react-select"
+                    data-tip="Please select a status"
                     styles={{
                       menu: (provided) => ({ ...provided, zIndex: 9999 }),
                     }}

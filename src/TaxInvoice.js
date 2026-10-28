@@ -3990,6 +3990,7 @@ function TaxInvoice() {
                                             value={selectedPendingStatus}
                                             onChange={handleChangeStatus}
                                             options={filteredOptionStatus}
+                                            classNamePrefix="react-select"
                                             data-tip="Please select a default warehouse"
                                             styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                                         />
@@ -4002,6 +4003,7 @@ function TaxInvoice() {
                                             required
                                             value={selectedscreens}
                                             onChange={handleChangeScreens}
+                                            classNamePrefix="react-select"
                                             options={filteredOptionScreens}
                                             data-tip="Please select a default warehouse"
                                             styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
@@ -4013,6 +4015,7 @@ function TaxInvoice() {
                                             className="exp-input-field"
                                             placeholder="Select a Invoice Type  "
                                             options={filteredOptionInvoice}
+                                            classNamePrefix="react-select"
                                             value={selectedInvoice}
                                             onChange={handleChangeInvoice}
                                             styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
@@ -4163,6 +4166,7 @@ function TaxInvoice() {
                                         <Select
                                             id="payType"
                                             value={selectedPay}
+                                            classNamePrefix="react-select"
                                             onChange={handleChangePay}
                                             options={filteredOptionPay}
                                             className="exp-input-field"
@@ -4181,6 +4185,7 @@ function TaxInvoice() {
                                         <Select
                                             id="salesType"
                                             value={selectedSales}
+                                            classNamePrefix="react-select"
                                             onChange={handleChangeSales}
                                             options={filteredOptionSales}
                                             className="exp-input-field"
@@ -4331,6 +4336,7 @@ function TaxInvoice() {
                                                 id="Product"
                                                 value={selectedProduct}
                                                 onChange={handleChangecode}
+                                                classNamePrefix="react-select"
                                                 options={filteredOptionProduct}
                                                 className="exp-input-field"
                                                 placeholder=""
@@ -4351,6 +4357,7 @@ function TaxInvoice() {
                                                 placeholder=""
                                                 maxLength={18}
                                                 autoComplete='off'
+                                                classNamePrefix="react-select"
                                                 options={dynamicOptions}
                                                 onChange={handleItemCode}
                                                 styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
