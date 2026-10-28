@@ -208,6 +208,7 @@ function AddBaseAcc({ }) {
                       value={selectedStatus}
                       onChange={handleChangeStatus}
                       options={filteredOptionStatus}
+                      classNamePrefix="react-select"
                       className=""
                       placeholder=""
                       ref={Status}

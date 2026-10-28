@@ -429,6 +429,8 @@ export default function EmployeeInfoPopup({ open, handleClose, EmployeeInfo }) {
                             gridOptions={gridOptions}
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+                            rowHeight={25}
                           />
                         </div>
                       </div>
@@ -520,6 +522,8 @@ export default function EmployeeInfoPopup({ open, handleClose, EmployeeInfo }) {
                               gridOptions={gridOptions}
                               onSelectionChanged={handleRowSelected}
                               onRowDoubleClicked={handleRowDoubleClick}
+                              headerHeight={28}
+                              rowHeight={25}
                             />
                           </div>
                         </div>

@@ -1432,6 +1432,8 @@ console.log(transaction_type)
               paginationAutoPageSize={true}
               onCellValueChanged={async (event) => { handleCellValueChanged(event); }}
               onGridReady={onGridReady}
+              headerHeight={28}
+              rowHeight={25}
             />
           </div>
         </div>

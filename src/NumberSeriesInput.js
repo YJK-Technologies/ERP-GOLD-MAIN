@@ -438,6 +438,7 @@ function NumberSeriesInput({ }) {
                         onChange={handleChangescreentype}
                         options={filteredOptionscreentype}
                         className="exp-input-field "
+                        classNamePrefix="react-select"
                         placeholder=""
                         required
                         title="Please select a screen type"
@@ -629,6 +630,7 @@ function NumberSeriesInput({ }) {
                         onChange={handleChangeStatus}
                         options={filteredOptionStatus}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         ref={Status}
                         required
@@ -656,6 +658,7 @@ function NumberSeriesInput({ }) {
                         onChange={handleChangeBoolean}
                         options={filteredOptionBoolean}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         required
                         title="Please select a Number Prefix status"
@@ -685,6 +688,7 @@ function NumberSeriesInput({ }) {
                         onChange={handleChangeBillFormat}
                         options={filteredOptionBillFormat}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         required
                         title="Please select a Bill Format"

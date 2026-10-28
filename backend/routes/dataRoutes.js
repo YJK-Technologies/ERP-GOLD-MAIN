@@ -278,7 +278,7 @@ router.post("/getsearchUserAccGrp", dataController.getsearchUserAccGrp);
 router.post("/updUserAccGrp", dataController.updUserAccGrp);
 router.post("/deleteUserAccGrp",dataController.deleteUserAccGrp)
 router.post("/getStdAccGrp",dataController.  getStdAccGrp)
-router.get("/getBaseAccGrp",dataController.  getBaseAccGrp)
+router.post("/getBaseAccGrp",dataController.  getBaseAccGrp)
 // router.post("/deleteBaseData",dataController.deleteBaseData)
 router.post("/AddStandardAccountData",dataController.addstandardaccountData)
 router.get("/getAllStandardAccountData",dataController.getAllStandardAccountData)

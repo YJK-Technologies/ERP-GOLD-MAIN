@@ -400,6 +400,7 @@ function TaxDetInput({ }) {
                         onChange={handleChangeTax}
                         options={filteredOptionTax}
                         className="srcinput exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         maxLength={18}
                         ref={taxtypehdr}
@@ -524,6 +525,7 @@ function TaxDetInput({ }) {
                         onChange={handleChangeTransaction}
                         options={filteredOptionTransaction}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         maxLength={250}
                         ref={transactiontype}
@@ -548,6 +550,7 @@ function TaxDetInput({ }) {
                         onChange={handleChangeStatus}
                         options={filteredOptionStatus}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         maxLength={18}
                         ref={StatuS}

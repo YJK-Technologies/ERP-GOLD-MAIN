@@ -28,7 +28,7 @@ const UnplannedReturn = () => {
 
   //code added by Pavun purpose of set user permisssion
   const permissions = JSON.parse(sessionStorage.getItem('permissions')) || {};
-  
+
   const returnPermission = permissions
     .filter(permission => permission.screen_type === 'UnplannedReturn')
     .map(permission => permission.permission_type.toLowerCase());
@@ -41,7 +41,7 @@ const UnplannedReturn = () => {
   const [globalItem, setGlobalItem] = useState(null)
   const [returnType, setReturnType] = useState('');
   const [returnDate, setReturnDate] = useState('');
-  
+
   const [returnId, setReturnId] = useState('');
   const [returnDrop, setReturnDrop] = useState([]);
   const [selectedReturn, setSelectedReturn] = useState(null);
@@ -66,81 +66,81 @@ const UnplannedReturn = () => {
   const [loading, setLoading] = useState(false);
   const [warehouse, setWarehouse] = useState('');
 
-  const company_code = sessionStorage.getItem('selectedCompanyCode') ;
+  const company_code = sessionStorage.getItem('selectedCompanyCode');
 
-    //code added by Ramya  purpose of keyboard shortcut functionality
-        useEffect(() => {
-            const handleKeyDown = (e) => {
-              // 1. Ensure keys only trigger on F-keys
-              if (!['F1', 'F3', 'F4', 'F5', 'F6', 'F8'].includes(e.key)) {
-                return;
-              }
-        
-              // 2. Prevent default browser shortcut actions (e.g., F1 Help, F5 Refresh)
-              e.preventDefault();
-              e.stopPropagation();
-        
-              // 3. Prevent execution if screen is currently loading
-              if (loading) return;
-        
-              switch (e.key) {
-                case 'F1':
-                  // Open Item Search Popup
-                  setOpen(true); 
-                  break;
-        
-    
-                case 'F3':
-                  // New / Reset Sales Invoice Form
-                  if (window.confirm("Start a new adjustment? Unsaved changes will be lost.")) {
-                    handleReload(); 
-                  }
-                  break;  
-        
-                case 'F4':
-                  // Save / Complete Invoice (Same logic as Save Button)
-                  handleSaveButtonClick(); 
-                  break;
-        
-                case 'F5':
-                  // Search Existing Invoices to Edit
-                  setOpen1(true); 
-                  break;
-        
-                case 'F6':
-                  // Delete selected line item in AG Grid
-                  if ( issuedId) {
-                    handleDeleteButtonClick();
-                  } else {
-                    alert("Please save the invoice before deleting.");
-                  }
-                  break;
-        
-                case 'F8':
-                  // Print Invoice
-                  if (showExcelButton && issuedId) {
-                    generateReport();
-                  } else {
-                    alert("Please save the invoice before printing.");
-                  }
-                  break;
-        
-                default:
-                  break;
-              }
-            };
-        
-            // Attach listener
-            window.addEventListener('keydown', handleKeyDown);
-        
-            // Clean up listener on unmount
-            return () => {
-              window.removeEventListener('keydown', handleKeyDown);
-            };
-          }, [loading, showExcelButton, issuedId, rowData]);
-        
-    //code ended by Ramya  purpose of keyboard shortcut functionality
-  
+  //code added by Ramya  purpose of keyboard shortcut functionality
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // 1. Ensure keys only trigger on F-keys
+      if (!['F1', 'F3', 'F4', 'F5', 'F6', 'F8'].includes(e.key)) {
+        return;
+      }
+
+      // 2. Prevent default browser shortcut actions (e.g., F1 Help, F5 Refresh)
+      e.preventDefault();
+      e.stopPropagation();
+
+      // 3. Prevent execution if screen is currently loading
+      if (loading) return;
+
+      switch (e.key) {
+        case 'F1':
+          // Open Item Search Popup
+          setOpen(true);
+          break;
+
+
+        case 'F3':
+          // New / Reset Sales Invoice Form
+          if (window.confirm("Start a new adjustment? Unsaved changes will be lost.")) {
+            handleReload();
+          }
+          break;
+
+        case 'F4':
+          // Save / Complete Invoice (Same logic as Save Button)
+          handleSaveButtonClick();
+          break;
+
+        case 'F5':
+          // Search Existing Invoices to Edit
+          setOpen1(true);
+          break;
+
+        case 'F6':
+          // Delete selected line item in AG Grid
+          if (issuedId) {
+            handleDeleteButtonClick();
+          } else {
+            alert("Please save the invoice before deleting.");
+          }
+          break;
+
+        case 'F8':
+          // Print Invoice
+          if (showExcelButton && issuedId) {
+            generateReport();
+          } else {
+            alert("Please save the invoice before printing.");
+          }
+          break;
+
+        default:
+          break;
+      }
+    };
+
+    // Attach listener
+    window.addEventListener('keydown', handleKeyDown);
+
+    // Clean up listener on unmount
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [loading, showExcelButton, issuedId, rowData]);
+
+  //code ended by Ramya  purpose of keyboard shortcut functionality
+
 
   useEffect(() => {
     const companyCode = sessionStorage.getItem('selectedCompanyCode');
@@ -1197,7 +1197,7 @@ const UnplannedReturn = () => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ transaction_no: ReturnID,company_code })
+        body: JSON.stringify({ transaction_no: ReturnID, company_code })
       });
 
       if (response.ok) {
@@ -1395,79 +1395,79 @@ const UnplannedReturn = () => {
 
   const handleExcelDownload = () => {
 
-  const filteredRowData = rowData.filter(row => row.quantityReturned > 0);
+    const filteredRowData = rowData.filter(row => row.quantityReturned > 0);
 
-  if (rowData.length === 0 || !returnId || !returnDate || !selectedReturn) {
-    toast.warning("No Data Available");
-    return;
-  }
+    if (rowData.length === 0 || !returnId || !returnDate || !selectedReturn) {
+      toast.warning("No Data Available");
+      return;
+    }
 
-  const headerData = [{
-    "Transaction ID": returnId,
-    "Transaction Date": returnDate,
-    "Transaction Type": selectedReturn.value,
-  }];
+    const headerData = [{
+      "Transaction ID": returnId,
+      "Transaction Date": returnDate,
+      "Transaction Type": selectedReturn.value,
+    }];
 
-  const transformedData = transformRowData(filteredRowData);
+    const transformedData = transformRowData(filteredRowData);
 
-  // Header Sheet
-  const headerSheet = XLSX.utils.aoa_to_sheet([
-    ["Inventory Return"],
-    [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
-    [],
-  ]);
+    // Header Sheet
+    const headerSheet = XLSX.utils.aoa_to_sheet([
+      ["Inventory Return"],
+      [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
+      [],
+    ]);
 
-  XLSX.utils.sheet_add_json(headerSheet, headerData, {
-    origin: "A4",
-  });
-
-  // Merge Heading
-  headerSheet["!merges"] = [
-    {
-      s: { r: 0, c: 0 }, // A1
-      e: { r: 0, c: 7 }, // H1
-    },
-    {
-      s: { r: 1, c: 0 }, // A2
-      e: { r: 1, c: 7 }, // H2
-    },
-  ];
-
-  // Details Sheet
-  const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
-
-  // Auto Fit Function
-  const autoFitColumns = (worksheet, data) => {
-    const cols = [];
-
-    data.forEach((row) => {
-      Object.keys(row).forEach((key, i) => {
-        const value = row[key] == null ? "" : row[key].toString();
-
-        cols[i] = Math.max(
-          cols[i] || key.length,
-          key.length,
-          value.length
-        );
-      });
+    XLSX.utils.sheet_add_json(headerSheet, headerData, {
+      origin: "A4",
     });
 
-    worksheet["!cols"] = cols.map(width => ({
-      wch: width + 5,
-    }));
+    // Merge Heading
+    headerSheet["!merges"] = [
+      {
+        s: { r: 0, c: 0 }, // A1
+        e: { r: 0, c: 7 }, // H1
+      },
+      {
+        s: { r: 1, c: 0 }, // A2
+        e: { r: 1, c: 7 }, // H2
+      },
+    ];
+
+    // Details Sheet
+    const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
+
+    // Auto Fit Function
+    const autoFitColumns = (worksheet, data) => {
+      const cols = [];
+
+      data.forEach((row) => {
+        Object.keys(row).forEach((key, i) => {
+          const value = row[key] == null ? "" : row[key].toString();
+
+          cols[i] = Math.max(
+            cols[i] || key.length,
+            key.length,
+            value.length
+          );
+        });
+      });
+
+      worksheet["!cols"] = cols.map(width => ({
+        wch: width + 5,
+      }));
+    };
+
+    // Apply Auto Width
+    autoFitColumns(headerSheet, headerData);
+    autoFitColumns(rowDataSheet, transformedData);
+
+    // Workbook
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
+
+    XLSX.writeFile(workbook, "Inventory_Return.xlsx");
   };
-
-  // Apply Auto Width
-  autoFitColumns(headerSheet, headerData);
-  autoFitColumns(rowDataSheet, transformedData);
-
-  // Workbook
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
-  XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
-
-  XLSX.writeFile(workbook, "Inventory_Return.xlsx");
-};
   const handleAddRow = () => {
     const serialNumber = rowData.length + 1;
     const newRow = { serialNumber, itemCode: '', itemName: '', serialno: '', warehouse: selectedWarehouse ? selectedWarehouse.value : '', supplier: '', quantityReturned: '', reasonForReturn: '', condition: '', processedBy: '', approvalStatus: '', actionTaken: '', notes: '' };
@@ -1506,11 +1506,11 @@ const UnplannedReturn = () => {
   };
 
   // For default warehouse
-    useEffect(() => {
+  useEffect(() => {
     if (!selectedWarehouse) {
       return;
     }
-  
+
     setRowData(prevRowData =>
       prevRowData.map(row => {
         // Only set default warehouse if the row has no warehouse
@@ -1520,7 +1520,7 @@ const UnplannedReturn = () => {
             warehouse: selectedWarehouse.value
           };
         }
-  
+
         // Keep existing warehouse value
         return row;
       })
@@ -1649,7 +1649,7 @@ const UnplannedReturn = () => {
                   />
                   <div className='position-absolute mt-1 me-2'>
                     <span className="icon searchIcon"
-                    title='Inventory Return Help'
+                      title='Inventory Return Help'
                       onClick={handleInvReturn}>
                       <i class="fa fa-search"></i>
                     </span>
@@ -1679,16 +1679,17 @@ const UnplannedReturn = () => {
               </label>
               <div class="exp-form-floating">
                 <div title="Select a Transaction Type">
-                <Select
-                  id="returnType"
-                  className="exp-input-field"
-                  placeholder=""
-                  required
-                  value={selectedReturn}
-                  onChange={handleChangeReturn}
-                  options={filteredOptionReturn}
-                  data-tip="Please select a transaction type"
-                />
+                  <Select
+                    id="returnType"
+                    className="exp-input-field"
+                    classNamePrefix="react-select"
+                    placeholder=""
+                    required
+                    value={selectedReturn}
+                    onChange={handleChangeReturn}
+                    options={filteredOptionReturn}
+                    data-tip="Please select a transaction type"
+                  />
                 </div>
               </div>
             </div>
@@ -1696,16 +1697,17 @@ const UnplannedReturn = () => {
               <label for="">Default Warehouse</label>
               <div class="exp-form-floating">
                 <div title="Select the Default Warehouse">
-                <Select
-                  id="returnType"
-                  className="exp-input-field"
-                  placeholder=""
-                  required
-                  value={selectedWarehouse}
-                  onChange={handleChangeWarehouse}
-                  options={filteredOptionWarehouse}
-                  data-tip="Please select a default warehouse"
-                />
+                  <Select
+                    id="returnType"
+                    className="exp-input-field"
+                    classNamePrefix="react-select"
+                    placeholder=""
+                    required
+                    value={selectedWarehouse}
+                    onChange={handleChangeWarehouse}
+                    options={filteredOptionWarehouse}
+                    data-tip="Please select a default warehouse"
+                  />
                 </div>
               </div>
             </div>
@@ -1743,6 +1745,8 @@ const UnplannedReturn = () => {
               rowData={rowData}
               defaultColDef={{ editable: true, resizable: true }}
               onCellValueChanged={handleCellValueChanged}
+              headerHeight={28}
+              rowHeight={25}
             />
           </div>
         </div>
