@@ -11276,12 +11276,6 @@ const productdeletehdrData = async (req, res) => {
   }
 };
 
-
-
-
-
-
-
 //code added by AK on 27 aug 2024 // code begins
 const addPurchaseOrderheader = async (req, res) => {
   const { company_code, Entry_date, transaction_no, vendor_code,
@@ -11326,8 +11320,8 @@ const addPurchaseOrderheader = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(`EXEC sp_purchase_order_hdr @mode,@company_code, @Entry_date,@transaction_no,@vendor_code, @purchase_amount,@add_fright,@less_fright,@tax_amount,@rounded_off,@loading_charges,@cartage_paid,@other_charges,@total_amount,@tax_acc_code,@rounded_off_acc_code,
-        @loading_charges_acc_code,  @cartage_paid_acc_code, @other_charges_acc_code,@purchase_amount_acc_code,@delivery_date,@credit,@remarks,
+      .query(`EXEC sp_purchase_order_hdr_test @mode,@company_code, @Entry_date,@transaction_no,@vendor_code, @purchase_amount,@add_fright,@less_fright,@tax_amount,@rounded_off,@loading_charges,@cartage_paid,@other_charges,@total_amount,@tax_acc_code,@rounded_off_acc_code,
+        @loading_charges_acc_code,  @cartage_paid_acc_code, @other_charges_acc_code,@purchase_amount_acc_code,@delivery_date,@credit,@remarks,'',
         @created_by, @modified_by, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
@@ -11339,6 +11333,7 @@ const addPurchaseOrderheader = async (req, res) => {
     res.status(500).json({ message: err.message || 'Internal Server Error' });
   }
 };
+
 const getAllPOhdrData = async (req, res) => {
   const { company_code } = req.body;
   let pool;
@@ -11348,7 +11343,7 @@ const getAllPOhdrData = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "A")
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_purchase_order_hdr @mode,@company_code,'','','',0,0,0,0,0,0,0,0,00,'','','','','','','','','','','', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
+      .query(`EXEC sp_purchase_order_hdr_test @mode,@company_code,'','','',0,0,0,0,0,0,0,0,00,'','','','','','','','','','','','', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
 
     res.json(result.recordset);
   } catch (err) {
@@ -11370,7 +11365,7 @@ const POdeletehdrData = async (req, res) => {
         .input("company_code", sql.NVarChar, company_code)
         .input("transaction_no", sql.NVarChar, transaction_no)
         .input("modified_by", sql.NVarChar, modified_by)
-        .query(`EXEC sp_purchase_order_hdr @mode,@company_code,'',@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','','','','','','','',@modified_by, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
+        .query(`EXEC sp_purchase_order_hdr_test @mode,@company_code,'',@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','','','','','','','','',@modified_by, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
     } catch (error) {
       if (error.number === 547) {
         res.status(400).json("first delete the Purchase Order details  ");
@@ -11472,7 +11467,7 @@ const addPurchaseOrderdetail = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(`EXEC sp_purchase_order_details @mode,@company_code,@Entry_date,@transaction_no,@vendor_code, @vendor_name,@vendor_addr_1,@vendor_addr_2,@vendor_addr_3,@vendor_addr_4,@ShipTo_customer_name,@ShipTo_customer_addr_1,@ShipTo_customer_addr_2,@ShipTo_customer_addr_3,@ShipTo_customer_addr_4,@ItemSNo,
+      .query(`EXEC sp_purchase_order_details_test @mode,@company_code,@Entry_date,@transaction_no,@vendor_code, @vendor_name,@vendor_addr_1,@vendor_addr_2,@vendor_addr_3,@vendor_addr_4,@ShipTo_customer_name,@ShipTo_customer_addr_1,@ShipTo_customer_addr_2,@ShipTo_customer_addr_3,@ShipTo_customer_addr_4,@ItemSNo,
             @item_code,@item_name, @bill_qty,@bill_rate,@item_amt,@weight,@total_weight,@tax_amount,@hsn,@contact_person,@contact_number,@ship_to_contact_number,@ship_to_contact_person,@state,@country,@ship_to_state,@ship_to_country,@ShipTo_customer_code,
             @vendor_gst_no,@ShipTo_vendor_gst_no,@Discount_Type, @Discount_Value,@created_by, @modified_by, NULL, NULL, NULL, NULL, NULL, NULL, NULL,NULL`);
     {
@@ -11493,7 +11488,7 @@ const getAllPOdetData = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "A") // Insert mode
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_purchase_order_details 'A',@company_code,'','','','','','','','','','','', '','',0,'','',0,0,0,0,0,0,'','','','','','','','','','','','','',0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_purchase_order_details_test 'A',@company_code,'','','','','','','','','','','', '','',0,'','',0,0,0,0,0,0,'','','','','','','','','','','','','',0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     res.json(result.recordset);
   } catch (err) {
@@ -11514,7 +11509,7 @@ const POdeletedetData = async (req, res) => {
         .input("mode", sql.NVarChar, "D")
         .input("company_code", sql.NVarChar, company_code)
         .input("transaction_no", sql.NVarChar, transaction_no)
-        .query(`EXEC sp_purchase_order_details 'D',@company_code,'',@transaction_no,'','','','','','','','','', '','',0,'','',0,0,0,0,0,0,'','','','','','','','','','','','','',0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+        .query(`EXEC sp_purchase_order_details_test 'D',@company_code,'',@transaction_no,'','','','','','','','','', '','',0,'','',0,0,0,0,0,0,'','','','','','','','','','','','','',0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     } catch (err) {
       if (err.number === 547) {
         res.status(400).json("first delete the Purchase order details  ");
@@ -12060,7 +12055,7 @@ const getPOSearchData = async (req, res) => {
       .input("Entry_date", sql.NVarChar, Entry_date)
       .input("vendor_name", sql.NVarChar, vendor_name)
       .input("ShipTo_customer_name", sql.NVarChar, ShipTo_customer_name)
-      .query(`EXEC sp_purchase_order_details @mode,@company_code,@Entry_date,@transaction_no,'',@vendor_name,'','','','',@ShipTo_customer_name,'',
+      .query(`EXEC sp_purchase_order_details_test @mode,@company_code,@Entry_date,@transaction_no,'',@vendor_name,'','','','',@ShipTo_customer_name,'',
 '', '','',0,'','',0,0,0,0,0,0,'','','','','','','','','','','','','',0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     // Send response
@@ -23151,7 +23146,7 @@ const getDeletedPoSearchData = async (req, res) => {
       .input("Entry_date", sql.NVarChar, Entry_date)
       .input("vendor_name", sql.NVarChar, vendor_name)
       .input("ShipTo_customer_name", sql.NVarChar, ShipTo_customer_name)
-      .query(`EXEC sp_purchase_order_details @mode,@company_code,@Entry_date,@transaction_no,'',@vendor_name,'','','','',@ShipTo_customer_name,'',
+      .query(`EXEC sp_purchase_order_details_test @mode,@company_code,@Entry_date,@transaction_no,'',@vendor_name,'','','','',@ShipTo_customer_name,'',
 '', '','',0,'','',0,0,0,0,0,0,'','','','','','','','','','','','','',0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     if (result.recordset.length > 0) {
@@ -25339,7 +25334,7 @@ const getReceivedGoods = async (req, res) => {
       .input("mode", sql.NVarChar, "SC")
       .input("company_code", sql.NVarChar, company_code)
       .input("bill_no", sql.NVarChar, bill_no)
-      .query(`EXEC sp_received_goods @mode,@company_code,@bill_no,'',0,'','',0,0,'',0,0,'','','','','', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_received_goods_test @mode,@company_code,@bill_no,'',0,'','',0,0,'',0,0,'',0,'','','','','','', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
@@ -25356,30 +25351,85 @@ const getReceivedGoods = async (req, res) => {
 const updateReceivedGoods = async (req, res) => {
   const editedData = req.body.editedData;
 
-  if (!editedData || !editedData.length) {
-    res.status(400).json("Invalid or empty editedData array.");
-    return;
+  if (!Array.isArray(editedData) || editedData.length === 0) {
+    return res.status(400).json({
+      message: "Invalid or empty editedData array."
+    });
   }
 
   try {
     const pool = await connection.connectToDatabase();
+
+    // Store all updated results
+    const updatedResults = [];
+
     for (const updatedRow of editedData) {
-      await pool
+
+      const result = await pool
         .request()
         .input("mode", sql.NVarChar, "U")
-        .input("company_code", sql.NVarChar, req.headers['company_code'])
+        .input("company_code", sql.NVarChar, req.headers["company_code"])
         .input("bill_no", sql.NVarChar, updatedRow.transactionNo)
         .input("bill_date", sql.NVarChar, updatedRow.transactionDate)
+        .input("status", sql.NVarChar, updatedRow.status)
+        .input("source", sql.NVarChar, updatedRow.source)
+        .input("amendment_no", sql.Int, updatedRow.amendment_no)
+        .input("accepted_qty", sql.Int, updatedRow.accepted_qty)
+        .input("rejected_qty", sql.Int, updatedRow.rejected_qty)
         .input("keyfield", sql.NVarChar, updatedRow.keyfield)
         .input("qty_to_receive", sql.Decimal(10, 2), updatedRow.qty_to_receive)
-        // .query(`EXEC sp_received_goods @mode,@company_code,'',@bill_no,0,'','',0,@qty_to_receive,'',0,0,@keyfield,'','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
-        .query(`EXEC sp_received_goods @mode,@company_code,@bill_no,@bill_date,0,'','',0,@qty_to_receive,'',0,0,@keyfield,'','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+        .query(`
+          EXEC sp_received_goods_test
+            @mode,
+            @company_code,
+            @bill_no,
+            @bill_date,
+            0,
+            '',
+            '',
+            0,
+            @qty_to_receive,
+            '',
+            @accepted_qty,
+            @rejected_qty,
+            @status,
+            @amendment_no,
+            @source,
+            @keyfield,
+            '',
+            '',
+            '',
+            '',
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            NULL
+        `);
+
+      // Collect returned amendment number and status
+      if (result.recordset && result.recordset.length > 0) {
+        updatedResults.push(...result.recordset);
+      }
     }
-    res.status(200).json("data updated successfully");
-  }
-  catch (err) {
-    console.error("Error", err);
-    res.status(500).json({ message: err.message || 'Internal Server Error' });
+
+    if (updatedResults.length > 0) {
+      return res.status(200).json(updatedResults);
+    } else {
+      return res.status(404).json({
+        message: "No updated records returned from stored procedure."
+      });
+    }
+
+  } catch (err) {
+    console.error("Error updating received goods:", err);
+
+    return res.status(500).json({
+      message: err.message || "Internal Server Error"
+    });
   }
 };
 //CODE ENDED BY PAVUN
@@ -25400,7 +25450,7 @@ const getReceivedGoodsReport = async (req, res) => {
       .input("pending", sql.NVarChar, pending)
       .input("start_date", sql.NVarChar, start_date)
       .input("end_date", sql.NVarChar, end_date)
-      .query(`EXEC sp_received_goods @mode,@company_code,@bill_no,'',0,@item_code,@item_name,0,0,@pending,0,0,'',@start_date,@end_date,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+      .query(`EXEC sp_received_goods_test @mode,@company_code,@bill_no,'',0,@item_code,@item_name,0,0,@pending,0,0,'',0,'','',@start_date,@end_date,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
 `);
 
     if (result.recordset.length > 0) {
@@ -25496,7 +25546,7 @@ const getReceivedGoodsHelp = async (req, res) => {
       .input("bill_date", sql.NVarChar, bill_date)
       .input("item_name", sql.NVarChar, item_name)
       .input("item_code", sql.NVarChar, item_code)
-      .query(`EXEC sp_received_goods @mode,@company_code,@bill_no,@bill_date,0,@item_code,@item_name,0,0,'',0,0,'','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_received_goods_test @mode,@company_code,@bill_no,@bill_date,0,@item_code,@item_name,0,0,'',0,0,'',0,'','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -26627,7 +26677,8 @@ const Userdropdown = async (req, res) => {
 // Code Ended by Harish 22/02/25
 const updPurchaseOrderheader = async (req, res) => {
   const { company_code, Entry_date, transaction_no, vendor_code,
-    purchase_amount, add_fright, less_fright, tax_amount, rounded_off, loading_charges, cartage_paid, other_charges, total_amount, tax_acc_code, rounded_off_acc_code, loading_charges_acc_code, cartage_paid_acc_code, other_charges_acc_code, purchase_amount_acc_code, delivery_date, credit, remarks, created_by, modified_by
+    purchase_amount, add_fright, less_fright, tax_amount, rounded_off, loading_charges, cartage_paid, other_charges, total_amount, tax_acc_code, rounded_off_acc_code, 
+    loading_charges_acc_code, cartage_paid_acc_code, other_charges_acc_code, purchase_amount_acc_code, delivery_date, credit, remarks, created_by, modified_by, authroization_status
   } = req.body;
   let pool;
   try {
@@ -26657,10 +26708,11 @@ const updPurchaseOrderheader = async (req, res) => {
       .input("delivery_date", sql.Date, delivery_date)
       .input("credit", sql.NVarChar, credit)
       .input("remarks", sql.NVarChar, remarks)
+      .input("authroization_status", sql.NVarChar, authroization_status)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
-      .query(`EXEC sp_purchase_order_hdr @mode,@company_code, @Entry_date,@transaction_no,@vendor_code, @purchase_amount,@add_fright,@less_fright,@tax_amount,@rounded_off,@loading_charges,@cartage_paid,@other_charges,@total_amount,@tax_acc_code,@rounded_off_acc_code,
-          @loading_charges_acc_code,  @cartage_paid_acc_code, @other_charges_acc_code,@purchase_amount_acc_code,@delivery_date,@credit,@remarks,
+      .query(`EXEC sp_purchase_order_hdr_test @mode,@company_code, @Entry_date,@transaction_no,@vendor_code, @purchase_amount,@add_fright,@less_fright,@tax_amount,@rounded_off,@loading_charges,@cartage_paid,@other_charges,@total_amount,@tax_acc_code,@rounded_off_acc_code,
+          @loading_charges_acc_code,  @cartage_paid_acc_code, @other_charges_acc_code,@purchase_amount_acc_code,@delivery_date,@credit,@remarks,@authroization_status,
           @created_by, @modified_by, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
     res.json({ success: true, message: "Data Updated successfully" });
   } catch (err) {
@@ -32253,6 +32305,230 @@ const getChartOfAccountsSC = async (req, res) => {
   }
 };
 //Code ended by SakthiGanesh J on 26-10-2026
+
+//Code added by Dinesh Gokul on 25-10-2026
+const insertReceivedGoods = async (req, res) => {
+  const editedData = req.body.editedData;
+
+  if (!Array.isArray(editedData) || editedData.length === 0) {
+    return res.status(400).json({
+      message: "Invalid or empty editedData array."
+    });
+  }
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    // Store all inserted results
+    const insertedResults = [];
+
+    for (const updatedRow of editedData) {
+
+      const result = await pool
+        .request()
+        .input("mode", sql.NVarChar, "I")
+        .input("company_code", sql.NVarChar, req.headers["company_code"])
+        .input("bill_no", sql.NVarChar, updatedRow.transactionNo)
+        .input("bill_date", sql.NVarChar, updatedRow.transactionDate)
+        .input("item_sno", sql.NVarChar, updatedRow.itemSNo)
+        .input("item_code", sql.NVarChar, updatedRow.itemCode)
+        .input("item_name", sql.NVarChar, updatedRow.itemName)
+        .input("po_qty", sql.Decimal(10, 2), updatedRow.po_qty)
+        .input("qty_to_receive", sql.Decimal(10, 2), updatedRow.qty_to_receive)
+        .input("status", sql.NVarChar, updatedRow.status)
+        .input("source", sql.NVarChar, updatedRow.source)
+        .input("amendment_no", sql.Int, updatedRow.amendment_no)
+        .input("accepted_qty", sql.Int, updatedRow.accepted_qty)
+        .input("rejected_qty", sql.Int, updatedRow.rejected_qty)
+        .input("keyfield", sql.NVarChar, updatedRow.keyfield)
+        .input("created_by", sql.NVarChar, updatedRow.created_by)
+        .query(`
+          EXEC sp_received_goods_test
+            @mode,
+            @company_code,
+            @bill_no,
+            @bill_date,
+            @item_sno,
+            @item_code,
+            @item_name,
+            @po_qty,
+            @qty_to_receive,
+            '',
+            @accepted_qty,
+            @rejected_qty,
+            @status,
+            @amendment_no,
+            @source,
+            @keyfield,
+            '',
+            '',
+            @created_by,
+            '',
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            NULL
+        `);
+
+      // Collect returned inserted data
+      if (result.recordset && result.recordset.length > 0) {
+        insertedResults.push(...result.recordset);
+      }
+    }
+
+    return res.status(200).json({
+  message: insertedResults.length > 0
+    ? "Received Goods processed successfully."
+    : "Stored procedure completed without returning records. Verify database changes.",
+  data: insertedResults
+});
+
+  } catch (err) {
+    console.error("Error inserting received goods:", err);
+
+    return res.status(500).json({
+      message: err.message || "Internal Server Error"
+    });
+  }
+};
+//Code ended by Dinesh Gokul on 25-10-2026
+
+//Code added by Dinesh Gokul on 26-10-2026
+const getAmendmentNumberDrop = async (req, res) => {
+  const { company_code, bill_no } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "AM")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("bill_no", sql.NVarChar, bill_no)
+      .query(`EXEC sp_received_goods_test @mode,@company_code,@bill_no,'',0,'','',0,0,'',0,0,'',0,'','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json("Data Not Found");
+    }
+  }
+  catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+//Code ended by Dinesh Gokul on 26-10-2026
+
+//Code added by Dinesh Gokul on 27-10-2026
+const authorizeReceivedGoods = async (req, res) => {
+  const editedData = req.body.editedData;
+
+  if (!Array.isArray(editedData) || editedData.length === 0) {
+    return res.status(400).json({
+      message: "Invalid or empty editedData array."
+    });
+  }
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    // Store all authorized results
+    const authorizedResults = [];
+
+    // Prevent duplicate authorization for the same bill and amendment
+    const processedAmendments = new Set();
+
+    for (const updatedRow of editedData) {
+
+      const companyCode = req.headers["company_code"];
+      const billNo = updatedRow.transactionNo;
+      const amendmentNo = updatedRow.amendment_no;
+
+      if (!companyCode || !billNo ||
+          amendmentNo === null || amendmentNo === undefined ||
+          amendmentNo === "") {
+        return res.status(400).json({
+          message: "Company Code, Bill No and Amendment No are required."
+        });
+      }
+
+      const amendmentKey = `${companyCode}|${billNo}|${amendmentNo}`;
+
+      // AU mode updates all rows belonging to the same amendment
+      if (processedAmendments.has(amendmentKey)) {
+        continue;
+      }
+
+      const result = await pool
+        .request()
+        .input("mode", sql.NVarChar(2), "AU")
+        .input("company_code", sql.NVarChar, companyCode)
+        .input("bill_no", sql.NVarChar, billNo)
+        .input("status", sql.NVarChar, updatedRow.status)
+        .input("amendment_no", sql.Int, Number(amendmentNo))
+        .input(
+          "modified_by",
+          sql.NVarChar,
+          updatedRow.modified_by ||
+          updatedRow.created_by ||
+          req.headers["modified_by"] ||
+          ""
+        )
+        .query(`
+          EXEC sp_received_goods_test @mode, @company_code, @bill_no, '', 0, '', '', 0, 0, '', 0, 0, @status, @amendment_no, '', '', '', '', '', @modified_by, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL `);
+
+      processedAmendments.add(amendmentKey);
+
+      // Collect authorized records returned from SP
+      if (result.recordset && result.recordset.length > 0) {
+        authorizedResults.push(...result.recordset);
+      }
+    }
+
+    if (authorizedResults.length > 0) {
+      return res.status(200).json(authorizedResults);
+    } else {
+      return res.status(404).json({
+        message: "No authorized records returned from stored procedure."
+      });
+    }
+
+  } catch (err) {
+    console.error("Error authorizing received goods:", err);
+
+    return res.status(500).json({
+      message: err.message || "Internal Server Error"
+    });
+  }
+};
+//Code ended by Dinesh Gokul on 27-10-2026
+
+
+//Code added by pavun on 26-10-2026 
+const updateStatusPurchaseOrder = async (req, res) => {
+  const { company_code, transaction_no } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool
+      .request()
+      .input("mode", sql.NVarChar, "ASU")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("transaction_no", sql.NVarChar, transaction_no)
+      .query(`EXEC sp_purchase_order_hdr_test @mode,@company_code,'',@transaction_no,'',0,0,0,0,0,0,0,0,00,'','','','','','','','','','','','', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
+
+     res.status(200).json("Purchase order updated successfully");
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+//Code ended by pavun on 26-10-2026 
+
 module.exports = {
   login,
   forgetPassword,
@@ -33277,6 +33553,10 @@ module.exports = {
   getDiscountType,
   invoiceHsnTax,
   purchaseOrderHsnTax,
+  insertReceivedGoods,
+  getAmendmentNumberDrop,
+  authorizeReceivedGoods,
+  updateStatusPurchaseOrder,
   chart_of_accountsInsert, 
   chart_of_accountsUpdate, 
   chart_of_accountsDelete,
@@ -33290,5 +33570,5 @@ module.exports = {
   getReportLine,
   getCurrencyCode,
   getChartOfAccountsSC
-  
+
 };

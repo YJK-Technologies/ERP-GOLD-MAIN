@@ -1058,6 +1058,10 @@ router.post("/getReportSection", dataController.getReportSection)
 router.post("/getReportLine", dataController.getReportLine)
 router.post("/getCurrencyCode", dataController.getCurrencyCode)
 router.post("/getChartOfAccountsSC", dataController.getChartOfAccountsSC)
+router.post("/insertReceivedGoods", dataController.insertReceivedGoods)
+router.post("/getAmendmentNumberDrop", dataController.getAmendmentNumberDrop)
+router.post("/authorizeReceivedGoods", dataController.authorizeReceivedGoods)
+router.post("/updateStatusPurchaseOrder", dataController.updateStatusPurchaseOrder)
 
 
 module.exports = router;
