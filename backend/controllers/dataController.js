@@ -31960,6 +31960,352 @@ const purchaseOrderHsnTax = async (req, res) => {
 };
 //Code ended by Dinesh Gokul on 24-10-2026
 
+//Code added by SakthiGanesh J on 25-10-2026
+const chart_of_accountsInsert = async (req, res) => {
+  const { account_code, account_name, account_group, account_class, report_section, report_line, report_type, currency_code, iscontrolaccount, isbankaccount, allowmanualposting, effectivefrom, effectiveto, status, company_code, location_code, created_by, created_date } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("mode", sql.NVarChar, "I")
+      .input("account_code", sql.NVarChar, account_code)
+      .input("account_name", sql.NVarChar, account_name)
+      .input("account_group", sql.NVarChar, account_group)
+      .input("account_class", sql.NVarChar, account_class)
+      .input("report_section", sql.NVarChar, report_section)
+      .input("report_line", sql.NVarChar, report_line)
+      .input("report_type", sql.NVarChar, report_type)
+      .input("currency_code", sql.NVarChar, currency_code)
+      .input("iscontrolaccount", sql.Int, iscontrolaccount)
+      .input("isbankaccount", sql.Int, isbankaccount)
+      .input("allowmanualposting", sql.Int, allowmanualposting)
+      .input("effectivefrom", sql.DateTime, effectivefrom)
+      .input("effectiveto", sql.DateTime, effectiveto)
+      .input("status", sql.NVarChar, status)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("created_by", sql.NVarChar, created_by)
+      .input("created_date", sql.DateTime, created_date)
+      .query(`EXEC sp_chart_of_accounts_hdr @mode, @account_code, @account_name, @account_group, @account_class, @report_section, @report_line, @report_type, @currency_code, @iscontrolaccount, @isbankaccount, @allowmanualposting, @effectivefrom, @effectiveto, @status, @company_code, @location_code, @created_by, @created_date, '', ''`);
+
+    res.status(200).json({ success: true, message: "chart of accounts inserted successfully" });
+  } catch (err) {
+    console.error("Error during chart of accounts insert:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const chart_of_accountsUpdate = async (req, res) => {
+  const { account_code, account_name, account_group, account_class, report_section, report_line, report_type, currency_code, iscontrolaccount, isbankaccount, allowmanualposting, effectivefrom, effectiveto, status, company_code, location_code, modified_by, modified_date } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("mode", sql.NVarChar, "U")
+      .input("account_code", sql.NVarChar, account_code)
+      .input("account_name", sql.NVarChar, account_name)
+      .input("account_group", sql.NVarChar, account_group)
+      .input("account_class", sql.NVarChar, account_class)
+      .input("report_section", sql.NVarChar, report_section)
+      .input("report_line", sql.NVarChar, report_line)
+      .input("report_type", sql.NVarChar, report_type)
+      .input("currency_code", sql.NVarChar, currency_code)
+      .input("iscontrolaccount", sql.Int, iscontrolaccount)
+      .input("isbankaccount", sql.Int, isbankaccount)
+      .input("allowmanualposting", sql.Int, allowmanualposting)
+      .input("effectivefrom", sql.DateTime, effectivefrom)
+      .input("effectiveto", sql.DateTime, effectiveto)
+      .input("status", sql.NVarChar, status)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("modified_by", sql.NVarChar, modified_by)
+      .input("modified_date", sql.DateTime, modified_date)
+      .query(`EXEC sp_chart_of_accounts_hdr @mode, @account_code, @account_name, @account_group, @account_class, @report_section, @report_line, @report_type, @currency_code, @iscontrolaccount, @isbankaccount, @allowmanualposting, @effectivefrom, @effectiveto, @status, @company_code, @location_code, '', '', @modified_by, @modified_date`);
+
+    res.status(200).json({ success: true, message: "chart of accounts updated successfully" });
+  } catch (err) {
+    console.error("Error during chart of accounts update:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const chart_of_accountsDelete = async (req, res) => {
+  const { account_code, company_code, location_code } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("mode", sql.NVarChar, "D")
+      .input("account_code", sql.NVarChar, account_code)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .query(`EXEC sp_chart_of_accounts_hdr @mode, @account_code, '', '', '', '', '', '', '', 0, 0, 0, '', '', '', @company_code, @location_code, '', '', '', ''`);
+
+    res.status(200).json({ success: true, message: "chart of accounts deleted successfully" });
+  } catch (err) {
+    console.error("Error during chart of accounts delete:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const chart_of_accountsLoopInsert = async (req, res) => {
+  const chart_of_accountsData = req.body.chart_of_accountsData;
+  if (!chart_of_accountsData || !chart_of_accountsData.length) {
+    return res.status(400).json("Invalid or empty chart_of_accountsData array.");
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    for (const item of chart_of_accountsData) {
+      await pool.request()
+        .input("mode", sql.NVarChar, "I")
+        .input("account_code", sql.NVarChar, item.account_code)
+        .input("account_name", sql.NVarChar, item.account_name)
+        .input("account_group", sql.NVarChar, item.account_group)
+        .input("account_class", sql.NVarChar, item.account_class)
+        .input("report_section", sql.NVarChar, item.report_section)
+        .input("report_line", sql.NVarChar, item.report_line)
+        .input("report_type", sql.NVarChar, item.report_type)
+        .input("currency_code", sql.NVarChar, item.currency_code)
+        .input("iscontrolaccount", sql.Int, item.iscontrolaccount)
+        .input("isbankaccount", sql.Int, item.isbankaccount)
+        .input("allowmanualposting", sql.Int, item.allowmanualposting)
+        .input("effectivefrom", sql.DateTime, item.effectivefrom)
+        .input("effectiveto", sql.DateTime, item.effectiveto)
+        .input("status", sql.NVarChar, item.status)
+        .input("company_code", sql.NVarChar, item.company_code)
+        .input("location_code", sql.NVarChar, item.location_code)
+        .input("created_by", sql.NVarChar, item.created_by)
+        .input("created_date", sql.DateTime, item.created_date)
+        .query(`EXEC sp_chart_of_accounts_hdr @mode, @account_code, @account_name, @account_group, @account_class, @report_section, @report_line, @report_type, @currency_code, @iscontrolaccount, @isbankaccount, @allowmanualposting, @effectivefrom, @effectiveto, @status, @company_code, @location_code, @created_by, @created_date, '', ''`);
+    }
+    res.status(200).json("chart_of_accounts data inserted successfully");
+  } catch (err) {
+    console.error("Error in chart_of_accountsLoopInsert:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const chart_of_accountsLoopUpdate = async (req, res) => {
+  const chart_of_accountsData = req.body.chart_of_accountsData;
+  if (!chart_of_accountsData || !chart_of_accountsData.length) {
+    return res.status(400).json("Invalid or empty chart_of_accountsData array.");
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    for (const item of chart_of_accountsData) {
+      await pool.request()
+        .input("mode", sql.NVarChar, "U")
+        .input("account_code", sql.NVarChar, item.account_code)
+        .input("account_name", sql.NVarChar, item.account_name)
+        .input("account_group", sql.NVarChar, item.account_group)
+        .input("account_class", sql.NVarChar, item.account_class)
+        .input("report_section", sql.NVarChar, item.report_section)
+        .input("report_line", sql.NVarChar, item.report_line)
+        .input("report_type", sql.NVarChar, item.report_type)
+        .input("currency_code", sql.NVarChar, item.currency_code)
+        .input("iscontrolaccount", sql.Int, item.iscontrolaccount)
+        .input("isbankaccount", sql.Int, item.isbankaccount)
+        .input("allowmanualposting", sql.Int, item.allowmanualposting)
+        .input("effectivefrom", sql.DateTime, item.effectivefrom)
+        .input("effectiveto", sql.DateTime, item.effectiveto)
+        .input("status", sql.NVarChar, item.status)
+        .input("company_code", sql.NVarChar, item.company_code)
+        .input("location_code", sql.NVarChar, item.location_code)
+        .input("modified_by", sql.NVarChar, item.modified_by)
+        .input("modified_date", sql.DateTime, item.modified_date)
+        .query(`EXEC sp_chart_of_accounts_hdr @mode, @account_code, @account_name, @account_group, @account_class, @report_section, @report_line, @report_type, @currency_code, @iscontrolaccount, @isbankaccount, @allowmanualposting, @effectivefrom, @effectiveto, @status, @company_code, @location_code, '', '', @modified_by, @modified_date`);
+    }
+    res.status(200).json("chart_of_accounts data updated successfully");
+  } catch (err) {
+    console.error("Error in chart_of_accountsLoopUpdate:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const chart_of_accountsLoopDelete = async (req, res) => {
+  const chart_of_accountsData = req.body.chart_of_accountsData;
+  if (!chart_of_accountsData || !chart_of_accountsData.length) {
+    return res.status(400).json("Invalid or empty chart_of_accountsData array.");
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    for (const item of chart_of_accountsData) {
+      await pool.request()
+        .input("mode", sql.NVarChar, "D")
+        .input("account_code", sql.NVarChar, item.account_code)
+        .input("company_code", sql.NVarChar, item.company_code)
+        .input("location_code", sql.NVarChar, item.location_code)
+        .query(`EXEC sp_chart_of_accounts_hdr @mode, @account_code, '', '', '', '', '', '', '', 0, 0, 0, '', '', '', @company_code, @location_code, '', '', '', ''`);
+    }
+    res.status(200).json("chart_of_accounts data deleted successfully");
+  } catch (err) {
+    console.error("Error in chart_of_accountsLoopDelete:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const getAccountClass = async (req, res) => {
+  const { company_code } = req.body;
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("company_code", sql.NVarChar, company_code)
+      .query(
+        "EXEC sp_attribute_Info 'F',@company_code,'Account Class','','','', '',0,'','', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL"
+      );
+ 
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+ 
+const getFSR = async (req, res) => {
+  const { company_code } = req.body;
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("company_code", sql.NVarChar, company_code)
+      .query(
+        "EXEC sp_attribute_Info 'F',@company_code,'FSR','','','', '',0,'','', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL"
+      );
+ 
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+ 
+const getAccountGroup = async (req, res) => {
+  const { company_code } = req.body;
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("company_code", sql.NVarChar, company_code)
+      .query(
+        "EXEC sp_attribute_Info 'F',@company_code,'Account Group','','','', '',0,'','', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL"
+      );
+ 
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+ 
+const getReportSection = async (req, res) => {
+  const { company_code } = req.body;
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("company_code", sql.NVarChar, company_code)
+      .query(
+        "EXEC sp_attribute_Info 'F',@company_code,'Report Section','','','', '',0,'','', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL"
+      );
+ 
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+ 
+const getReportLine = async (req, res) => {
+  const { company_code } = req.body;
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("company_code", sql.NVarChar, company_code)
+      .query(
+        "EXEC sp_attribute_Info 'F',@company_code,'Report Line','','','', '',0,'','', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL"
+      );
+ 
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+//Code ended by SakthiGanesh J on 25-10-2026
+//Code added by SakthiGanesh J on 26-10-2026
+const getCurrencyCode = async (req, res) => {
+  const { company_code, location_code } = req.body;
+  let pool;
+  try {
+    pool = await sql.connect(dbConfig);
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "A") // Insert mode
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .query(`EXEC sp_Currency @mode, 0, '', '', '', 0, '', '', '', @company_code, @location_code, '', '', '', '' `);
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const getChartOfAccountsSC = async (req, res) => {
+  const { account_code, account_name, account_group, account_class, report_section, report_line, report_type, currency_code, iscontrolaccount, isbankaccount, allowmanualposting,
+    effectivefrom, effectiveto, status, company_code, location_code, created_by, created_date, modified_by, modified_date } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "SC")
+      .input("account_code", sql.NVarChar, account_code ?? "")
+      .input("account_name", sql.NVarChar, account_name ?? "")
+      .input("account_group", sql.NVarChar, account_group ?? "")
+      .input("account_class", sql.NVarChar, account_class ?? "")
+      .input("report_section", sql.NVarChar, report_section ?? "")
+      .input("report_line", sql.NVarChar, report_line ?? "")
+      .input("report_type", sql.NVarChar, report_type ?? "")
+      .input("currency_code", sql.NVarChar, currency_code ?? "")
+      .input("iscontrolaccount",sql.Int,iscontrolaccount === "" || iscontrolaccount === undefined
+      || iscontrolaccount === null? null: Number(iscontrolaccount))
+      .input("isbankaccount",sql.Int,isbankaccount === "" || isbankaccount === undefined
+      || isbankaccount === null ? null : Number(isbankaccount) )
+      .input( "allowmanualposting", sql.Int, allowmanualposting === "" || allowmanualposting === undefined
+      || allowmanualposting === null ? null : Number(allowmanualposting) )
+      .input("effectivefrom", sql.DateTime, effectivefrom || null)
+      .input("effectiveto", sql.DateTime, effectiveto || null)
+      .input("status", sql.NVarChar, status ?? "")
+      .input("company_code", sql.NVarChar, company_code ?? "")
+      .input("location_code", sql.NVarChar, location_code ?? "")
+      .input("created_by", sql.NVarChar, created_by ?? "")
+      .input("created_date", sql.DateTime, created_date || null)
+      .input("modified_by", sql.NVarChar, modified_by ?? "")
+      .input("modified_date", sql.DateTime, modified_date || null)
+      .query(`EXEC sp_chart_of_accounts_hdr 'SC',@account_code,@account_name,@account_group,@account_class,@report_section,@report_line,@report_type,@currency_code,@iscontrolaccount,@isbankaccount,@allowmanualposting,@effectivefrom,@effectiveto,@status,@company_code,@location_code,@created_by,@created_date,@modified_by,@modified_date`);
+
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json("Data not found");
+    }
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({
+      message: err.message || "Internal Server Error"
+    });
+  }
+};
+//Code ended by SakthiGanesh J on 26-10-2026
+
 //Code added by Dinesh Gokul on 25-10-2026
 const insertReceivedGoods = async (req, res) => {
   const editedData = req.body.editedData;
@@ -33210,6 +33556,19 @@ module.exports = {
   insertReceivedGoods,
   getAmendmentNumberDrop,
   authorizeReceivedGoods,
-  updateStatusPurchaseOrder
+  updateStatusPurchaseOrder,
+  chart_of_accountsInsert, 
+  chart_of_accountsUpdate, 
+  chart_of_accountsDelete,
+  chart_of_accountsLoopInsert, 
+  chart_of_accountsLoopUpdate, 
+  chart_of_accountsLoopDelete,
+  getAccountClass,
+  getFSR,
+  getAccountGroup,
+  getReportSection,
+  getReportLine,
+  getCurrencyCode,
+  getChartOfAccountsSC
 
 };

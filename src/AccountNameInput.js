@@ -2,1000 +2,573 @@ import React, { useState, useEffect, useRef } from "react";
 import "./input.css";
 import Select from "react-select";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import LoadingScreen from './Loading';
 
 const config = require("./Apiconfig");
 
-function AccNameInput({ }) {
+function AddChart_of_accountsScreen() {
   const navigate = useNavigate();
-  const [account_code, setaccount_code] = useState("");
-  const [account_name, setaccount_name] = useState("");
-  const [acc_addr_1, setacc_addr_1] = useState("");
-  const [acc_addr_2, setacc_addr_2] = useState("");
-  const [acc_addr_3, setacc_addr_3] = useState("");
-  const [acc_addr_4, setacc_addr_4] = useState("");
-  const [acc_area_code, setacc_area_code] = useState("");
-  const [acc_state_code, setacc_state_code] = useState("");
-  const [acc_country_code, setacc_country_code] = useState("");
-  const [acc_imex_no, setacc_imex_no] = useState("");
-  const [acc_office_no, setacc_office_no] = useState("");
-  const [acc_resi_no, setacc_resi_no] = useState("");
-  const [acc_mobile_no, setacc_mobile_no] = useState("");
-  const [acc_fax_no, setacc_fax_no] = useState("");
-  const [acc_email_id, setacc_email_id] = useState("");
-  const [acc_credit_limit, setacc_credit_limit] = useState("");
-  const [acc_transport_code, setacc_transport_code] = useState("");
-  const [acc_salesman_code, setacc_salesman_code] = useState("");
-  const [acc_broker_code, setacc_broker_code] = useState("");
-  const [acc_weekday_code, setacc_weekday_code] = useState("");
-  // const [standard_accgroup_code, setstandard_accgroup_code] = useState("");
-  const [user_accgroup_code, setuser_accgroup_code] = useState("");
-  const [status, setstatus] = useState("");
+  const location = useLocation();
+  const { mode = "create", selectedData = {} } = location.state || {};
+
+  // Form Field States
+  const [account_code, setAccountCode] = useState(selectedData.account_code || "");
+  const [account_name, setAccountName] = useState(selectedData.account_name || "");
+  const [account_group, setAccountGroup] = useState(selectedData.account_group || "");
+  const [account_class, setAccountClass] = useState(selectedData.account_class || "");
+  const [report_section, setReportSection] = useState(selectedData.report_section || "");
+  const [report_line, setReportLine] = useState(selectedData.report_line || "");
+  const [report_type, setReportType] = useState(selectedData.report_type || "");
+  const [currency_code, setCurrencyCode] = useState(selectedData.currency_code || "");
+  const [iscontrolaccount, setIsControlAccount] = useState(selectedData.iscontrolaccount || false);
+  const [isbankaccount, setIsBankAccount] = useState(selectedData.isbankaccount || false);
+  const [allowmanualposting, setAllowManualPosting] = useState(selectedData.allowmanualposting || false);
+  const [effectivefrom, setEffectiveFrom] = useState(selectedData.effectivefrom ? selectedData.effectivefrom.split('T')[0] : "");
+  const [effectiveto, setEffectiveTo] = useState(selectedData.effectiveto ? selectedData.effectiveto.split('T')[0] : "");
+  const [status, setStatus] = useState(selectedData.status || "");
+
+  // Selected Option States for react-select
+  const [selectedStatus, setSelectedStatus] = useState(selectedData.status ? { label: selectedData.status, value: selectedData.status } : null);
+  const [selectedGroup, setSelectedGroup] = useState(selectedData.account_group ? { label: selectedData.account_group, value: selectedData.account_group } : null);
+  const [selectedClass, setSelectedClass] = useState(selectedData.account_class ? { label: selectedData.account_class, value: selectedData.account_class } : null);
+  const [selectedSection, setSelectedSection] = useState(selectedData.report_section ? { label: selectedData.report_section, value: selectedData.report_section } : null);
+  const [selectedLine, setSelectedLine] = useState(selectedData.report_line ? { label: selectedData.report_line, value: selectedData.report_line } : null);
+  const [selectedType, setSelectedType] = useState(selectedData.report_type ? { label: selectedData.report_type, value: selectedData.report_type } : null);
+  const [selectedCurrency, setSelectedCurrency] = useState(selectedData.currency_code ? { label: selectedData.currency_code, value: selectedData.currency_code } : null);
+
+  // Dropdown Data States
   const [statusdrop, setStatusdrop] = useState([]);
-  const [selectedStatus, setSelectedStatus] = useState("");
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [customercodedrop, setcustomercodedrop] = useState([]);
-  const [SMcodedrop, setsmcodedrop] = useState([]);
-  const [TRcodedrop, settrcodedrop] = useState([]);
-  const [BRcodedrop, setbrcodedrop] = useState([]);
-  const [drop, setDrop] = useState([]);
-  const [condrop, setCondrop] = useState([]);
-  const [statedrop, setStatedrop] = useState([]);
-  const [selectedCity, setSelectedCity] = useState("");
-  const [selectedState, setselectedState] = useState("");
-  const [selectedCountry, setselectedCountry] = useState("");
-  const [selectedTransport, setSelectedTransport] = useState("");
-  const [selectedSales, setSelectedSales] = useState("");
-  const [selectedBroker, setSelectedBroker] = useState("");
-  const [selectBaseacc, setselectedbaseacc] = useState("");
-  const [baseaccdrop, setbaseaccdrop] = useState([]);
-  const [error, setError] = useState("");
-  const [StdAccGrpdrop, setStdAccGrpdrop] = useState([]);
-  const [selectedUserAcc, setSelectedUserAcc] = useState("");
-  const [Userdrop, setUserdrop] = useState([]);
-  const [selectedUser, setSelectedUser] = useState("");
-  const [selectedUserCode, setSelectedUserCode] = useState("");
+  const [groupDrop, setGroupDrop] = useState([]);
+  const [classDrop, setClassDrop] = useState([]);
+  const [sectionDrop, setSectionDrop] = useState([]);
+  const [lineDrop, setLineDrop] = useState([]);
+  const [typeDrop, setTypeDrop] = useState([]);
+  const [currencyDrop, setCurrencyDrop] = useState([]);
+
+  const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
 
-
-  // const [standardAccCode, setStandardAccCode] = useState('');
-  const Status = useRef(null)
-  const Address4 = useRef(null)
-  const City = useRef(null)
-  const State = useRef(null)
-  const Country = useRef(null)
-  const IMEX = useRef(null)
-  const Office = useRef(null)
-  const Residential = useRef(null)
-  const Mobile = useRef(null)
-  const Fax = useRef(null)
-  const Email = useRef(null)
-  const Credit = useRef(null)
-  const Transport = useRef(null)
-  const Salesman = useRef(null)
-  const Broker = useRef(null)
-  const Weekday = useRef(null)
-  const Address3 = useRef(null)
-  const Address2 = useRef(null)
-  const Address1 = useRef(null)
-  const Accountant = useRef(null)
-  const User = useRef(null)
-  const Accountantcode = useRef(null)
-  const [hasValueChanged, setHasValueChanged] = useState(false);
-  const created_by = sessionStorage.getItem('selectedUserCode')
-
-  console.log(selectedRows);
-  // useEffect(() => {
-  //   fetch(`${config.apiBaseUrl}/getStdAccGrp`)
-  //     .then((data) => data.json())
-  //     .then((val) => setStdAccGrpdrop(val));
-  // }, []);
-  const company_code = sessionStorage.getItem('selectedCompanyCode');
-
-useEffect(() => {
-fetch(`${config.apiBaseUrl}/getStdAccGrp`, {
-method: 'POST',
-headers: {
-'Content-Type': 'application/json'
-},
-body: JSON.stringify({ company_code })
-})
-.then((data) => data.json())
-.then((val) => setStdAccGrpdrop(val))
-.catch((err) => console.error('Error fetching Standard Account Groups:', err));
-}, []);
-
-  // useEffect(() => {
-  //   fetch(`${config.apiBaseUrl}/getbasaccode`)
-  //     .then((data) => data.json())
-  //     .then((val) => setbaseaccdrop(val));
-  // }, []);
-
-useEffect(() => {
-fetch(`${config.apiBaseUrl}/getbasaccode`, {
-method: 'POST',
-headers: {
-'Content-Type': 'application/json',
-},
-body: JSON.stringify({ company_code }),
-})
-.then((data) => data.json())
-.then((val) => setbaseaccdrop(val));
-}, []);
-
+  // Refs for Enter-Key Navigation Flow
+  const RefCode = useRef(null);
+  const RefName = useRef(null);
+  const RefGroup = useRef(null);
+  const RefClass = useRef(null);
+  const RefSection = useRef(null);
+  const RefLine = useRef(null);
+  const RefType = useRef(null);
+  const RefCurrency = useRef(null);
+  const RefEffFrom = useRef(null);
+  const RefEffTo = useRef(null);
+  const RefStatus = useRef(null);
 
   useEffect(() => {
-    fetch(`${config.apiBaseUrl}/trcode`)
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+    const location_code = sessionStorage.getItem("selectedLocationCode");
+    const reqOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ company_code, location_code }),
+    };
+
+    fetch(`${config.apiBaseUrl}/getAccountGroup`, reqOptions)
       .then((data) => data.json())
-      .then((val) => settrcodedrop(val));
-  }, []);
-  useEffect(() => {
-    fetch(`${config.apiBaseUrl}/smcode`)
+      .then((val) => setGroupDrop(val))
+      .catch((error) => console.error("Error fetching Account Group:", error));
+
+    fetch(`${config.apiBaseUrl}/getAccountClass`, reqOptions)
       .then((data) => data.json())
-      .then((val) => setsmcodedrop(val));
-  }, []);
-  useEffect(() => {
-    fetch(`${config.apiBaseUrl}/brcode`)
+      .then((val) => setClassDrop(val))
+      .catch((error) => console.error("Error fetching Account Class:", error));
+
+    fetch(`${config.apiBaseUrl}/getReportSection`, reqOptions)
       .then((data) => data.json())
-      .then((val) => setbrcodedrop(val));
+      .then((val) => setSectionDrop(val))
+      .catch((error) => console.error("Error fetching Report Section:", error));
+
+    fetch(`${config.apiBaseUrl}/getReportLine`, reqOptions)
+      .then((data) => data.json())
+      .then((val) => setLineDrop(val))
+      .catch((error) => console.error("Error fetching Report Line:", error));
+
+    fetch(`${config.apiBaseUrl}/getFSR`, reqOptions)
+      .then((data) => data.json())
+      .then((val) => setTypeDrop(val))
+      .catch((error) => console.error("Error fetching Report Type:", error));
+
+    // Assuming a standard route for currency
+    fetch(`${config.apiBaseUrl}/getCurrencyCode`, reqOptions)
+      .then((data) => data.json())
+      .then((val) => setCurrencyDrop(val))
+      .catch((error) => console.error("Error fetching Currency Code:", error));
   }, []);
 
-
-
-  useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
-
-    fetch(`${config.apiBaseUrl}/city`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ company_code })
-    })
-      .then((data) => data.json())
-      .then((val) => setDrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
-  }, []);
-
-
-  useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
-
-    fetch(`${config.apiBaseUrl}/country`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ company_code })
-    })
-      .then((data) => data.json())
-      .then((val) => setCondrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
-  }, []);
-
-  useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
-
-    fetch(`${config.apiBaseUrl}/state`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ company_code })
-    })
-      .then((data) => data.json())
-      .then((val) => setStatedrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
-  }, []);
-  useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    useEffect(() => {
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
 
     fetch(`${config.apiBaseUrl}/status`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ company_code })
+      body: JSON.stringify({ company_code }),
     })
       .then((data) => data.json())
       .then((val) => setStatusdrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-  useEffect(() => {
-    const company_code = sessionStorage.getItem('selectedCompanyCode');
-
-    fetch(`${config.apiBaseUrl}/getUsercodename`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ company_code })
-    })
-      .then((data) => data.json())
-      .then((val) => setUserdrop(val))
-      .catch((error) => console.error('Error fetching data:', error));
-  }, []);
-
-
-  const filteredOptionStdAccGrp = StdAccGrpdrop.map((option) => ({
-    value: option.standard_accgroup_code,
-    label: option.standard_accgroup_code,
-  }));
-  const filteredOptionTransaction = TRcodedrop.map((option) => ({
-    value: option.keyfield,
-    label: option.keyfield,
-  }));
-
-  const filteredOptionSales = SMcodedrop.map((option) => ({
-    value: option.keyfield,
-    label: option.keyfield,
-  }));
-
-  const filteredOptionBroker = BRcodedrop.map((option) => ({
-    value: option.keyfield,
-    label: option.keyfield,
-  }));
-
-  const filteredOptionCity = drop.map((option) => ({
-    value: option.attributedetails_name,
-    label: option.attributedetails_name,
-  }));
-
-  const filteredOptionState = statedrop.map((option) => ({
-    value: option.attributedetails_name,
-    label: option.attributedetails_name,
-  }));
-
-  const filteredOptionCountry = condrop.map((option) => ({
-    value: option.attributedetails_name,
-    label: option.attributedetails_name,
-  }));
+  // Filtered Options mapping (removed "All" object to prevent DB insert errors)
   const filteredOptionStatus = statusdrop.map((option) => ({
     value: option.attributedetails_name,
-    label: option.attributedetails_name,
+    label: option.descriptions,
   }));
-  const filteredOptionUser = Userdrop.map((option) => ({
-    value: option.user_accgroup_code,
-    label: option.user_accgroup_name,
+
+  const filteredOptionGroup = groupDrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.descriptions,
   }));
-  // const handleChangeStdAccGrp = (selectedUserAcc) => {
-  //   setSelectedUserAcc(selectedUserAcc);
-  //   setstandard_accgroup_code(selectedUserAcc ? selectedUserAcc.value : '');
-  //   setError(false);
-  // };
+
+  const filteredOptionClass = classDrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.descriptions,
+  }));
+
+  const filteredOptionSection = sectionDrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.descriptions,
+  }));
+
+  const filteredOptionLine = lineDrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.descriptions,
+  }));
+
+  const filteredOptionType = typeDrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.descriptions,
+  }));
+
+  const filteredOptionCurrency = currencyDrop.map((option) => ({
+    value: option.Currency_Code,
+    label: option.Currency_Code,
+  }));
+
+  // Handle Changes
   const handleChangeStatus = (selectedStatus) => {
     setSelectedStatus(selectedStatus);
-    setstatus(selectedStatus ? selectedStatus.value : "");
+    setStatus(selectedStatus ? selectedStatus.value : "");
   };
 
-  const handleChangeTransport = (selectedTransport) => {
-    setSelectedTransport(selectedTransport);
-    setacc_transport_code(selectedTransport ? selectedTransport.value : "");
+  const handleChangeGroup = (selected) => {
+    setSelectedGroup(selected);
+    setAccountGroup(selected ? selected.value : "");
   };
 
-  const handleChangeSales = (selectedSales) => {
-    setSelectedSales(selectedSales);
-    setacc_salesman_code(selectedSales ? selectedSales.value : "");
+  const handleChangeClass = (selected) => {
+    setSelectedClass(selected);
+    setAccountClass(selected ? selected.value : "");
   };
 
-  const handleChangeBroker = (selectedBroker) => {
-    setSelectedBroker(selectedBroker);
-    setacc_broker_code(selectedBroker ? selectedBroker.value : "");
-  };
-  const handleChangeCity = (selectedCity) => {
-    setSelectedCity(selectedCity);
-    setacc_area_code(selectedCity ? selectedCity.value : "");
+  const handleChangeSection = (selected) => {
+    setSelectedSection(selected);
+    setReportSection(selected ? selected.value : "");
   };
 
-  const handleChangeState = (selectedState) => {
-    setselectedState(selectedState);
-    setacc_state_code(selectedState ? selectedState.value : "");
+  const handleChangeLine = (selected) => {
+    setSelectedLine(selected);
+    setReportLine(selected ? selected.value : "");
   };
 
-  const handleChangeCountry = (selectedCountry) => {
-    setselectedCountry(selectedCountry);
-    setacc_country_code(selectedCountry ? selectedCountry.value : "");
+  const handleChangeType = (selected) => {
+    setSelectedType(selected);
+    setReportType(selected ? selected.value : "");
   };
 
-  const handleChangeUser = (selectedUser) => {
-    setSelectedUser(selectedUser);
-    setuser_accgroup_code(selectedUser ? selectedUser.value : "");
-    setSelectedUserCode(selectedUser.value);
+  const handleChangeCurrency = (selected) => {
+    setSelectedCurrency(selected);
+    setCurrencyCode(selected ? selected.value : "");
   };
 
-  // const SelectItem = async (user_accgroup_code) => {
-  //   try {
-  //     const response = await fetch(`${config.apiBaseUrl}/getstdBase`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ user_accgroup_code: user_accgroup_code }),
-  //     });
-
-  //     if (response.ok) {
-  //       const searchData = await response.json();
-  //       const [{standard_accgroup_code}] = searchData;
-  //       setStandardAccCode(standard_accgroup_code)
-
-  //       console.log(searchData);
-  //     } else if (response.status === 404) {
-  //       console.log("Data not found");
-  //     } else {
-  //       console.log("Bad request");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching search data:", error);
-  //   }
-  // };
-
-  const handleNavigateToForm = () => {
-    navigate("/AddAccountName", { selectedRows }); // Pass selectedRows as props to the Input component
+  const handleKeyDown = (e, nextFieldRef, currentValue) => {
+    if (e.key === 'Enter') {
+      if (currentValue || currentValue === false) {
+        if (nextFieldRef && nextFieldRef.current) {
+          nextFieldRef.current.focus();
+        }
+      } else {
+        e.preventDefault();
+      }
+    }
   };
 
   const handleNavigate = () => {
-    navigate("/AccountName", { selectedRows }); // Pass selectedRows as props to the Input component
+    navigate("/AccountName");
   };
 
-  const handleInsert = async () => {
-    if (
-      !account_name ||
-      !acc_addr_1 ||
-      !acc_addr_2 ||
-      !acc_area_code ||
-      !acc_state_code ||
-      !acc_country_code ||
-      !acc_imex_no ||
-      !acc_mobile_no ||
-      !acc_fax_no ||
-      !acc_email_id ||
-      !acc_credit_limit ||
-      // !standard_accgroup_code ||
-      !user_accgroup_code ||
-      !status
-    ) {
-      setError(" ");
-      toast.warning("Error: Missing required fields");
+  const handleSave = async () => {
+    if (!account_code || !account_name || !status) {
+      setError(true);
+      toast.warning("Error: Missing required fields (Code, Name, Status)");
       return;
     }
 
-    // Email validation
-    if (!validateEmail(acc_email_id)) {
-      toast.warning("Please enter a valid email address");
-      return;
-    }
     setLoading(true);
+    const endpoint = mode === "create" ? "chart_of_accountsInsert" : "chart_of_accountsUpdate";
 
     try {
-      const response = await fetch(`${config.apiBaseUrl}/addAccountName`, {
+      const response = await fetch(`${config.apiBaseUrl}/${endpoint}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           company_code: sessionStorage.getItem('selectedCompanyCode'),
-          account_code,
-          account_name,
-          acc_addr_1,
-          acc_addr_2,
-          acc_addr_3,
-          acc_addr_4,
-          acc_area_code,
-          acc_state_code,
-          acc_country_code,
-          acc_imex_no,
-          acc_office_no,
-          acc_resi_no,
-          acc_mobile_no,
-          acc_fax_no,
-          acc_email_id,
-          acc_credit_limit,
-          acc_transport_code,
-          acc_salesman_code,
-          acc_broker_code,
-          acc_weekday_code,
-          user_accgroup_code,
-          status,
-          created_by: sessionStorage.getItem('selectedUserCode')
+          location_code: sessionStorage.getItem("selectedLocationCode"),
+          created_by: mode === "create" ? sessionStorage.getItem('selectedUserCode') : undefined,
+          modified_by: mode === "update" ? sessionStorage.getItem('selectedUserCode') : undefined,
+          created_date: new Date().toISOString(),
+          modified_date: new Date().toISOString(),
+          account_code, account_name, account_group, account_class, report_section,
+          report_line, report_type, currency_code,
+          iscontrolaccount: iscontrolaccount ? 1 : 0,
+          isbankaccount: isbankaccount ? 1 : 0,
+          allowmanualposting: allowmanualposting ? 1 : 0,
+          effectivefrom, effectiveto, status
         }),
       });
+
       if (response.ok) {
-        const searchData = await response.json();
-        setTimeout(() => {
-          toast.success("Data inserted successfully!", {
-            onClose: () => window.location.reload(), // Reloads the page after the toast closes
-          });
-        }, 1000);
-        // Reload the page after a delay
-        // setTimeout(() => {
-        //     window.location.reload();
-        // }, 1000); // Adjust the delay time if needed
-        //
-      } else if (response.status === 400) {
-        const errorResponse = await response.json();
-        console.error(errorResponse.message);
-        toast.error(errorResponse.message)
-
+        toast.success(`Data ${mode === "create" ? "inserted" : "updated"} successfully!`, {
+          onClose: () => handleNavigate()
+        });
       } else {
-        console.error("Failed to insert data");
-        toast.error("Failed to insert data")
-
+        const errorResponse = await response.json();
+        toast.error(errorResponse.message || "Failed to process data");
       }
     } catch (error) {
-      console.error("Error inserting data:", error);
-      toast.error("Error inserting data: " + error.message)
+      toast.error("Error saving data: " + error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleChangeName = (e) => {
-    const accountantName = e.target.value;
-    setaccount_name(accountantName);
-  };
-
-  const handleKeyPressRef = (e) => {
-    if (e.key === "Enter") {
-      GeneretedCode(account_name);
-    }
-  };
-
-  const handleBlur = () => {
-    if (selectedUserCode && account_name) {
-      GeneretedCode(account_name);
-    }
-  };
-
-  const GeneretedCode = async (account_name) => {
-    try {
-      const response = await fetch(`${config.apiBaseUrl}/getAccountCode`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          company_code: sessionStorage.getItem('selectedCompanyCode'),
-          user_accgroup_code: selectedUserCode,
-          account_name: account_name,
-        }),
-      });
-
-      if (response.ok) {
-        const searchData = await response.json();
-        const [{ GeneratedAccountCode }] = searchData;
-        setaccount_code(GeneratedAccountCode);
-      } else if (response.status === 404) {
-        console.log("Data not found");
-      } else {
-        console.log("Bad request"); // Log the message for other errors
-      }
-    } catch (error) {
-      console.error("Error fetching search data:", error);
-    }
-  };
-
-  function validateEmail(email) {
-    const emailRegex = /^[A-Za-z\._\-0-9]*[@][A-Za-z]*[\.][a-z]{2,4}$/;
-    return emailRegex.test(email);
-  }
-
-
-  const handleKeyDown = async (e, nextFieldRef, value, hasValueChanged, setHasValueChanged) => {
-    if (e.key === 'Enter') {
-      // Check if the value has changed and handle the search logic
-      if (hasValueChanged) {
-        await handleKeyDownStatus(e); // Trigger the search function
-        setHasValueChanged(false); // Reset the flag after the search
-      }
-
-      // Move to the next field if the current field has a valid value
-      if (value) {
-        nextFieldRef.current.focus();
-      } else {
-        e.preventDefault(); // Prevent moving to the next field if the value is empty
-      }
-    }
-  };
-
-
-
-  const handleKeyDownStatus = async (e) => {
-    if (e.key === 'Enter' && hasValueChanged) { // Only trigger search if the value has changed
-      // Trigger the search function
-      setHasValueChanged(false); // Reset the flag after search
-    }
-  };
-
   return (
-    <div class="container-fluid Topnav-screen ">
+    <div className="container-fluid Topnav-screen">
       {loading && <LoadingScreen />}
       <ToastContainer position="top-right" className="toast-design" theme="colored" />
       <div className="purbut">
-        <div class="">
+        <div>
+          {/* Header Layout */}
           <div className="shadow-lg p-0 bg-body-tertiary rounded mb-2">
-            <div className="purbut mb-0 d-flex justify-content-between" >
-              <h1 align="left" class="purbut">Add Chart of Accounts</h1>
+            <div className="purbut mb-0 d-flex justify-content-between">
+              <h1 align="left" className="purbut">
+                {mode === "update" ? "Update Chart of Accounts" : "Add Chart of Accounts"}
+              </h1>
               <button onClick={handleNavigate} className="purbut btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
-                <i class="fa-solid fa-xmark"></i>
+                <i className="fa-solid fa-xmark"></i>
               </button>
             </div>
           </div>
+
+          {/* Form Layout */}
           <div className="shadow-lg p-3 bg-body-tertiary rounded mb-2">
             <div className="row">
-              <div className="col-md-3 form-group">
+              
+              <div className="col-md-3 form-group mb-2">
                 <div className="exp-form-floating">
                   <div className="d-flex justify-content-start">
                     <div>
-                      <label htmlFor="rid" className="exp-form-labels">
-                        Accountant code<span className="text-danger">*</span>
+                      <label className={`exp-form-labels ${error && !account_code ? 'text-danger' : ''}`}>
+                        Account Code<span className="text-danger">*</span>
                       </label>
                     </div>
                   </div>
                   <input
-                    id="cusad1"
                     className="exp-input-field form-control"
                     type="text"
                     placeholder=""
                     required
-                    title="Accountant code"
+                    title="Account Code"
                     value={account_code}
-                    readOnly
+                    onChange={(e) => setAccountCode(e.target.value)}
+                    readOnly={mode === "update"}
                     maxLength={100}
-                    ref={Accountantcode}
-                    onKeyDown={(e) => handleKeyDown(e, User, Accountantcode)}
+                    ref={RefCode}
+                    onKeyDown={(e) => handleKeyDown(e, RefName, account_code)}
                   />
                 </div>
               </div>
-              <div className="col-md-3 form-group ">
-                <div class="exp-form-floating">
-                  <div class="">
-                    <label for="cusad4" class="exp-form-labels" className={`${error && !user_accgroup_code ? 'text-danger' : ''}`}>
-                      User Account Code<span className="text-danger">*</span>
-                    </label>
-                    <div title="Select the User Account Code">
-                      <Select
-                        id="UserAccCode"
-                        value={selectedUser}
-                        onChange={handleChangeUser}
-                        options={filteredOptionUser}
-                        className=""
-                        classNamePrefix="react-select"
-                        placeholder=""
-                        ref={User}
-                        onKeyDown={(e) => handleKeyDown(e, Accountant, User)}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-3 form-group ">
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
+
+              <div className="col-md-3 form-group mb-2">
+                <div className="exp-form-floating">
+                  <div className="d-flex justify-content-start">
                     <div>
-                      <label for="cusad4" class="exp-form-labels" className={`${error && !account_name ? 'text-danger' : ''}`}>
-                        Accountant Name<span className="text-danger">*</span>
+                      <label className={`exp-form-labels ${error && !account_name ? 'text-danger' : ''}`}>
+                        Account Name<span className="text-danger">*</span>
                       </label>
                     </div>
                   </div>
                   <input
-                    id="cusad1"
-                    class="exp-input-field form-control"
+                    className="exp-input-field form-control"
                     type="text"
                     placeholder=""
                     required
-                    title="Please enter the accountant name"
+                    title="Account Name"
                     value={account_name}
-                    onBlur={handleBlur}
-                    onChange={handleChangeName}
+                    onChange={(e) => setAccountName(e.target.value)}
                     maxLength={100}
-                    ref={Accountant}
-                    onKeyDown={(e) => handleKeyDown(e, Address1, Accountant)}
+                    ref={RefName}
+                    onKeyDown={(e) => handleKeyDown(e, RefGroup, account_name)}
                   />
                 </div>
               </div>
-              <div className="col-md-3 form-group">
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
+
+              <div className="col-md-3 form-group mb-2">
+                <div className="exp-form-floating">
+                  <div className="d-flex justify-content-start">
                     <div>
-                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_addr_1 ? 'text-danger' : ''}`}>
-                        Address 1<span className="text-danger">*</span>
-                      </label>
+                      <label className="exp-form-labels">Account Group</label>
                     </div>
                   </div>
-                  <input
-                    id="cusad1"
-                    class="exp-input-field form-control"
-                    type="text"
-                    required
-                    title="Please enter the address"
-                    value={acc_addr_1}
-                    onChange={(e) => setacc_addr_1(e.target.value)}
-                    maxLength={250}
-                    ref={Address1}
-                    onKeyDown={(e) => handleKeyDown(e, Address2, Address1)}
-                  />
-                </div>
-              </div>
-              <div className="col-md-3 form-group ">
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
-                    <div>
-                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_addr_2 ? 'text-danger' : ''}`}>
-                        Address 2<span className="text-danger">*</span>
-                      </label>
-                    </div>
-                  </div>
-                  <input
-                    id="cusad2"
-                    class="exp-input-field form-control"
-                    type="text"
-                    placeholder=""
-                    required
-                    title="Please enter the address"
-                    value={acc_addr_2}
-                    onChange={(e) => setacc_addr_2(e.target.value)}
-                    maxLength={250}
-                    ref={Address2}
-                    onKeyDown={(e) => handleKeyDown(e, Address3, Address2)}
-                  />
-                </div>
-              </div>
-              <div className="col-md-3 form-group ">
-                <div class="exp-form-floating">
-                  <label for="cusad3" class="exp-form-labels">
-                    Address 3
-                  </label>
-                  <input
-                    id="cusad3"
-                    class="exp-input-field form-control"
-                    type="text"
-                    placeholder=""
-                    required
-                    title="Please enter the address"
-                    value={acc_addr_3}
-                    onChange={(e) => setacc_addr_3(e.target.value)}
-                    maxLength={250}
-                    ref={Address3}
-                    onKeyDown={(e) => handleKeyDown(e, Address4, Address3)}
-                  />
-                </div>
-              </div>
-              <div className="col-md-3 form-group ">
-                <div class="exp-form-floating">
-                  <label for="cusad4" class="exp-form-labels">
-                    Address 4
-                  </label>
-                  <input
-                    id="cusad4"
-                    class="exp-input-field form-control"
-                    type="text"
-                    placeholder=""
-                    required
-                    title="Please enter the address"
-                    value={acc_addr_4}
-                    onChange={(e) => setacc_addr_4(e.target.value)}
-                    maxLength={250}
-                    ref={Address4}
-                    onKeyDown={(e) => handleKeyDown(e, City, Address4)}
-                  />
-                </div>
-              </div>
-              <div className="col-md-3 form-group ">
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
-                    <div>
-                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_area_code ? 'text-danger' : ''}`}>
-                        City<span className="text-danger">*</span>
-                      </label>
-                    </div>
-                  </div>
-                  <div title="Select the City">
+                  <div title="Select the Account Group">
                     <Select
-                      id="city"
-                      value={selectedCity}
-                      onChange={handleChangeCity}
-                      options={filteredOptionCity}
+                      id="account_group"
+                      value={selectedGroup}
+                      onChange={handleChangeGroup}
+                      onKeyDown={(e) => handleKeyDown(e, RefClass, account_group)}
+                      options={filteredOptionGroup}
                       className="exp-input-field"
-                      classNamePrefix="react-select"
                       placeholder=""
-                      ref={City}
-                      onKeyDown={(e) => handleKeyDown(e, State, City)}
+                      classNamePrefix="react-select"
+                      ref={RefGroup}
+                      styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                     />
                   </div>
                 </div>
               </div>
-              <div className="col-md-3 form-group ">
-                <div class="exp-form-floating">
-                  <label for="cusad4" class="exp-form-labels" className={`${error && !acc_state_code ? 'text-danger' : ''}`}>
-                    State<span className="text-danger">*</span>
-                  </label>
-                  <div title="Select the State">
+
+              <div className="col-md-3 form-group mb-2">
+                <div className="exp-form-floating">
+                  <div className="d-flex justify-content-start">
+                    <div>
+                      <label className="exp-form-labels">Account Class</label>
+                    </div>
+                  </div>
+                  <div title="Select the Account Class">
                     <Select
-                      id="state"
-                      value={selectedState}
-                      onChange={handleChangeState}
-                      options={filteredOptionState}
+                      id="account_class"
+                      value={selectedClass}
+                      onChange={handleChangeClass}
+                      onKeyDown={(e) => handleKeyDown(e, RefSection, account_class)}
+                      options={filteredOptionClass}
                       className="exp-input-field"
-                      classNamePrefix="react-select"
                       placeholder=""
-                      ref={State}
-                      onKeyDown={(e) => handleKeyDown(e, Country, State)}
+                      classNamePrefix="react-select"
+                      ref={RefClass}
+                      styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                     />
                   </div>
                 </div>
               </div>
-              <div className="col-md-3 form-group ">
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
+
+              <div className="col-md-3 form-group mb-2">
+                <div className="exp-form-floating">
+                  <div className="d-flex justify-content-start">
                     <div>
-                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_country_code ? 'text-danger' : ''}`}>
-                        Country<span className="text-danger">*</span>
-                      </label>
+                      <label className="exp-form-labels">Report Section</label>
                     </div>
                   </div>
-                  <div title="Select the Country">
+                  <div title="Select the Report Section">
                     <Select
-                      id="country"
-                      value={selectedCountry}
-                      onChange={handleChangeCountry}
-                      options={filteredOptionCountry}
+                      id="report_section"
+                      value={selectedSection}
+                      onChange={handleChangeSection}
+                      onKeyDown={(e) => handleKeyDown(e, RefLine, report_section)}
+                      options={filteredOptionSection}
                       className="exp-input-field"
-                      classNamePrefix="react-select"
                       placeholder=""
-                      ref={Country}
-                      onKeyDown={(e) => handleKeyDown(e, IMEX, Country)}
+                      classNamePrefix="react-select"
+                      ref={RefSection}
+                      styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                     />
                   </div>
                 </div>
               </div>
+
               <div className="col-md-3 form-group mb-2">
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
+                <div className="exp-form-floating">
+                  <div className="d-flex justify-content-start">
                     <div>
-                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_imex_no ? 'text-danger' : ''}`}>
-                        IMEX No<span className="text-danger">*</span>
-                      </label>
+                      <label className="exp-form-labels">Report Line</label>
                     </div>
                   </div>
-                  <input
-                    id="cusimex"
-                    class="exp-input-field form-control"
-                    type="text"
-                    placeholder=""
-                    required
-                    title="Please enter the IMEX number"
-                    value={acc_imex_no}
-                    onChange={(e) => setacc_imex_no(e.target.value)}
-                    maxLength={20}
-                    ref={IMEX}
-                    onKeyDown={(e) => handleKeyDown(e, Office, IMEX)}
-                  />
-                </div>
-              </div>
-              <div className="col-md-3 form-group mb-2">
-                <div class="exp-form-floating">
-                  <label for="cusoff" class="exp-form-labels">
-                    Office No
-                  </label>
-                  <input
-                    id="cusoff"
-                    class="exp-input-field form-control"
-                    type="number"
-                    placeholder=""
-                    required
-                    title="Please enter the office number"
-                    value={acc_office_no}
-                    onChange={(e) => setacc_office_no(e.target.value)}
-                    maxLength={20}
-                    ref={Office}
-                    onKeyDown={(e) => handleKeyDown(e, Residential, Office)}
-                  />
-                </div>
-              </div>
-              <div className="col-md-3 form-group mb-2">
-                <div class="exp-form-floating">
-                  <label for="cusresi" class="exp-form-labels">
-                    Residential No
-                  </label>
-                  <input
-                    id="cusresi"
-                    class="exp-input-field form-control"
-                    type="number"
-                    placeholder=""
-                    required
-                    title="Please enter the residential number"
-                    value={acc_resi_no}
-                    onChange={(e) => setacc_resi_no(e.target.value)}
-                    maxLength={20}
-                    ref={Residential}
-                    onKeyDown={(e) => handleKeyDown(e, Mobile, Residential)}
-                  />
-                </div>
-              </div>
-              <div className="col-md-3 form-group mb-2">
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
-                    <div>
-                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_mobile_no ? 'text-danger' : ''}`}>
-                        Mobile No<span className="text-danger">*</span>
-                      </label>
-                    </div>
-                  </div>
-                  <input
-                    id="mobno"
-                    class="exp-input-field form-control"
-                    type="number"
-                    placeholder=""
-                    required
-                    title="Please enter the mobile number"
-                    value={acc_mobile_no}
-                    onChange={(e) => setacc_mobile_no(e.target.value)}
-                    maxLength={20}
-                    ref={Mobile}
-                    onKeyDown={(e) => handleKeyDown(e, Fax, Mobile)}
-                  />
-                </div>
-              </div>
-              <div className="col-md-3 form-group mb-2">
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
-                    <div>
-                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_fax_no ? 'text-danger' : ''}`}>
-                        Fax No<span className="text-danger">*</span>
-                      </label>
-                    </div>
-                  </div>
-                  <input
-                    id="cusfax"
-                    class="exp-input-field form-control"
-                    type="number"
-                    placeholder=""
-                    required
-                    title="Please enter the FAX number"
-                    value={acc_fax_no}
-                    onChange={(e) => setacc_fax_no(e.target.value)}
-                    maxLength={20}
-                    ref={Fax}
-                    onKeyDown={(e) => handleKeyDown(e, Email, Fax)}
-                  />
-                </div>
-              </div>
-              <div className="col-md-3 form-group mb-2">
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
-                    <div>
-                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_email_id ? 'text-danger' : ''}`}>
-                        Email ID<span className="text-danger">*</span>
-                      </label>
-                    </div>
-                  </div>
-                  <input
-                    id="emailid"
-                    class="exp-input-field form-control"
-                    type="email"
-                    placeholder=""
-                    required
-                    title="Please enter the email ID"
-                    value={acc_email_id}
-                    onChange={(e) => setacc_email_id(e.target.value)}
-                    maxLength={250}
-                    ref={Email}
-                    onKeyDown={(e) => handleKeyDown(e, Credit, Email)}
-                  />
-                </div>
-              </div>
-              <div className="col-md-3 form-group mb-2">
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
-                    <div>
-                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_credit_limit ? 'text-danger' : ''}`}>
-                        Credit Limit<span className="text-danger">*</span>
-                      </label>
-                    </div>
-                  </div>
-                  <input
-                    id="cuscre"
-                    class="exp-input-field form-control"
-                    type="number"
-                    placeholder=""
-                    required
-                    title="Please enter the credit limit"
-                    value={acc_credit_limit}
-                    onChange={(e) => setacc_credit_limit(e.target.value)}
-                    maxLength={18}
-                    ref={Credit}
-                    onKeyDown={(e) => handleKeyDown(e, Transport, Credit)}
-                  />
-                </div>
-              </div>
-              <div className="col-md-3 form-group mb-2">
-                <div class="exp-form-floating">
-                  <label for="custrans" class="exp-form-labels">
-                    Transport Code
-                  </label>
-                  <div title="Select the Transport Code">
+                  <div title="Select the Report Line">
                     <Select
-                      id="custrans"
-                      value={selectedTransport}
-                      onChange={handleChangeTransport}
-                      options={filteredOptionTransaction}
+                      id="report_line"
+                      value={selectedLine}
+                      onChange={handleChangeLine}
+                      onKeyDown={(e) => handleKeyDown(e, RefType, report_line)}
+                      options={filteredOptionLine}
                       className="exp-input-field"
-                      classNamePrefix="react-select"
                       placeholder=""
-                      ref={Transport}
-                      onKeyDown={(e) => handleKeyDown(e, Salesman, Transport)}
+                      classNamePrefix="react-select"
+                      ref={RefLine}
+                      styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                     />
                   </div>
                 </div>
               </div>
+
               <div className="col-md-3 form-group mb-2">
-                <div class="exp-form-floating">
-                  <label for="cussales" class="exp-form-labels">
-                    Salesman Code
-                  </label>
-                  <div title="Select the Salesman Code">
+                <div className="exp-form-floating">
+                  <div className="d-flex justify-content-start">
+                    <div>
+                      <label className="exp-form-labels">Report Type</label>
+                    </div>
+                  </div>
+                  <div title="Select the Report Type">
                     <Select
-                      id="cussales"
-                      value={selectedSales}
-                      onChange={handleChangeSales}
-                      options={filteredOptionSales}
+                      id="report_type"
+                      value={selectedType}
+                      onChange={handleChangeType}
+                      onKeyDown={(e) => handleKeyDown(e, RefCurrency, report_type)}
+                      options={filteredOptionType}
                       className="exp-input-field"
-                      classNamePrefix="react-select"
                       placeholder=""
-                      ref={Salesman}
-                      onKeyDown={(e) => handleKeyDown(e, Broker, Salesman)}
+                      classNamePrefix="react-select"
+                      ref={RefType}
+                      styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                     />
                   </div>
                 </div>
               </div>
+
               <div className="col-md-3 form-group mb-2">
-                <div class="exp-form-floating">
-                  <label for="cusbro" class="exp-form-labels">
-                    Broker Code
-                  </label>
-                  <div title="Select the Broker Code">
+                <div className="exp-form-floating">
+                  <div className="d-flex justify-content-start">
+                    <div>
+                      <label className="exp-form-labels">Currency Code</label>
+                    </div>
+                  </div>
+                  <div title="Select the Currency Code">
                     <Select
-                      id="cusbro"
-                      value={selectedBroker}
-                      onChange={handleChangeBroker}
-                      options={filteredOptionBroker}
+                      id="currency_code"
+                      value={selectedCurrency}
+                      onChange={handleChangeCurrency}
+                      onKeyDown={(e) => handleKeyDown(e, RefEffFrom, currency_code)}
+                      options={filteredOptionCurrency}
                       className="exp-input-field"
-                      classNamePrefix="react-select"
                       placeholder=""
-                      ref={Broker}
-                      onKeyDown={(e) => handleKeyDown(e, Weekday, Broker)}
+                      classNamePrefix="react-select"
+                      ref={RefCurrency}
+                      styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                     />
                   </div>
                 </div>
               </div>
-              <div className="col-md-3 form-group mb-2 ">
-                <div class="exp-form-floating">
-                  <label for="cusweek" class="exp-form-labels">
-                    Weekday Code
-                  </label>
+
+              <div className="col-md-1 form-group mb-2">
+                <div className="exp-form-floating">
+                  <div className="d-flex justify-content-start">
+                    <div>
+                      <label className="exp-form-labels">Control</label>
+                    </div>
+                  </div>
+                  <div className="form-check form-switch pt-2 d-flex ms-3" title="Is Control Account?">
+                    <input 
+                      className="form-check-input fs-4" 
+                      type="checkbox" 
+                      role="switch" 
+                      checked={iscontrolaccount} 
+                      onChange={(e) => setIsControlAccount(e.target.checked)} 
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="col-md-1 form-group mb-2">
+                <div className="exp-form-floating">
+                  <div className="d-flex justify-content-start">
+                    <div>
+                      <label className="exp-form-labels">Bank</label>
+                    </div>
+                  </div>
+                  <div className="form-check form-switch pt-2 d-flex ms-3" title="Is Bank Account?">
+                    <input 
+                      className="form-check-input fs-4" 
+                      type="checkbox" 
+                      role="switch" 
+                      checked={isbankaccount} 
+                      onChange={(e) => setIsBankAccount(e.target.checked)} 
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="col-md-1 form-group mb-2">
+                <div className="exp-form-floating">
+                  <div className="d-flex justify-content-start">
+                    <div>
+                      <label className="exp-form-labels">Manual</label>
+                    </div>
+                  </div>
+                  <div className="form-check form-switch pt-2 d-flex ms-3" title="Allow Manual Posting?">
+                    <input 
+                      className="form-check-input fs-4" 
+                      type="checkbox" 
+                      role="switch" 
+                      checked={allowmanualposting} 
+                      onChange={(e) => setAllowManualPosting(e.target.checked)} 
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="col-md-3 form-group mb-2">
+                <div className="exp-form-floating">
+                  <div className="d-flex justify-content-start">
+                    <div>
+                      <label className="exp-form-labels">Effective From</label>
+                    </div>
+                  </div>
                   <input
-                    id="cusweek"
-                    class="exp-input-field form-control"
-                    type="text"
-                    placeholder=""
+                    className="exp-input-field form-control"
+                    type="date"
                     required
-                    title="Please select a weekday code"
-                    value={acc_weekday_code}
-                    onChange={(e) => setacc_weekday_code(e.target.value)}
-                    maxLength={10}
-                    ref={Weekday}
-                    onKeyDown={(e) => handleKeyDown(e, Status, Weekday)}
+                    title="Effective From"
+                    value={effectivefrom}
+                    onChange={(e) => setEffectiveFrom(e.target.value)}
+                    ref={RefEffFrom}
+                    onKeyDown={(e) => handleKeyDown(e, RefEffTo, effectivefrom)}
                   />
                 </div>
               </div>
-              <div className="col-md-3 form-group">
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
+
+              <div className="col-md-3 form-group mb-2">
+                <div className="exp-form-floating">
+                  <div className="d-flex justify-content-start">
                     <div>
-                      <label for="cusad4" class="exp-form-labels" className={`${error && !status ? 'text-danger' : ''}`}>
+                      <label className="exp-form-labels">Effective To</label>
+                    </div>
+                  </div>
+                  <input
+                    className="exp-input-field form-control"
+                    type="date"
+                    required
+                    title="Effective To"
+                    value={effectiveto}
+                    onChange={(e) => setEffectiveTo(e.target.value)}
+                    ref={RefEffTo}
+                    onKeyDown={(e) => handleKeyDown(e, RefStatus, effectiveto)}
+                  />
+                </div>
+              </div>
+
+              <div className="col-md-3 form-group mb-2">
+                <div className="exp-form-floating">
+                  <div className="d-flex justify-content-start">
+                    <div>
+                      <label className={`exp-form-labels ${error && !status ? 'text-danger' : ''}`}>
                         Status<span className="text-danger">*</span>
                       </label>
                     </div>
@@ -1005,569 +578,46 @@ body: JSON.stringify({ company_code }),
                       id="status"
                       value={selectedStatus}
                       onChange={handleChangeStatus}
+                      onKeyDown={(e) => handleKeyDown(e, null, status)}
                       options={filteredOptionStatus}
                       className="exp-input-field"
-                      classNamePrefix="react-select"
                       placeholder=""
-                      ref={Status}
-                      onKeyDown={(e) => handleKeyDown}
+                      classNamePrefix="react-select"
+                      ref={RefStatus}
+                      styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                     />
                   </div>
                 </div>
               </div>
-              {/* <div className="col-md-3 form-group  mb-2">
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
-                    <div>
-                      <label for="state" class="exp-form-labels">
-                        Created By
 
-                      </label>
-                    </div>
-                  </div><input
-                    id="emailid"
-                    class="exp-input-field form-control"
-                    type="text"
-                    placeholder=""
-                    required title="Please enter the email ID"
-                    value={created_by}
-                  />
-                </div>
-              </div> */}
-              <div class="col-md-3 form-group mt-4">
-                <button onClick={handleInsert} class="" required title="Save">
-                  <i class="fa-solid fa-floppy-disk"></i>
+              <div className="col-md-3 form-group mt-4">
+                <button onClick={handleSave} className="" required title={mode === "update" ? "Update" : "Save"}>
+                  {mode === "update" ? <i className="fa-solid fa-pen-to-square"></i> : <i className="fa-solid fa-floppy-disk"></i>}
                 </button>
               </div>
+
             </div>
           </div>
         </div>
       </div>
+      
+      {/* Mobile View Structure */}
       <div className="mobileview">
-        <div class="">
+        <div>
           <div className="shadow-lg p-0 bg-body-tertiary rounded mb-2">
-            <div className=" mb-0 d-flex justify-content-between" >
-              <h1 align="left" class="h1">Add Chart of Accounts</h1>
-              <button onClick={handleNavigate} className=" btn btn-danger shadow-none borde-shape h-70 fs-5" required title="Close">
-                <i class="fa-solid fa-xmark"></i>
+            <div className="mb-0 d-flex justify-content-between">
+              <h1 align="left" className="h1">
+                {mode === "update" ? "Update Chart of Accounts" : "Add Chart of Accounts"}
+              </h1>
+              <button onClick={handleNavigate} className="btn btn-danger shadow-none borde-shape h-70 fs-5" required title="Close">
+                <i className="fa-solid fa-xmark"></i>
               </button>
             </div>
           </div>
           <div className="shadow-lg p-3 bg-body-tertiary rounded mb-2">
             <div className="row">
-              <div className="col-md-3 form-group">
-                <div className="exp-form-floating">
-                  <div className="d-flex justify-content-start">
-                    <div>
-                      <label htmlFor="rid" className="exp-form-labels">
-                        Accountant code<span className="text-danger">*</span>
-                      </label>
-                    </div>
-                  </div>
-                  <input
-                    id="cusad1"
-                    className="exp-input-field form-control"
-                    type="text"
-                    placeholder=""
-                    required
-                    title="Accountant code"
-                    value={account_code}
-                    readOnly
-                    maxLength={100}
-                    ref={Accountantcode}
-                    onKeyDown={(e) => handleKeyDown(e, User, Accountantcode)}
-                  />
-                </div>
-              </div>
-              <div className="col-md-3 form-group ">
-                <div class="exp-form-floating">
-                  <div class="">
-                    <label for="cusad4" class="exp-form-labels" className={`${error && !user_accgroup_code ? 'text-danger' : ''}`}>
-                      User Account Code<span className="text-danger">*</span>
-                    </label>
-                    <div title="Select the User Account Code">
-                      <Select
-                        id="UserAccCode"
-                        value={selectedUser}
-                        onChange={handleChangeUser}
-                        options={filteredOptionUser}
-                        className=""
-                        classNamePrefix="react-select"
-                        placeholder=""
-                        ref={User}
-                        onKeyDown={(e) => handleKeyDown(e, Accountant, User)}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-3 form-group ">
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
-                    <div>
-                      <label for="cusad4" class="exp-form-labels" className={`${error && !account_name ? 'text-danger' : ''}`}>
-                        Accountant Name<span className="text-danger">*</span>
-                      </label>
-                    </div>
-                  </div>
-                  <input
-                    id="cusad1"
-                    class="exp-input-field form-control"
-                    type="text"
-                    placeholder=""
-                    required
-                    title="Please enter the accountant name"
-                    value={account_name}
-                    onBlur={handleBlur}
-                    onChange={handleChangeName}
-                    maxLength={100}
-                    ref={Accountant}
-                    onKeyDown={(e) => handleKeyDown(e, Address1, Accountant)}
-                  />
-                </div>
-              </div>
-              <div className="col-md-3 form-group">
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
-                    <div>
-                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_addr_1 ? 'text-danger' : ''}`}>
-                        Address 1<span className="text-danger">*</span>
-                      </label>
-                    </div>
-                  </div>
-                  <input
-                    id="cusad1"
-                    class="exp-input-field form-control"
-                    type="text"
-                    required
-                    title="Please enter the address"
-                    value={acc_addr_1}
-                    onChange={(e) => setacc_addr_1(e.target.value)}
-                    maxLength={250}
-                    ref={Address1}
-                    onKeyDown={(e) => handleKeyDown(e, Address2, Address1)}
-                  />
-                </div>
-              </div>
-              <div className="col-md-3 form-group ">
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
-                    <div>
-                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_addr_2 ? 'text-danger' : ''}`}>
-                        Address 2<span className="text-danger">*</span>
-                      </label>
-                    </div>
-                  </div>
-                  <input
-                    id="cusad2"
-                    class="exp-input-field form-control"
-                    type="text"
-                    placeholder=""
-                    required
-                    title="Please enter the address"
-                    value={acc_addr_2}
-                    onChange={(e) => setacc_addr_2(e.target.value)}
-                    maxLength={250}
-                    ref={Address2}
-                    onKeyDown={(e) => handleKeyDown(e, Address3, Address2)}
-                  />
-                </div>
-              </div>
-              <div className="col-md-3 form-group ">
-                <div class="exp-form-floating">
-                  <label for="cusad3" class="exp-form-labels">
-                    Address 3
-                  </label>
-                  <input
-                    id="cusad3"
-                    class="exp-input-field form-control"
-                    type="text"
-                    placeholder=""
-                    required
-                    title="Please enter the address"
-                    value={acc_addr_3}
-                    onChange={(e) => setacc_addr_3(e.target.value)}
-                    maxLength={250}
-                    ref={Address3}
-                    onKeyDown={(e) => handleKeyDown(e, Address4, Address3)}
-                  />
-                </div>
-              </div>
-              <div className="col-md-3 form-group ">
-                <div class="exp-form-floating">
-                  <label for="cusad4" class="exp-form-labels">
-                    Address 4
-                  </label>
-                  <input
-                    id="cusad4"
-                    class="exp-input-field form-control"
-                    type="text"
-                    placeholder=""
-                    required
-                    title="Please enter the address"
-                    value={acc_addr_4}
-                    onChange={(e) => setacc_addr_4(e.target.value)}
-                    maxLength={250}
-                    ref={Address4}
-                    onKeyDown={(e) => handleKeyDown(e, City, Address4)}
-                  />
-                </div>
-              </div>
-              <div className="col-md-3 form-group ">
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
-                    <div>
-                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_area_code ? 'text-danger' : ''}`}>
-                        City<span className="text-danger">*</span>
-                      </label>
-                    </div>
-                  </div>
-                  <div title="Select the City">
-                    <Select
-                      id="city"
-                      value={selectedCity}
-                      onChange={handleChangeCity}
-                      options={filteredOptionCity}
-                      className="exp-input-field"
-                      classNamePrefix="react-select"
-                      placeholder=""
-                      ref={City}
-                      onKeyDown={(e) => handleKeyDown(e, State, City)}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-3 form-group ">
-                <div class="exp-form-floating">
-                  <label for="cusad4" class="exp-form-labels" className={`${error && !acc_state_code ? 'text-danger' : ''}`}>
-                    State<span className="text-danger">*</span>
-                  </label>
-                  <div title="Select the State">
-                    <Select
-                      id="state"
-                      value={selectedState}
-                      onChange={handleChangeState}
-                      options={filteredOptionState}
-                      className="exp-input-field"
-                      classNamePrefix="react-select"
-                      placeholder=""
-                      ref={State}
-                      onKeyDown={(e) => handleKeyDown(e, Country, State)}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-3 form-group ">
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
-                    <div>
-                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_country_code ? 'text-danger' : ''}`}>
-                        Country<span className="text-danger">*</span>
-                      </label>
-                    </div>
-                  </div>
-                  <div title="Select the Country">
-                    <Select
-                      id="country"
-                      value={selectedCountry}
-                      onChange={handleChangeCountry}
-                      options={filteredOptionCountry}
-                      className="exp-input-field"
-                      classNamePrefix="react-select"
-                      placeholder=""
-                      ref={Country}
-                      onKeyDown={(e) => handleKeyDown(e, IMEX, Country)}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-3 form-group mb-2">
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
-                    <div>
-                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_imex_no ? 'text-danger' : ''}`}>
-                        IMEX No<span className="text-danger">*</span>
-                      </label>
-                    </div>
-                  </div>
-                  <input
-                    id="cusimex"
-                    class="exp-input-field form-control"
-                    type="text"
-                    placeholder=""
-                    required
-                    title="Please enter the IMEX number"
-                    value={acc_imex_no}
-                    onChange={(e) => setacc_imex_no(e.target.value)}
-                    maxLength={20}
-                    ref={IMEX}
-                    onKeyDown={(e) => handleKeyDown(e, Office, IMEX)}
-                  />
-                </div>
-              </div>
-              <div className="col-md-3 form-group mb-2">
-                <div class="exp-form-floating">
-                  <label for="cusoff" class="exp-form-labels">
-                    Office No
-                  </label>
-                  <input
-                    id="cusoff"
-                    class="exp-input-field form-control"
-                    type="number"
-                    placeholder=""
-                    required
-                    title="Please enter the office number"
-                    value={acc_office_no}
-                    onChange={(e) => setacc_office_no(e.target.value)}
-                    maxLength={20}
-                    ref={Office}
-                    onKeyDown={(e) => handleKeyDown(e, Residential, Office)}
-                  />
-                </div>
-              </div>
-              <div className="col-md-3 form-group mb-2">
-                <div class="exp-form-floating">
-                  <label for="cusresi" class="exp-form-labels">
-                    Residential No
-                  </label>
-                  <input
-                    id="cusresi"
-                    class="exp-input-field form-control"
-                    type="number"
-                    placeholder=""
-                    required
-                    title="Please enter the residential number"
-                    value={acc_resi_no}
-                    onChange={(e) => setacc_resi_no(e.target.value)}
-                    maxLength={20}
-                    ref={Residential}
-                    onKeyDown={(e) => handleKeyDown(e, Mobile, Residential)}
-                  />
-                </div>
-              </div>
-              <div className="col-md-3 form-group mb-2">
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
-                    <div>
-                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_mobile_no ? 'text-danger' : ''}`}>
-                        Mobile No<span className="text-danger">*</span>
-                      </label>
-                    </div>
-                  </div>
-                  <input
-                    id="mobno"
-                    class="exp-input-field form-control"
-                    type="number"
-                    placeholder=""
-                    required
-                    title="Please enter the mobile number"
-                    value={acc_mobile_no}
-                    onChange={(e) => setacc_mobile_no(e.target.value)}
-                    maxLength={20}
-                    ref={Mobile}
-                    onKeyDown={(e) => handleKeyDown(e, Fax, Mobile)}
-                  />
-                </div>
-              </div>
-              <div className="col-md-3 form-group mb-2">
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
-                    <div>
-                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_fax_no ? 'text-danger' : ''}`}>
-                        Fax No<span className="text-danger">*</span>
-                      </label>
-                    </div>
-                  </div>
-                  <input
-                    id="cusfax"
-                    class="exp-input-field form-control"
-                    type="number"
-                    placeholder=""
-                    required
-                    title="Please enter the FAX number"
-                    value={acc_fax_no}
-                    onChange={(e) => setacc_fax_no(e.target.value)}
-                    maxLength={20}
-                    ref={Fax}
-                    onKeyDown={(e) => handleKeyDown(e, Email, Fax)}
-                  />
-                </div>
-              </div>
-              <div className="col-md-3 form-group mb-2">
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
-                    <div>
-                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_email_id ? 'text-danger' : ''}`}>
-                        Email ID<span className="text-danger">*</span>
-                      </label>
-                    </div>
-                  </div>
-                  <input
-                    id="emailid"
-                    class="exp-input-field form-control"
-                    type="email"
-                    placeholder=""
-                    required
-                    title="Please enter the email ID"
-                    value={acc_email_id}
-                    onChange={(e) => setacc_email_id(e.target.value)}
-                    maxLength={250}
-                    ref={Email}
-                    onKeyDown={(e) => handleKeyDown(e, Credit, Email)}
-                  />
-                </div>
-              </div>
-              <div className="col-md-3 form-group mb-2">
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
-                    <div>
-                      <label for="cusad4" class="exp-form-labels" className={`${error && !acc_credit_limit ? 'text-danger' : ''}`}>
-                        Credit Limit<span className="text-danger">*</span>
-                      </label>
-                    </div>
-                  </div>
-                  <input
-                    id="cuscre"
-                    class="exp-input-field form-control"
-                    type="number"
-                    placeholder=""
-                    required
-                    title="Please enter the credit limit"
-                    value={acc_credit_limit}
-                    onChange={(e) => setacc_credit_limit(e.target.value)}
-                    maxLength={18}
-                    ref={Credit}
-                    onKeyDown={(e) => handleKeyDown(e, Transport, Credit)}
-                  />
-                </div>
-              </div>
-              <div className="col-md-3 form-group mb-2">
-                <div class="exp-form-floating">
-                  <label for="custrans" class="exp-form-labels">
-                    Transport Code
-                  </label>
-                  <div title="Select the Transport Code">
-                    <Select
-                      id="custrans"
-                      value={selectedTransport}
-                      onChange={handleChangeTransport}
-                      options={filteredOptionTransaction}
-                      className="exp-input-field"
-                      classNamePrefix="react-select"
-                      placeholder=""
-                      ref={Transport}
-                      onKeyDown={(e) => handleKeyDown(e, Salesman, Transport)}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-3 form-group mb-2">
-                <div class="exp-form-floating">
-                  <label for="cussales" class="exp-form-labels">
-                    Salesman Code
-                  </label>
-                  <div title="Select the Salesman Code">
-                    <Select
-                      id="cussales"
-                      value={selectedSales}
-                      onChange={handleChangeSales}
-                      options={filteredOptionSales}
-                      className="exp-input-field"
-                      classNamePrefix="react-select"
-                      placeholder=""
-                      ref={Salesman}
-                      onKeyDown={(e) => handleKeyDown(e, Broker, Salesman)}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-3 form-group mb-2">
-                <div class="exp-form-floating">
-                  <label for="cusbro" class="exp-form-labels">
-                    Broker Code
-                  </label>
-                  <div title="Select the Broker Code">
-                    <Select
-                      id="cusbro"
-                      value={selectedBroker}
-                      onChange={handleChangeBroker}
-                      options={filteredOptionBroker}
-                      className="exp-input-field"
-                      classNamePrefix="react-select"
-                      placeholder=""
-                      ref={Broker}
-                      onKeyDown={(e) => handleKeyDown(e, Weekday, Broker)}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-3 form-group mb-2 ">
-                <div class="exp-form-floating">
-                  <label for="cusweek" class="exp-form-labels">
-                    Weekday Code
-                  </label>
-                  <input
-                    id="cusweek"
-                    class="exp-input-field form-control"
-                    type="text"
-                    placeholder=""
-                    required
-                    title="Please select a weekday code"
-                    value={acc_weekday_code}
-                    onChange={(e) => setacc_weekday_code(e.target.value)}
-                    maxLength={10}
-                    ref={Weekday}
-                    onKeyDown={(e) => handleKeyDown(e, Status, Weekday)}
-                  />
-                </div>
-              </div>
-              <div className="col-md-3 form-group">
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
-                    <div>
-                      <label for="cusad4" class="exp-form-labels" className={`${error && !status ? 'text-danger' : ''}`}>
-                        Status<span className="text-danger">*</span>
-                      </label>
-                    </div>
-                  </div>
-                  <div title="Select the Status">
-                    <Select
-                      id="status"
-                      value={selectedStatus}
-                      onChange={handleChangeStatus}
-                      options={filteredOptionStatus}
-                      className="exp-input-field"
-                      classNamePrefix="react-select"
-                      placeholder=""
-                      ref={Status}
-                      onKeyDown={(e) => handleKeyDown}
-                    />
-                  </div>
-                </div>
-              </div>
-              {/* <div className="col-md-3 form-group  mb-2">
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
-                    <div>
-                      <label for="state" class="exp-form-labels">
-                        Created By
-
-                      </label>
-                    </div>
-                  </div><input
-                    id="emailid"
-                    class="exp-input-field form-control"
-                    type="text"
-                    placeholder=""
-                    required title="Please enter the email ID"
-                    value={created_by}
-                  />
-                </div>
-              </div> */}
-              <div class="col-md-3 form-group mt-4">
-                <button onClick={handleInsert} class="" required title="Save">
-                  <i class="fa-solid fa-floppy-disk"></i>
-                </button>
+              <div className="col-md-12 form-group mt-2">
+                <p className="text-center text-muted">Use standard responsive views or duplicate inputs here as needed per AccountNameInput reference.</p>
               </div>
             </div>
           </div>
@@ -1576,4 +626,5 @@ body: JSON.stringify({ company_code }),
     </div>
   );
 }
-export default AccNameInput;
+
+export default AddChart_of_accountsScreen;
