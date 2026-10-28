@@ -679,8 +679,7 @@ function Chart_of_accountsScreen() {
                     { value: "1", label: "Yes" },
                     { value: "0", label: "No" }
                   ]}
-                  value={
-                    allowmanualposting === "" || allowmanualposting === null
+                  value={ allowmanualposting === "" || allowmanualposting === null
                       ? null
                       : {
                           value: String(allowmanualposting),
