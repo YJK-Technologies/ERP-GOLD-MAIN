@@ -2889,7 +2889,7 @@ function DeliveryChallan() {
             {Screens === 'Add' ? (
                 <div className="container-fluid Topnav-screen">
                     {loading && <LoadingScreen />}
-                    <ToastContainer position="top-right" className="toast-design" theme="colored" />
+                    <ToastContainer position="top-right" className="toast-design" theme="colored" autoClose={3000} />
                     <div>
                         <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
                             <div class="d-flex justify-content-between">
@@ -3306,7 +3306,7 @@ function DeliveryChallan() {
             ) : (
                 <div className="container-fluid Topnav-screen">
                     {loading && <LoadingScreen />}
-                    <ToastContainer position="top-right" className="toast-design" theme="colored" />
+                    <ToastContainer position="top-right" className="toast-design" theme="colored"/>
                     <div>
                         <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
                             <div class="d-flex justify-content-between">

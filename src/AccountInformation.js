@@ -160,7 +160,14 @@ const AccountInformation = () => {
             const savedCompanyNo = sessionStorage.getItem('selectedCompanyCode');
             const savedLocationNo = sessionStorage.getItem('selectedLocationCode');
 
-            // Check if sessionStorage has saved data
+            // Condition 1: Orey oru row mattum thaan irukku na automatic-ah save function run aganum
+            if (searchData.length === 1) {
+              setDefaultData(searchData[0]);
+              handleSave(searchData[0]); // Auto save for single row
+              return;
+            }
+
+            // Condition 2: 1-ku mela iruntha usual checks (sessionStorage or default first row)
             if (savedCompanyNo && savedLocationNo) {
               const savedData = searchData.find(item =>
                 item.company_no === savedCompanyNo && item.location_no === savedLocationNo
