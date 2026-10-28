@@ -261,6 +261,7 @@ function CompanyMappingGrid() {
       field: "order_no",
       editable: true,
       cellStyle: { textAlign: "left" },
+      cellStyle: { textAlign: 'right' },
       cellEditorParams: {
         maxLength: 50,
       },
@@ -849,6 +850,8 @@ function CompanyMappingGrid() {
               pagination={true}
               paginationAutoPageSize={true}
               onRowSelected={onRowSelected}
+              headerHeight={28}
+              rowHeight={25}
             />
           </div>
         </div>
