@@ -284,6 +284,7 @@ function UserAccInput({ }) {
                           onChange={handleChangeStdAccGrp}
                           options={filteredOptionStdAccGrp}
                           className="exp-input-field position-relative"
+                          classNamePrefix="react-select"
                           placeholder=""
                           ref={Standard}
                           onKeyDown={(e) => handleKeyDown(e, Status, Standard)}
@@ -331,6 +332,7 @@ function UserAccInput({ }) {
                       onChange={handleChangeStatus}
                       options={filteredOptionStatus}
                       className="exp-input-field"
+                      classNamePrefix="react-select"
                       placeholder=""
                       ref={Status}
                       onKeyDown={(e) => handleKeyDown}

@@ -227,7 +227,7 @@ const Invoice = () => {
                                                 <td style={{ textAlign: "left", fontSize: "9px" }}>{row.code || row.barcode || "-"}</td>
                                                 <td>
                                                     <strong>{row.name}</strong><br />
-                                                    <span style={{ fontSize: "9.5px" }}>Unit UOM : {row.Item_BaseUOM || "Pcs"}</span>
+                                                    <span style={{ fontSize: "9.5px" }}>MRP / Marginal: {row.MRP_Price || "Pcs"}</span>
                                                 </td>
                                                 <td style={{ textAlign: "center" }}>{row.hsn_code}</td>
                                                 <td style={{ textAlign: "center" }}>{row.tax_percentage}%</td>
@@ -235,7 +235,7 @@ const Invoice = () => {
                                                 <td style={{ textAlign: "right" }}>{formatCurrency(unitPrice)}</td>
                                                 <td style={{ textAlign: "center" }}>{row.Item_BaseUOM || "Pcs"}</td>
                                                 <td style={{ textAlign: "center" }}>{row.Discount_Value}%</td>
-                                                <td style={{ textAlign: "right" }}>{formatCurrency(calculatedNetRate)}</td>
+                                                <td style={{ textAlign: "right" }}>{row.net_rate}</td>
                                                 <td style={{ textAlign: "right" }}>{formatCurrency(row.bill_rate)}</td>
                                             </tr>
                                         );

@@ -316,6 +316,7 @@ function DesginationInput({ }) {
                           onChange={handleChangedept}
                           options={filteredOptionDept}
                           className=" exp-input-field position-relative "
+                          classNamePrefix="react-select"
                           placeholder=""
                           ref={departmentid}
                           isDisabled={mode === "update"}
@@ -405,6 +406,7 @@ function DesginationInput({ }) {
                         onChange={handleChangeStatus}
                         options={filteredOptionStatus}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         required
                         data-tip="Please select a payment type"

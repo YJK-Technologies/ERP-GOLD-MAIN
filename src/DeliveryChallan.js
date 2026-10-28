@@ -3055,6 +3055,7 @@ function DeliveryChallan() {
                                                     onChange={handleChangePay}
                                                     options={filteredOptionPay}
                                                     className="exp-input-field"
+                                                    classNamePrefix="react-select"
                                                     placeholder=""
                                                     required
                                                     data-tip="Please select a payment type"
@@ -3075,6 +3076,7 @@ function DeliveryChallan() {
                                                     onChange={handleChangeSales}
                                                     options={filteredOptionSales}
                                                     className="exp-input-field"
+                                                    classNamePrefix="react-select"
                                                     placeholder=""
                                                     required
                                                     data-tip="Please select a sales type"
@@ -3092,9 +3094,10 @@ function DeliveryChallan() {
                                             columnDefs={columnDefsTermsConditions}
                                             rowData={rowDataTerms}
                                             defaultColDef={{ editable: true }}
-                                            rowHeight={28}
+                                            rowHeight={25}
                                             onRowClicked={handleRowClicked}
                                             onColumnMoved={onColumnMoved}
+                                            headerHeight={28}
                                         />
                                     </div>
                                 </div>
@@ -3104,7 +3107,8 @@ function DeliveryChallan() {
                                             rowData={rowdatapatch}
                                             columnDefs={columnPatch}
                                             defaultColDef={{ flex: 1 }}
-                                            rowHeight={28}
+                                            headerHeight={28}
+                                            rowHeight={25}
                                         />
                                     </div>
                                 </div>
@@ -3133,7 +3137,8 @@ function DeliveryChallan() {
                                     columnDefs={columnHeader}
                                     rowData={headerRowData}
                                     defaultColDef={{ flex: 1 }}
-                                    rowHeight={28}
+                                    headerHeight={28}
+                                    rowHeight={25}
                                 />
                             </div>
                         </div>
@@ -3228,6 +3233,7 @@ function DeliveryChallan() {
                                                     onChange={handleChangecode}
                                                     options={filteredOptionProduct}
                                                     className="exp-input-field"
+                                                    classNamePrefix="react-select"
                                                     placeholder=""
                                                     required
                                                     styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
@@ -3246,6 +3252,7 @@ function DeliveryChallan() {
                                                     id='itemCode'
                                                     required
                                                     placeholder=""
+                                                    classNamePrefix="react-select"
                                                     maxLength={18}
                                                     autoComplete='off'
                                                     options={dynamicOptions}
@@ -3280,6 +3287,8 @@ function DeliveryChallan() {
                                     onGridReady={onGridReady}
                                     onRowClicked={handleRowClicked}
                                     onColumnMoved={onColumnMoved}
+                                    headerHeight={28}
+                                    rowHeight={25}
                                 />
                             </div>
                         </div>
@@ -3318,6 +3327,7 @@ function DeliveryChallan() {
                                         <Select
                                             id="returnType"
                                             className="exp-input-field col-md-6 mt-2"
+                                            classNamePrefix="react-select"
                                             placeholder=""
                                             required
                                             value={selectedscreens}
@@ -3426,7 +3436,8 @@ function DeliveryChallan() {
                                             columnDefs={deletedTermsConditions}
                                             rowData={deletedRowDataTerms}
                                             defaultColDef={{ editable: true }}
-                                            rowHeight={28}
+                                            headerHeight={28}
+                                            rowHeight={25}
                                             onRowClicked={handleRowClicked}
                                             onColumnMoved={onColumnMoved}
                                         />
@@ -3438,7 +3449,8 @@ function DeliveryChallan() {
                                             rowData={deleterowdatapatch}
                                             columnDefs={deletecolumnPatch}
                                             defaultColDef={{ flex: 1 }}
-                                            rowHeight={28}
+                                            headerHeight={28}
+                                            rowHeight={25}
                                         />
                                     </div>
                                 </div>
@@ -3466,7 +3478,8 @@ function DeliveryChallan() {
                                     columnDefs={deletedColumnHeader}
                                     rowData={deletedHeaderRowData}
                                     defaultColDef={{ flex: 1 }}
-                                    rowHeight={28}
+                                    headerHeight={28}
+                                    rowHeight={25}
                                 />
                             </div>
                         </div>
@@ -3548,6 +3561,8 @@ function DeliveryChallan() {
                                     defaultColDef={{ editable: true, resizable: true }}
                                     onRowClicked={handleRowClicked}
                                     onColumnMoved={onColumnMoved}
+                                    headerHeight={28}
+                                    rowHeight={25}
                                 />
                             </div>
 

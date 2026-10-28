@@ -1154,6 +1154,8 @@ function AccNameGrid() {
               onSelectionChanged={onSelectionChanged}
               paginationAutoPageSize={true}
               onRowSelected={onRowSelected}
+              headerHeight={28}
+              rowHeight={25}
             />
           </div>
         </div>

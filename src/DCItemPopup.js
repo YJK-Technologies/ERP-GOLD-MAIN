@@ -437,6 +437,7 @@ export default function DCItemPopup({ open, handleClose, handleItem }) {
                                   onChange={handleChangeStatus}
                                   options={filteredOptionStatus}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Status"
                                   isClearable
                                 />
@@ -464,6 +465,8 @@ export default function DCItemPopup({ open, handleClose, handleItem }) {
                             pagination
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+                            rowHeight={25}
                           />
                         </div>
                       </div>
@@ -579,6 +582,7 @@ export default function DCItemPopup({ open, handleClose, handleItem }) {
                                   onChange={handleChangeStatus}
                                   options={filteredOptionStatus}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Status"
                                   isClearable
                                 />
@@ -605,6 +609,8 @@ export default function DCItemPopup({ open, handleClose, handleItem }) {
                               pagination
                               onSelectionChanged={handleRowSelected}
                               onRowDoubleClicked={handleRowDoubleClick}
+                              headerHeight={28}
+                              rowHeight={25}
                             />
                           </div>
                         </div>

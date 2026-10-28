@@ -1681,6 +1681,7 @@ const UnplannedIssued = () => {
                   <Select
                     id="issuedType"
                     className="exp-input-field"
+                    classNamePrefix="react-select"
                     placeholder=""
                     required
                     value={selectedIssued}
@@ -1707,6 +1708,7 @@ const UnplannedIssued = () => {
                       onChange={handleChangedept}
                       options={filteredOptionDepartment}
                       className=" exp-input-field position-relative "
+                      classNamePrefix="react-select"
                       data-tip="Please select a Default Department"
                       placeholder=""
                       styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
@@ -1723,6 +1725,7 @@ const UnplannedIssued = () => {
                   <Select
                     id="returnType"
                     className="exp-input-field"
+                    classNamePrefix="react-select"
                     placeholder=""
                     required
                     value={selectedWarehouse}
@@ -1761,6 +1764,8 @@ const UnplannedIssued = () => {
               rowData={rowData}
               defaultColDef={{ editable: true, resizable: true }}
               onCellValueChanged={handleCellValueChanged}
+              headerHeight={28}
+              rowHeight={25}
             />
           </div>
         </div>

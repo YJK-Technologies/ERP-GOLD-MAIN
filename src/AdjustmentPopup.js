@@ -245,6 +245,7 @@ export default function AdjustmentPopup({ open, handleClose, adjustmentData }) {
                                   onChange={handleChangetransaction}
                                   options={filteredOptionTransaction}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Transaction Type"
                                   title="Please select a transaction type here"
                                 />
@@ -343,6 +344,7 @@ export default function AdjustmentPopup({ open, handleClose, adjustmentData }) {
                                   onChange={handleChangetransaction}
                                   options={filteredOptionTransaction}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Transaction Type"
                                   title="Please select a transaction type here"
                                 />

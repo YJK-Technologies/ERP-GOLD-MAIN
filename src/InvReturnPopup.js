@@ -328,6 +328,7 @@ export default function InvReturnPopup({ open, handleClose, InvReturnData }) {
                                 <Select
                                   id="issuedType"
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Transaction Type"
                                   required
                                   value={selectedIssued}
@@ -360,6 +361,8 @@ export default function InvReturnPopup({ open, handleClose, InvReturnData }) {
                             pagination='true'
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+                            rowHeight={25}
                           />
                         </div>
                       </div>
@@ -448,6 +451,8 @@ export default function InvReturnPopup({ open, handleClose, InvReturnData }) {
                               pagination='true'
                               onSelectionChanged={handleRowSelected}
                               onRowDoubleClicked={handleRowDoubleClick}
+                              headerHeight={28}
+                              rowHeight={25}
                             />
                           </div>
                         </div>

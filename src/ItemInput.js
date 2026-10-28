@@ -916,6 +916,7 @@ function ItemInput({ }) {
                         onChange={handleChangeVariant}
                         options={filteredOptionVariant}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         maxLength={18}
                         ref={variant}
@@ -987,6 +988,7 @@ function ItemInput({ }) {
                         onChange={handleChangeUom}
                         options={filteredOptionuom}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         maxLength={60}
                         ref={baseuom}
@@ -1014,6 +1016,7 @@ function ItemInput({ }) {
                         onChange={handleChangeSuom}
                         options={filteredOptionSuom}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         maxLength={60}
                         ref={seceondoryuom}
@@ -1218,6 +1221,7 @@ function ItemInput({ }) {
                         onChange={handleChangepurtax}
                         options={filteredOptiontaxitempur}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         maxLength={18}
                         ref={Lpurchasetaxtype}
@@ -1245,6 +1249,7 @@ function ItemInput({ }) {
                         onChange={handleChangeotherpurtax}
                         options={filteredOptionothertaxitempur}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         maxLength={18}
                         ref={Opurchasetaxtype}
@@ -1272,6 +1277,7 @@ function ItemInput({ }) {
                         onChange={handleChangeOthersaltax}
                         options={filteredOptiontaxitemsales}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         maxLength={18}
                         ref={Lsalestaxtype}
@@ -1298,6 +1304,7 @@ function ItemInput({ }) {
                         onChange={handleChangesaltax}
                         options={filteredOptionOthertaxitemsales}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         maxLength={18}
                         ref={Osalestaxtype}
@@ -1398,6 +1405,7 @@ function ItemInput({ }) {
                         onChange={handleChangeRegister}
                         options={filteredOptionRegister}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         maxLength={30}
                         ref={regbrand}
@@ -1423,6 +1431,7 @@ function ItemInput({ }) {
                         onChange={handleChangeBrand}
                         options={filteredOptionBrand}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         maxLength={30}
                         ref={ourbrand}
@@ -1446,6 +1455,7 @@ function ItemInput({ }) {
                         onChange={handleChangeStatus}
                         options={filteredOptionStatus}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         maxLength={250}
                         ref={Status}

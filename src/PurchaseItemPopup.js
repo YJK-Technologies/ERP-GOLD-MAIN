@@ -429,6 +429,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                                 id="OurBrand"
                                 type="text"
                                 placeholder='Our Brand'
+                                classNamePrefix="react-select"
                                 value={selectedItemOurBrand}
                                 onChange={handleChangeItemOurBrand}
                                 options={filteredOptionItemOurBrand}
@@ -441,6 +442,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                                 id="status"
                                 type="text"
                                 placeholder='Status'
+                                classNamePrefix="react-select"
                                 value={selectedStatus}
                                 onChange={handleStatusChange}
                                 options={filteredOptionStatus}
@@ -492,6 +494,8 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                             pagination
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+                            rowHeight={25}
                           />
                         </div>
                       </div>
@@ -578,6 +582,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                               id="OurBrand"
                               type="text"
                               placeholder='Our Brand'
+                              classNamePrefix="react-select"
                               value={selectedItemOurBrand}
                               onChange={handleChangeItemOurBrand}
                               options={filteredOptionItemOurBrand}
@@ -588,6 +593,7 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                               id="status"
                               type="text"
                               placeholder='Status'
+                              classNamePrefix="react-select"
                               value={selectedStatus}
                               onChange={handleStatusChange}
                               options={filteredOptionStatus}
@@ -637,6 +643,8 @@ export default function PurchaseItemPopup({ open, handleClose, handleItem }) {
                               pagination
                               onSelectionChanged={handleRowSelected}
                               onRowDoubleClicked={handleRowDoubleClick}
+                              headerHeight={28}
+                              rowHeight={25}
                             />
                           </div>
                         </div>

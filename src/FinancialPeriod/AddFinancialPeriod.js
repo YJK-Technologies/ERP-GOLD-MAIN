@@ -301,6 +301,7 @@ function AddFinancialPeriod() {
                                             onChange={handleYearChange}
                                             options={filteredOptionFinancialYear}
                                             className="exp-input-field"
+                                            classNamePrefix="react-select"
                                             placeholder=""
                                             isDisabled={mode === "update"}
                                             onKeyDown={(e) => handleKeyDown(e, periodCodeRef)}
@@ -403,6 +404,7 @@ function AddFinancialPeriod() {
                                             onChange={handleStatusChange}
                                             options={filteredOptionStatus}
                                             className="exp-input-field"
+                                            classNamePrefix="react-select"
                                             placeholder=""
                                             required
                                             onKeyDown={(e) => {
