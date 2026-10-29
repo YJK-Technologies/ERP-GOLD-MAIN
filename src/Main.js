@@ -209,6 +209,7 @@ import QuotationPrint from "./PrintScreens/NSMTemplate/QuotePrint.js";
 import DeliveryChallanSM from "./PrintScreens/NSMTemplate/DeliveryChallanPrint.js";
 import PurchaseOrderPrint from "./PrintScreens/VRETemplate/PurchaseOrderPrint.js";
 import BankStatement from './BankStatement.js'
+import BankReconciliation from './BankReconciliation.js'
 
 function Main() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -458,6 +459,7 @@ function Main() {
      { path: "/CurrExeRate", component: <CurrExeRate /> },
      { path: "/CurrExeRateInput", component: <CurrExeRateInput /> },
      { path: "/BankStatement", component: <BankStatement /> },
+     { path: "/BankReconciliation", component: <BankReconciliation /> },
   ];
  
   return (
