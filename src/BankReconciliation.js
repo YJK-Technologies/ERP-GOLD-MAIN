@@ -114,11 +114,11 @@ const BankReconciliation = () => {
     const onGridReady = (params) => setGridApi(params.api);
 
     return (
-        <div className="container-fluid Topnav-screen" style={{ backgroundColor: "#f4f7f6", minHeight: "100vh", paddingBottom: "20px" }}>
+        <div className="container-fluid Topnav-screen">
             <ToastContainer position="top-right" className="toast-design" theme="colored" />
 
             {/* TOP HEADER */}
-            <div className="shadow-sm p-3 bg-white rounded mb-3 mt-2 border">
+            <div className="shadow-sm p-3 bg-white rounded mb-2 mt-2 border">
                 <div className="d-flex justify-content-between align-items-center">
                     <div>
                         <div className="d-flex align-items-center gap-2 mb-1">
@@ -137,7 +137,7 @@ const BankReconciliation = () => {
             </div>
 
             {/* BANK INFO & PROGRESS BAR */}
-            <div className="shadow-sm p-3 bg-white rounded mb-3 border">
+            <div className="shadow-sm p-3 bg-white rounded mb-2 border">
                 <div className="row align-items-center">
                     <div className="col-md-6 d-flex align-items-start gap-3 border-end">
                         <div className="bg-primary text-white p-3 rounded shadow-sm d-flex align-items-center justify-content-center">
@@ -171,7 +171,7 @@ const BankReconciliation = () => {
             </div>
 
             {/* KPI METRIC CARDS */}
-            <div className="row g-3 mb-3">
+            <div className="row g-3 mb-2">
                 {[
                     { label: "OPENING BALANCE", value: "₹1,42,50,000.00", sub: "As of 01 Oct 2024", color: "text-dark", border: "border-secondary-subtle" },
                     { label: "TOTAL CREDITS", value: "+₹2,48,50,000.50", sub: "Inward Remittances & Collections", color: "text-success", border: "border-success-subtle", icon: "fa-arrow-trend-up text-success bg-success-subtle" },
