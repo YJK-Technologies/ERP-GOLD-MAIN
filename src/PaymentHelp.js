@@ -98,7 +98,7 @@ export default function PaymentHelp({ open, handleClose, handlePaymentData }) {
     const [paymentId, setPaymentId] = useState("");
     const [paymentType, setPaymentType] = useState("");
     const [selectedPaymentType, setSelectedPaymentType] = useState(null);
-    
+
     const [partyType, setPartyType] = useState("");
     const [selectedPartyType, setSelectedPartyType] = useState(null);
 
@@ -119,7 +119,7 @@ export default function PaymentHelp({ open, handleClose, handlePaymentData }) {
     const [paymentDateTo, setPaymentDateTo] = useState("");
     const [referenceDateFrom, setReferenceDateFrom] = useState("");
     const [referenceDateTo, setReferenceDateTo] = useState("");
-    
+
     const [amountFrom, setAmountFrom] = useState("");
     const [amountTo, setAmountTo] = useState("");
 
@@ -329,6 +329,7 @@ export default function PaymentHelp({ open, handleClose, handlePaymentData }) {
                     onChange={handleChangePaymentType}
                     options={filteredOptionPaymentType}
                     className="exp-input-field"
+                    classNamePrefix="react-select"
                     placeholder="Payment Type"
                 />
             </div>
@@ -340,6 +341,7 @@ export default function PaymentHelp({ open, handleClose, handlePaymentData }) {
                     onChange={handleChangePartyType}
                     options={filteredOptionPartyType}
                     className="exp-input-field"
+                    classNamePrefix="react-select"
                     placeholder="Party Type"
                 />
             </div>
@@ -351,6 +353,7 @@ export default function PaymentHelp({ open, handleClose, handlePaymentData }) {
                     onChange={handleChangePartyId}
                     options={filteredOptionPartyId}
                     className="exp-input-field"
+                    classNamePrefix="react-select"
                     placeholder="Party Name / ID"
                 />
             </div>
@@ -362,6 +365,7 @@ export default function PaymentHelp({ open, handleClose, handlePaymentData }) {
                     onChange={handleChangePaymentMode}
                     options={filteredOptionPaymentMode}
                     className="exp-input-field"
+                    classNamePrefix="react-select"
                     placeholder="Payment Mode"
                 />
             </div>
@@ -522,6 +526,8 @@ export default function PaymentHelp({ open, handleClose, handlePaymentData }) {
                                                         pagination={true}
                                                         onSelectionChanged={handleRowSelected}
                                                         onRowDoubleClicked={handleRowDoubleClick}
+                                                        headerHeight={28}
+                                                        rowHeight={25}
                                                     />
                                                 </div>
                                             </div>

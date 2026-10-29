@@ -378,6 +378,7 @@ export default function ItemPopup({ open, handleClose, handlePurchaseDeleteData 
                                   onChange={handleChangePurchase}
                                   options={filteredOptionPurchase}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Purchase"
                                   isClearable
                                 />
@@ -394,6 +395,7 @@ export default function ItemPopup({ open, handleClose, handlePurchaseDeleteData 
                                   onChange={handleChangePay}
                                   options={filteredOptionPay}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Pay Type"
                                   required
                                   data-tip="Please select a payment type"
@@ -424,6 +426,8 @@ export default function ItemPopup({ open, handleClose, handlePurchaseDeleteData 
                             pagination='true'
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+                            rowHeight={25}
                           />
                         </div>
                       </div>
@@ -516,6 +520,7 @@ export default function ItemPopup({ open, handleClose, handlePurchaseDeleteData 
                                   onChange={handleChangePurchase}
                                   options={filteredOptionPurchase}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Purchase"
                                   isClearable
                                 />
@@ -532,6 +537,7 @@ export default function ItemPopup({ open, handleClose, handlePurchaseDeleteData 
                                   onChange={handleChangePay}
                                   options={filteredOptionPay}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Pay Type"
                                   required
                                   data-tip="Please select a payment type"
@@ -561,6 +567,8 @@ export default function ItemPopup({ open, handleClose, handlePurchaseDeleteData 
                               pagination='true'
                               onSelectionChanged={handleRowSelected}
                               onRowDoubleClicked={handleRowDoubleClick}
+                              headerHeight={28}
+                              rowHeight={25}
                             />
                           </div>
                         </div>

@@ -1773,6 +1773,8 @@ function JournalGrid() {
             rowSelection="multiple"
             pagination={true}
             paginationAutoPageSize={true}
+            headerHeight={28}
+            rowHeight={25}
           />
         </div>
       </div>

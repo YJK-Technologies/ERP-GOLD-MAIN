@@ -4,6 +4,7 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ToastContainer, toast } from "react-toastify";
 import Select from "react-select";
 import { showConfirmationToast } from "./ToastConfirmation"; 
@@ -749,23 +750,23 @@ function Chart_of_accountsScreen() {
             <div className="col-md-3 form-group mb-2">
               <div className="exp-form-floating pt-3">
                 <div className="d-flex justify-content-center">
-                  <button
+                  <icon
                     type="button"
                     className="popups-btn fs-6 p-3 me-3"
                     onClick={handleSearch}
                     title="Search"
                   >
                     <i className="fas fa-search"></i>
-                  </button>
+                  </icon>
                 
-                  <button
+                  <icon
                     type="button"
                     className="popups-btn fs-6 p-3"
                     onClick={reloadGridData}
                     title="Refresh"
                   >
-                    <i className="fa-solid fa-arrow-rotate-right"></i>
-                  </button>
+                    <FontAwesomeIcon icon="fa-solid fa-arrow-rotate-right" />
+                  </icon>
                 </div>
               </div>
             </div>
