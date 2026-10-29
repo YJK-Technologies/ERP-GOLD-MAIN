@@ -286,6 +286,7 @@ export default function JournalPopup({ open, handleClose, handlejournal }) {
                                   onChange={handleChangeTrans}
                                   options={filteredOptionTrans}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Transaction"
                                   required
                                   isClearable
@@ -343,6 +344,8 @@ export default function JournalPopup({ open, handleClose, handlejournal }) {
                             pagination
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+                            rowHeight={25}
                           />
                         </div>
                       </div>
@@ -410,6 +413,7 @@ export default function JournalPopup({ open, handleClose, handlejournal }) {
                                   onChange={handleChangeTrans}
                                   options={filteredOptionTrans}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Transaction"
                                   required
                                   isClearable
@@ -466,6 +470,8 @@ export default function JournalPopup({ open, handleClose, handlejournal }) {
                               pagination
                               onSelectionChanged={handleRowSelected}
                               onRowDoubleClicked={handleRowDoubleClick}
+                              headerHeight={28}
+                              rowHeight={25}
                             />
                           </div>
                         </div>

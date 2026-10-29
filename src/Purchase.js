@@ -25,7 +25,7 @@ import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
 import labels from './Labels';
 import { Modal, Button } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
-import { BrowserMultiFormatReader, NotFoundException  } from "@zxing/library";
+import { BrowserMultiFormatReader, NotFoundException } from "@zxing/library";
 import LoadingScreen from './Loading';
 const config = require('./Apiconfig');
 
@@ -43,8 +43,8 @@ function Purchase() {
   const [purchaseType, setPurchaseType] = useState("");
   const [entryDate, setEntryDate] = useState("");
   const [transactionNumber, setTransactionNumber] = useState("");
-    const [loading, setLoading] = useState(false);
-     const getTodayDate = () => {
+  const [loading, setLoading] = useState(false);
+  const getTodayDate = () => {
     const today = new Date();
     return today.toISOString().split('T')[0]; // 'YYYY-MM-DD'
   };
@@ -82,99 +82,99 @@ function Purchase() {
   // const [selectedStatus, setSelectedStatus] = useState(null);
   const [status, setStatus] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState(null);
-  const[Type,setType]=useState("purchase");
-  const[BillDate,setBillDate]=useState("");
-  const[vendorcodedrop,setVendorcodedrop]=useState([]);
-  const[warehouse_code,setWarehousecode]=useState("");
-  
- 
+  const [Type, setType] = useState("purchase");
+  const [BillDate, setBillDate] = useState("");
+  const [vendorcodedrop, setVendorcodedrop] = useState([]);
+  const [warehouse_code, setWarehousecode] = useState("");
+
+
   const navigate = useNavigate();
 
   const location = useLocation();
 
   const savedPath = sessionStorage.getItem('currentPath');
 
-useEffect(() => {
-        const handleKeyDown = (e) => {
-          // 1. Ensure keys only trigger on F-keys
-          if (!['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F8'].includes(e.key)) {
-            return;
-          }
-    
-          // 2. Prevent default browser shortcut actions (e.g., F1 Help, F5 Refresh)
-          e.preventDefault();
-          e.stopPropagation();
-    
-          // 3. Prevent execution if screen is currently loading
-          if (loading) return;
-    
-          switch (e.key) {
-            case 'F1':
-              // Open Item Search Popup
-              setOpen(true); 
-              break;
-    
-            case 'F2':
-              // Open Customer Search Popup
-              setOpen2(true); 
-              break;
-    
-            case 'F3':
-              // New / Reset Sales Invoice Form
-              if (window.confirm("Start a new adjustment? Unsaved changes will be lost.")) {
-                handleReload(); 
-              }
-              break;  
-    
-            case 'F4':
-              // Save / Complete Invoice (Same logic as Save Button)
-              handleSaveButtonClick(); 
-              break;
-    
-            case 'F5':
-              // Search Existing Invoices to Edit
-              setOpen1(true); 
-              break;
-    
-            case 'F6':
-              // Delete selected line item in AG Grid
-              if ( transaction_no) {
-                handleDeleteButtonClick();
-              } else {
-                alert("Please save the invoice before deleting.");
-              }
-              break;
-    
-            case 'F8':
-              // Print Invoice
-              if (showExcelButton && transaction_no) {
-                generateReport();
-              } else {
-                alert("Please save the invoice before printing.");
-              }
-              break;
-    
-            default:
-              break;
-          }
-        };
-    
-        // Attach listener
-        window.addEventListener('keydown', handleKeyDown);
-    
-        // Clean up listener on unmount
-        return () => {
-          window.removeEventListener('keydown', handleKeyDown);
-        };
-      }, [loading, showExcelButton, transaction_no, rowData]);
-    
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // 1. Ensure keys only trigger on F-keys
+      if (!['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F8'].includes(e.key)) {
+        return;
+      }
 
-    // For default warehouse
-    useEffect(() => {
+      // 2. Prevent default browser shortcut actions (e.g., F1 Help, F5 Refresh)
+      e.preventDefault();
+      e.stopPropagation();
+
+      // 3. Prevent execution if screen is currently loading
+      if (loading) return;
+
+      switch (e.key) {
+        case 'F1':
+          // Open Item Search Popup
+          setOpen(true);
+          break;
+
+        case 'F2':
+          // Open Customer Search Popup
+          setOpen2(true);
+          break;
+
+        case 'F3':
+          // New / Reset Sales Invoice Form
+          if (window.confirm("Start a new adjustment? Unsaved changes will be lost.")) {
+            handleReload();
+          }
+          break;
+
+        case 'F4':
+          // Save / Complete Invoice (Same logic as Save Button)
+          handleSaveButtonClick();
+          break;
+
+        case 'F5':
+          // Search Existing Invoices to Edit
+          setOpen1(true);
+          break;
+
+        case 'F6':
+          // Delete selected line item in AG Grid
+          if (transaction_no) {
+            handleDeleteButtonClick();
+          } else {
+            alert("Please save the invoice before deleting.");
+          }
+          break;
+
+        case 'F8':
+          // Print Invoice
+          if (showExcelButton && transaction_no) {
+            generateReport();
+          } else {
+            alert("Please save the invoice before printing.");
+          }
+          break;
+
+        default:
+          break;
+      }
+    };
+
+    // Attach listener
+    window.addEventListener('keydown', handleKeyDown);
+
+    // Clean up listener on unmount
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [loading, showExcelButton, transaction_no, rowData]);
+
+
+  // For default warehouse
+  useEffect(() => {
     if (!selectedWarehouse) {
       return;
     }
-  
+
     setRowData(prevRowData =>
       prevRowData.map(row => {
         // Only set default warehouse if the row has no warehouse
@@ -184,16 +184,16 @@ useEffect(() => {
             warehouse: selectedWarehouse.value,
             unitWeight: 0,
             purchaseQty: 0,
-            purchaseAmt: 0 
+            purchaseAmt: 0
           };
         }
-  
+
         // Keep existing warehouse value
         return row;
       })
     );
   }, [selectedWarehouse]);
-  
+
   useEffect(() => {
     fetch(`${config.apiBaseUrl}/getDefaultoptions`, {
       method: "POST",
@@ -208,18 +208,18 @@ useEffect(() => {
         if (!data || data.length === 0) return;
 
         const { pay_type, Party_code, warehouse_code, Transaction_type, Party_name } = data[0];
-  
+
         const setDefault = (type, setType, options, setSelected) => {
           if (type) {
             setType(type);
             setSelected(options.find((opt) => opt.value === type) || null);
           }
         };
-  
+
         setDefault(pay_type, setPayType, filteredOptionPay, setselectedPay);
         setDefault(warehouse_code, setWarehousecode, filteredOptionWarehouse, setSelectedWarehouse);
-        setDefault(Transaction_type, setPurchaseType,filteredOptionPurchase, setSelected);
-  
+        setDefault(Transaction_type, setPurchaseType, filteredOptionPurchase, setSelected);
+
         if (Party_code) setvendor_code(Party_code);
         if (Party_name) setVendorName(Party_name);
       })
@@ -231,7 +231,7 @@ useEffect(() => {
     setselectedPay(selectedPay);
     setPayType(selectedPay ? selectedPay.value : '');
   };
-  
+
   useEffect(() => {
     const currentDate = new Date().toISOString().split("T")[0]; // Format the date as 'YYYY-MM-DD'
     setEntryDate(currentDate);
@@ -536,9 +536,10 @@ useEffect(() => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ Tax_amount: formattedTotalTaxAmounts, Putchase_amount: formattedTotalItemAmounts,
-            company_code:sessionStorage.getItem("selectedCompanyCode")
-           }),
+          body: JSON.stringify({
+            Tax_amount: formattedTotalTaxAmounts, Putchase_amount: formattedTotalItemAmounts,
+            company_code: sessionStorage.getItem("selectedCompanyCode")
+          }),
         });
         if (response.ok) {
           const data = await response.json();
@@ -561,7 +562,7 @@ useEffect(() => {
   //ITEM CODE TO SEARCH IN AG GRID
   const handleItemCode = async (params) => {
     const company_code = sessionStorage.getItem("selectedCompanyCode");
-        // Selected Purchase Type
+    // Selected Purchase Type
     const purchase_type = selected?.value || "";
 
     console.log("Company Code:", company_code);
@@ -575,7 +576,7 @@ useEffect(() => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code, Item_code: params.data.itemCode,purchase_type: purchaseType })
+        body: JSON.stringify({ company_code, Item_code: params.data.itemCode, purchase_type: purchaseType })
       });
 
       if (response.ok) {
@@ -611,21 +612,21 @@ useEffect(() => {
           onClose: () => {
             setRowData(prevRowData =>
               prevRowData.map(row => {
-              if (row.itemCode === params.data.itemCode) {
-                return {
-                  ...row,
-                  itemCode: '',
-                  itemName: '',
-                  unitWeight: 0,
-                  purchaseAmt: 0,
-                  taxType: '',
-                  taxDetails: '',
-                  taxPer: '',
-                };
-              }
-              return row;
-            })
-          );
+                if (row.itemCode === params.data.itemCode) {
+                  return {
+                    ...row,
+                    itemCode: '',
+                    itemName: '',
+                    unitWeight: 0,
+                    purchaseAmt: 0,
+                    taxType: '',
+                    taxDetails: '',
+                    taxPer: '',
+                  };
+                }
+                return row;
+              })
+            );
           }
         });
       } else {
@@ -633,7 +634,7 @@ useEffect(() => {
       }
     } catch (error) {
       console.error("Error fetching search data:", error);
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -709,7 +710,7 @@ useEffect(() => {
       }
     } catch (error) {
       console.error("Error fetching search data:", error);
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -717,7 +718,7 @@ useEffect(() => {
 
   //CODE FOR PARTY CODE TO GET PARTY NAME
   const handleSearchVendor = async (code) => {
-        setLoading(true)
+    setLoading(true)
 
     try {
       const response = await fetch(`${config.apiBaseUrl}/PartyCode`, {
@@ -760,7 +761,7 @@ useEffect(() => {
       toast.warning('An error occurred while fetching the data.');
       setvendor_code('');
       setVendorName('');
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -853,8 +854,8 @@ useEffect(() => {
       fetchVendor();
     }
   }, []);
-        
-    
+
+
 
 
   //CODE ITEM CODE TO ADD NEW ROW FUNCTION
@@ -987,20 +988,20 @@ useEffect(() => {
     const [cameras, setCameras] = useState([]); // Store available cameras
     const [currentCamera, setCurrentCamera] = useState(null); // Current selected camera
     const [modalVisible, setModalVisible] = useState(true);
-  
+
     useEffect(() => {
       detectAvailableCameras();
-  
+
       return () => {
         stopCamera();
       };
     }, []);
-  
+
     const detectAvailableCameras = async () => {
       try {
         const devices = await navigator.mediaDevices.enumerateDevices();
         const videoDevices = devices.filter((device) => device.kind === 'videoinput');
-  
+
         if (videoDevices.length > 0) {
           setCameras(videoDevices);
           const backCamera = videoDevices.find((device) => device.label.toLowerCase().includes('back')) || videoDevices[0];
@@ -1013,30 +1014,30 @@ useEffect(() => {
         console.error('Error detecting cameras:', err);
       }
     };
-  
+
     const startCamera = async (deviceId) => {
       stopCamera();
-  
+
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: { deviceId: { exact: deviceId } },
         });
-  
+
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
-  
+
         startScanner();
       } catch (err) {
         console.error('Camera access error:', err);
       }
     };
-  
+
     const startScanner = () => {
       if (!scannerRef.current) {
         scannerRef.current = new BrowserMultiFormatReader();
       }
-  
+
       scannerRef.current.decodeFromVideoDevice(null, videoRef.current, (result, err) => {
         if (result) {
           onScan(result.getText());
@@ -1044,13 +1045,13 @@ useEffect(() => {
         }
       });
     };
-  
+
     const stopCamera = () => {
       if (videoRef.current?.srcObject) {
         videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
       }
     };
-  
+
     const toggleCamera = () => {
       if (cameras.length > 1) {
         const newCamera = cameras.find((cam) => cam.deviceId !== currentCamera);
@@ -1060,16 +1061,16 @@ useEffect(() => {
         }
       }
     };
-  
+
     const handleClose = () => {
       setModalVisible(false);
       onClose();
     };
-  
+
     return (
       <>
         <video ref={videoRef} autoPlay playsInline style={{ width: '100%', height: '100%', position: 'fixed', top: 0, left: 0, zIndex: -1 }}></video>
-  
+
         <Modal show={modalVisible} onHide={handleClose} centered>
           <Modal.Header closeButton>
             <Modal.Title>Scan Barcode</Modal.Title>
@@ -1093,7 +1094,7 @@ useEffect(() => {
       </>
     );
   };
-  
+
   const columnDefs = [
     {
       headerName: 'S.No',
@@ -1398,15 +1399,15 @@ useEffect(() => {
       .then((data) => setPaydrop(data))
       .catch((error) => console.error("Error fetching payment types:", error));
 
-      fetch(`${config.apiBaseUrl}/purchasetype`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          company_code: companyCode,
-        }),
-      })
+    fetch(`${config.apiBaseUrl}/purchasetype`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        company_code: companyCode,
+      }),
+    })
 
       .then((response) => response.json())
       .then((data) => setPurchasedrop(data))
@@ -1418,10 +1419,10 @@ useEffect(() => {
 
   //CODE TO SAVE PURCHASE HEADER 
   const handleSaveButtonClick = async () => {
-    if (!vendor_code 
-      || !payType || 
-      !purchaseType 
-      || !entryDate 
+    if (!vendor_code
+      || !payType ||
+      !purchaseType
+      || !entryDate
       || !transactionDate) {
       setError(" ");
       toast.warning("Error: Missing required fields");
@@ -1433,22 +1434,22 @@ useEffect(() => {
       return;
     }
 
-        // Check for itemCode present but purchaseQty missing/invalid
-        const invalidRows = rowData.filter(row => row.itemCode && (!row.purchaseQty || row.purchaseQty <= 0));
-        if (invalidRows.length > 0) {
-          toast.warning("Item code is present but Quantity is missing or zero in one or more rows.");
-          return;
-        }
-      
-        // ? Check for purchaseQty present but itemCode missing
-        const rowsWithQtyNoItemCode = rowData.filter(row => row.purchaseQty > 0 && (!row.itemCode || row.itemCode.trim() === ''));
-        if (rowsWithQtyNoItemCode.length > 0) {
-          toast.warning("Quantity is entered but Item Code is missing in one or more rows.");
-          return;
-        }
-      
+    // Check for itemCode present but purchaseQty missing/invalid
+    const invalidRows = rowData.filter(row => row.itemCode && (!row.purchaseQty || row.purchaseQty <= 0));
+    if (invalidRows.length > 0) {
+      toast.warning("Item code is present but Quantity is missing or zero in one or more rows.");
+      return;
+    }
 
-      
+    // ? Check for purchaseQty present but itemCode missing
+    const rowsWithQtyNoItemCode = rowData.filter(row => row.purchaseQty > 0 && (!row.itemCode || row.itemCode.trim() === ''));
+    if (rowsWithQtyNoItemCode.length > 0) {
+      toast.warning("Quantity is entered but Item Code is missing in one or more rows.");
+      return;
+    }
+
+
+
 
     const filteredRowData = rowData.filter(row => row.purchaseQty > 0 && row.TotalItemAmount > 0 && row.purchaseAmt > 0);
 
@@ -1494,7 +1495,7 @@ useEffect(() => {
         const [{ transaction_no }] = searchData;
         setTransactionNumber(transaction_no);
 
-        
+
         await savePurchaseDetails(transaction_no);
         await savePurTaxDetails(transaction_no);
         toast.success("Purchase Data inserted Successfully")
@@ -1512,7 +1513,7 @@ useEffect(() => {
     } catch (error) {
       console.error("Error inserting data:", error);
       toast.error('Error inserting data: ' + error.message);
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -1687,7 +1688,7 @@ useEffect(() => {
 
   const generateReport = async () => {
     setStatus('Generating Report...');
-        setLoading(true);
+    setLoading(true);
 
     try {
       const headerData = await PrintHeaderData();
@@ -1870,7 +1871,7 @@ useEffect(() => {
   };
 
   const handleRefNo = async (code) => {
-        setLoading(true);
+    setLoading(true);
 
     try {
       const response = await fetch(`${config.apiBaseUrl}/getPurchaseData`, {
@@ -1918,28 +1919,28 @@ useEffect(() => {
         setRoundDifference(formatToTwoDecimalPoints(item.rounded_off));
 
         const selectedPay = filteredOptionPurchase.find(
-  (option) => option.value === item.purchase_type
-);
+          (option) => option.value === item.purchase_type
+        );
 
-if (selectedPay) {
-  setSelected(selectedPay);
-  setPurchaseType(selectedPay.value);
-} else {
-  setSelected(null);
-  setPurchaseType(item.purchase_type || "");
-}
+        if (selectedPay) {
+          setSelected(selectedPay);
+          setPurchaseType(selectedPay.value);
+        } else {
+          setSelected(null);
+          setPurchaseType(item.purchase_type || "");
+        }
 
-const selected = filteredOptionPay.find(
-  (option) => option.value === item.pay_type
-);
+        const selected = filteredOptionPay.find(
+          (option) => option.value === item.pay_type
+        );
 
-if (selected) {
-  setselectedPay(selected);
-  setPayType(selected.value);
-} else {
-  setselectedPay(null);
-  setPayType(item.pay_type || "");
-}
+        if (selected) {
+          setselectedPay(selected);
+          setPayType(selected.value);
+        } else {
+          setselectedPay(null);
+          setPayType(item.pay_type || "");
+        }
       } else {
         console.log("Header Data is empty or not found");
         clearFormFields();
@@ -2172,7 +2173,7 @@ if (selected) {
   };
 
   const PurchaseTax = async (TransactionNo) => {
-        setLoading(true);
+    setLoading(true);
 
     try {
       const response = await fetch(`${config.apiBaseUrl}/getpurchasereturntax`, {
@@ -2225,26 +2226,67 @@ if (selected) {
     }
   };
 
-const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiString, taxType) => {
-  setLoading(true);
+  const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiString, taxType) => {
+    setLoading(true);
 
-  try {
-    const response = await fetch(`${config.apiBaseUrl}/getpurchasereturnit`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        transaction_no: TransactionNo,
-        company_code: sessionStorage.getItem("selectedCompanyCode")
-      })
-    });
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/getpurchasereturnit`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          transaction_no: TransactionNo,
+          company_code: sessionStorage.getItem("selectedCompanyCode")
+        })
+      });
 
-    if (response.ok) {
-      const searchData = await response.json();
-      setDelButtonVisible(true);
+      if (response.ok) {
+        const searchData = await response.json();
+        setDelButtonVisible(true);
 
-      if (searchData.length === 0) {
+        if (searchData.length === 0) {
+          setRowData([
+            {
+              serialNumber: 1,
+              delete: "",
+              itemCode: "",
+              itemName: "",
+              search: "",
+              unitWeight: 0,
+              warehouse: "",
+              purchaseQty: 0,
+              ItemTotalWight: 0,
+              purchaseAmt: 0,
+              TotalTaxAmount: 0,
+              TotalItemAmount: 0,
+            },
+          ]);
+          return;
+        }
+
+        const newRowData = searchData.map(item => ({
+          serialNumber: item.ItemSNo,
+          itemCode: item.item_code,
+          itemName: item.item_name,
+          unitWeight: item.weight,
+          purchaseQty: item.bill_qty,
+          warehouse: item.warehouse_code,
+          ItemTotalWight: parseFloat(item.total_weight).toFixed(2),
+          purchaseAmt: parseFloat(item.item_amt).toFixed(2),
+          TotalTaxAmount: parseFloat(item.tax_amount).toFixed(2),
+          TotalItemAmount: parseFloat(item.bill_rate).toFixed(2),
+          taxType: taxType,
+          taxPer: taxPerDetaiString,
+          taxDetails: taxNameDetailsString,
+        }));
+
+        setRowData(newRowData);
+
+        // ✅ Set vendor name from the first item (if consistent)
+        setVendorName(searchData[0].vendor_name);
+
+      } else if (response.status === 404) {
         setRowData([
           {
             serialNumber: 1,
@@ -2261,58 +2303,17 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
             TotalItemAmount: 0,
           },
         ]);
-        return;
+      } else {
+        const errorResponse = await response.json();
+        toast.warning(errorResponse.message || "Failed to insert sales data");
+        console.error(errorResponse.details || errorResponse.message);
       }
-
-      const newRowData = searchData.map(item => ({
-        serialNumber: item.ItemSNo,
-        itemCode: item.item_code,
-        itemName: item.item_name,
-        unitWeight: item.weight,
-        purchaseQty: item.bill_qty,
-        warehouse: item.warehouse_code,
-        ItemTotalWight: parseFloat(item.total_weight).toFixed(2),
-        purchaseAmt: parseFloat(item.item_amt).toFixed(2),
-        TotalTaxAmount: parseFloat(item.tax_amount).toFixed(2),
-        TotalItemAmount: parseFloat(item.bill_rate).toFixed(2),
-        taxType: taxType,
-        taxPer: taxPerDetaiString,
-        taxDetails: taxNameDetailsString,
-      }));
-
-      setRowData(newRowData);
-
-      // ✅ Set vendor name from the first item (if consistent)
-      setVendorName(searchData[0].vendor_name);
-
-    } else if (response.status === 404) {
-      setRowData([
-        {
-          serialNumber: 1,
-          delete: "",
-          itemCode: "",
-          itemName: "",
-          search: "",
-          unitWeight: 0,
-          warehouse: "",
-          purchaseQty: 0,
-          ItemTotalWight: 0,
-          purchaseAmt: 0,
-          TotalTaxAmount: 0,
-          TotalItemAmount: 0,
-        },
-      ]);
-    } else {
-      const errorResponse = await response.json();
-      toast.warning(errorResponse.message || "Failed to insert sales data");
-      console.error(errorResponse.details || errorResponse.message);
+    } catch (error) {
+      console.error("Error fetching search data:", error);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error("Error fetching search data:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const handleDeleteHeader = async () => {
     try {
@@ -2321,8 +2322,9 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), transaction_no: transactionNumber,
-          modified_by : sessionStorage.getItem("selectedUserCode")
+        body: JSON.stringify({
+          company_code: sessionStorage.getItem('selectedCompanyCode'), transaction_no: transactionNumber,
+          modified_by: sessionStorage.getItem("selectedUserCode")
 
         })
       });
@@ -2929,7 +2931,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
     } catch (error) {
       console.error("Error fetching search data:", error);
       toast.error(error.message || "Failed to fetch data");
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -2965,94 +2967,94 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
   // };
 
   const handleExcelDownload = () => {
-  const filteredRowData = rowData.filter(
-    row =>
-      row.purchaseQty > 0 &&
-      row.TotalItemAmount > 0 &&
-      row.purchaseAmt > 0
-  );
+    const filteredRowData = rowData.filter(
+      row =>
+        row.purchaseQty > 0 &&
+        row.TotalItemAmount > 0 &&
+        row.purchaseAmt > 0
+    );
 
-  const filteredRowDataTax = rowDataTax.filter(
-    taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0
-  );
+    const filteredRowDataTax = rowDataTax.filter(
+      taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0
+    );
 
-  const headerData = [{
-    "Vendor Code": vendor_code,
-    "Pay Type": payType,
-    "Purchase Type": purchaseType,
-    "Entry Date": entryDate,
-    "Transaction No": transactionNumber,
-    "Transaction Date": transactionDate,
-    "Purchase Amount": TotalPurchase,
-    "Tax Amount": TotalTax,
-    "Total Amount": TotalBill,
-    "Rounded Off": round_difference,
-  }];
+    const headerData = [{
+      "Vendor Code": vendor_code,
+      "Pay Type": payType,
+      "Purchase Type": purchaseType,
+      "Entry Date": entryDate,
+      "Transaction No": transactionNumber,
+      "Transaction Date": transactionDate,
+      "Purchase Amount": TotalPurchase,
+      "Tax Amount": TotalTax,
+      "Total Amount": TotalBill,
+      "Rounded Off": round_difference,
+    }];
 
-  // Header Sheet
-  const headerSheet = XLSX.utils.aoa_to_sheet([
-    ["Purchase"],
-    [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
-    [],
-  ]);
+    // Header Sheet
+    const headerSheet = XLSX.utils.aoa_to_sheet([
+      ["Purchase"],
+      [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
+      [],
+    ]);
 
-  XLSX.utils.sheet_add_json(headerSheet, headerData, {
-    origin: "A4",
-  });
-
-  // Merge Heading
-  headerSheet["!merges"] = [
-    {
-      s: { r: 0, c: 0 }, // A1
-      e: { r: 0, c: 9 }, // J1
-    },
-    {
-      s: { r: 1, c: 0 }, // A2
-      e: { r: 1, c: 9 }, // J2
-    },
-  ];
-
-  // Purchase Details
-  const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
-
-  // Tax Details
-  const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
-
-  // Auto Fit Function
-  const autoFitColumns = (worksheet, data) => {
-    if (!data || data.length === 0) return;
-
-    const cols = [];
-
-    data.forEach((row) => {
-      Object.keys(row).forEach((key, i) => {
-        const value = row[key] == null ? "" : row[key].toString();
-
-        cols[i] = Math.max(
-          cols[i] || key.length,
-          key.length,
-          value.length
-        );
-      });
+    XLSX.utils.sheet_add_json(headerSheet, headerData, {
+      origin: "A4",
     });
 
-    worksheet["!cols"] = cols.map(width => ({
-      wch: width + 5,
-    }));
-  };
+    // Merge Heading
+    headerSheet["!merges"] = [
+      {
+        s: { r: 0, c: 0 }, // A1
+        e: { r: 0, c: 9 }, // J1
+      },
+      {
+        s: { r: 1, c: 0 }, // A2
+        e: { r: 1, c: 9 }, // J2
+      },
+    ];
 
-  // Apply Auto Width
-  autoFitColumns(headerSheet, headerData);
-  autoFitColumns(rowDataSheet, filteredRowData);
-  autoFitColumns(rowDataTaxSheet, filteredRowDataTax);
+    // Purchase Details
+    const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
 
-  // Workbook
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
-  XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Purchase Details");
-  XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Tax Details");
+    // Tax Details
+    const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
 
-  XLSX.writeFile(workbook, "Purchase_Data.xlsx");
+    // Auto Fit Function
+    const autoFitColumns = (worksheet, data) => {
+      if (!data || data.length === 0) return;
+
+      const cols = [];
+
+      data.forEach((row) => {
+        Object.keys(row).forEach((key, i) => {
+          const value = row[key] == null ? "" : row[key].toString();
+
+          cols[i] = Math.max(
+            cols[i] || key.length,
+            key.length,
+            value.length
+          );
+        });
+      });
+
+      worksheet["!cols"] = cols.map(width => ({
+        wch: width + 5,
+      }));
+    };
+
+    // Apply Auto Width
+    autoFitColumns(headerSheet, headerData);
+    autoFitColumns(rowDataSheet, filteredRowData);
+    autoFitColumns(rowDataTaxSheet, filteredRowDataTax);
+
+    // Workbook
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Purchase Details");
+    XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Tax Details");
+
+    XLSX.writeFile(workbook, "Purchase_Data.xlsx");
   };
   const handleKeyDown = async (e, nextFieldRef, value, hasValueChanged, setHasValueChanged) => {
     if (e.key === 'Enter') {
@@ -3092,16 +3094,16 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
   };
 
   const handleAuthorizedButtonClick = async () => {
-        setLoading(true);
-  if (!status || 
+    setLoading(true);
+    if (!status ||
       !transactionNumber) {
       setError(" ");
       toast.warning("Error: Missing required fields");
       return;
     }
     try {
-      const headerResponse =      await AuthorizedHeader();
-      const detailsResponse =     await AuthorizedDetails();
+      const headerResponse = await AuthorizedHeader();
+      const detailsResponse = await AuthorizedDetails();
       const taxDetailsResponse = await AuthorizedTaxDetails();
 
       if (headerResponse && detailsResponse && taxDetailsResponse) {
@@ -3115,7 +3117,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
   };
 
   const AuthorizedHeader = async () => {
-      
+
 
     try {
       const response = await fetch(`${config.apiBaseUrl}/PurchaseAuthHdr`, {
@@ -3193,8 +3195,8 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
     <div className="">
       {Screens === 'Add' ? (
         <div className="container-fluid Topnav-screen">
-                {loading && <LoadingScreen />}
-        
+          {loading && <LoadingScreen />}
+
           <ToastContainer position="top-right" className="toast-design" theme="colored" />
           <div>
             <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
@@ -3207,13 +3209,14 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                     <Select
                       id="returnType"
                       className="exp-input-field col-md-6 mt-2"
+                      classNamePrefix="react-select"
                       placeholder=""
                       required
                       value={selectedscreens}
                       onChange={handleChangeScreens}
                       options={filteredOptionScreens}
                       data-tip="Please select a default warehouse"
-                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                      styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                     />
                   </div>
                   {saveButtonVisible && ['add', 'all permission'].some(permission => purchasePermission.includes(permission)) && (
@@ -3221,12 +3224,12 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                       <i class="fa-regular fa-floppy-disk"></i>
                     </savebutton>
                   )}
-                  
-                   {authButtonVisible && (
-                 <savebutton className="purbut" onClick={handleAuthorizedButtonClick} >
-                    <i class="fa-solid fa-check"></i>
-                  </savebutton>
-                   )}
+
+                  {authButtonVisible && (
+                    <savebutton className="purbut" onClick={handleAuthorizedButtonClick} >
+                      <i class="fa-solid fa-check"></i>
+                    </savebutton>
+                  )}
 
                   {delButtonVisible && ['delete', 'all permission'].some(permission => purchasePermission.includes(permission)) && (
                     <delbutton className="purbut" onClick={handleDeleteButtonClick} title='delete' >
@@ -3246,19 +3249,19 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                   <printbutton className="purbut" title='Reload' onClick={handleReload} >
                     <i class="fa-solid fa-arrow-rotate-right"></i>
                   </printbutton>
-             <a className='border-none text-dark p-1 mt-2' title='Setting' onClick={navigateToPurchaseSettings} style={{ cursor: "pointer" }}>
-                      <svg xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="feather feather-settings">
-                        <circle cx="12" cy="12" r="3"></circle>
-                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 
+                  <a className='border-none text-dark p-1 mt-2' title='Setting' onClick={navigateToPurchaseSettings} style={{ cursor: "pointer" }}>
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="feather feather-settings">
+                      <circle cx="12" cy="12" r="3"></circle>
+                      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 
            1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 
            1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 
            1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 
@@ -3270,10 +3273,10 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
            1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.09a1.65 
            1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 
            0-1.51 1z"/>
-                      </svg>
-                    </a>
+                    </svg>
+                  </a>
                 </div>
-                
+
               </div>
               <div class="mobileview">
                 <div class="d-flex justify-content-between">
@@ -3338,18 +3341,19 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                     <label for="" className={`${error && !status ? 'red' : ''}`}>Status</label>
                     <span className="text-danger">*</span>
                     <div title="Select an option">
-                    <div class="exp-form-floating">
-                      <Select
-                        id="returnType"
-                        className="exp-input-field"
-                        placeholder="Select an option"
-                        options={status}
-                        value={selectedStatus}
-                        onChange={handleChangeStatus}
-                        getOptionLabel={(option) => option.label || ""}
-                        getOptionValue={(option) => option.value || ""}
-                        styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
-                      />
+                      <div class="exp-form-floating">
+                        <Select
+                          id="returnType"
+                          className="exp-input-field"
+                          classNamePrefix="react-select"
+                          placeholder="Select an option"
+                          options={status}
+                          value={selectedStatus}
+                          onChange={handleChangeStatus}
+                          getOptionLabel={(option) => option.label || ""}
+                          getOptionValue={(option) => option.value || ""}
+                          styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                        />
                       </div>
                     </div>
                   </div>
@@ -3449,39 +3453,41 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                 </label>
                   <div class="exp-form-floating">
                     <div title="Select a Pay Type">
-                    <Select
-                      id="paytype"
-                      value={selectedPay}
-                      onChange={handleChangePay}
-                      options={filteredOptionPay}
-                      className="exp-input-field"
-                      placeholder=""
-                      required
-                      data-tip="Please select a payment type"
-                      onKeyDown={(e) => handleKeyDown(e, purchasetype, paytype)} // No next field after this
-                      ref={paytype} // Attach ref to Purchase Type
-                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
-                    />
-                  </div>
+                      <Select
+                        id="paytype"
+                        value={selectedPay}
+                        onChange={handleChangePay}
+                        options={filteredOptionPay}
+                        className="exp-input-field"
+                        classNamePrefix="react-select"
+                        placeholder=""
+                        required
+                        data-tip="Please select a payment type"
+                        onKeyDown={(e) => handleKeyDown(e, purchasetype, paytype)} // No next field after this
+                        ref={paytype} // Attach ref to Purchase Type
+                        styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                      />
+                    </div>
                   </div>
                 </div>
                 <div className="col-md-3 form-group mb-2">
-                 
-                    <label className={`${error && !purchaseType ? 'red' : ''}`}> Purchase Type</label>
-                    <span className="text-danger">*</span>
-                     <div class="exp-form-floating">
-                      <div title="Select a Purchase Type">
-                    <Select
-                      id="purchaseType"
-                      value={selected}
-                      onChange={handleChangePurchase}
-                      options={filteredOptionPurchase}
-                      className="exp-input-field"
-                      placeholder=""
-                      onKeyDown={(e) => handleKeyDown(e, DatE, purchasetype)} // No next field after this
-                      ref={purchasetype} // Attach ref to Purchase Type
-                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
-                    />
+
+                  <label className={`${error && !purchaseType ? 'red' : ''}`}> Purchase Type</label>
+                  <span className="text-danger">*</span>
+                  <div class="exp-form-floating">
+                    <div title="Select a Purchase Type">
+                      <Select
+                        id="purchaseType"
+                        value={selected}
+                        onChange={handleChangePurchase}
+                        options={filteredOptionPurchase}
+                        className="exp-input-field"
+                        classNamePrefix="react-select"
+                        placeholder=""
+                        onKeyDown={(e) => handleKeyDown(e, DatE, purchasetype)} // No next field after this
+                        ref={purchasetype} // Attach ref to Purchase Type
+                        styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                      />
                     </div>
                   </div>
                 </div>
@@ -3508,17 +3514,18 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                   <label for="">Default Warehouse</label>
                   <div class="exp-form-floating">
                     <div title="Select a Default Warehouse">
-                    <Select
-                      id="returnType"
-                      className="exp-input-field"
-                      placeholder=""
-                      required
-                      value={selectedWarehouse}
-                      onChange={handleChangeWarehouse}
-                      options={filteredOptionWarehouse}
-                      data-tip="Please select a default warehouse"
-                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
-                    />
+                      <Select
+                        id="returnType"
+                        className="exp-input-field"
+                        classNamePrefix="react-select"
+                        placeholder=""
+                        required
+                        value={selectedWarehouse}
+                        onChange={handleChangeWarehouse}
+                        options={filteredOptionWarehouse}
+                        data-tip="Please select a default warehouse"
+                        styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                      />
                     </div>
                   </div>
                 </div>
@@ -3594,16 +3601,16 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                   </div>
                 </div>
                 <div className="col-md-3 form-group mb-2" style={{ display: "none" }}>
-                <div className="exp-form-floating">
-                  <label id="customer">Screen Type</label>
-                  <input
-                    className="exp-input-field form-control"
-                    id="customername"
-                    required
-                    value={Type}
-                    onChange={(e) => setType(e.target.value)}
-                  />
-                </div>
+                  <div className="exp-form-floating">
+                    <label id="customer">Screen Type</label>
+                    <input
+                      className="exp-input-field form-control"
+                      id="customername"
+                      required
+                      value={Type}
+                      onChange={(e) => setType(e.target.value)}
+                    />
+                  </div>
                 </div>
               </div>
               <div class="d-flex justify-content-between " style={{ marginBlock: "", marginTop: "10px" }} >
@@ -3691,6 +3698,8 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                   }}
                   onRowClicked={handleRowClicked}
                   onColumnMoved={onColumnMoved}
+                  headerHeight={28}
+                  rowHeight={25}
                 />
               </div>
             </div>
@@ -3725,29 +3734,30 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
               <div class="d-flex justify-content-between">
                 <div className="d-flex justify-content-start">
                   <h1 align="left" className="purbut me-5" >Deleted Purchase</h1>
-                  
+
                 </div>
-                 <div class="exp-form-floating">
-                    <Select
-                      id="returnType"
-                      className="exp-input-field col-md-6 mt-2"
-                      placeholder=""
-                      required
-                      value={selectedscreens}
-                      onChange={handleChangeScreens}
-                      options={filteredOptionScreens}
-                      data-tip="Please select a default warehouse"
-                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
-                    />
-                  </div>
-                
+                <div class="exp-form-floating">
+                  <Select
+                    id="returnType"
+                    className="exp-input-field col-md-6 mt-2"
+                    classNamePrefix="react-select"
+                    placeholder=""
+                    required
+                    value={selectedscreens}
+                    onChange={handleChangeScreens}
+                    options={filteredOptionScreens}
+                    data-tip="Please select a default warehouse"
+                    styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                  />
+                </div>
+
               </div>
               <div class="mobileview">
                 <div class="d-flex justify-content-between">
                   <div className="d-flex justify-content-start">
                     <h1 align="left" className="h1">Deleted Purchase</h1>
                   </div>
-                
+
                 </div>
               </div>
             </div>
@@ -3784,7 +3794,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                   <div className="col-md-3 form-group mb-2" >
                     <div class="exp-form-floating" >
                       <label for="" className="">Transaction Date</label>
-                     
+
                       <input
                         name="transactionDate"
                         id="transactionDate"
@@ -3835,7 +3845,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                     </div>
                   </div>
                   <div className="col-md-3 form-group mb-2"><label for="" className={`${error && !payType ? 'red' : ''}`}>Pay Type
-                   
+
                   </label>
                     <div class="exp-form-floating">
                       <input
@@ -3853,7 +3863,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                   <div className="col-md-3 form-group mb-2">
                     <div class="exp-form-floating">
                       <label className=""> Purchase Type</label>
-                     
+
                       <input
                         id="purchaseType"
                         value={deletePurchaseType}
@@ -3867,7 +3877,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                   <div className="col-md-3 form-group mb-2">
                     <div class="exp-form-floating">
                       <label for="entryDate" className=""> Entry Date</label>
-                      
+
                       <input
                         id="entryDate"
                         className="exp-input-field form-control"
@@ -3890,6 +3900,7 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                       <Select
                         id="returnType"
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder=""
                         required
                         value={selectedscreens}
@@ -3988,6 +3999,8 @@ const PurchaseDetail = async (TransactionNo, taxNameDetailsString, taxPerDetaiSt
                   columnDefs={activeTable === 'myTable' ? columnDeletedDefs : columnDeletedDefsTax}
                   rowData={activeTable === 'myTable' ? rowDataDelete : rowDataTaxDelete}
                   defaultColDef={{ editable: true, resizable: true }}
+                  headerHeight={28}
+                  rowHeight={25}
                 />
               </div>
             </div>
