@@ -98,7 +98,7 @@ export default function DeletedPaymentHelp({ open, handleClose, handleDeletePaym
     const [paymentId, setPaymentId] = useState("");
     const [paymentType, setPaymentType] = useState("");
     const [selectedPaymentType, setSelectedPaymentType] = useState(null);
-    
+
     const [partyType, setPartyType] = useState("");
     const [selectedPartyType, setSelectedPartyType] = useState(null);
 
@@ -117,7 +117,7 @@ export default function DeletedPaymentHelp({ open, handleClose, handleDeletePaym
     const [paymentDateTo, setPaymentDateTo] = useState("");
     const [referenceDateFrom, setReferenceDateFrom] = useState("");
     const [referenceDateTo, setReferenceDateTo] = useState("");
-    
+
     const [amountFrom, setAmountFrom] = useState("");
     const [amountTo, setAmountTo] = useState("");
 
@@ -323,6 +323,7 @@ export default function DeletedPaymentHelp({ open, handleClose, handleDeletePaym
                     onChange={handleChangePaymentType}
                     options={filteredOptionPaymentType}
                     className="exp-input-field"
+                    classNamePrefix="react-select"
                     placeholder="Payment Type"
                 />
             </div>
@@ -334,6 +335,7 @@ export default function DeletedPaymentHelp({ open, handleClose, handleDeletePaym
                     onChange={handleChangePartyType}
                     options={filteredOptionPartyType}
                     className="exp-input-field"
+                    classNamePrefix="react-select"
                     placeholder="Party Type"
                 />
             </div>
@@ -345,6 +347,7 @@ export default function DeletedPaymentHelp({ open, handleClose, handleDeletePaym
                     onChange={handleChangePartyId}
                     options={filteredOptionPartyId}
                     className="exp-input-field"
+                    classNamePrefix="react-select"
                     placeholder="Party Name / ID"
                 />
             </div>
@@ -356,6 +359,7 @@ export default function DeletedPaymentHelp({ open, handleClose, handleDeletePaym
                     onChange={handleChangePaymentMode}
                     options={filteredOptionPaymentMode}
                     className="exp-input-field"
+                    classNamePrefix="react-select"
                     placeholder="Payment Mode"
                 />
             </div>
@@ -516,6 +520,8 @@ export default function DeletedPaymentHelp({ open, handleClose, handleDeletePaym
                                                         pagination={true}
                                                         onSelectionChanged={handleRowSelected}
                                                         onRowDoubleClicked={handleRowDoubleClick}
+                                                        headerHeight={28}
+                                                        rowHeight={25}
                                                     />
                                                 </div>
                                             </div>

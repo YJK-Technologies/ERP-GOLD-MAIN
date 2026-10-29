@@ -450,7 +450,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData, selec
                             <input
                               type="date"
                               id="billdate"
-                              className="form-control"
+                              className="exp-input-field form-control"
                               placeholder="Bill Date"
                               title='Select the Bill Date'
                               value={bill_date}
@@ -463,7 +463,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData, selec
                             <input
                               type="text"
                               id="billno"
-                              className="form-control"
+                              className="exp-input-field form-control"
                               placeholder="Bill No"
                               title='Enter the Bill No'
                               value={bill_no}
@@ -476,7 +476,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData, selec
                             <input
                               type="text"
                               id="cuscode"
-                              className="form-control"
+                              className="exp-input-field form-control"
                               placeholder="Customer Code"
                               title='Enter the Customer Code'
                               value={customer_code}
@@ -489,7 +489,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData, selec
                             <input
                               type="text"
                               id="cusname"
-                              className="form-control"
+                              className="exp-input-field form-control"
                               placeholder="Customer Name"
                               title='Enter the Customer Name'
                               value={customer_name}
@@ -510,6 +510,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData, selec
                                   onChange={handleChangeSales}
                                   options={filteredOptionSales}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Sales Type"
                                   required
                                   isClearable
@@ -529,6 +530,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData, selec
                                   onChange={handleChangePay}
                                   options={filteredOptionPay}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Pay Type"
                                   required
                                   isClearable
@@ -547,6 +549,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData, selec
                                   onChange={handleChangeOrder}
                                   options={filteredOptionOrder}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Order Type"
                                   required
                                   data-tip="Please select a payment type"
@@ -561,7 +564,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData, selec
                             <input
                               type="text"
                               id="delychlno"
-                              className="form-control"
+                              className="exp-input-field form-control"
                               placeholder="DC No"
                               title='Enter the DC No'
                               value={dely_chlno}
@@ -591,6 +594,8 @@ export default function InventoryHdrPopup({ open, handleClose, handleData, selec
                             pagination
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+                            rowHeight={25}
                           />
                         </div>
                       </div>
@@ -626,7 +631,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData, selec
                             <input
                               type="date"
                               id="billdate"
-                              className="form-control"
+                              className="exp-input-field form-control"
                               placeholder="Bill Date"
                               value={bill_date}
                               onChange={(e) => setbill_date(e.target.value)}
@@ -638,7 +643,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData, selec
                             <input
                               type="text"
                               id="billno"
-                              className="form-control"
+                              className="exp-input-field form-control"
                               placeholder="Bill No"
                               value={bill_no}
                               onChange={(e) => setbill_no(e.target.value)}
@@ -650,7 +655,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData, selec
                             <input
                               type="text"
                               id="cuscode"
-                              className="form-control"
+                              className="exp-input-field form-control"
                               placeholder="Customer Code"
                               value={customer_code}
                               onChange={(e) => setcustomer_code(e.target.value)}
@@ -662,7 +667,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData, selec
                             <input
                               type="text"
                               id="cusname"
-                              className="form-control"
+                              className="exp-input-field form-control"
                               placeholder="Customer Name"
                               value={customer_name}
                               onChange={(e) => setcustomer_name(e.target.value)}
@@ -681,6 +686,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData, selec
                                   onChange={handleChangeSales}
                                   options={filteredOptionSales}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Sales Type"
                                   required
                                   isClearable
@@ -700,6 +706,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData, selec
                                   onChange={handleChangePay}
                                   options={filteredOptionPay}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Pay Type"
                                   required
                                   isClearable
@@ -718,6 +725,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData, selec
                                   onChange={handleChangeOrder}
                                   options={filteredOptionOrder}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Order Type"
                                   required
                                   data-tip="Please select a payment type"
@@ -731,7 +739,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData, selec
                             <input
                               type="text"
                               id="delychlno"
-                              className="form-control"
+                              className="exp-input-field form-control"
                               placeholder="DC No"
                               value={dely_chlno}
                               onChange={(e) => setdely_chlno(e.target.value)}
@@ -771,6 +779,8 @@ export default function InventoryHdrPopup({ open, handleClose, handleData, selec
                               pagination
                               onSelectionChanged={handleRowSelected}
                               onRowDoubleClicked={handleRowDoubleClick}
+                              headerHeight={28}
+                              rowHeight={25}
                             />
                           </div>
                         </div>

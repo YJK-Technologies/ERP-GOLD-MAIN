@@ -522,7 +522,7 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
                             headerHeight={28}
-              rowHeight={25}
+                            rowHeight={25}
                           />
                         </div>
                       </div>
@@ -637,7 +637,7 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
                               onSelectionChanged={handleRowSelected}
                               onRowDoubleClicked={handleRowDoubleClick}
                               headerHeight={28}
-              rowHeight={25}
+                              rowHeight={25}
                             />
                           </div>
                         </div>

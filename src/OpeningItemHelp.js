@@ -133,7 +133,7 @@ export default function OIPopup({ open, handleClose, handleOb }) {
     setSelectedRows([]);
   }
 
-    const handleRowDoubleClick = (params) => {
+  const handleRowDoubleClick = (params) => {
     const row = params.data;
 
     if (!row) return;
@@ -250,6 +250,8 @@ export default function OIPopup({ open, handleClose, handleOb }) {
                             pagination
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+                            rowHeight={25}
                           />
                         </div>
                       </div>
@@ -354,6 +356,8 @@ export default function OIPopup({ open, handleClose, handleOb }) {
                               pagination
                               onSelectionChanged={handleRowSelected}
                               onRowDoubleClicked={handleRowDoubleClick}
+                              headerHeight={28}
+                              rowHeight={25}
                             />
                           </div>
                         </div>
