@@ -1804,6 +1804,7 @@ function Payment() {
                   <Select
                     id="returnType"
                     className="exp-input-field"
+                    classNamePrefix="react-select"
                     value={selectedscreens}
                     onChange={handleChangeScreens}
                     options={filteredOptionScreens}
@@ -1967,6 +1968,7 @@ function Payment() {
                     onChange={handleChangePaymentType}
                     options={filteredOptionPaymentType}
                     className="exp-input-field"
+                    classNamePrefix="react-select"
                     styles={{
                       menu: (provided) => ({ ...provided, zIndex: 9999 }),
                     }}
@@ -1991,6 +1993,7 @@ function Payment() {
                     onChange={handleChangePartyType}
                     options={filteredOptionPartyType}
                     className="exp-input-field"
+                    classNamePrefix="react-select"
                     styles={{
                       menu: (provided) => ({ ...provided, zIndex: 9999 }),
                     }}
@@ -2072,6 +2075,7 @@ function Payment() {
                     onChange={handleChangePaymentMode}
                     options={filteredOptionPaymentMode}
                     className="exp-input-field"
+                    classNamePrefix="react-select"
                     styles={{
                       menu: (provided) => ({ ...provided, zIndex: 9999 }),
                     }}
@@ -2096,6 +2100,7 @@ function Payment() {
                     onChange={handleChangeBankCashAccount}
                     options={filteredOptionBankCashAccount}
                     className="exp-input-field"
+                    classNamePrefix="react-select"
                     styles={{
                       menu: (provided) => ({ ...provided, zIndex: 9999 }),
                     }}
@@ -2230,6 +2235,8 @@ function Payment() {
                 rowData={activeTable === "myTable" ? rowData : rowDataTax}
                 defaultColDef={{ editable: true, resizable: true }}
                 rowSelection="multiple"
+                headerHeight={28}
+                rowHeight={25}
               />
             </div>
           </div>
@@ -2327,6 +2334,8 @@ function Payment() {
                       filter: true,
                     }}
                     animateRows={true}
+                    headerHeight={28}
+                    rowHeight={25}
                   />
                 </div>
               </div>
@@ -2378,6 +2387,7 @@ function Payment() {
                   <Select
                     id="returnType"
                     className="exp-input-field"
+                    classNamePrefix="react-select"
                     value={selectedscreens}
                     onChange={handleChangeScreens}
                     options={filteredOptionScreens}
@@ -2579,6 +2589,8 @@ function Payment() {
                 columnDefs={deletedColumnDefs}
                 rowData={deletedRowData}
                 defaultColDef={{ editable: false, resizable: true }}
+                headerHeight={28}
+                rowHeight={25}
               />
             </div>
           </div>

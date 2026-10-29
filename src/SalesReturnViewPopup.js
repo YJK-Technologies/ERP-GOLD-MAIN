@@ -441,6 +441,7 @@ export default function SalesRetrunView({ open, handleClose, handleDataView, sel
                               onChange={handleChangeSales}
                               options={filteredOptionSales}
                               className="exp-input-field"
+                              classNamePrefix="react-select"
                               placeholder="Sales type"
                               isClearable
                             />
@@ -454,6 +455,7 @@ export default function SalesRetrunView({ open, handleClose, handleDataView, sel
                               onChange={handleChangePay}
                               options={filteredOptionPay}
                               className="exp-input-field"
+                              classNamePrefix="react-select"
                               placeholder="Pay type"
                               isClearable
                             />
@@ -480,6 +482,8 @@ export default function SalesRetrunView({ open, handleClose, handleDataView, sel
                           pagination
                           onSelectionChanged={handleRowSelected}
                           onRowDoubleClicked={handleRowDoubleClick}
+                          headerHeight={28}
+                          rowHeight={25}
                         />
                       </div>
                     </div>
@@ -586,6 +590,7 @@ export default function SalesRetrunView({ open, handleClose, handleDataView, sel
                               onChange={handleChangeSales}
                               options={filteredOptionSales}
                               className="exp-input-field"
+                              classNamePrefix="react-select"
                               placeholder="Sales type"
                               isClearable
                             />
@@ -599,6 +604,7 @@ export default function SalesRetrunView({ open, handleClose, handleDataView, sel
                               onChange={handleChangePay}
                               options={filteredOptionPay}
                               className="exp-input-field"
+                              classNamePrefix="react-select"
                               placeholder="Pay type"
                               isClearable
                             />
@@ -625,6 +631,8 @@ export default function SalesRetrunView({ open, handleClose, handleDataView, sel
                           pagination
                           onSelectionChanged={handleRowSelected}
                           onRowDoubleClicked={handleRowDoubleClick}
+                          headerHeight={28}
+                          rowHeight={25}
                         />
                       </div>
                     </div>

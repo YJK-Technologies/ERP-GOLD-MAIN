@@ -542,6 +542,8 @@ export default function PurchaseVendorPopup({ open, handleClose, handleVendor })
                           pagination
                           onSelectionChanged={handleRowSelected}
                           onRowDoubleClicked={handleRowDoubleClick}
+                          headerHeight={28}
+                          rowHeight={25}
                         />
                       </div>
                     </div>
@@ -650,6 +652,8 @@ export default function PurchaseVendorPopup({ open, handleClose, handleVendor })
                           pagination
                           onSelectionChanged={handleRowSelected}
                           onRowDoubleClicked={handleRowDoubleClick}
+                          headerHeight={28}
+                          rowHeight={25}
                         />
                       </div>
                     </div>

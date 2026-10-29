@@ -3059,6 +3059,7 @@ const AuthorizedHeader = async () => {
                                         <Select
                                             id="noteType"
                                             className="exp-input-field"
+                                            classNamePrefix="react-select"
                                             placeholder="Select Type"
                                             value={selectedNoteType}
                                             onChange={handleChangeNoteType}
@@ -3119,6 +3120,7 @@ const AuthorizedHeader = async () => {
                                     <Select
                                         id="returnType"
                                         className="exp-input-field"
+                                        classNamePrefix="react-select"
                                         // placeholder="Select Screen"
                                         value={selectedscreens}
                                         onChange={handleChangeScreens}
@@ -3138,6 +3140,7 @@ const AuthorizedHeader = async () => {
                                     <Select
                                         id="returnType"
                                         className="exp-input-field"
+                                        classNamePrefix="react-select"
                                         // placeholder="Select Screen"
                                         value={selectedauthorization}
                                         onChange={handleChangeauthorization}
@@ -3205,6 +3208,7 @@ const AuthorizedHeader = async () => {
                                      <Select
                                        id="returnType"
                                        className="exp-input-field"
+                                       classNamePrefix="react-select"
                                        placeholder="Select an option"
                                        options={status}
                                        value={selectedStatus}
@@ -3269,6 +3273,7 @@ const AuthorizedHeader = async () => {
                                         <Select
                                             id="noteType"
                                             className="exp-input-field"
+                                            classNamePrefix="react-select"
                                             placeholder="Select Type"
                                             value={selectedNoteType}
                                             onChange={handleChangeNoteType}
@@ -3294,6 +3299,7 @@ const AuthorizedHeader = async () => {
                                         // onChange={handleChangePartyType}
                                         // options={filteredOptionPartyType}
                                         className="exp-input-field"
+                                        classNamePrefix="react-select"
                                         isDisabled={true}
                                         // placeholder="Select Vendor / Customer Type"
                                         styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
@@ -3359,6 +3365,7 @@ const AuthorizedHeader = async () => {
                                         }}
                                         options={filteredOptionCode}
                                         className="exp-input-field"
+                                        classNamePrefix="react-select"
                                         // placeholder="Select Vendor / Customer Name"
                                         isDisabled={!partyType}
                                         styles={{
@@ -3405,6 +3412,7 @@ const AuthorizedHeader = async () => {
                                         onChange={handleChangeRefType}
                                         options={filteredOptionRefType}
                                         className="exp-input-field"
+                                        classNamePrefix="react-select"
                                         // placeholder="Select Reason"
                                         styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                                     />
@@ -3420,6 +3428,7 @@ const AuthorizedHeader = async () => {
                                         onChange={handleChangeReason}
                                         options={reasonOptions}
                                         className="exp-input-field"
+                                        classNamePrefix="react-select"
                                         // placeholder="Select Reason"
                                         styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                                     />
@@ -3600,6 +3609,8 @@ const AuthorizedHeader = async () => {
                                 rowData={activeTable === 'myTable' ? rowData : rowDataTax}
                                 defaultColDef={{ editable: true, resizable: true }}
                                 rowSelection="multiple"
+                                headerHeight={28}
+              rowHeight={25}
                                 onCellValueChanged={async (event) => {
                                     if (event.colDef.field === 'Qty' || event.colDef.field === 'purchaseAmt') {
                                         await ItemAmountCalculation(event);
@@ -3672,6 +3683,8 @@ const AuthorizedHeader = async () => {
                                 filter: true,
                               }}
                               animateRows={true}
+                              headerHeight={28}
+              rowHeight={25}
                             />
                           </div>
                         </div>
@@ -3759,6 +3772,7 @@ const AuthorizedHeader = async () => {
                                     <Select
                                         id="returnType"
                                         className="exp-input-field"
+                                        classNamePrefix="react-select"
                                         value={selectedscreens}
                                         onChange={handleChangeScreens}
                                         options={filteredOptionScreens}
@@ -3945,6 +3959,8 @@ const AuthorizedHeader = async () => {
                                 columnDefs={activeTable === 'myTable' ? deletedColumnDefs : deletedColumnDefsTax}
                                 rowData={activeTable === 'myTable' ? deletedRowData : deletedRowDataTax}
                                 defaultColDef={{ editable: false, resizable: true }}
+                                headerHeight={28}
+              rowHeight={25}
                             />
                         </div>
                     </div>

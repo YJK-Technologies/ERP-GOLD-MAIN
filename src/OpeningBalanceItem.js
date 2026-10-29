@@ -1035,6 +1035,8 @@ useEffect(() => {
               onCellValueChanged={handleCellValueChanged}
               paginationAutoPageSize={true}
               pagination={true}
+              headerHeight={28}
+              rowHeight={25}
             />
           </div>
           <div>

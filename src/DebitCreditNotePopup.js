@@ -340,7 +340,7 @@ export default function DebitCreditNoteHelp({ open, handleClose, handleDebitCred
                     Reference_Invoice_Date_From: refFromDate,
                     Reference_Invoice_Date_To: refToDate,
                     Narration: narration,
-                    Total_Amount: Number(totalBillAmount) 
+                    Total_Amount: Number(totalBillAmount)
                 })
             });
 
@@ -428,6 +428,7 @@ export default function DebitCreditNoteHelp({ open, handleClose, handleDebitCred
                         onChange={handleChangeNoteType}
                         options={filteredOptionNoteType}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder="Note Type"
                     />
                 </div>
@@ -481,6 +482,7 @@ export default function DebitCreditNoteHelp({ open, handleClose, handleDebitCred
                         onChange={handleChangePartyType}
                         options={filteredOptionPartyType}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder="Party Type"
                     />
                 </div>
@@ -495,6 +497,7 @@ export default function DebitCreditNoteHelp({ open, handleClose, handleDebitCred
                         onChange={handleChangePartyName}
                         options={filteredOptionPartyName}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder="Party Name"
                     />
                 </div>
@@ -509,6 +512,7 @@ export default function DebitCreditNoteHelp({ open, handleClose, handleDebitCred
                         onChange={handleChangeRefType}
                         options={filteredOptionRefType}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder="Ref Type"
                     />
                 </div>
@@ -523,6 +527,7 @@ export default function DebitCreditNoteHelp({ open, handleClose, handleDebitCred
                         onChange={handleChangeReason}
                         options={reasonOptions}
                         className="exp-input-field"
+                        classNamePrefix="react-select"
                         placeholder="Reason"
                     />
                 </div>
@@ -644,6 +649,8 @@ export default function DebitCreditNoteHelp({ open, handleClose, handleDebitCred
                                                         pagination={true}
                                                         onSelectionChanged={handleRowSelected}
                                                         onRowDoubleClicked={handleRowDoubleClick}
+                                                        headerHeight={28}
+                                                        rowHeight={25}
                                                     />
                                                 </div>
                                             </div>
@@ -682,6 +689,8 @@ export default function DebitCreditNoteHelp({ open, handleClose, handleDebitCred
                                                         pagination={true}
                                                         onSelectionChanged={handleRowSelected}
                                                         onRowDoubleClicked={handleRowDoubleClick}
+                                                        headerHeight={28}
+                                                        rowHeight={25}
                                                     />
                                                 </div>
                                             </div>

@@ -223,7 +223,7 @@ const defaultColDef = {
   filter: true,
 };
 
-export default function ReceivedGoodsPopup({ open, handleClose, handleRGData}) {
+export default function ReceivedGoodsPopup({ open, handleClose, handleRGData }) {
 
   const [rowData, setRowData] = useState([]);
   const [bill_no, setbill_no] = useState("");
@@ -406,6 +406,8 @@ export default function ReceivedGoodsPopup({ open, handleClose, handleRGData}) {
                             pagination='true'
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+                            rowHeight={25}
                           />
                         </div>
                       </div>
@@ -505,6 +507,8 @@ export default function ReceivedGoodsPopup({ open, handleClose, handleRGData}) {
                               pagination='true'
                               onSelectionChanged={handleRowSelected}
                               onRowDoubleClicked={handleRowDoubleClick}
+                              headerHeight={28}
+                              rowHeight={25}
                             />
                           </div>
                         </div>

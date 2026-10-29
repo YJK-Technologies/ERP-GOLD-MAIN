@@ -493,6 +493,7 @@ export default function PurchaseReturnView({ open, handleClose, handleItemView, 
                                   onChange={handleChangePurchase}
                                   options={filteredOptionPurchase}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Purchase Type"
                                   isClearable
                                 />
@@ -509,6 +510,7 @@ export default function PurchaseReturnView({ open, handleClose, handleItemView, 
                                   onChange={handleChangePay}
                                   options={filteredOptionPay}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Pay Type"
                                   required
                                   data-tip="Please select a payment type"
@@ -539,6 +541,8 @@ export default function PurchaseReturnView({ open, handleClose, handleItemView, 
                             pagination='true'
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+                            rowHeight={25}
                           />
                         </div>
                       </div>
@@ -644,6 +648,7 @@ export default function PurchaseReturnView({ open, handleClose, handleItemView, 
                                   onChange={handleChangePurchase}
                                   options={filteredOptionPurchase}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Purchase Type"
                                   isClearable
                                 />
@@ -660,6 +665,7 @@ export default function PurchaseReturnView({ open, handleClose, handleItemView, 
                                   onChange={handleChangePay}
                                   options={filteredOptionPay}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Pay Type"
                                   required
                                   data-tip="Please select a payment type"
@@ -689,6 +695,8 @@ export default function PurchaseReturnView({ open, handleClose, handleItemView, 
                               pagination='true'
                               onSelectionChanged={handleRowSelected}
                               onRowDoubleClicked={handleRowDoubleClick}
+                              headerHeight={28}
+                              rowHeight={25}
                             />
                           </div>
                         </div>
