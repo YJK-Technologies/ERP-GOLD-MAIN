@@ -208,6 +208,7 @@ import TaxInvoiceTemplate3 from "./PrintScreens/VRETemplate/TaxInvoicePrint.js";
 import QuotationPrint from "./PrintScreens/NSMTemplate/QuotePrint.js";
 import DeliveryChallanSM from "./PrintScreens/NSMTemplate/DeliveryChallanPrint.js";
 import PurchaseOrderPrint from "./PrintScreens/VRETemplate/PurchaseOrderPrint.js";
+import BankStatement from './BankStatement.js'
 
 function Main() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -456,6 +457,7 @@ function Main() {
      { path: "/CurrencyInput", component: <CurrencyInput /> },
      { path: "/CurrExeRate", component: <CurrExeRate /> },
      { path: "/CurrExeRateInput", component: <CurrExeRateInput /> },
+     { path: "/BankStatement", component: <BankStatement /> },
   ];
  
   return (
