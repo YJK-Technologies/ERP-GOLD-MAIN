@@ -488,14 +488,16 @@ function AssetsReturn({ }) {
             itemName: matchedItem.item_name,
             po_qty: matchedItem.po_qty,
             bal_qty: matchedItem.bal_qty,
-            receivedQty: matchedItem.qty_to_receive,
-            accepted_qty: matchedItem.accepted_qty,
-            rejected_qty: matchedItem.rejected_qty,
+            receiveQty: matchedItem.qty_to_receive,
+            // accepted_qty: matchedItem.accepted_qty,
+            // rejected_qty: matchedItem.rejected_qty,
             keyfield: matchedItem.keyfield,
             amendment_no: matchedItem.amendment_no,
             status: matchedItem.status,
             source: matchedItem.source,
-            receiveQty: 0,
+            accepted_qty: 0,
+            rejected_qty: 0,
+            qty_to_receive: 0,
           }));
           // Store every amendment record
           setAllReceivedGoodsRows(newRows);
