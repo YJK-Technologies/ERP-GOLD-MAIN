@@ -775,16 +775,16 @@ function AssetsReturn({ }) {
     window.location.reload();
   };
 
-  const transformRowData = (data) => {
-    return data.map((row) => ({
-      "Item S.No": row.itemSNo,
-      "Item Code": row.itemCode.toString(),
-      "Item Name": row.itemName.toString(),
-      "Bill Qty": row.billQty.toString(),
-      "Balance Qty": row.balanceQty.toString(),
-      "Receive Qty": row.receiveQty.toString(),
-    }));
-  };
+  // const transformRowData = (data) => {
+  //   return data.map((row) => ({
+  //     "Item S.No": row.itemSNo,
+  //     "Item Code": row.itemCode.toString(),
+  //     "Item Name": row.itemName.toString(),
+  //     "Bill Qty": row.billQty.toString(),
+  //     "Balance Qty": row.balanceQty.toString(),
+  //     "Receive Qty": row.receiveQty.toString(),
+  //   }));
+  // };
 
   //   const handleExcelDownload = () => {
   //     const filteredRowData = rowData.filter(row => row.receiveQty > 0);
@@ -811,78 +811,172 @@ function AssetsReturn({ }) {
   //     XLSX.writeFile(workbook, "Received_Goods.xlsx");
   //   };
 
+  // const handleExcelDownload = () => {
+  //   // const filteredRowData = rowData.filter(row => row.receiveQty > 0);
+  //   const filteredRowData = rowData;
+  //   if (rowData.length === 0 || !transactionNo || !transactionDate) {
+  //     toast.warning("No Data Available");
+  //     return;
+  //   }
+
+  //   const headerData = [
+  //     {
+  //       "Transaction No": transactionNo,
+  //       "Transaction Date": transactionDate,
+  //     },
+  //   ];
+
+  //   const transformedData = transformRowData(filteredRowData);
+
+  //   // Header Sheet
+  //   const headerSheet = XLSX.utils.aoa_to_sheet([
+  //     ["Received Goods"],
+  //     [`Company Name: ${sessionStorage.getItem("selectedCompanyName")}`],
+  //     [],
+  //   ]);
+
+  //   XLSX.utils.sheet_add_json(headerSheet, headerData, {
+  //     origin: "A4",
+  //   });
+
+  //   // Merge Heading
+  //   headerSheet["!merges"] = [
+  //     {
+  //       s: { r: 0, c: 0 }, // A1
+  //       e: { r: 0, c: 7 }, // H1
+  //     },
+  //     {
+  //       s: { r: 1, c: 0 }, // A2
+  //       e: { r: 1, c: 7 }, // H2
+  //     },
+  //   ];
+
+  //   // Details Sheet
+  //   const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
+
+  //   // Auto Fit Function
+  //   const autoFitColumns = (worksheet, data) => {
+  //     if (!data || data.length === 0) return;
+
+  //     const cols = [];
+
+  //     data.forEach((row) => {
+  //       Object.keys(row).forEach((key, i) => {
+  //         const value = row[key] == null ? "" : row[key].toString();
+
+  //         cols[i] = Math.max(cols[i] || key.length, key.length, value.length);
+  //       });
+  //     });
+
+  //     worksheet["!cols"] = cols.map((width) => ({
+  //       wch: width + 5,
+  //     }));
+  //   };
+
+  //   // Apply Auto Width
+  //   autoFitColumns(headerSheet, headerData);
+  //   autoFitColumns(rowDataSheet, transformedData);
+
+  //   // Workbook
+  //   const workbook = XLSX.utils.book_new();
+  //   XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+  //   XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
+
+  //   XLSX.writeFile(workbook, "Received_Goods.xlsx");
+  // };
+
+  const transformRowData = (data) => {
+    return data.map((row) => ({
+      "Item S.No": row.itemSNo ?? "",
+      "Item Code": String(row.itemCode ?? ""),
+      "Item Name": String(row.itemName ?? ""),
+      "PO Qty": Number(row.po_qty) || 0,
+      "Received Qty": Number(row.receiveQty) || 0,
+      "Balance Qty": Number(row.bal_qty) || 0,
+      "Quantity to Receive": Number(row.qty_to_receive) || 0,
+      "Accepted Qty": Number(row.accepted_qty) || 0,
+      "Rejected Qty": Number(row.rejected_qty) || 0,
+    }));
+  };
+
   const handleExcelDownload = () => {
-    // const filteredRowData = rowData.filter(row => row.receiveQty > 0);
-    const filteredRowData = rowData;
-    if (rowData.length === 0 || !transactionNo || !transactionDate) {
-      toast.warning("No Data Available");
+    if (!gridApi) {
+      toast.warning("Grid is not ready");
       return;
     }
 
-    const headerData = [
-      {
-        "Transaction No": transactionNo,
-        "Transaction Date": transactionDate,
-      },
-    ];
+    // Stop active cell editing so newly typed values are captured
+    gridApi.stopEditing();
 
-    const transformedData = transformRowData(filteredRowData);
-
-    // Header Sheet
-    const headerSheet = XLSX.utils.aoa_to_sheet([
-      ["Received Goods"],
-      [`Company Name: ${sessionStorage.getItem("selectedCompanyName")}`],
-      [],
-    ]);
-
-    XLSX.utils.sheet_add_json(headerSheet, headerData, {
-      origin: "A4",
+    // Extract current data from all grid nodes (including edited values)
+    const currentGridRows = [];
+    gridApi.forEachNode((node) => {
+      if (node.data) {
+        currentGridRows.push(node.data);
+      }
     });
 
-    // Merge Heading
-    headerSheet["!merges"] = [
-      {
-        s: { r: 0, c: 0 }, // A1
-        e: { r: 0, c: 7 }, // H1
-      },
-      {
-        s: { r: 1, c: 0 }, // A2
-        e: { r: 1, c: 7 }, // H2
-      },
+    if (currentGridRows.length === 0) {
+      toast.warning("No Data Available in Grid");
+      return;
+    }
+
+    const companyName = sessionStorage.getItem("selectedCompanyName") || "";
+
+    // 1. Title & Metadata Header Rows
+    const headerRows = [
+      ["Received Goods"],
+      [`Company Name: ${companyName}`],
+      [`Transaction No: ${transactionNo || ""}`, `Transaction Date: ${transactionDate || ""}`, `Amendment No: ${amendmentNo || ""}`, `Status: ${status || ""}`],
+      [], // Empty row before table details
     ];
 
-    // Details Sheet
-    const rowDataSheet = XLSX.utils.json_to_sheet(transformedData);
+    const transformedData = transformRowData(currentGridRows);
 
-    // Auto Fit Function
-    const autoFitColumns = (worksheet, data) => {
-      if (!data || data.length === 0) return;
+    // 2. Build the Worksheet starting with the metadata header
+    const worksheet = XLSX.utils.aoa_to_sheet(headerRows);
 
-      const cols = [];
+    // 3. Append the Grid Details table starting at row 5 (A5)
+    XLSX.utils.sheet_add_json(worksheet, transformedData, {
+      origin: "A5",
+      header: [
+        "Item S.No",
+        "Item Code",
+        "Item Name",
+        "PO Qty",
+        "Received Qty",
+        "Balance Qty",
+        "Quantity to Receive",
+        "Accepted Qty",
+        "Rejected Qty",
+      ],
+    });
 
-      data.forEach((row) => {
-        Object.keys(row).forEach((key, i) => {
-          const value = row[key] == null ? "" : row[key].toString();
+    // 4. Merge Title rows across the columns (Columns A through I)
+    worksheet["!merges"] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 8 } }, // Row 1 (A1:I1)
+      { s: { r: 1, c: 0 }, e: { r: 1, c: 8 } }, // Row 2 (A2:I2)
+    ];
 
-          cols[i] = Math.max(cols[i] || key.length, key.length, value.length);
-        });
+    // 5. Dynamic column width autofitting based on headers and cell contents
+    const keys = Object.keys(transformedData[0] || {});
+    worksheet["!cols"] = keys.map((key) => {
+      let maxLen = key.length;
+      transformedData.forEach((row) => {
+        const valStr = row[key] !== null && row[key] !== undefined ? String(row[key]) : "";
+        if (valStr.length > maxLen) {
+          maxLen = valStr.length;
+        }
       });
+      return { wch: Math.max(maxLen + 4, 12) };
+    });
 
-      worksheet["!cols"] = cols.map((width) => ({
-        wch: width + 5,
-      }));
-    };
-
-    // Apply Auto Width
-    autoFitColumns(headerSheet, headerData);
-    autoFitColumns(rowDataSheet, transformedData);
-
-    // Workbook
+    // 6. Generate and save workbook
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
-    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Received Goods");
 
-    XLSX.writeFile(workbook, "Received_Goods.xlsx");
+    const fileName = `${transactionNo ? `${transactionNo}_` : ""}Received_Goods.xlsx`;
+    XLSX.writeFile(workbook, fileName);
   };
   return (
     <div class="container-fluid Topnav-screen">
@@ -900,6 +994,7 @@ function AssetsReturn({ }) {
           </div>
           <div class="d-flex justify-content-end purbut me-3">
             <div className="exp-form-floating">
+              <div title="Select the Mode">
               <Select
                 id="returnType"
                 className="exp-input-field col-md-6 mt-2"
@@ -912,6 +1007,7 @@ function AssetsReturn({ }) {
                 data-tip="Please select a default warehouse"
                 styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
               />
+              </div>
             </div>
             {["add", "all permission"].some((permission) =>
               purchasePermission.includes(permission),
@@ -1059,7 +1155,7 @@ function AssetsReturn({ }) {
             <div className="col-md-2  form-group">
               <div class="exp-form-floating">
                 <label for="rid" class="exp-form-labels">Amendment No</label>
-                <div title="select a Amendment No">
+                <div title="Select a Amendment No">
                   <Select
                     id="status"
                     value={selectedAmendmentNo}
