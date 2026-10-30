@@ -32877,6 +32877,26 @@ const BankStatementTransactionDelete = async (req, res) => {
   }
 };
 
+const getBankStatementHistory = async (req, res) => {
+  const { company_code } = req.body;
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool.request()
+      .input("mode", sql.NVarChar, "A")
+      .input("company_code", sql.NVarChar, company_code)
+      .query(`EXEC sp_BankStatementUpload @mode, '', '', '', '', '', '', '', '', '', '', 0, 0, 0, 0, 0, 0, '', 0, 0, '', '', 0, @company_code, '', '', '', '', ''`);
+      
+    if (result.recordset && result.recordset.length > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(200).json([]); // Return empty array if no data
+    }
+  } catch (err) {
+    console.error("Error fetching history:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
 const BankReconciliationInsert = async (req, res) => {
   const { ReconciliationId, TransactionDate, BankAccountId, BankStatementId, ReconciliationNumber, StatementStartDate, StatementEndDate, CurrencyCode, OpeningBalance, TotalCredits, TotalDebits, BankClosingBalance, ERPClosingBalance, ReconciliationStatus, ReconciliationDate, ReconciledBy, Remarks, company_code, location_code, created_by, created_date } = req.body;
 
@@ -33077,6 +33097,42 @@ const BankReconciliationTransactionDelete = async (req, res) => {
   } catch (err) {
     console.error("Error during BankReconciliationTransaction delete:", err);
     res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const get_ImportMethod = async (req, res) => {
+  const { company_code } = req.body;
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("company_code", sql.NVarChar, company_code)
+      .query(
+        "EXEC sp_attribute_Info 'F',@company_code,'Import Method','','','', '' , 0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL"
+      );
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const get_StatementFormat = async (req, res) => {
+  const { company_code } = req.body;
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("company_code", sql.NVarChar, company_code)
+      .query(
+        "EXEC sp_attribute_Info 'F',@company_code,'Statement Format','','','', '' , 0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL"
+      );
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
   }
 };
 //Code ended by SakthiGanesh J on 30-10-2026 
@@ -34130,11 +34186,14 @@ module.exports = {
   BankStatementTransactionInsert, 
   BankStatementTransactionUpdate, 
   BankStatementTransactionDelete,
+  getBankStatementHistory,
   BankReconciliationInsert, 
   BankReconciliationUpdate, 
   BankReconciliationDelete,
   BankReconciliationTransactionInsert, 
   BankReconciliationTransactionUpdate, 
   BankReconciliationTransactionDelete,
+  get_ImportMethod,
+  get_StatementFormat
 
 };

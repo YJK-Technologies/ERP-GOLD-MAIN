@@ -1074,12 +1074,15 @@ router.post("/BankStatementUploadDelete", dataController.BankStatementUploadDele
 router.post("/BankStatementTransactionInsert", dataController.BankStatementTransactionInsert);
 router.post("/BankStatementTransactionUpdate", dataController.BankStatementTransactionUpdate);
 router.post("/BankStatementTransactionDelete", dataController.BankStatementTransactionDelete);
+router.post("/getBankStatementHistory", dataController.getBankStatementHistory);
 router.post("/BankReconciliationInsert", dataController.BankReconciliationInsert);
 router.post("/BankReconciliationUpdate", dataController.BankReconciliationUpdate);
 router.post("/BankReconciliationDelete", dataController.BankReconciliationDelete);
 router.post("/BankReconciliationTransactionInsert", dataController.BankReconciliationTransactionInsert);
 router.post("/BankReconciliationTransactionUpdate", dataController.BankReconciliationTransactionUpdate);
 router.post("/BankReconciliationTransactionDelete", dataController.BankReconciliationTransactionDelete);
+router.post("/get_StatementFormat", dataController.get_StatementFormat);
+router.post("/get_ImportMethod", dataController.get_ImportMethod);
 
 
 module.exports = router;
