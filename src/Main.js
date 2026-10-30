@@ -212,7 +212,7 @@ import BankStatement from './BankStatement.js'
 import BankReconciliation from './BankReconciliation.js'
 
 function Main() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
   const [screenTypes, setScreenTypes] = useState(
     JSON.parse(sessionStorage.getItem("screenTypes")) || []
   );

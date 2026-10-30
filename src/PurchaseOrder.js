@@ -395,9 +395,9 @@ function PurchaseOrder() {
 
   const filteredOptionParty = Array.isArray(partyDrop)
     ? partyDrop.map((option) => ({
-        value: option.descriptions,
-        label: option.descriptions,
-      }))
+      value: option.descriptions,
+      label: option.descriptions,
+    }))
     : [];
 
   const handleChangeParty = (selectedParty) => {
@@ -2122,7 +2122,7 @@ function PurchaseOrder() {
     }
 
     const actionLabel = selectedscreens?.label || "data";
-    const actionValue = selectedscreens?.value || "data"; 
+    const actionValue = selectedscreens?.value || "data";
 
     showConfirmationToast(
       `Are you sure you want to ${actionLabel} the data ?`,
@@ -2298,17 +2298,23 @@ function PurchaseOrder() {
     }
   };
 
-  const openPrintWindow = (url, headerKey, detailKey, taxKey) => {
+  const openPrintWindow = (url, headerKey, detailKey, taxKey, hsnKey) => {
+
     const printWindow = window.open(url, "_blank");
 
-    if (printWindow) {
-      printWindow.addEventListener("beforeunload", () => {
-        sessionStorage.removeItem(headerKey);
-        sessionStorage.removeItem(detailKey);
-        sessionStorage.removeItem(taxKey);
-        console.log("Session storage cleared after print window closed.");
-      });
+    if (!printWindow) {
+      toast.error("Please allow popups to open the print window");
+      return;
     }
+
+    printWindow.addEventListener("beforeunload", () => {
+      sessionStorage.removeItem(headerKey);
+      sessionStorage.removeItem(detailKey);
+      sessionStorage.removeItem(taxKey);
+      sessionStorage.removeItem(hsnKey);
+
+      console.log("Session storage cleared after print window closed.");
+    });
   };
 
   const generateReport = async () => {
@@ -2317,6 +2323,7 @@ function PurchaseOrder() {
       toast.warning("Error: Missing required fields");
       return;
     }
+
     setLoading(true);
 
     try {
@@ -2325,47 +2332,56 @@ function PurchaseOrder() {
       const taxData = await PrintSumTax();
       const hsnTaxData = await PrintHsnTaxData();
 
-      if (headerData && detailData) {
-        console.log("All API calls completed successfully");
-
-        let url, headerKey, detailKey, taxKey, hsnKey;
-
-        headerKey = "POheaderData";
-        detailKey = "POdetailData";
-        taxKey = "POtaxData";
-        hsnKey = "POhsnTaxData";
-        url = "/PurchaseOrderPrint";
-
-        sessionStorage.setItem(
-          headerKey,
-          LZString.compress(JSON.stringify(headerData)),
-        );
-        sessionStorage.setItem(
-          detailKey,
-          LZString.compress(JSON.stringify(detailData)),
-        );
-        sessionStorage.setItem(
-          taxKey,
-          LZString.compress(JSON.stringify(taxData)),
-        );
-        sessionStorage.setItem(
-          hsnKey,
-          LZString.compress(JSON.stringify(hsnTaxData)),
-        );
-
-        // sessionStorage.setItem('POheaderData', JSON.stringify(headerData));
-        // sessionStorage.setItem('POdetailData', JSON.stringify(detailData));
-        // sessionStorage.setItem('POtaxData', JSON.stringify(taxData));
-
-        // window.open('/PurchaseOrderPrint', '_blank');
-
-        openPrintWindow(url, headerKey, detailKey, taxKey);
-      } else {
-        console.log("Failed to fetch some data");
-        toast.error("Transaction No Does Not Exits");
+      if (
+        !headerData ||
+        !detailData ||
+        !taxData ||
+        !hsnTaxData
+      ) {
+        toast.error("Transaction No Does Not Exist");
+        return;
       }
+
+      const headerKey = "POheaderData";
+      const detailKey = "POdetailData";
+      const taxKey = "POtaxData";
+      const hsnKey = "POhsnTaxData";
+
+      // Compress and store data
+      const storeData = (key, data) => {
+        const jsonData = JSON.stringify(data);
+
+        if (jsonData === undefined) {
+          throw new Error(`Invalid data for ${key}`);
+        }
+
+        const compressedData = LZString.compress(jsonData);
+
+        if (!compressedData) {
+          throw new Error(`Compression failed for ${key}`);
+        }
+
+        sessionStorage.setItem(key, compressedData);
+      };
+
+      storeData(headerKey, headerData);
+      storeData(detailKey, detailData);
+      storeData(taxKey, taxData);
+      storeData(hsnKey, hsnTaxData);
+
+      console.log("All API calls completed successfully");
+
+      openPrintWindow(
+        "/PurchaseOrderPrint",
+        headerKey,
+        detailKey,
+        taxKey,
+        hsnKey
+      );
+
     } catch (error) {
       console.error("Error executing API calls:", error);
+      toast.error("Unable to generate Purchase Order report");
     } finally {
       setLoading(false);
     }
@@ -3623,14 +3639,14 @@ function PurchaseOrder() {
                 {["add", "all permission"].some((permission) =>
                   purchaseOrderPermission.includes(permission),
                 ) && (
-                  <savebutton
-                    className="purbut"
-                    onClick={handleMasterAction}
-                    title="Save / Update"
-                  >
-                    <i class="fa-regular fa-floppy-disk"></i>
-                  </savebutton>
-                )}
+                    <savebutton
+                      className="purbut"
+                      onClick={handleMasterAction}
+                      title="Save / Update"
+                    >
+                      <i class="fa-regular fa-floppy-disk"></i>
+                    </savebutton>
+                  )}
                 {/* {["update", "all permission"].some((permission) => purchaseOrderPermission.includes(permission)) && (
                     <savebutton
                       className="purbut"
@@ -3652,14 +3668,14 @@ function PurchaseOrder() {
                 {["all permission", "view"].some((permission) =>
                   purchaseOrderPermission.includes(permission),
                 ) && (
-                  <printbutton
-                    className="purbut"
-                    title="Print"
-                    onClick={generateReport}
-                  >
-                    <i class="fa-solid fa-file-pdf"></i>
-                  </printbutton>
-                )}
+                    <printbutton
+                      className="purbut"
+                      title="Print"
+                      onClick={generateReport}
+                    >
+                      <i class="fa-solid fa-file-pdf"></i>
+                    </printbutton>
+                  )}
                 <printbutton
                   className="purbut"
                   title="Excel"
@@ -3732,10 +3748,10 @@ function PurchaseOrder() {
                       {["add", "all permission"].some((permission) =>
                         purchaseOrderPermission.includes(permission),
                       ) && (
-                        <icon class="icon" onClick={handleMasterAction}>
-                          <i class="fa-regular fa-floppy-disk"></i>
-                        </icon>
-                      )}
+                          <icon class="icon" onClick={handleMasterAction}>
+                            <i class="fa-regular fa-floppy-disk"></i>
+                          </icon>
+                        )}
                     </li>
                     {/* <li class="iconbutton  d-flex justify-content-center text-danger">
                       {["delete", "all permission"].some((permission) => purchaseOrderPermission.includes(permission)) && (
@@ -3748,10 +3764,10 @@ function PurchaseOrder() {
                       {["all permission", "view"].some((permission) =>
                         purchaseOrderPermission.includes(permission),
                       ) && (
-                        <icon class="icon" onClick={generateReport}>
-                          <i class="fa-solid fa-file-pdf"></i>
-                        </icon>
-                      )}
+                          <icon class="icon" onClick={generateReport}>
+                            <i class="fa-solid fa-file-pdf"></i>
+                          </icon>
+                        )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center text-success">
                       <icon class="icon" onClick={handleExcelDownload}>

@@ -3,132 +3,82 @@ import "./InvoicePrint.css"; // Uses the scoped .template3-container from your C
 import { ToWords } from 'to-words';
 import LZString from "lz-string";
 
-// ==========================================
-// DEMO DATA (Remove after design approval)
-// ==========================================
-// const demoHeaderData = [{
-//     company_name: "DEMO COMPANY LTD",
-//     address1: "123 Demo Street",
-//     address2: "Tech Park",
-//     address3: "",
-//     city: "Chennai",
-//     pincode: "600001",
-//     company_gst_no: "33AABCD1234E1Z1",
-//     contact_no: "+91-9876543210",
-//     shipTo_customer_name: "Demo Company (Warehouse)",
-//     shipTo_customer_addr_1: "456 Delivery Ave",
-//     shipTo_customer_addr_2: "Industrial Estate",
-//     shipTo_customer_addr_3: "",
-//     ShipTo_customer_gst_no: "33AABCD1234E1Z1",
-//     shipTo_customer_state: "Tamil Nadu",
-//     billTo_customer_name: "Vendor Supplier Inc",
-//     billTo_customer_addr_1: "789 Supplier Road",
-//     billTo_customer_addr_2: "Business District",
-//     billTo_customer_addr_3: "",
-//     billTo_customer_gst_no: "27XYZAB9876C1Z2",
-//     billTo_customer_state: "Maharashtra",
-//     bill_no: "YJKT/045/26-27", 
-//     bill_date: "2026-08-25",
-//     quote_date: "1900-01-01",
-//     delivery_terms: "",
-//     bill_amt: 141600.00,
-//     sale_amt: 120000.00,
-//     tax_amount: 21600.00,
-//     roff_amt: 0.0,
-//     authorisedSignatur: null 
-// }];
-
-// Generating 5 items to demonstrate the automatic A4 pagination
-// const demoDetailData = Array.from({ length: 5 }).map((_, i) => ({
-//     SNo: i + 1,
-//     name: `Demo Raw Material ${i + 1}`,
-//     Item_BaseUOM: "Pcs",
-//     hsn_code: "84713010",
-//     tax_percentage: 18,
-//     bill_qty: 10,
-//     unit_price: 1500.00,
-//     Discount_Value: 0,
-//     bill_rate: 15000.00,
-//     state: "Tamil Nadu"
-// }));
-
-// const demoTaxData = [
-//     { tax_name_details: "IGST 18%", tax_amt: 21600.00 }
-// ];
-
-// const demoHsnTaxData = [
-//     {
-//         "HSN/SAC": "84713010",
-//         "Taxable Value": 120000.00,
-//         "CGST Rate (%)": 0,
-//         "CGST Amount": 0,
-//         "SGST/UTGST Rate (%)": 0,
-//         "SGST/UTGST Amount": 0,
-//         "IGST Rate (%)": 18,
-//         "IGST Amount": 21600.00,
-//         "Total Tax Amount": 21600.00
-//     }
-// ];
-// ==========================================
 
 const PurchaseOrderPrint = () => {
     const [headerData, setHeaderData] = useState(null);
     const [detailData, setDetailData] = useState(null);
     const [taxData, setTaxData] = useState(null);
     const [hsnTaxData, setHsnTaxData] = useState(null);
-    
+
     const toWords = new ToWords();
 
-    // useEffect(() => {
-    //     const header = sessionStorage.getItem('POheaderData');
-    //     const detail = sessionStorage.getItem('POdetailData');
-    //     const tax = sessionStorage.getItem('POtaxData');
-    //     const hsnTax = sessionStorage.getItem('POHsnTaxData');
+    useEffect(() => {
+        try {
+            const getSessionData = (key) => {
+                const compressedData = sessionStorage.getItem(key);
+
+                if (!compressedData) {
+                    throw new Error(`Session data not found: ${key}`);
+                }
+
+                const decompressedData = LZString.decompress(compressedData);
+
+                if (!decompressedData) {
+                    throw new Error(`Decompression failed: ${key}`);
+                }
+
+                try {
+                    return JSON.parse(decompressedData);
+                } catch (error) {
+                    throw new Error(`Invalid JSON data: ${key}`);
+                }
+            };
+
+            const header = getSessionData("POheaderData");
+            const detail = getSessionData("POdetailData");
+            const tax = getSessionData("POtaxData");
+            const hsnTax = getSessionData("POhsnTaxData");
+
+            setHeaderData(header);
+            setDetailData(detail);
+            setTaxData(tax);
+            setHsnTaxData(hsnTax);
+
+            console.log("Purchase Order data loaded successfully");
+
+        } catch (error) {
+            console.error("Purchase Order data loading error:", error);
+        }
+    }, []);
+
+    //     useEffect(() => {
+    //     const header = sessionStorage.getItem("POheaderData");
+    //     const detail = sessionStorage.getItem("POdetailData");
+    //     const tax = sessionStorage.getItem("POtaxData");
+    //     const hsnTax = sessionStorage.getItem("POHsnTaxData");
+
+    //     const parseStoredData = (value) => {
+    //         if (!value) return [];
+
+    //         try {
+    //             const decompressed = LZString.decompress(value);
+    //             const parsed = JSON.parse(decompressed || value);
+
+    //             return Array.isArray(parsed) ? parsed : [];
+    //         } catch (error) {
+    //             console.error("Error parsing stored data:", error);
+    //             return [];
+    //         }
+    //     };
 
     //     if (header && detail && tax) {
-    //         setHeaderData(JSON.parse(LZString.decompress(header)));
-    //         setDetailData(JSON.parse(LZString.decompress(detail)));
-    //         setTaxData(JSON.parse(LZString.decompress(tax)));
-    //         if (hsnTax) {
-    //             setHsnTaxData(JSON.parse(LZString.decompress(hsnTax)));
-    //         }
+    //         setHeaderData(parseStoredData(header));
+    //         setDetailData(parseStoredData(detail));
+    //         setTaxData(parseStoredData(tax));
+    //         setHsnTaxData(parseStoredData(hsnTax));
     //     }
+
     // }, []);
-
-    useEffect(() => {
-    const header = sessionStorage.getItem("POheaderData");
-    const detail = sessionStorage.getItem("POdetailData");
-    const tax = sessionStorage.getItem("POtaxData");
-    const hsnTax = sessionStorage.getItem("POHsnTaxData");
-
-    console.log("HSN Raw Session Data:", hsnTax);
-
-    const parseStoredData = (value) => {
-        if (!value) return [];
-
-        try {
-            const decompressed = LZString.decompress(value);
-            const parsed = JSON.parse(decompressed || value);
-
-            return Array.isArray(parsed) ? parsed : [];
-        } catch (error) {
-            console.error("Error parsing stored data:", error);
-            return [];
-        }
-    };
-
-    if (header && detail && tax) {
-        setHeaderData(parseStoredData(header));
-        setDetailData(parseStoredData(detail));
-        setTaxData(parseStoredData(tax));
-    }
-
-    const parsedHsnData = parseStoredData(hsnTax);
-
-    console.log("HSN Parsed Data:", parsedHsnData);
-
-    setHsnTaxData(parsedHsnData);
-}, []);
 
     const bufferToBase64 = (buffer) => {
         const bytes = new Uint8Array(buffer);
