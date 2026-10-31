@@ -9978,11 +9978,16 @@ const AccNameDelete = async (req, res) => {
   }
 };
 
-
 const getAllAccNameData = async (req, res) => {
+  const { company_code } = req.body;
+  let pool;
   try {
-    await connection.connectToDatabase();
-    const result = await sql.query(`EXEC sp_account_name 'A','','','','','','','','','','','','','','','','',0,'','','','','','','','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+    pool = await sql.connect(dbConfig);
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "A") // Insert mode
+      .input("company_code", sql.NVarChar, company_code)
+      .query(`EXEC sp_account_name 'A',@company_code,'','','','','','','','','','','','','','','',0,'','','','','','','','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     res.json(result.recordset);
   } catch (err) {
@@ -9990,8 +9995,6 @@ const getAllAccNameData = async (req, res) => {
     res.status(500).json({ message: err.message || 'Internal Server Error' });
   }
 };
-
-
 
 const getsalesreturnsearchViewdata = async (req, res) => {
   const { company_code, bill_date, bill_no, return_no, sales_type, customer_code, customer_name, pay_type } = req.body;
@@ -10769,8 +10772,8 @@ const addQuotationheader = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(`EXEC sp_quotation_hdr @mode ,@company_code, @customer_name,@customer_addr_1,@customer_addr_2,@customer_addr_3,@customer_addr_4, @customer_state,@customer_country,@customer_mobile_no,@contact_person, @Entry_date, @transaction_no,
-        @customer_code, @purchase_amount,@tax_amount, @add_fright, @less_fright, @rounded_off, @loading_charges, @cartage_paid, @other_charges, @total_amount, @customer_gst_no,@kind_attention,@quotation_validity, @created_by, @modified_by, NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_quotation_hdr_test @mode ,@company_code, @customer_name,@customer_addr_1,@customer_addr_2,@customer_addr_3,@customer_addr_4, @customer_state,@customer_country,@customer_mobile_no,@contact_person, @Entry_date, @transaction_no,
+        @customer_code, @purchase_amount,@tax_amount, @add_fright, @less_fright, @rounded_off, @loading_charges, @cartage_paid, @other_charges, @total_amount, @customer_gst_no,@kind_attention,@quotation_validity, '', @created_by, @modified_by, NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -10784,7 +10787,7 @@ const addQuotationheader = async (req, res) => {
 
 
 const updQuotationheader = async (req, res) => {
-  const { company_code, Entry_date, transaction_no, customer_code, customer_name, customer_addr_1, customer_addr_2, customer_addr_3, customer_addr_4, customer_state, customer_country, customer_mobile_no, contact_person, purchase_amount, tax_amount, add_fright, less_fright, rounded_off, loading_charges, cartage_paid, other_charges, total_amount, customer_gst_no, kind_attention, quotation_validity, modified_by } = req.body;
+  const { company_code, authroization_status, Entry_date, transaction_no, customer_code, customer_name, customer_addr_1, customer_addr_2, customer_addr_3, customer_addr_4, customer_state, customer_country, customer_mobile_no, contact_person, purchase_amount, tax_amount, add_fright, less_fright, rounded_off, loading_charges, cartage_paid, other_charges, total_amount, customer_gst_no, kind_attention, quotation_validity, modified_by } = req.body;
   let pool;
   try {
     pool = await sql.connect(dbConfig);
@@ -10816,9 +10819,10 @@ const updQuotationheader = async (req, res) => {
       .input("customer_gst_no", sql.NVarChar, customer_gst_no)
       .input("kind_attention", sql.NVarChar, kind_attention)
       .input("quotation_validity", sql.NVarChar, quotation_validity)
+      .input("authroization_status", sql.NVarChar, authroization_status)
       .input("modified_by", sql.NVarChar, modified_by)
-      .query(`EXEC sp_quotation_hdr @mode ,@company_code, @customer_name,@customer_addr_1,@customer_addr_2,@customer_addr_3,@customer_addr_4, @customer_state,@customer_country,@customer_mobile_no,@contact_person, @Entry_date, @transaction_no,
-        @customer_code, @purchase_amount,@tax_amount, @add_fright, @less_fright, @rounded_off, @loading_charges, @cartage_paid, @other_charges, @total_amount, @customer_gst_no,@kind_attention,@quotation_validity, '', @modified_by, NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_quotation_hdr_test @mode ,@company_code, @customer_name,@customer_addr_1,@customer_addr_2,@customer_addr_3,@customer_addr_4, @customer_state,@customer_country,@customer_mobile_no,@contact_person, @Entry_date, @transaction_no,
+        @customer_code, @purchase_amount,@tax_amount, @add_fright, @less_fright, @rounded_off, @loading_charges, @cartage_paid, @other_charges, @total_amount, @customer_gst_no,@kind_attention,@quotation_validity, @authroization_status, '', @modified_by, NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
     res.json(result.recordset);
 
   } catch (err) {
@@ -10836,7 +10840,7 @@ const getAllquotehdrData = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "A") // Insert mode
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_quotation_hdr 'A',@company_code,'','','','','','','','','','','','',0,0,0,0,0,0,0,0,0,'','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_quotation_hdr_test 'A',@company_code,'','','','','','','','','','','','',0,0,0,0,0,0,0,0,0,'','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     res.json(result.recordset);
   } catch (err) {
     console.error("Error", err);
@@ -10856,7 +10860,7 @@ const quotedeletehdrData = async (req, res) => {
         .input("company_code", sql.NVarChar, company_code)
         .input("transaction_no", sql.NVarChar, transaction_no)
         .input("modified_by", sql.NVarChar, modified_by)
-        .query(`EXEC sp_quotation_hdr @mode,@company_code,'','','','','','','','','','',@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+        .query(`EXEC sp_quotation_hdr_test @mode,@company_code,'','','','','','','','','','',@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','','',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     } catch (err) {
       if (err.number === 547) {
         // Foreign key constraint violation
@@ -11970,7 +11974,7 @@ const getQuotationSearchData = async (req, res) => {
       .input("Entry_date", sql.NVarChar, Entry_date)
       .input("customer_name", sql.NVarChar, customer_name)
       .input("contact_person", sql.NVarChar, contact_person)
-      .query(`EXEC sp_quotation_hdr @mode,@company_code,@customer_name,'','','','','','','',@contact_person,@Entry_date,@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','','', NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_quotation_hdr_test @mode,@company_code,@customer_name,'','','','','','','',@contact_person,@Entry_date,@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','','','', NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
     // Send response
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset); // 200 OK if data is found
@@ -17712,7 +17716,7 @@ const addtaxInvoicehdr = async (req, res) => {
       .input("supplier_ref", sql.NVarChar, supplier_ref)
       .input("delivered_through", sql.NVarChar, delivered_through)
       .input("created_by", sql.NVarChar, created_by)
-      .query(`EXEC sp_taxInvoice_Header @mode, @company_code, @bill_date, @bill_no, @dely_chlno, @warehouse_code, @sales_type,
+      .query(`EXEC sp_taxInvoice_Header_test @mode, @company_code, @bill_date, @bill_no, @dely_chlno, @warehouse_code, @sales_type,
 @customer_code, @sale_amt, @less_frit, @less_disc, @less_amt, @net_amt, @excs_amt, @cess_amt, @dely_amt, @roff_amt, @othr_amt,
 @bill_amt, @tax_amount, @total_item, @total_qty, @pay_type, @broker_code, @tpot_code, @sman_code, @vehl_no, @mark_name,
 @payment_mode, @customer_name, @entry_no, @roff_acccode, @order_type, @deli_charge, @billTo_customer_name ,
@@ -17721,7 +17725,7 @@ const addtaxInvoicehdr = async (req, res) => {
 @shipTo_customer_addr_2, @shipTo_customer_addr_3, @shipTo_customer_addr_4, @shipTo_customer_state, @shipTo_customer_country,
 @shipTo_customer_mobile_no, @shipTo_contact_person,@tax_acc_code, @sale_amt_acc_code, @othr_amt_acc_code, @advance_amount, @shipTo_customer_code,
 @bal_amt,@invoice_type,@pending,@billTo_customer_gst_no,@ShipTo_customer_gst_no,@delivery_note,@dispatched_through,@destination,@po_no,@po_date,@document_type,
-@Performa_bill_no,@Eway_bill_no,@supplier_ref,@delivered_through,@created_by,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+@Performa_bill_no,@Eway_bill_no,@supplier_ref,@delivered_through,'',@created_by,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -17745,7 +17749,7 @@ const TaxInvoicehdrDelteData = async (req, res) => {
         .input("bill_no", bill_no)
         .input("invoice_type", invoice_type)
         .input("modified_by", modified_by)
-        .query(` EXEC sp_taxInvoice_Header 'D',@company_code,'',@bill_no,'','','','',0,0,0,0,0,0,0,0,0,0,0,0,0,0,'','','','','','','','','','','',0,'','','','','','','','','','','','','','','','','','','','','',0,'',0,@invoice_type,'','','','','','','','','','','','','','',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+        .query(` EXEC sp_taxInvoice_Header_test 'D',@company_code,'',@bill_no,'','','','',0,0,0,0,0,0,0,0,0,0,0,0,0,0,'','','','','','','','','','','',0,'','','','','','','','','','','','','','','','','','','','','',0,'',0,@invoice_type,'','','','','','','','','','','','','','','',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     } catch (err) {
       if (err.number === 547) {
         res.status(400).json("First Delete the Invoice Details and Tax Details Data");
@@ -17770,7 +17774,7 @@ const getAlltaxinvoicehdrData = async (req, res) => {
       .input("mode", sql.NVarChar, "A")
       .input("company_code", sql.NVarChar, company_code)
       .input("invoice_type", sql.NVarChar, invoice_type)
-      .query(`EXEC sp_taxInvoice_Header @mode,@company_code,'','','','','','',0,0,0,0,0,0,0,0,0,0,0,0,0,0,'','','','','','','','','','','',0,'','','','','','','','','','','','','','','','','','','','','',0,'',0,@invoice_type,'','','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_taxInvoice_Header_test @mode,@company_code,'','','','','','',0,0,0,0,0,0,0,0,0,0,0,0,0,0,'','','','','','','','','','','',0,'','','','','','','','','','','','','','','','','','','','','',0,'',0,@invoice_type,'','','','','','','','','','','','','','','',,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     res.json(result.recordset);
   } catch (err) {
     console.error("Error", err);
@@ -18072,7 +18076,7 @@ const gettaxsearchdata = async (req, res) => {
       .input("company_code", sql.NVarChar, company_code)
       .input("invoice_type", sql.NVarChar, invoice_type)
       .query(`
-        EXEC sp_taxInvoice_Header 'sc',@company_code,@bill_date,@bill_no,'','',@sales_type,'',0,0,0,0,0,0,0,0,0,0,0,0,0,0,@pay_type,'','','','','','','','','','',0,@billTo_customer_name,'','','','','','','','',@shipTo_customer_name,'','','','','','','','','','','',0,'',0,@invoice_type,'','','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
+        EXEC sp_taxInvoice_Header_test 'sc',@company_code,@bill_date,@bill_no,'','',@sales_type,'',0,0,0,0,0,0,0,0,0,0,0,0,0,0,@pay_type,'','','','','','','','','','',0,@billTo_customer_name,'','','','','','','','',@shipTo_customer_name,'','','','','','','','','','','',0,'',0,@invoice_type,'','','','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
     // Send response
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset); // 200 OK if data is found
@@ -23274,7 +23278,7 @@ const getDeletedQuotationSearchData = async (req, res) => {
       .input("Entry_date", sql.NVarChar, Entry_date)
       .input("customer_name", sql.NVarChar, customer_name)
       .input("contact_person", sql.NVarChar, contact_person)
-      .query(`EXEC sp_quotation_hdr @mode,@company_code,@customer_name,'','','','','','','',@contact_person,@Entry_date,@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','','', NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_quotation_hdr_test @mode,@company_code,@customer_name,'','','','','','','',@contact_person,@Entry_date,@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','','','', NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -23301,7 +23305,7 @@ const getDeletedTaxInvoiceSearchData = async (req, res) => {
       .input("shipTo_customer_name", sql.NVarChar, shipTo_customer_name)
       .input("company_code", sql.NVarChar, company_code)
       .input("invoice_type", sql.NVarChar, invoice_type)
-      .query(`EXEC sp_taxInvoice_Header @mode,@company_code,@bill_date,@bill_no,'','',@sales_type,'',0,0,0,0,0,0,0,0,0,0,0,0,0,0,@pay_type,'','','','','','','','','','',0,@billTo_customer_name,'','','','','','','','',@shipTo_customer_name,'','','','','','','','','','','',0,'',0,@invoice_type,'','','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
+      .query(`EXEC sp_taxInvoice_Header_test @mode,@company_code,@bill_date,@bill_no,'','',@sales_type,'',0,0,0,0,0,0,0,0,0,0,0,0,0,0,@pay_type,'','','','','','','','','','',0,@billTo_customer_name,'','','','','','','','',@shipTo_customer_name,'','','','','','','','','','','',0,'',0,@invoice_type,'','','','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -26903,7 +26907,7 @@ const TaxInvoiceUpdate = async (req, res) => {
     billTo_customer_addr_4, billTo_customer_state, billTo_customer_country, billTo_customer_mobile_no, billTo_contact_person, shipTo_customer_name, shipTo_customer_addr_1, shipTo_customer_addr_2, shipTo_customer_addr_3,
     shipTo_customer_addr_4, shipTo_customer_state, shipTo_customer_country, shipTo_customer_mobile_no, shipTo_contact_person, tax_acc_code, sale_amt_acc_code, othr_amt_acc_code, advance_amount, shipTo_customer_code,
     bal_amt, invoice_type, pending, billTo_customer_gst_no, ShipTo_customer_gst_no, delivery_note, dispatched_through, destination, po_no, po_date, document_type,
-    Performa_bill_no, Eway_bill_no, supplier_ref, delivered_through, created_by, modified_by } = req.body;
+    Performa_bill_no, Eway_bill_no, supplier_ref, delivered_through, authroization_status, created_by, modified_by } = req.body;
   try {
     const pool = await connection.connectToDatabase();
 
@@ -26981,9 +26985,10 @@ const TaxInvoiceUpdate = async (req, res) => {
       .input("Eway_bill_no", sql.NVarChar, Eway_bill_no)
       .input("supplier_ref", sql.NVarChar, supplier_ref)
       .input("delivered_through", sql.NVarChar, delivered_through)
+      .input("authroization_status", sql.NVarChar, authroization_status)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
-      .query(`EXEC sp_taxInvoice_Header @mode, @company_code, @bill_date, @bill_no, @dely_chlno, @warehouse_code, @sales_type,
+      .query(`EXEC sp_taxInvoice_Header_test @mode, @company_code, @bill_date, @bill_no, @dely_chlno, @warehouse_code, @sales_type,
               @customer_code, @sale_amt, @less_frit, @less_disc, @less_amt, @net_amt,@excs_amt, @cess_amt, @dely_amt, @roff_amt, @othr_amt,
               @bill_amt, @tax_amount, @total_item, @total_qty, @pay_type, @broker_code,@tpot_code, @sman_code, @vehl_no, @mark_name,
               @payment_mode, @customer_name, @entry_no, @roff_acccode, @order_type,@deli_charge, @billTo_customer_name ,
@@ -26992,7 +26997,7 @@ const TaxInvoiceUpdate = async (req, res) => {
               @shipTo_customer_addr_2, @shipTo_customer_addr_3, @shipTo_customer_addr_4,@shipTo_customer_state, @shipTo_customer_country,
               @shipTo_customer_mobile_no, @shipTo_contact_person,@tax_acc_code,@sale_amt_acc_code, @othr_amt_acc_code, @advance_amount, @shipTo_customer_code,
               @bal_amt,@invoice_type,@pending,@billTo_customer_gst_no,@ShipTo_customer_gst_no,@delivery_note,@dispatched_through,@destination,@po_no,@po_date,@document_type,
-              @Performa_bill_no,@Eway_bill_no,@supplier_ref,@delivered_through,@created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+              @Performa_bill_no,@Eway_bill_no,@supplier_ref,@delivered_through,@authroization_status,@created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     res.json({ success: true, message: "Data inserted successfully" });
   } catch (err) {
     console.error("Error", err);
