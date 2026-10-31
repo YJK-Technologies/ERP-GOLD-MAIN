@@ -949,19 +949,7 @@ function PurchaseOrder() {
         console.log(searchData);
 
         const [
-          {
-            customer_code,
-            customer_name,
-            customer_addr_1,
-            customer_addr_2,
-            customer_addr_3,
-            customer_addr_4,
-            customer_state,
-            customer_country,
-            customer_mobile_no,
-            contact_person,
-            customer_gst_no,
-          },
+          { customer_code, customer_name, customer_addr_1, customer_addr_2, customer_addr_3, customer_addr_4, customer_state, customer_country, customer_mobile_no, contact_person, customer_gst_no, },
         ] = searchData;
 
         setHeaderRowData((prevRowData) =>
@@ -1016,19 +1004,7 @@ function PurchaseOrder() {
   const handleVendorBillTo = async (data) => {
     if (data && data.length > 0) {
       const [
-        {
-          VendorCode,
-          VendorName,
-          Address1,
-          Address2,
-          Address3,
-          Address4,
-          State,
-          Country,
-          MobileNo,
-          ContactPerson,
-          GSTNo,
-        },
+        { VendorCode, VendorName, Address1, Address2, Address3, Address4, State, Country, MobileNo, ContactPerson, GSTNo, },
       ] = data;
 
       setHeaderRowData((prevRowData) =>
@@ -1069,19 +1045,7 @@ function PurchaseOrder() {
   const handleVendorShipTo = async (data) => {
     if (data && data.length > 0) {
       const [
-        {
-          VendorCode,
-          VendorName,
-          Address1,
-          Address2,
-          Address3,
-          Address4,
-          State,
-          Country,
-          MobileNo,
-          ContactPerson,
-          GSTNo,
-        },
+        { VendorCode, VendorName, Address1, Address2, Address3, Address4, State, Country, MobileNo, ContactPerson, GSTNo, },
       ] = data;
 
       setHeaderRowData((prevRowData) =>
@@ -1122,19 +1086,7 @@ function PurchaseOrder() {
   const handleCustomerShipTo = async (data) => {
     if (data && data.length > 0) {
       const [
-        {
-          CustomerCode,
-          CustomerName,
-          Address1,
-          Address2,
-          Address3,
-          Address4,
-          State,
-          Country,
-          MobileNo,
-          ContactPerson,
-          GSTNo,
-        },
+        { CustomerCode, CustomerName, Address1, Address2, Address3, Address4, State, Country, MobileNo, ContactPerson, GSTNo, },
       ] = data;
 
       setHeaderRowData((prevRowData) =>
@@ -3606,11 +3558,7 @@ function PurchaseOrder() {
       <div className="container-fluid Topnav-screen">
         {loading && <LoadingScreen />}
 
-        <ToastContainer
-          position="top-right"
-          className="toast-design"
-          theme="colored"
-        />
+        <ToastContainer position="top-right" className="toast-design" theme="colored" />
         <div>
           <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
             <div class="d-flex justify-content-between">
@@ -3631,9 +3579,7 @@ function PurchaseOrder() {
                     options={filteredOptionScreens}
                     classNamePrefix="react-select"
                     data-tip="Please select a status"
-                    styles={{
-                      menu: (provided) => ({ ...provided, zIndex: 9999 }),
-                    }}
+                    styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }), }}
                   />
                 </div>
                 {["add", "all permission"].some((permission) =>
@@ -3910,10 +3856,7 @@ function PurchaseOrder() {
             {/* BOTTOM ROW: Terms & Conditions and Notes */}
             <div className="row me-2 mt-3 p-0 gx-0">
               <div className="col-md-6">
-                <div
-                  className="ag-theme-alpine"
-                  style={{ height: 155, width: "102%" }}
-                >
+                <div className="ag-theme-alpine" style={{ height: 155, width: "102%" }} >
                   <AgGridReact
                     columnDefs={columnDefsTermsConditions}
                     rowData={rowDataTerms}
@@ -3927,10 +3870,7 @@ function PurchaseOrder() {
                 </div>
               </div>
               <div className="col-md-6">
-                <div
-                  className="ag-theme-alpine"
-                  style={{ height: 155, width: "102%" }}
-                >
+                <div className="ag-theme-alpine" style={{ height: 155, width: "102%" }} >
                   <AgGridReact
                     columnDefs={columnNotes}
                     rowData={notesRowData}
@@ -4082,9 +4022,7 @@ function PurchaseOrder() {
               style={{ height: 280, width: "102%" }}
             >
               <AgGridReact
-                columnDefs={
-                  activeTable === "myTable" ? columnDefs : columnDefsTax
-                }
+                columnDefs={ activeTable === "myTable" ? columnDefs : columnDefsTax }
                 rowData={activeTable === "myTable" ? rowData : rowDataTax}
                 defaultColDef={{ editable: true, flex: 1 }}
                 // getRowId={(params) => String(params.data.serialNumber)}
@@ -4108,36 +4046,12 @@ function PurchaseOrder() {
           </div>
         </div>
         <div>
-          <PurchaseOrderItemPopup
-            open={open}
-            handleClose={handleClose}
-            handleItem={handleItem}
-          />
-          <PurchaseWarehousePopup
-            open={open1}
-            handleClose={handleClose}
-            handleWarehouse={handleWarehouse}
-          />
-          <PoCustomerPopup
-            open={open2}
-            handleClose={handleClose}
-            handleVendor={handleCustomerShipTo}
-          />
-          <PurchaseOrderPopup
-            open={open3}
-            handleClose={handleClose}
-            handlePoData={handlePoData}
-          />
-          <PoVendorPopup
-            open={open4}
-            handleClose={handleClose}
-            handleVendor={handleVendorBillTo}
-          />
-          <PoShipToVendorPopup
-            open={open6}
-            handleClose={handleClose}
-            handleVendorShipTo={handleVendorShipTo}
-          />
+          <PurchaseOrderItemPopup open={open} handleClose={handleClose} handleItem={handleItem} />
+          <PurchaseWarehousePopup open={open1} handleClose={handleClose} handleWarehouse={handleWarehouse} />
+          <PoCustomerPopup open={open2} handleClose={handleClose} handleVendor={handleCustomerShipTo} />
+          <PurchaseOrderPopup open={open3} handleClose={handleClose} handlePoData={handlePoData} />
+          <PoVendorPopup open={open4} handleClose={handleClose} handleVendor={handleVendorBillTo} />
+          <PoShipToVendorPopup open={open6} handleClose={handleClose} handleVendorShipTo={handleVendorShipTo} />
         </div>
         <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
           <div className="row ms-2">
