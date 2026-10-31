@@ -174,45 +174,39 @@ function Quotation() {
   }, [location]);
 
   useEffect(() => {
-    const savedScreen = sessionStorage.getItem("QuotationScreenSelection");
-    if (savedScreen) {
-      setSelectedscreens({
-        value: savedScreen,
-        label: savedScreen === "Add" ? "Add" : "Delete",
-      });
-      setScreens(savedScreen);
-    } else {
-      setSelectedscreens({ value: "Add", label: "Add" });
-      setScreens("Add");
-    }
-  }, []);
-
-  useEffect(() => {
-    const companyCode = sessionStorage.getItem("selectedCompanyCode");
-
     fetch(`${config.apiBaseUrl}/getEvent`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        company_code: companyCode,
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
       }),
     })
       .then((response) => response.json())
-      .then((data) => setScreensDrop(data))
+      .then((data) => {
+        setScreensDrop(data);
+
+        // Automatically set a default option (e.g., "Draft" or the first record)
+        const defaultScreen =
+          data.find((item) => item.descriptions === "Draft") || data[0];
+
+        if (defaultScreen && !selectedscreens) {
+          setSelectedscreens({
+            value: defaultScreen.descriptions,
+            label: defaultScreen.attributedetails_name,
+          });
+          setScreens(defaultScreen.descriptions);
+        }
+      })
       .catch((error) => console.error("Error fetching purchase types:", error));
   }, []);
 
   const handleChangeScreens = (selected) => {
     setSelectedscreens(selected);
-    const screenValue = selected?.value === "Add" ? "Add" : "Delete";
-    setScreens(screenValue);
-    sessionStorage.setItem("QuotationScreenSelection", screenValue);
+    setScreens(selected.value);
   };
 
   const filteredOptionScreens = screensDrop.map((option) => ({
-    value: option.attributedetails_name,
+    value: option.descriptions,
     label: option.attributedetails_name,
   }));
 
@@ -448,7 +442,6 @@ function Quotation() {
     setOpen(false);
     setOpen2(false);
     setOpen3(false);
-    setOpen4(false);
   };
 
   //CODE FOR TOTAL WEIGHT, TOTAL TAX AND TOTAL AMOUNT CALCULATION
@@ -1147,6 +1140,7 @@ function Quotation() {
 
       const Header = {
         company_code: sessionStorage.getItem("selectedCompanyCode"),
+        authroization_status: Screens === "Modified" ? "Draft" : Screens,
         transaction_no: transactionNo,
         customer_code: billToData["Customer Code"],
         customer_name: billToData["Customer Name"],
@@ -1199,6 +1193,21 @@ function Quotation() {
       setLoading(false);
     }
   };
+
+  const handleMasterAction = () => {
+    // screens variable-il current selected value irukum
+    if (Screens === "Draft") {
+      handleSaveButtonClick();
+    } else if (Screens && Screens.trim() !== "") {
+      // Draft illama vera entha status irunthalum update function call aagum
+      handleUpdateButtonClick();
+    } else {
+      toast.warning(
+        "Please select a valid transaction event from the dropdown.",
+      );
+    }
+  };
+
   //CODE TO SAVE PURCHASE HEADER
   const handleSaveButtonClick = async () => {
     if (!entryDate) {
@@ -2640,44 +2649,6 @@ function Quotation() {
     label: option.attributedetails_name,
   }));
 
-  // const fetchProductCodes = () => {
-  //   fetch(`${config.apiBaseUrl}/getProductcode`, {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify({ company_code: sessionStorage.getItem("selectedCompanyCode") })
-  //   })
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       const formattedData = data.map((product) => ({
-  //         value: product.Product_Code,
-  //         label: product.Product_Code,
-  //       }));
-  //       setDynamicOptions(formattedData);
-  //     })
-  //     .catch((error) => console.error('Error fetching product codes:', error));
-  // };
-
-  // const fetchItemCodes = () => {
-  //   fetch(`${config.apiBaseUrl}/itemcode`, {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify({ company_code: sessionStorage.getItem("selectedCompanyCode") })
-  //   })
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       const formattedData = data.map((item) => ({
-  //         value: item.Item_code,
-  //         label: item.Item_code,
-  //       }));
-  //       setDynamicOptions(formattedData);
-  //     })
-  //     .catch((error) => console.error('Error fetching item codes:', error));
-  // };
-
   const fetchCodes = (selectedValue) => {
     fetch(`${config.apiBaseUrl}/getcodetest`, {
       method: "POST",
@@ -2765,56 +2736,6 @@ function Quotation() {
     }
   };
 
-  //ITEM CODE TO SEARCH IN AG GRID
-  // const handleItemCode = async (Item_code) => {
-  //   try {
-  //     const response = await fetch(
-  //       `${config.apiBaseUrl}/getItemCodeSalesDataQuote`,
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({ Item_code,company_code: sessionStorage.getItem("selectedCompanyCode") }),
-  //       }
-  //     );
-
-  //     if (response.ok) {
-  //       const searchData = await response.json();
-  //       const updatedRow = rowData.map((row) => {
-  //         if (Item_code) {
-  //           const matchedItem = searchData.find((item) => item.id === row.id);
-  //           if (matchedItem) {
-  //             return {
-  //               ...row,
-  //               itemCode: matchedItem.Item_code,
-  //               image: matchedItem.image,
-  //               itemName: matchedItem.Item_name,
-  //               unitWeight: matchedItem.Item_wigh,
-  //               purchaseAmt: matchedItem.Item_std_purch_price,
-  //               taxType: matchedItem.Item_purch_tax_type,
-  //               taxDetails: matchedItem.combined_tax_details,
-  //               taxPer: matchedItem.combined_tax_percent,
-  //               keyField: `${row.serialNumber || ''}-${matchedItem.Item_code || ''}`,
-  //               // itemImages: matchedItem.item_images
-  //               //   ? arrayBufferToBase64(matchedItem.item_images.data)
-  //               //   : null,
-  //             };
-  //           }
-  //         }
-  //         return row;
-  //       });
-  //       setRowData(updatedRow);
-  //       console.log(updatedRow);
-  //     } else if (response.status === 404) {
-  //       toast.warning('Data not found');
-  //     } else {
-  //       console.log("Bad request");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching search data:", error);
-  //   }
-  // };
   const handleItemCode = async (Item_code) => {
     try {
       const response = await fetch(
@@ -2872,19 +2793,7 @@ function Quotation() {
   const handleVendor = async (data) => {
     if (data && data.length > 0) {
       const [
-        {
-          CustomerCode,
-          CustomerName,
-          Address1,
-          Address2,
-          Address3,
-          Address4,
-          State,
-          Country,
-          MobileNo,
-          ContactPerson,
-          GSTNo,
-        },
+        { CustomerCode, CustomerName, Address1, Address2, Address3, Address4, State, Country, MobileNo, ContactPerson, GSTNo, },
       ] = data;
 
       setHeaderRowData((prevRowData) =>
@@ -2922,647 +2831,6 @@ function Quotation() {
     }
   };
 
-  //Deleted Screen
-  const [deletedRowData, setDeletedRowData] = useState([]);
-  const [deletedRowDataTax, setDeletedRowDataTax] = useState([]);
-  const [deletedRowDataTerms, setDeletedRowDataTerms] = useState([]);
-  const [TransactionNo, setTransactionno] = useState("");
-  const [TransactionDate, setTransactionDate] = useState("");
-  const [Total, setTotal] = useState("");
-  const [Tax, setTax] = useState("");
-  const [RoundOff, setRoundOff] = useState("");
-  const [GrandTotal, setGrandTotal] = useState("");
-
-  const [deletedrowdatapatch, setdeleterowdatapatch] = useState([
-    { fieldName: "Kind Attention", deletedNotes: "" },
-    { fieldName: "Quotation Validity", deletedNotes: "" },
-  ]);
-
-  const columDeletedPatch = [
-    {
-      headerName: "Details",
-      field: "fieldName",
-      maxWidth: 240,
-      editable: false,
-    },
-    {
-      headerName: "Notes",
-      field: "deletedNotes",
-      editable: true,
-      onCellValueChanged: onCellValueChangedBillTo,
-      cellEditorParams: {
-        maxLength: 250,
-      },
-    },
-  ];
-
-  const deletedColumnDetail = [
-    {
-      headerName: "S.No",
-      field: "deletedSerialNumber",
-      maxWidth: 80,
-      sortable: false,
-      editable: false,
-    },
-    {
-      headerName: "Product / Item Code",
-      field: "deletedItemCode",
-      editable: false,
-      filter: true,
-      sortable: false,
-    },
-    {
-      headerName: "Item Name",
-      field: "deletedItemName",
-      editable: false,
-      filter: true,
-      sortable: false,
-      // maxWidth: 260,
-      // minWidth: 260,
-    },
-    {
-      headerName: "Description",
-      field: "deletedDescription",
-      editable: false,
-      filter: true,
-      sortable: false,
-      // maxWidth: 260,
-      // minWidth: 260,
-    },
-    {
-      headerName: "Qty",
-      field: "deletedPurchaseQty",
-      editable: false,
-      // maxWidth: 140,
-      filter: true,
-      sortable: false,
-    },
-    {
-      headerName: "Ref.Image",
-      field: "deletedImage",
-      editable: false,
-      filter: true,
-      sortable: false,
-      cellStyle: { textAlign: "center" },
-      cellRenderer: (params) => {
-        if (params.value) {
-          const base64Image = arrayBufferToBase64(params.value.data);
-          return (
-            <img
-              src={`data:image/jpeg;base64,${base64Image}`}
-              alt="Product Image"
-              style={{ width: " 50px", height: "50px" }}
-            />
-          );
-        } else {
-          return "";
-        }
-      },
-      hide: false,
-    },
-    {
-      headerName: "Unit Price",
-      field: "deletedPurchaseAmt",
-      // maxWidth: 170,
-      editable: false,
-      filter: true,
-      sortable: false,
-    },
-    {
-      headerName: "HSN",
-      field: "deletedHSN_code",
-      editable: false,
-      filter: true,
-      sortable: false,
-      // maxWidth: 150,
-      // minWidth: 150,
-    },
-    {
-      headerName: "Tax Amount",
-      field: "deletedTotalTaxAmount",
-      editable: false,
-      // maxWidth: 200,
-      filter: true,
-      sortable: false,
-    },
-    {
-      headerName: "Total",
-      field: "deletedTotalItemAmount",
-      editable: false,
-      // minWidth: 150,
-      filter: true,
-      sortable: false,
-    },
-  ];
-
-  const deletedColumnTax = [
-    {
-      headerName: "S.No",
-      field: "deletedItemSNO",
-      maxWidth: 250,
-      sortable: false,
-      editable: false,
-    },
-    {
-      headerName: "Tax S.No",
-      field: "deletedTaxSNO",
-      maxWidth: 170,
-      sortable: false,
-      editable: false,
-    },
-    {
-      headerName: "Item Code",
-      field: "deletedItem_code",
-      // minWidth: 315,
-      sortable: false,
-      editable: false,
-    },
-    {
-      headerName: "Tax Type ",
-      field: "deletedTaxType",
-      // minWidth: 315,
-      sortable: false,
-      editable: false,
-    },
-    {
-      headerName: "Tax %",
-      field: "deletedTaxPercentage",
-      // minWidth: 250,
-      sortable: false,
-      editable: false,
-    },
-    {
-      headerName: "Tax Amount",
-      field: "deletedTaxAmount",
-      // minWidth: 301,
-      sortable: false,
-      editable: false,
-    },
-  ];
-
-  const deletedColumnHeader = [
-    {
-      headerName: "Details",
-      field: "fieldName",
-      // maxWidth: 240,
-      editable: false,
-    },
-    {
-      headerName: "Bill To",
-      field: "deletedBillTo",
-      editable: false,
-      cellEditor: "agTextCellEditor",
-    },
-  ];
-
-  const [deletedHeaderRowData, setDeletedHeaderRowData] = useState([
-    { fieldName: "Customer Code", deletedBillTo: "" },
-    { fieldName: "Customer Name", deletedBillTo: "" },
-    { fieldName: "Address 1", deletedBillTo: "" },
-    { fieldName: "Address 2", deletedBillTo: "" },
-    { fieldName: "Address 3", deletedBillTo: "" },
-    { fieldName: "Address 4", deletedBillTo: "" },
-    { fieldName: "State", deletedBillTo: "" },
-    { fieldName: "Country", deletedBillTo: "" },
-    { fieldName: "Mobile No", deletedBillTo: "" },
-    { fieldName: "GST No", deletedBillTo: "" },
-    { fieldName: "Contact Person", deletedBillTo: "" },
-  ]);
-
-  const deletedTermsConditions = [
-    {
-      headerName: "S.No",
-      field: "deletedSerialNumber",
-      maxWidth: 70,
-      valueGetter: (params) => params.node.rowIndex + 1,
-      sortable: false,
-      minHeight: 50,
-      maxHeight: 50,
-    },
-    {
-      headerName: "Terms & Conditions",
-      field: "deletedTermsConditions",
-      // minWidth: 1000,
-      // maxWidth: 1000,
-      minHeight: 50,
-      maxHeight: 50,
-      maxLength: 250,
-      sortable: false,
-      editable: false,
-    },
-  ];
-
-  const handleDeleteKeyPress = (e) => {
-    if (e.key === "Enter") {
-      handleDeletedTransaction(TransactionNo);
-    }
-  };
-
-  const handleDeletedTransaction = async (code) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${config.apiBaseUrl}/getDeletedQuotation`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          transaction_no: code,
-          company_code: sessionStorage.getItem("selectedCompanyCode"),
-        }),
-      });
-      if (response.ok) {
-        const searchData = await response.json();
-        if (searchData.Header && searchData.Header.length > 0) {
-          const item = searchData.Header[0];
-          setTransactionDate(formatDate(item.Entry_date));
-          setTransactionno(item.transaction_no);
-          setTotal(item.purchase_amount);
-          setGrandTotal(item.total_amount);
-          setRoundOff(item.rounded_off);
-          setTax(item.tax_amount);
-
-          setdeleterowdatapatch([
-            { fieldName: "Kind Attention", deletedNotes: item.kind_attention },
-            {
-              fieldName: "Quotation Validity",
-              deletedNotes: item.quotation_validity,
-            },
-          ]);
-
-          setDeletedHeaderRowData([
-            { fieldName: "Customer Code", deletedBillTo: item.customer_code },
-            { fieldName: "Customer Name", deletedBillTo: item.customer_name },
-            { fieldName: "Address 1", deletedBillTo: item.customer_addr_1 },
-            { fieldName: "Address 2", deletedBillTo: item.customer_addr_2 },
-            { fieldName: "Address 3", deletedBillTo: item.customer_addr_3 },
-            { fieldName: "Address 4", deletedBillTo: item.customer_addr_4 },
-            { fieldName: "State", deletedBillTo: item.customer_state },
-            { fieldName: "Country", deletedBillTo: item.customer_country },
-            { fieldName: "Mobile No", deletedBillTo: item.customer_mobile_no }, // Assuming no mobile numbers are fetched
-            { fieldName: "GST No", deletedBillTo: item.customer_gst_no },
-            { fieldName: "Contact Person", deletedBillTo: item.contact_person },
-          ]);
-        } else {
-          console.log("Header Data is empty or not found");
-          setTransactionDate("");
-          setTransactionno("");
-          setTotal("");
-          setGrandTotal("");
-          setRoundOff("");
-          setTax("");
-        }
-
-        if (searchData.Detail && searchData.Detail.length > 0) {
-          const updatedRowData = searchData.Detail.map((item) => {
-            return {
-              deletedSerialNumber: item.ItemSNo,
-              deletedItemCode: item.item_code,
-              deletedItemName: item.item_name,
-              deletedPurchaseQty: item.bill_qty,
-              deletedPurchaseAmt: item.item_amt,
-              deletedDescription: item.Description,
-              deletedHSN_code: item.hsn,
-              deletedImage: item.item_images,
-              deletedTotalTaxAmount: parseFloat(item.tax_amount).toFixed(2),
-              deletedTotalItemAmount: parseFloat(item.bill_rate).toFixed(2),
-            };
-          });
-
-          setDeletedRowData(updatedRowData);
-        } else {
-          console.log("Detail Data is empty or not found");
-          setDeletedRowData([]);
-        }
-
-        if (searchData.TaxDetail && searchData.TaxDetail.length > 0) {
-          const updatedRowDataTax = searchData.TaxDetail.map((item) => ({
-            deletedItemSNO: item.ItemSNo,
-            deletedTaxSNO: item.TaxSNo,
-            deletedItem_code: item.item_code,
-            deletedTaxType: item.tax_name_details,
-            deletedTaxPercentage: parseFloat(item.tax_per).toFixed(2),
-            deletedTaxAmount: parseFloat(item.tax_amt).toFixed(2),
-          }));
-
-          console.log("Updated Row Data Tax:", updatedRowDataTax);
-          setDeletedRowDataTax(updatedRowDataTax);
-        } else {
-          console.log("Tax Data is empty or not found");
-          setDeletedRowDataTax([]);
-        }
-        if (searchData.Terms && searchData.Terms.length > 0) {
-          const updatedRowData = searchData.Terms.map((item) => {
-            return {
-              deletedTermsConditions: item.Terms_conditions,
-            };
-          });
-
-          setDeletedRowDataTerms(updatedRowData);
-        } else {
-          console.log(" Data is empty or not found");
-          setDeletedRowDataTerms([]);
-        }
-
-        console.log("data fetched successfully");
-      } else if (response.status === 404) {
-        toast.warning("Data not found");
-
-        setTransactionDate("");
-        setTransactionno("");
-        setTotal("");
-        setGrandTotal("");
-        setRoundOff("");
-        setTax("");
-        setDeletedRowData([]);
-        setDeletedRowDataTerms([]);
-        setDeletedHeaderRowData([]);
-        setDeletedRowDataTax([]);
-      } else {
-        const errorResponse = await response.json();
-        console.error(errorResponse.message); // Log error message
-        toast.error(errorResponse.message);
-      }
-    } catch (error) {
-      console.error("Error fetching search data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const [open4, setOpen4] = React.useState(false);
-
-  const handleDeletedQuotation = () => {
-    setOpen4(true);
-  };
-
-  const handleDeletedQuotationData = async (data) => {
-    if (data && data.length > 0) {
-      const [
-        {
-          TransactionNo,
-          CustomerCode,
-          EntryDate,
-          CustomerName,
-          CustomerAddr1,
-          CustomerAddr2,
-          CustomerAddr3,
-          CustomerAddr4,
-          CustomerState,
-          CustomerCountry,
-          ContactPerson,
-          ContactMobileNo,
-          TaxAmount,
-          KIND_attention,
-          Quotation_validity,
-          PurchaseAmount,
-          RoundOff,
-          TotalAmount,
-          GSTNo,
-        },
-      ] = data;
-
-      const transactionNumber = document.getElementById("TransactionNo");
-      if (transactionNumber) {
-        transactionNumber.value = TransactionNo;
-        setTransactionno(TransactionNo);
-      } else {
-        console.error("transactionNumber element not found");
-      }
-
-      const transactiondate = document.getElementById("TransactionDate");
-      if (transactiondate) {
-        transactiondate.value = EntryDate;
-        setTransactionDate(formatDate(EntryDate));
-      } else {
-        console.error("EntryDate element not found");
-      }
-
-      const total = document.getElementById("Total");
-      if (total) {
-        total.value = PurchaseAmount;
-        setTotal(formatToTwoDecimalPoints(PurchaseAmount));
-      } else {
-        console.error("PurchaseAmount element not found");
-      }
-
-      const grandTotal = document.getElementById("GrandTotal");
-      if (grandTotal) {
-        grandTotal.value = TotalAmount;
-        setGrandTotal(formatToTwoDecimalPoints(TotalAmount));
-      } else {
-        console.error("TotalAmount element not found");
-      }
-
-      const roundOff = document.getElementById("RoundOff");
-      if (roundOff) {
-        roundOff.value = RoundOff;
-        setRoundOff(RoundOff);
-      } else {
-        console.error("RoundOff element not found");
-      }
-
-      const taxAmount = document.getElementById("Tax");
-      if (taxAmount) {
-        taxAmount.value = TaxAmount;
-        setTax(TaxAmount);
-      } else {
-        console.error("TaxAmount element not found");
-      }
-
-      await DeletedQuotationDetailView(TransactionNo);
-      await DeletedQuotationTaxView(TransactionNo);
-      await DeletedTermsView(TransactionNo);
-
-      setDeletedHeaderRowData([
-        { fieldName: "Customer Code", deletedBillTo: CustomerCode },
-        { fieldName: "Customer Name", deletedBillTo: CustomerName },
-        { fieldName: "Address 1", deletedBillTo: CustomerAddr1 },
-        { fieldName: "Address 2", deletedBillTo: CustomerAddr2 },
-        { fieldName: "Address 3", deletedBillTo: CustomerAddr3 },
-        { fieldName: "Address 4", deletedBillTo: CustomerAddr4 },
-        { fieldName: "State", deletedBillTo: CustomerState },
-        { fieldName: "Country", deletedBillTo: CustomerCountry },
-        { fieldName: "Mobile No", deletedBillTo: ContactMobileNo },
-        { fieldName: "GST No", deletedBillTo: GSTNo },
-        { fieldName: "Contact Person", deletedBillTo: ContactPerson },
-      ]);
-
-      setdeleterowdatapatch([
-        { fieldName: "Kind Attention", deletedNotes: KIND_attention },
-        { fieldName: "Quotation Validity", deletedNotes: Quotation_validity },
-      ]);
-    } else {
-      console.log("Data not fetched...!");
-    }
-    console.log(data);
-  };
-
-  const DeletedQuotationTaxView = async (TransactionNo) => {
-    try {
-      const response = await fetch(
-        `${config.apiBaseUrl}/getDeletedQuotationTaxDetailView`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            transaction_no: TransactionNo,
-            company_code: sessionStorage.getItem("selectedCompanyCode"),
-          }),
-        },
-      );
-
-      if (response.ok) {
-        const searchData = await response.json();
-        const newRowData = [];
-        searchData.forEach(
-          ({
-            ItemSNo,
-            TaxSNo,
-            item_code,
-            tax_name_details,
-            tax_per,
-            tax_amt,
-            tax_type,
-          }) => {
-            newRowData.push({
-              deletedItemSNO: ItemSNo,
-              deletedTaxSNO: TaxSNo,
-              deletedItem_code: item_code,
-              deletedTaxType: tax_name_details,
-              deletedTaxPercentage: tax_per,
-              deletedTaxAmount: parseFloat(tax_amt).toFixed(2),
-            });
-          },
-        );
-
-        setDeletedRowDataTax(newRowData);
-      } else if (response.status === 404) {
-        console.log("Data not found");
-        setDeletedRowDataTax([]);
-      } else {
-        const errorResponse = await response.json();
-        toast.warning(
-          errorResponse.message || "Failed to save Terms & Conditions",
-        );
-        console.error(errorResponse.details || errorResponse.message);
-      }
-    } catch (error) {
-      console.error("Error fetching search data:", error);
-    }
-  };
-
-  const DeletedQuotationDetailView = async (TransactionNo) => {
-    try {
-      const response = await fetch(
-        `${config.apiBaseUrl}/getDeletedQuotationDetailView`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            transaction_no: TransactionNo,
-            company_code: sessionStorage.getItem("selectedCompanyCode"),
-          }),
-        },
-      );
-
-      if (response.ok) {
-        const searchData = await response.json();
-        console.log(searchData);
-
-        const newRowData = [];
-        searchData.forEach((item) => {
-          const {
-            ItemSNo,
-            item_code,
-            item_name,
-            bill_qty,
-            item_images,
-            item_amt,
-            tax_amount,
-            bill_rate,
-            hsn,
-            Description,
-          } = item;
-
-          newRowData.push({
-            deletedSerialNumber: ItemSNo,
-            deletedItemCode: item_code,
-            deletedItemName: item_name,
-            deletedDescription: Description,
-            deletedHSN_code: hsn,
-            deletedImage: item_images,
-            deletedPurchaseQty: bill_qty,
-            deletedTotalTaxAmount: parseFloat(tax_amount).toFixed(2),
-            deletedPurchaseAmt: parseFloat(item_amt).toFixed(2),
-            deletedTotalItemAmount: parseFloat(bill_rate).toFixed(2),
-          });
-        });
-
-        setDeletedRowData(newRowData);
-      } else if (response.status === 404) {
-        console.log("Data not found");
-        setDeletedRowData([]);
-      } else {
-        const errorResponse = await response.json();
-        toast.warning(
-          errorResponse.message || "Failed to save Terms & Conditions",
-        );
-        console.error(errorResponse.details || errorResponse.message);
-      }
-    } catch (error) {
-      console.error("Error fetching search data:", error);
-    }
-  };
-
-  const DeletedTermsView = async (TransactionNo) => {
-    try {
-      const response = await fetch(
-        `${config.apiBaseUrl}/getDeletedQuotationTerms`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            transaction_no: TransactionNo,
-            company_code: sessionStorage.getItem("selectedCompanyCode"),
-          }),
-        },
-      );
-
-      if (response.ok) {
-        const searchData = await response.json();
-        console.log(searchData);
-
-        const newRowData = [];
-        searchData.forEach((item) => {
-          const { Terms_conditions } = item;
-          newRowData.push({
-            deletedTermsConditions: Terms_conditions,
-          });
-        });
-
-        setDeletedRowDataTerms(newRowData);
-      } else if (response.status === 404) {
-        console.log("Data not found");
-        setDeletedRowDataTerms([]);
-      } else {
-        const errorResponse = await response.json();
-        toast.warning(
-          errorResponse.message || "Failed to save Terms & Conditions",
-        );
-        console.error(errorResponse.details || errorResponse.message);
-      }
-    } catch (error) {
-      console.error("Error fetching search data:", error);
-    }
-  };
-
   //Default Date functionality
   const currentDate = new Date().toISOString().split("T")[0];
 
@@ -3590,14 +2858,9 @@ function Quotation() {
 
   return (
     <div className="">
-      {Screens === "Add" ? (
         <div className="container-fluid Topnav-screen">
           {loading && <LoadingScreen />}
-          <ToastContainer
-            position="top-right"
-            className="toast-design"
-            theme="colored"
-          />
+          <ToastContainer position="top-right" className="toast-design" theme="colored" />
           <div>
             <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
               <div class="d-flex justify-content-between">
@@ -3620,68 +2883,27 @@ function Quotation() {
                       styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                     />
                   </div>
-                  {buttonsVisible &&
+                  {
                     ["add", "all permission"].some((permission) =>
                       quotationPermission.includes(permission),
                     ) && (
-                      <savebutton
-                        className="purbut"
-                        onClick={handleSaveButtonClick}
-                        title="Save"
-                      >
+                      <savebutton className="purbut" onClick={handleMasterAction} title="Save" >
                         <i class="fa-regular fa-floppy-disk"></i>
                       </savebutton>
-                    )}
-
-                  {showUpdateButton &&
-                    ["update", "all permission"].some((permission) =>
-                      quotationPermission.includes(permission),
-                    ) && (
-                      <savebutton
-                        className="purbut"
-                        onClick={handleUpdateButtonClick}
-                        title="Update"
-                      >
-                        <i class="fa-solid fa-floppy-disk"></i>
-                      </savebutton>
-                    )}
-
-                  {["delete", "all permission"].some((permission) =>
-                    quotationPermission.includes(permission),
-                  ) && (
-                      <delbutton
-                        className="purbut"
-                        onClick={handleDeleteButtonClick}
-                        title="Delete"
-                      >
-                        <i class="fa-solid fa-trash"></i>
-                      </delbutton>
                     )}
                   {["all permission", "view"].some((permission) =>
                     quotationPermission.includes(permission),
                   ) && (
-                      <printbutton
-                        className="purbut"
-                        title="Print"
-                        onClick={generateReport}
-                      >
+                      <printbutton className="purbut" title="Print" onClick={generateReport} >
                         <i class="fa-solid fa-file-pdf"></i>
                       </printbutton>
                     )}
                   {showExcelButton && (
-                    <printbutton
-                      className="purbut"
-                      title="Excel"
-                      onClick={handleExcelDownload}
-                    >
+                    <printbutton className="purbut" title="Excel" onClick={handleExcelDownload} >
                       <i class="fa-solid fa-file-excel"></i>
                     </printbutton>
                   )}
-                  <printbutton
-                    className="purbut"
-                    title="Reload"
-                    onClick={handleReload}
-                  >
+                  <printbutton className="purbut" title="Reload" onClick={handleReload} >
                     <i class="fa-solid fa-arrow-rotate-right"></i>
                   </printbutton>
                 </div>
@@ -3694,12 +2916,8 @@ function Quotation() {
                     </h1>
                   </div>
                   <div class="dropdown mt-1 ms-5" style={{ paddingLeft: 0 }}>
-                    <button
-                      class="btn btn-primary dropdown-toggle p-1 ms-3"
-                      type="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
+                    <button  class="btn btn-primary dropdown-toggle p-1 ms-3"  type="button"  data-bs-toggle="dropdown"
+                    aria-expanded="false">
                       <i class="fa-solid fa-list"></i>
                     </button>
                     <ul class="dropdown-menu menu">
@@ -3708,21 +2926,12 @@ function Quotation() {
                           {["add", "all permission"].some((permission) =>
                             quotationPermission.includes(permission),
                           ) && (
-                              <icon class="icon" onClick={handleSaveButtonClick}>
+                              <icon class="icon" onClick={handleMasterAction}>
                                 <i class="fa-regular fa-floppy-disk"></i>
                               </icon>
                             )}
                         </li>
                       )}
-                      <li class="iconbutton  d-flex justify-content-center text-danger">
-                        {["delete", "all permission"].some((permission) =>
-                          quotationPermission.includes(permission),
-                        ) && (
-                            <icon class="icon" onClick={handleDeleteButtonClick}>
-                              <i class="fa-solid fa-trash"></i>
-                            </icon>
-                          )}
-                      </li>
                       <li class="iconbutton  d-flex justify-content-center text-warning">
                         {["all permission", "view"].some((permission) =>
                           quotationPermission.includes(permission),
@@ -3753,11 +2962,8 @@ function Quotation() {
               <div className="row ms-3 me-3">
                 {/* <div className=""> */}
                 <div className="col-md-4 form-group mb-2">
-                  <label
-                    className={`${deleteError && !transactionNo ? "red" : ""}`}
-                  >
-                    Transaction No
-                    {showAsterisk && <span className="text-danger">*</span>}
+                  <label className={`${deleteError && !transactionNo ? "red" : ""}`} >
+                    Transaction No {showAsterisk && <span className="text-danger">*</span>}
                   </label>
                   <div className="exp-form-floating">
                     <div class="d-flex justify-content-end">
@@ -3775,11 +2981,7 @@ function Quotation() {
                         autoComplete="off"
                       />
                       <div className="position-absolute mt-1 me-2">
-                        <span
-                          className="icon searchIcon"
-                          title="Quotation Help"
-                          onClick={handlePurchase}
-                        >
+                        <span className="icon searchIcon" title="Quotation Help" onClick={handlePurchase} >
                           <i class="fa fa-search"></i>
                         </span>
                       </div>
@@ -3788,12 +2990,8 @@ function Quotation() {
                 </div>
                 <div className="col-md-4 form-group mb-2 ">
                   <div class="exp-form-floating">
-                    <label
-                      for=""
-                      className={`${error && !entryDate ? "red" : ""}`}
-                    >
-                      Transaction Date
-                      {!showAsterisk && <span className="text-danger">*</span>}
+                    <label for="" className={`${error && !entryDate ? "red" : ""}`} >
+                      Transaction Date {!showAsterisk && <span className="text-danger">*</span>}
                     </label>
                     <input
                       name="transactionDate"
@@ -3814,51 +3012,42 @@ function Quotation() {
               </div>
               <div className="row ms-2 me-3 g-0">
                 <div className="col-md-6">
-                  <div
-                    className="ag-theme-alpine"
-                    style={{ height: 240, width: "100%" }}
-                  >
+                  <div className="ag-theme-alpine" style={{ height: 155, width: "100%" }} >
                     <AgGridReact
                       columnDefs={columnDefsTermsConditions}
                       rowData={rowDataTerms}
                       defaultColDef={{ editable: true, resizable: true }}
                       onGridReady={onGridReady}
-                      rowHeight={28}
+                      rowHeight={25}
+                      headerHeight={28}
                       onRowClicked={handleRowClicked}
                       onColumnMoved={onColumnMoved}
                     />
                   </div>
                 </div>
                 <div className="col-md-6">
-                  <div
-                    className="ag-theme-alpine"
-                    style={{ height: 240, width: "100%" }}
-                  >
+                  <div className="ag-theme-alpine" style={{ height: 155, width: "100%" }} >
                     <AgGridReact
                       columnDefs={columnPatch}
                       rowData={rowdatapatch}
                       defaultColDef={{ flex: 1 }}
-                      rowHeight={28}
+                      rowHeight={25}
+                      headerHeight={28}
                     />
                   </div>
                 </div>
               </div>
-              <div
-                className="ag-theme-alpine mt-2"
-                style={{ height: 360, width: "100%" }}
-              >
+              <div className="ag-theme-alpine mt-2" style={{ height: 210, width: "100%" }} >
                 <AgGridReact
                   columnDefs={columnHeader}
                   rowData={headerRowData}
                   defaultColDef={{ flex: 1 }}
-                  rowHeight={28}
+                  headerHeight={28}
+                  rowHeight={25}
                 />
               </div>
             </div>
-            <div
-              className="shadow-lg p-1 bg-body-tertiary rounded mt-2 pt-3 pb-4"
-              align="left"
-            >
+            <div className="shadow-lg p-1 bg-body-tertiary rounded mt-2 pt-3 pb-4" align="left" >
               <div className="row ms-3 me-3">
                 <div className="col-md-3 form-group mb-2">
                   <div class="exp-form-floating">
@@ -3935,10 +3124,7 @@ function Quotation() {
                     />
                   </div>
                 </div>
-                <div
-                  className="col-md-3 form-group mb-2"
-                  style={{ justifyContent: "center" }}
-                >
+                <div className="col-md-3 form-group mb-2" style={{ justifyContent: "center" }} >
                   <label htmlFor="party_code">Product/Items Filter</label>
                   <div className="exp-form-floating">
                     <div title="Select the Product/Items Filter">
@@ -3952,16 +3138,14 @@ function Quotation() {
                           placeholder=""
                           required
                           title="Please select the product/items filter"
+                          classNamePrefix="react-select"
                           styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                         />
                       </div>
                     </div>
                   </div>
                 </div>
-                <div
-                  className="col-md-3 form-group mb-2"
-                  style={{ justifyContent: "center" }}
-                >
+                <div className="col-md-3 form-group mb-2" style={{ justifyContent: "center" }} >
                   <label htmlFor="party_code">Product/Items Name</label>
                   <div className="exp-form-floating">
                     <div title="Select the Product/Items Name">
@@ -3975,6 +3159,7 @@ function Quotation() {
                           autoComplete="off"
                           options={dynamicOptions}
                           onChange={handleChangeDynamicOption}
+                          classNamePrefix="react-select"
                           title="Please select the product/items name"
                           styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                         />
@@ -3983,26 +3168,15 @@ function Quotation() {
                   </div>
                 </div>
               </div>
-              <div
-                class="d-flex justify-content-between ms-2"
-                style={{ marginBlock: "", marginTop: "10px" }}
-              >
-                <div
-                  align="left"
-                  class="d-flex justify-content-start"
-                  style={{ marginLeft: "25px" }}
-                >
-                  <purButton
-                    type="button"
-                    title="Product / Item Details"
+              <div class="d-flex justify-content-between ms-2" style={{ marginBlock: "", marginTop: "10px" }} >
+                <div align="left" class="d-flex justify-content-start" style={{ marginLeft: "25px" }} >
+                  <purButton type="button" title="Product / Item Details"
                     className={`"toggle-btn"  ${activeTable === "myTable" ? "active" : ""}`}
                     onClick={() => handleToggleTable("myTable")}
                   >
                     Product / Item Details
                   </purButton>
-                  <purButton
-                    type="button"
-                    title="Tax Details"
+                  <purButton type="button" title="Tax Details"
                     className={`"toggle-btn" ${activeTable === "tax" ? "active" : ""}`}
                     onClick={() => handleToggleTable("tax")}
                   >
@@ -4026,10 +3200,7 @@ function Quotation() {
               </icon>
             </div> */}
               </div>
-              <div
-                className="ag-theme-alpine"
-                style={{ height: 437, width: "100%" }}
-              >
+              <div className="ag-theme-alpine" style={{ height: 280, width: "100%" }} >
                 <AgGridReact
                   columnDefs={activeTable === "myTable" ? columnDefs : columnDefsTax}
                   rowData={activeTable === "myTable" ? rowData : rowDataTax}
@@ -4047,26 +3218,16 @@ function Quotation() {
                   onGridReady={onGridReady}
                   onRowClicked={handleRowClicked}
                   onColumnMoved={onColumnMoved}
+                  headerHeight={28}
+                  rowHeight={25}
                 />
               </div>
             </div>
           </div>
           <div>
-            <QuotationItemPopup
-              open={open}
-              handleClose={handleClose}
-              handleItem={handleItem}
-            />
-            <QuotationCustomerPopup
-              open={open2}
-              handleClose={handleClose}
-              handleVendor={handleVendor}
-            />
-            <QuotationPopup
-              open={open3}
-              handleClose={handleClose}
-              handleQuotationData={handleQuotationData}
-            />
+            <QuotationItemPopup open={open} handleClose={handleClose} handleItem={handleItem} />
+            <QuotationCustomerPopup open={open2} handleClose={handleClose} handleVendor={handleVendor} />
+            <QuotationPopup open={open3} handleClose={handleClose} handleQuotationData={handleQuotationData} />
           </div>
           <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
             <div className="row ms-2">
@@ -4090,300 +3251,6 @@ function Quotation() {
             </div>
           </div>
         </div>
-      ) : (
-        <div className="container-fluid Topnav-screen">
-          {loading && <LoadingScreen />}
-          <ToastContainer
-            position="top-right"
-            className="toast-design"
-            theme="colored"
-          />
-          <div>
-            <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
-              <div class="d-flex justify-content-between">
-                <div className="d-flex justify-content-start">
-                  <h1 align="left" className="purbut me-5">
-                    Deleted Quotation
-                  </h1>
-                </div>
-                <div className="d-flex justify-content-end purbut me-3">
-                  <div class="exp-form-floating">
-                    <Select
-                      id="returnType"
-                      className="exp-input-field col-md-6 mt-2"
-                      placeholder=""
-                      required
-                      value={selectedscreens}
-                      onChange={handleChangeScreens}
-                      options={filteredOptionScreens}
-                      data-tip="Please select a default warehouse"
-                      styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div class="mobileview">
-                <div class="d-flex justify-content-between ">
-                  <div className="d-flex justify-content-start">
-                    <h1 align="left" className="h1">
-                      Deleted Quotation
-                    </h1>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="shadow-lg p-1 bg-body-tertiary rounded  pt-3 pb-4">
-              <div className="row ms-3 me-3">
-                <div className="col-md-3">
-                  <div className="col-md-12 form-group mb-2">
-                    <label>Transaction No</label>
-                    <div className="exp-form-floating">
-                      <div class="d-flex justify-content-end">
-                        <input
-                          id="TransactionNo"
-                          className="exp-input-field form-control justify-content-start"
-                          type="text"
-                          placeholder=""
-                          required
-                          value={TransactionNo}
-                          onChange={(e) => setTransactionno(e.target.value)}
-                          maxLength={50}
-                          title="Please enter the transaction no"
-                          onKeyPress={handleDeleteKeyPress}
-                          autoComplete="off"
-                        />
-                        <div className="position-absolute mt-1 me-2">
-                          <span
-                            className="icon searchIcon"
-                            title="Deleted Quotation Help"
-                            onClick={handleDeletedQuotation}
-                          >
-                            <i class="fa fa-search"></i>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-md-12 form-group mb-2 ">
-                    <div class="exp-form-floating">
-                      <label for="">Transaction Date</label>
-                      <input
-                        name="TransactionDate"
-                        id="TransactionDate"
-                        className="exp-input-field form-control"
-                        type="date"
-                        readOnly
-                        placeholder=""
-                        title="Transaction date"
-                        required
-                        value={TransactionDate}
-                        onChange={(e) => setTransactionDate(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="col-md-4">
-                  <div
-                    className="ag-theme-alpine"
-                    style={{ height: 240, width: "100%" }}
-                  >
-                    <AgGridReact
-                      columnDefs={deletedTermsConditions}
-                      rowData={deletedRowDataTerms}
-                      defaultColDef={{ editable: true, resizable: true }}
-                      onGridReady={onGridReady}
-                      rowHeight={28}
-                      onRowClicked={handleRowClicked}
-                      onColumnMoved={onColumnMoved}
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4">
-                  <div
-                    className="ag-theme-alpine"
-                    style={{ height: 240, width: "100%" }}
-                  >
-                    <AgGridReact
-                      columnDefs={columDeletedPatch}
-                      rowData={deletedrowdatapatch}
-                      defaultColDef={{ flex: 1 }}
-                      rowHeight={28}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div
-                className="ag-theme-alpine mt-2"
-                style={{ height: 360, width: "100%" }}
-              >
-                <AgGridReact
-                  columnDefs={deletedColumnHeader}
-                  rowData={deletedHeaderRowData}
-                  defaultColDef={{ flex: 1 }}
-                  rowHeight={28}
-                />
-              </div>
-            </div>
-            <div
-              className="shadow-lg p-1 bg-body-tertiary rounded mt-2 pt-3 pb-4"
-              align="left"
-            >
-              <div className="row ms-3 me-3">
-                <div className="col-md-3 form-group mb-2">
-                  <div class="exp-form-floating">
-                    <label for="" class="exp-form-labels" className="partyName">
-                      Total
-                    </label>
-                    <input
-                      id="Total"
-                      class="exp-input-field form-control input"
-                      type="text"
-                      placeholder=""
-                      required
-                      title="Total"
-                      value={Total}
-                      onChange={(e) => setTotal(e.target.value)}
-                      readOnly
-                    />
-                  </div>
-                </div>
-                <div className="col-md-3 form-group mb-2">
-                  <div class="exp-form-floating">
-                    <label for="" class="exp-form-labels" className="partyName">
-                      Total Tax
-                    </label>
-                    <input
-                      name="totalTaxAmount"
-                      id="Tax"
-                      text="text"
-                      title="Total tax"
-                      className="exp-input-field form-control input"
-                      placeholder=""
-                      required
-                      value={Tax}
-                      onChange={(e) => setTax(e.target.value)}
-                      readOnly
-                    />
-                  </div>
-                </div>
-                <div className="col-md-3 form-group mb-2">
-                  <div class="exp-form-floating">
-                    <label for="" class="exp-form-labels" className="partyName">
-                      Round Off
-                    </label>
-                    <input
-                      name=""
-                      id="RoundOff"
-                      type="text"
-                      title="Round off"
-                      className="exp-input-field form-control input"
-                      placeholder=""
-                      required
-                      value={RoundOff}
-                      onChange={(e) => setRoundOff(e.target.value)}
-                      readOnly
-                    />
-                  </div>
-                </div>
-                <div className="col-md-3 form-group mb-2">
-                  <div class="exp-form-floating">
-                    <label for="" class="exp-form-labels" className="partyName">
-                      Grand Total
-                    </label>
-                    <input
-                      name=""
-                      id="GrandTotal"
-                      type="text"
-                      title="Grand total"
-                      className="exp-input-field form-control input"
-                      placeholder=""
-                      required
-                      value={GrandTotal}
-                      onChange={(e) => setGrandTotal(e.target.value)}
-                      readOnly
-                    />
-                  </div>
-                </div>
-              </div>
-              <div
-                class="d-flex justify-content-between ms-2"
-                style={{ marginBlock: "", marginTop: "10px" }}
-              >
-                <div
-                  align="left"
-                  class="d-flex justify-content-start"
-                  style={{ marginLeft: "25px" }}
-                >
-                  <purButton
-                    type="button"
-                    title="Product / Item Details"
-                    className={`"toggle-btn"  ${activeTable === "myTable" ? "active" : ""}`}
-                    onClick={() => handleToggleTable("myTable")}
-                  >
-                    Product / Item Details
-                  </purButton>
-                  <purButton
-                    type="button"
-                    title="Tax Details"
-                    className={`"toggle-btn" ${activeTable === "tax" ? "active" : ""}`}
-                    onClick={() => handleToggleTable("tax")}
-                  >
-                    Tax Details
-                  </purButton>
-                </div>
-              </div>
-              <div
-                className="ag-theme-alpine"
-                style={{ height: 437, width: "100%" }}
-              >
-                <AgGridReact
-                  columnDefs={
-                    activeTable === "myTable"
-                      ? deletedColumnDetail
-                      : deletedColumnTax
-                  }
-                  rowData={
-                    activeTable === "myTable"
-                      ? deletedRowData
-                      : deletedRowDataTax
-                  }
-                  defaultColDef={{ editable: true, resizable: true }}
-                  onGridReady={onGridReady}
-                  onRowClicked={handleRowClicked}
-                  onColumnMoved={onColumnMoved}
-                />
-              </div>
-            </div>
-          </div>
-          <div>
-            <DeletedQuotaionHelp
-              open={open4}
-              handleClose={handleClose}
-              handleDeletedQuotationData={handleDeletedQuotationData}
-            />
-          </div>
-          <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
-            <div className="row ms-2">
-              <div className="d-flex justify-content-start">
-                <p className="col-md-6">
-                  {labels.createdBy}: {additionalData.created_by}
-                </p>
-                <p className="col-md-6">
-                  {labels.createdDate}: {additionalData.created_date}
-                </p>
-              </div>
-              <div className="d-flex justify-content-start">
-                <p className="col-md-6">
-                  {labels.modifiedBy}: {additionalData.modified_by}
-                </p>
-                <p className="col-md-6">
-                  {labels.modifiedDate}: {additionalData.modified_date}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

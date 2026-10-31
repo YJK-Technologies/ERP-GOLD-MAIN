@@ -24,10 +24,7 @@ const BankStatement = () => {
   const [importHistory, setImportHistory] = useState([]);
 
   // Layout UI States matching Image Inputs
-  const [companyEntity, setCompanyEntity] = useState({
-    value: "FinEdge",
-    label: "FinEdge Enterprises India Pvt Ltd",
-  });
+  const [companyEntity, setCompanyEntity] = useState('');
   const [bankAccount, setBankAccount] = useState({
     value: "HDFC9821",
     label: "HDFC Bank Ltd - 9821 (Current Corporate Account)",
@@ -53,6 +50,10 @@ const BankStatement = () => {
   const [methodDrop, setMethodDrop] = useState([]);
   const [selectedImportMethod, setSelectedImportMethod] = useState(null);
   const [importMethodVal, setImportMethodVal] = useState("");
+
+  const [selectedBankAccount, setSelectedBankAccount] = useState(null);
+  const [statementBankAccount, setStatementBankAccount] = useState("");
+  const [BankAccountDrop, seBankAccountDrop] = useState([]);
 
   // Real File Upload States
   const [uploadedFile, setUploadedFile] = useState(null);
@@ -102,6 +103,15 @@ const BankStatement = () => {
       .then((data) => data.json())
       .then((val) => setFormatDrop(val))
       .catch((error) => console.error("Error fetching statement format:", error));
+    // Fetch BankAccount
+    fetch(`${config.apiBaseUrl}/AllAccNameData`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ company_code }),
+    })
+      .then((data) => data.json())
+      .then((val) => seBankAccountDrop(val))
+      .catch((error) => console.error("Error fetching BankAccount:", error));
 
     // Fetch Import Method
     fetch(`${config.apiBaseUrl}/get_ImportMethod`, {
@@ -122,6 +132,16 @@ const BankStatement = () => {
   const filteredOptionFormat = formatDrop.map((option) => ({
     value: option.attributedetails_name,
     label: option.attributedetails_name,
+  }));
+
+  const handleChangeBankAccount = (selectedOption) => {
+    setSelectedBankAccount(selectedOption);
+    setStatementBankAccount(selectedOption ? selectedOption.value : "");
+  };
+
+  const filteredOptionBankAccount = BankAccountDrop.map((option) => ({
+    value: option.account_name,
+    label: option.account_name,
   }));
 
   const handleChangeMethod = (selectedOption) => {
@@ -339,18 +359,17 @@ const BankStatement = () => {
         try {
           // 1. Header Payload
           const Header = {
-            company_code:
-              sessionStorage.getItem("selectedCompanyCode") || "FinEdge",
-            location_code:
-              sessionStorage.getItem("selectedLocationCode") || "LOC01",
-            created_by: sessionStorage.getItem("selectedUserCode") || "admin",
-            BankAccountId: bankAccount.value,
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
+            location_code: sessionStorage.getItem("selectedLocationCode"),
+            created_by: sessionStorage.getItem("selectedUserCode"),
+            // BankAccountId: bankAccount.value,
+            BankAccountId: statementBankAccount,
             OpeningBalance: openingBalance,
             ClosingBalance: closingBalance,
             StatementStartDate: startDate,
             StatementEndDate: endDate,
             TotalRecords: parsedData.length,
-            StatementFormat: statementFormat.value,
+            StatementFormat: statementFormatVal,
             ImportMethod: importMethod.value,
             TransactionDate: new Date().toISOString().split("T")[0],
           };
@@ -558,7 +577,7 @@ const BankStatement = () => {
       {/* PARAMETERS SECTION */}
       <div className="shadow-lg p-3 bg-body-tertiary rounded mb-2">
         <div className="row g-3 mb-3">
-          <div className="col-md-3 form-group">
+          {/* <div className="col-md-3 form-group">
             <div className="exp-form-floating">
               <label className="exp-form-labels">Company Entity</label>
               <Select
@@ -573,6 +592,24 @@ const BankStatement = () => {
                 className="exp-input-field"
                 classNamePrefix="react-select"
               />
+            </div>
+          </div> */}
+
+          <div className="col-md-3 form-group">
+            <div className="exp-form-floating">
+              <label className="exp-form-labels">Bank Account</label>
+              <div title="Select Statement Format">
+                <Select
+                  id="BankAccount"
+                  value={selectedBankAccount}
+                  onChange={handleChangeBankAccount}
+                  options={filteredOptionBankAccount}
+                  className="exp-input-field"
+                  placeholder="Select Bank Account"
+                  classNamePrefix="react-select"
+                  styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                />
+              </div>
             </div>
           </div>
 
@@ -612,24 +649,7 @@ const BankStatement = () => {
             </div>
           </div>
 
-          <div className="col-md-3 form-group">
-            <div className="exp-form-floating">
-              <label className="exp-form-labels">Import Method</label>
-              <Select
-                value={importMethod}
-                onChange={setImportMethod}
-                options={[
-                  { value: "Manual", label: "Direct Manual File Upload" },
-                ]}
-                className="exp-input-field"
-                classNamePrefix="react-select"
-              />
-            </div>
-          </div>
-        </div>
-
         {/* ROW 2: Dates and Balances */}
-        <div className="row g-3 mb-3">
           <div className="col-md-3 form-group">
             <div className="exp-form-floating">
               <label className="exp-form-labels">
