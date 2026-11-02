@@ -2298,7 +2298,7 @@ function PurchaseOrder() {
     }
   };
 
-  const openPrintWindow = (url, headerKey, detailKey, taxKey) => {
+  const openPrintWindow = (url, headerKey, detailKey, taxKey, hsnKey) => {
     const printWindow = window.open(url, "_blank");
 
     if (printWindow) {
@@ -2306,6 +2306,7 @@ function PurchaseOrder() {
         sessionStorage.removeItem(headerKey);
         sessionStorage.removeItem(detailKey);
         sessionStorage.removeItem(taxKey);
+        sessionStorage.removeItem(hsnKey);
         console.log("Session storage cleared after print window closed.");
       });
     }
@@ -2336,30 +2337,19 @@ function PurchaseOrder() {
         hsnKey = "POhsnTaxData";
         url = "/PurchaseOrderPrint";
 
-        sessionStorage.setItem(
-          headerKey,
-          LZString.compress(JSON.stringify(headerData)),
-        );
-        sessionStorage.setItem(
-          detailKey,
-          LZString.compress(JSON.stringify(detailData)),
-        );
-        sessionStorage.setItem(
-          taxKey,
-          LZString.compress(JSON.stringify(taxData)),
-        );
-        sessionStorage.setItem(
-          hsnKey,
-          LZString.compress(JSON.stringify(hsnTaxData)),
-        );
+        // sessionStorage.setItem( headerKey, LZString.compress(JSON.stringify(headerData)),);
+        // sessionStorage.setItem( detailKey, LZString.compress(JSON.stringify(detailData)),);
+        // sessionStorage.setItem( taxKey, LZString.compress(JSON.stringify(taxData)),);
+        // sessionStorage.setItem(  hsnKey,  LZString.compress(JSON.stringify(hsnTaxData)),);
 
-        // sessionStorage.setItem('POheaderData', JSON.stringify(headerData));
-        // sessionStorage.setItem('POdetailData', JSON.stringify(detailData));
-        // sessionStorage.setItem('POtaxData', JSON.stringify(taxData));
+        sessionStorage.setItem('POheaderData', JSON.stringify(headerData));
+        sessionStorage.setItem('POdetailData', JSON.stringify(detailData));
+        sessionStorage.setItem('POtaxData', JSON.stringify(taxData));
+        sessionStorage.setItem('POhsnTaxData', JSON.stringify(hsnTaxData));
 
         // window.open('/PurchaseOrderPrint', '_blank');
 
-        openPrintWindow(url, headerKey, detailKey, taxKey);
+        // openPrintWindow(url, headerKey, detailKey, taxKey, hsnKey);
       } else {
         console.log("Failed to fetch some data");
         toast.error("Transaction No Does Not Exits");
