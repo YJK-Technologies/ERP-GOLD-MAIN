@@ -370,6 +370,7 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
       MobileNo: row.customer_mobile_no,
       ContactPerson: row.contact_person,
       GSTNo: row.customer_gst_no,
+      CreditLimit: row.customer_credit_limit,
     }));
     console.log('Selected Data:', selectedData);
     handleVendor(selectedData);
@@ -400,6 +401,7 @@ export default function SalesVendorPopup({ open, handleClose, handleVendor }) {
       MobileNo: row.customer_mobile_no,
       ContactPerson: row.contact_person,
       GSTNo: row.customer_gst_no,
+      CreditLimit: row.customer_credit_limit,
     }];
 
     console.log('Selected Data (Double Click):', selectedData);
