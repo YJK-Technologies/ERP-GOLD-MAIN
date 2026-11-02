@@ -211,6 +211,7 @@ import PurchaseOrderPrint from "./PrintScreens/VRETemplate/PurchaseOrderPrint.js
 import BankStatement from './BankStatement.js'
 import BankReconciliation from './BankReconciliation.js'
 import ItemLedgerRep from './ItemLedgerReport.js'
+import CustomerReceipts from './CustomerReceipts.js'
 
 function Main() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
@@ -462,6 +463,7 @@ function Main() {
      { path: "/BankStatement", component: <BankStatement /> },
      { path: "/BankReconciliation", component: <BankReconciliation /> },
      { path: "/ItemLedgerRep", component: <ItemLedgerRep /> },
+     { path: "/CustomerReceipts", component: <CustomerReceipts /> },
   ];
  
   return (
