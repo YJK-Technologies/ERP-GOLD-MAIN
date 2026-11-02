@@ -324,7 +324,7 @@ const AccountInformation = () => {
           </div>
           <div
             className="ag-theme-alpine mb-2"
-            style={{ height: 437, width: "100%", marginTop: "20px" }}
+            style={{ height: 320, width: "100%", marginTop: "20px" }}
           >
             <AgGridReact
               columnDefs={columnData}
@@ -332,6 +332,8 @@ const AccountInformation = () => {
               defaultColDef={{ editable: true, resizable: true }}
               rowSelection="single"
               onSelectionChanged={onSelectionChanged}
+              headerHeight={28}
+              rowHeight={25}
             />
           </div>
         </div>

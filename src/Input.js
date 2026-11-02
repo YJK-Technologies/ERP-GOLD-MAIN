@@ -876,11 +876,7 @@ function Input({}) {
                   <div class="exp-form-floating">
                     <div class="d-flex justify-content-start">
                       <div>
-                        <label
-                          for="state"
-                          class="exp-form-labels"
-                          className={`${error && !country ? "text-danger" : ""}`}
-                        >
+                        <label for="state" class="exp-form-labels" className={`${error && !country ? "text-danger" : ""}`}>
                           Country<span className="text-danger">*</span>
                         </label>
                       </div>
@@ -896,9 +892,7 @@ function Input({}) {
                         ref={Country}
                         onKeyDown={(e) => handleKeyDown(e, Email, Country)}
                         classNamePrefix="react-select"
-                        styles={{
-                          menu: (provided) => ({ ...provided, zIndex: 9999 }),
-                        }}
+                        styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }), }}
                       />
                       {/* {error && !country && <div className="text-danger">Country should not be blank</div>} */}
                     </div>

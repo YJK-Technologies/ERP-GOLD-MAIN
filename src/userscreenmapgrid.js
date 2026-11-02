@@ -679,7 +679,7 @@ function UserScreenMapGrid() {
                   </div>
                   <div>
                     <icon className="popups-btn fs-6 p-3" onClick={clearInputFields} required title="Reload">
-                                          <FontAwesomeIcon icon="fa-solid fa-arrow-rotate-right" />
+                    <FontAwesomeIcon icon="fa-solid fa-arrow-rotate-right" />
                     </icon>
                   </div>
                 </div>
@@ -698,6 +698,8 @@ function UserScreenMapGrid() {
               pagination={true}
               paginationAutoPageSize={true}
               onRowSelected={onRowSelected}
+              headerHeight={28}
+              rowHeight={25}
             />
           </div>
         </div>
