@@ -395,9 +395,9 @@ function PurchaseOrder() {
 
   const filteredOptionParty = Array.isArray(partyDrop)
     ? partyDrop.map((option) => ({
-        value: option.descriptions,
-        label: option.descriptions,
-      }))
+      value: option.descriptions,
+      label: option.descriptions,
+    }))
     : [];
 
   const handleChangeParty = (selectedParty) => {
@@ -949,19 +949,7 @@ function PurchaseOrder() {
         console.log(searchData);
 
         const [
-          {
-            customer_code,
-            customer_name,
-            customer_addr_1,
-            customer_addr_2,
-            customer_addr_3,
-            customer_addr_4,
-            customer_state,
-            customer_country,
-            customer_mobile_no,
-            contact_person,
-            customer_gst_no,
-          },
+          { customer_code, customer_name, customer_addr_1, customer_addr_2, customer_addr_3, customer_addr_4, customer_state, customer_country, customer_mobile_no, contact_person, customer_gst_no, },
         ] = searchData;
 
         setHeaderRowData((prevRowData) =>
@@ -1016,19 +1004,7 @@ function PurchaseOrder() {
   const handleVendorBillTo = async (data) => {
     if (data && data.length > 0) {
       const [
-        {
-          VendorCode,
-          VendorName,
-          Address1,
-          Address2,
-          Address3,
-          Address4,
-          State,
-          Country,
-          MobileNo,
-          ContactPerson,
-          GSTNo,
-        },
+        { VendorCode, VendorName, Address1, Address2, Address3, Address4, State, Country, MobileNo, ContactPerson, GSTNo, },
       ] = data;
 
       setHeaderRowData((prevRowData) =>
@@ -1069,19 +1045,7 @@ function PurchaseOrder() {
   const handleVendorShipTo = async (data) => {
     if (data && data.length > 0) {
       const [
-        {
-          VendorCode,
-          VendorName,
-          Address1,
-          Address2,
-          Address3,
-          Address4,
-          State,
-          Country,
-          MobileNo,
-          ContactPerson,
-          GSTNo,
-        },
+        { VendorCode, VendorName, Address1, Address2, Address3, Address4, State, Country, MobileNo, ContactPerson, GSTNo, },
       ] = data;
 
       setHeaderRowData((prevRowData) =>
@@ -1122,19 +1086,7 @@ function PurchaseOrder() {
   const handleCustomerShipTo = async (data) => {
     if (data && data.length > 0) {
       const [
-        {
-          CustomerCode,
-          CustomerName,
-          Address1,
-          Address2,
-          Address3,
-          Address4,
-          State,
-          Country,
-          MobileNo,
-          ContactPerson,
-          GSTNo,
-        },
+        { CustomerCode, CustomerName, Address1, Address2, Address3, Address4, State, Country, MobileNo, ContactPerson, GSTNo, },
       ] = data;
 
       setHeaderRowData((prevRowData) =>
@@ -2122,7 +2074,7 @@ function PurchaseOrder() {
     }
 
     const actionLabel = selectedscreens?.label || "data";
-    const actionValue = selectedscreens?.value || "data"; 
+    const actionValue = selectedscreens?.value || "data";
 
     showConfirmationToast(
       `Are you sure you want to ${actionLabel} the data ?`,
@@ -2299,17 +2251,22 @@ function PurchaseOrder() {
   };
 
   const openPrintWindow = (url, headerKey, detailKey, taxKey, hsnKey) => {
+
     const printWindow = window.open(url, "_blank");
 
-    if (printWindow) {
-      printWindow.addEventListener("beforeunload", () => {
-        sessionStorage.removeItem(headerKey);
-        sessionStorage.removeItem(detailKey);
-        sessionStorage.removeItem(taxKey);
-        sessionStorage.removeItem(hsnKey);
-        console.log("Session storage cleared after print window closed.");
-      });
+    if (!printWindow) {
+      toast.error("Please allow popups to open the print window");
+      return;
     }
+
+    printWindow.addEventListener("beforeunload", () => {
+      sessionStorage.removeItem(headerKey);
+      sessionStorage.removeItem(detailKey);
+      sessionStorage.removeItem(taxKey);
+      sessionStorage.removeItem(hsnKey);
+
+      console.log("Session storage cleared after print window closed.");
+    });
   };
 
   const generateReport = async () => {
@@ -2318,6 +2275,7 @@ function PurchaseOrder() {
       toast.warning("Error: Missing required fields");
       return;
     }
+
     setLoading(true);
 
     try {
@@ -2326,36 +2284,56 @@ function PurchaseOrder() {
       const taxData = await PrintSumTax();
       const hsnTaxData = await PrintHsnTaxData();
 
-      if (headerData && detailData) {
-        console.log("All API calls completed successfully");
-
-        let url, headerKey, detailKey, taxKey, hsnKey;
-
-        headerKey = "POheaderData";
-        detailKey = "POdetailData";
-        taxKey = "POtaxData";
-        hsnKey = "POhsnTaxData";
-        url = "/PurchaseOrderPrint";
-
-        // sessionStorage.setItem( headerKey, LZString.compress(JSON.stringify(headerData)),);
-        // sessionStorage.setItem( detailKey, LZString.compress(JSON.stringify(detailData)),);
-        // sessionStorage.setItem( taxKey, LZString.compress(JSON.stringify(taxData)),);
-        // sessionStorage.setItem(  hsnKey,  LZString.compress(JSON.stringify(hsnTaxData)),);
-
-        sessionStorage.setItem('POheaderData', JSON.stringify(headerData));
-        sessionStorage.setItem('POdetailData', JSON.stringify(detailData));
-        sessionStorage.setItem('POtaxData', JSON.stringify(taxData));
-        sessionStorage.setItem('POhsnTaxData', JSON.stringify(hsnTaxData));
-
-        // window.open('/PurchaseOrderPrint', '_blank');
-
-        // openPrintWindow(url, headerKey, detailKey, taxKey, hsnKey);
-      } else {
-        console.log("Failed to fetch some data");
-        toast.error("Transaction No Does Not Exits");
+      if (
+        !headerData ||
+        !detailData ||
+        !taxData ||
+        !hsnTaxData
+      ) {
+        toast.error("Transaction No Does Not Exist");
+        return;
       }
+
+      const headerKey = "POheaderData";
+      const detailKey = "POdetailData";
+      const taxKey = "POtaxData";
+      const hsnKey = "POhsnTaxData";
+
+      // Compress and store data
+      const storeData = (key, data) => {
+        const jsonData = JSON.stringify(data);
+
+        if (jsonData === undefined) {
+          throw new Error(`Invalid data for ${key}`);
+        }
+
+        const compressedData = LZString.compress(jsonData);
+
+        if (!compressedData) {
+          throw new Error(`Compression failed for ${key}`);
+        }
+
+        sessionStorage.setItem(key, compressedData);
+      };
+
+      storeData(headerKey, headerData);
+      storeData(detailKey, detailData);
+      storeData(taxKey, taxData);
+      storeData(hsnKey, hsnTaxData);
+
+      console.log("All API calls completed successfully");
+
+      openPrintWindow(
+        "/PurchaseOrderPrint",
+        headerKey,
+        detailKey,
+        taxKey,
+        hsnKey
+      );
+
     } catch (error) {
       console.error("Error executing API calls:", error);
+      toast.error("Unable to generate Purchase Order report");
     } finally {
       setLoading(false);
     }
@@ -3580,11 +3558,7 @@ function PurchaseOrder() {
       <div className="container-fluid Topnav-screen">
         {loading && <LoadingScreen />}
 
-        <ToastContainer
-          position="top-right"
-          className="toast-design"
-          theme="colored"
-        />
+        <ToastContainer position="top-right" className="toast-design" theme="colored" />
         <div>
           <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
             <div class="d-flex justify-content-between">
@@ -3605,22 +3579,20 @@ function PurchaseOrder() {
                     options={filteredOptionScreens}
                     classNamePrefix="react-select"
                     data-tip="Please select a status"
-                    styles={{
-                      menu: (provided) => ({ ...provided, zIndex: 9999 }),
-                    }}
+                    styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }), }}
                   />
                 </div>
                 {["add", "all permission"].some((permission) =>
                   purchaseOrderPermission.includes(permission),
                 ) && (
-                  <savebutton
-                    className="purbut"
-                    onClick={handleMasterAction}
-                    title="Save / Update"
-                  >
-                    <i class="fa-regular fa-floppy-disk"></i>
-                  </savebutton>
-                )}
+                    <savebutton
+                      className="purbut"
+                      onClick={handleMasterAction}
+                      title="Save / Update"
+                    >
+                      <i class="fa-regular fa-floppy-disk"></i>
+                    </savebutton>
+                  )}
                 {/* {["update", "all permission"].some((permission) => purchaseOrderPermission.includes(permission)) && (
                     <savebutton
                       className="purbut"
@@ -3642,14 +3614,14 @@ function PurchaseOrder() {
                 {["all permission", "view"].some((permission) =>
                   purchaseOrderPermission.includes(permission),
                 ) && (
-                  <printbutton
-                    className="purbut"
-                    title="Print"
-                    onClick={generateReport}
-                  >
-                    <i class="fa-solid fa-file-pdf"></i>
-                  </printbutton>
-                )}
+                    <printbutton
+                      className="purbut"
+                      title="Print"
+                      onClick={generateReport}
+                    >
+                      <i class="fa-solid fa-file-pdf"></i>
+                    </printbutton>
+                  )}
                 <printbutton
                   className="purbut"
                   title="Excel"
@@ -3722,10 +3694,10 @@ function PurchaseOrder() {
                       {["add", "all permission"].some((permission) =>
                         purchaseOrderPermission.includes(permission),
                       ) && (
-                        <icon class="icon" onClick={handleMasterAction}>
-                          <i class="fa-regular fa-floppy-disk"></i>
-                        </icon>
-                      )}
+                          <icon class="icon" onClick={handleMasterAction}>
+                            <i class="fa-regular fa-floppy-disk"></i>
+                          </icon>
+                        )}
                     </li>
                     {/* <li class="iconbutton  d-flex justify-content-center text-danger">
                       {["delete", "all permission"].some((permission) => purchaseOrderPermission.includes(permission)) && (
@@ -3738,10 +3710,10 @@ function PurchaseOrder() {
                       {["all permission", "view"].some((permission) =>
                         purchaseOrderPermission.includes(permission),
                       ) && (
-                        <icon class="icon" onClick={generateReport}>
-                          <i class="fa-solid fa-file-pdf"></i>
-                        </icon>
-                      )}
+                          <icon class="icon" onClick={generateReport}>
+                            <i class="fa-solid fa-file-pdf"></i>
+                          </icon>
+                        )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center text-success">
                       <icon class="icon" onClick={handleExcelDownload}>
@@ -3884,10 +3856,7 @@ function PurchaseOrder() {
             {/* BOTTOM ROW: Terms & Conditions and Notes */}
             <div className="row me-2 mt-3 p-0 gx-0">
               <div className="col-md-6">
-                <div
-                  className="ag-theme-alpine"
-                  style={{ height: 155, width: "102%" }}
-                >
+                <div className="ag-theme-alpine" style={{ height: 155, width: "102%" }} >
                   <AgGridReact
                     columnDefs={columnDefsTermsConditions}
                     rowData={rowDataTerms}
@@ -3901,10 +3870,7 @@ function PurchaseOrder() {
                 </div>
               </div>
               <div className="col-md-6">
-                <div
-                  className="ag-theme-alpine"
-                  style={{ height: 155, width: "102%" }}
-                >
+                <div className="ag-theme-alpine" style={{ height: 155, width: "102%" }} >
                   <AgGridReact
                     columnDefs={columnNotes}
                     rowData={notesRowData}
@@ -4056,9 +4022,7 @@ function PurchaseOrder() {
               style={{ height: 280, width: "102%" }}
             >
               <AgGridReact
-                columnDefs={
-                  activeTable === "myTable" ? columnDefs : columnDefsTax
-                }
+                columnDefs={ activeTable === "myTable" ? columnDefs : columnDefsTax }
                 rowData={activeTable === "myTable" ? rowData : rowDataTax}
                 defaultColDef={{ editable: true, flex: 1 }}
                 // getRowId={(params) => String(params.data.serialNumber)}
@@ -4082,36 +4046,12 @@ function PurchaseOrder() {
           </div>
         </div>
         <div>
-          <PurchaseOrderItemPopup
-            open={open}
-            handleClose={handleClose}
-            handleItem={handleItem}
-          />
-          <PurchaseWarehousePopup
-            open={open1}
-            handleClose={handleClose}
-            handleWarehouse={handleWarehouse}
-          />
-          <PoCustomerPopup
-            open={open2}
-            handleClose={handleClose}
-            handleVendor={handleCustomerShipTo}
-          />
-          <PurchaseOrderPopup
-            open={open3}
-            handleClose={handleClose}
-            handlePoData={handlePoData}
-          />
-          <PoVendorPopup
-            open={open4}
-            handleClose={handleClose}
-            handleVendor={handleVendorBillTo}
-          />
-          <PoShipToVendorPopup
-            open={open6}
-            handleClose={handleClose}
-            handleVendorShipTo={handleVendorShipTo}
-          />
+          <PurchaseOrderItemPopup open={open} handleClose={handleClose} handleItem={handleItem} />
+          <PurchaseWarehousePopup open={open1} handleClose={handleClose} handleWarehouse={handleWarehouse} />
+          <PoCustomerPopup open={open2} handleClose={handleClose} handleVendor={handleCustomerShipTo} />
+          <PurchaseOrderPopup open={open3} handleClose={handleClose} handlePoData={handlePoData} />
+          <PoVendorPopup open={open4} handleClose={handleClose} handleVendor={handleVendorBillTo} />
+          <PoShipToVendorPopup open={open6} handleClose={handleClose} handleVendorShipTo={handleVendorShipTo} />
         </div>
         <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
           <div className="row ms-2">

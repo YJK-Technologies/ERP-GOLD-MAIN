@@ -3,48 +3,82 @@ import "./InvoicePrint.css"; // Uses the scoped .template3-container from your C
 import { ToWords } from 'to-words';
 import LZString from "lz-string";
 
+
 const PurchaseOrderPrint = () => {
     const [headerData, setHeaderData] = useState(null);
     const [detailData, setDetailData] = useState(null);
     const [taxData, setTaxData] = useState(null);
     const [hsnTaxData, setHsnTaxData] = useState(null);
-    
+
     const toWords = new ToWords();
 
     useEffect(() => {
-    const header = sessionStorage.getItem("POheaderData");
-    const detail = sessionStorage.getItem("POdetailData");
-    const tax = sessionStorage.getItem("POtaxData");
-    const hsnTax = sessionStorage.getItem("POHsnTaxData");
-
-
-    const parseStoredData = (value) => {
-        if (!value) return [];
-
         try {
-            const decompressed = LZString.decompress(value);
-            const parsed = JSON.parse(decompressed || value);
+            const getSessionData = (key) => {
+                const compressedData = sessionStorage.getItem(key);
 
-            return Array.isArray(parsed) ? parsed : [];
+                if (!compressedData) {
+                    throw new Error(`Session data not found: ${key}`);
+                }
+
+                const decompressedData = LZString.decompress(compressedData);
+
+                if (!decompressedData) {
+                    throw new Error(`Decompression failed: ${key}`);
+                }
+
+                try {
+                    return JSON.parse(decompressedData);
+                } catch (error) {
+                    throw new Error(`Invalid JSON data: ${key}`);
+                }
+            };
+
+            const header = getSessionData("POheaderData");
+            const detail = getSessionData("POdetailData");
+            const tax = getSessionData("POtaxData");
+            const hsnTax = getSessionData("POhsnTaxData");
+
+            setHeaderData(header);
+            setDetailData(detail);
+            setTaxData(tax);
+            setHsnTaxData(hsnTax);
+
+            console.log("Purchase Order data loaded successfully");
+
         } catch (error) {
-            console.error("Error parsing stored data:", error);
-            return [];
+            console.error("Purchase Order data loading error:", error);
         }
-    };
+    }, []);
 
-    if (header && detail && tax) {
-        setHeaderData(parseStoredData(header));
-        setDetailData(parseStoredData(detail));
-        setTaxData(parseStoredData(tax));
-        setHsnTaxData(hsnTax ? parseStoredData(hsnTax) : []);
-    }
+    //     useEffect(() => {
+    //     const header = sessionStorage.getItem("POheaderData");
+    //     const detail = sessionStorage.getItem("POdetailData");
+    //     const tax = sessionStorage.getItem("POtaxData");
+    //     const hsnTax = sessionStorage.getItem("POHsnTaxData");
 
-    const parsedHsnData = parseStoredData(hsnTax);
+    //     const parseStoredData = (value) => {
+    //         if (!value) return [];
 
-    console.log("HSN Parsed Data:", parsedHsnData);
+    //         try {
+    //             const decompressed = LZString.decompress(value);
+    //             const parsed = JSON.parse(decompressed || value);
 
-    setHsnTaxData(parsedHsnData);
-}, []);
+    //             return Array.isArray(parsed) ? parsed : [];
+    //         } catch (error) {
+    //             console.error("Error parsing stored data:", error);
+    //             return [];
+    //         }
+    //     };
+
+    //     if (header && detail && tax) {
+    //         setHeaderData(parseStoredData(header));
+    //         setDetailData(parseStoredData(detail));
+    //         setTaxData(parseStoredData(tax));
+    //         setHsnTaxData(parseStoredData(hsnTax));
+    //     }
+
+    // }, []);
 
     const bufferToBase64 = (buffer) => {
         const bytes = new Uint8Array(buffer);
@@ -63,7 +97,7 @@ const PurchaseOrderPrint = () => {
         return '';
     };
 
-    if (!headerData || !detailData || !taxData || !hsnTaxData) {
+    if (!headerData || !detailData || !taxData) {
         return <div>Loading...</div>;
     }
 

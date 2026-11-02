@@ -366,6 +366,7 @@ function AssetsReturn({ }) {
                                     options={filteredOptionCustomer}
                                     className="exp-input-field"
                                     placeholder=""
+                                    classNamePrefix="react-select"
                                 />
                             </div>
                             </div>
@@ -397,6 +398,7 @@ function AssetsReturn({ }) {
                                     options={filteredOptionType}
                                     className="exp-input-field"
                                     placeholder=""
+                                    classNamePrefix="react-select"
                                     styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                                 />
                             </div>
@@ -405,7 +407,7 @@ function AssetsReturn({ }) {
                     <div align="right" class="d-flex justify-content-end mb-2 me-6" style={{ marginRight: "90px" }}>
 
                     </div>
-                    <div className="ag-theme-alpine" style={{ height: 437, width: "100%" }}>
+                    <div className="ag-theme-alpine" style={{ height: 320, width: "100%" }}>
                         <AgGridReact
                             columnDefs={columnDefs}
                             rowData={rowData}
@@ -413,6 +415,8 @@ function AssetsReturn({ }) {
                             onGridReady={onGridReady}
                             pagination={true}
                             paginationAutoPageSize={true}
+                            headerHeight={28}
+                            rowHeight={25}
                         />
                     </div>
                 </div>

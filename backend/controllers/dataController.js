@@ -9978,11 +9978,16 @@ const AccNameDelete = async (req, res) => {
   }
 };
 
-
 const getAllAccNameData = async (req, res) => {
+  const { company_code } = req.body;
+  let pool;
   try {
-    await connection.connectToDatabase();
-    const result = await sql.query(`EXEC sp_account_name 'A','','','','','','','','','','','','','','','','',0,'','','','','','','','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+    pool = await sql.connect(dbConfig);
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "A") // Insert mode
+      .input("company_code", sql.NVarChar, company_code)
+      .query(`EXEC sp_account_name 'A',@company_code,'','','','','','','','','','','','','','','',0,'','','','','','','','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     res.json(result.recordset);
   } catch (err) {
@@ -9990,8 +9995,6 @@ const getAllAccNameData = async (req, res) => {
     res.status(500).json({ message: err.message || 'Internal Server Error' });
   }
 };
-
-
 
 const getsalesreturnsearchViewdata = async (req, res) => {
   const { company_code, bill_date, bill_no, return_no, sales_type, customer_code, customer_name, pay_type } = req.body;
@@ -10769,8 +10772,8 @@ const addQuotationheader = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(`EXEC sp_quotation_hdr @mode ,@company_code, @customer_name,@customer_addr_1,@customer_addr_2,@customer_addr_3,@customer_addr_4, @customer_state,@customer_country,@customer_mobile_no,@contact_person, @Entry_date, @transaction_no,
-        @customer_code, @purchase_amount,@tax_amount, @add_fright, @less_fright, @rounded_off, @loading_charges, @cartage_paid, @other_charges, @total_amount, @customer_gst_no,@kind_attention,@quotation_validity, @created_by, @modified_by, NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_quotation_hdr_test @mode ,@company_code, @customer_name,@customer_addr_1,@customer_addr_2,@customer_addr_3,@customer_addr_4, @customer_state,@customer_country,@customer_mobile_no,@contact_person, @Entry_date, @transaction_no,
+        @customer_code, @purchase_amount,@tax_amount, @add_fright, @less_fright, @rounded_off, @loading_charges, @cartage_paid, @other_charges, @total_amount, @customer_gst_no,@kind_attention,@quotation_validity, '', @created_by, @modified_by, NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -10784,7 +10787,7 @@ const addQuotationheader = async (req, res) => {
 
 
 const updQuotationheader = async (req, res) => {
-  const { company_code, Entry_date, transaction_no, customer_code, customer_name, customer_addr_1, customer_addr_2, customer_addr_3, customer_addr_4, customer_state, customer_country, customer_mobile_no, contact_person, purchase_amount, tax_amount, add_fright, less_fright, rounded_off, loading_charges, cartage_paid, other_charges, total_amount, customer_gst_no, kind_attention, quotation_validity, modified_by } = req.body;
+  const { company_code, authroization_status, Entry_date, transaction_no, customer_code, customer_name, customer_addr_1, customer_addr_2, customer_addr_3, customer_addr_4, customer_state, customer_country, customer_mobile_no, contact_person, purchase_amount, tax_amount, add_fright, less_fright, rounded_off, loading_charges, cartage_paid, other_charges, total_amount, customer_gst_no, kind_attention, quotation_validity, modified_by } = req.body;
   let pool;
   try {
     pool = await sql.connect(dbConfig);
@@ -10816,9 +10819,10 @@ const updQuotationheader = async (req, res) => {
       .input("customer_gst_no", sql.NVarChar, customer_gst_no)
       .input("kind_attention", sql.NVarChar, kind_attention)
       .input("quotation_validity", sql.NVarChar, quotation_validity)
+      .input("authroization_status", sql.NVarChar, authroization_status)
       .input("modified_by", sql.NVarChar, modified_by)
-      .query(`EXEC sp_quotation_hdr @mode ,@company_code, @customer_name,@customer_addr_1,@customer_addr_2,@customer_addr_3,@customer_addr_4, @customer_state,@customer_country,@customer_mobile_no,@contact_person, @Entry_date, @transaction_no,
-        @customer_code, @purchase_amount,@tax_amount, @add_fright, @less_fright, @rounded_off, @loading_charges, @cartage_paid, @other_charges, @total_amount, @customer_gst_no,@kind_attention,@quotation_validity, '', @modified_by, NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_quotation_hdr_test @mode ,@company_code, @customer_name,@customer_addr_1,@customer_addr_2,@customer_addr_3,@customer_addr_4, @customer_state,@customer_country,@customer_mobile_no,@contact_person, @Entry_date, @transaction_no,
+        @customer_code, @purchase_amount,@tax_amount, @add_fright, @less_fright, @rounded_off, @loading_charges, @cartage_paid, @other_charges, @total_amount, @customer_gst_no,@kind_attention,@quotation_validity, @authroization_status, '', @modified_by, NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
     res.json(result.recordset);
 
   } catch (err) {
@@ -10836,7 +10840,7 @@ const getAllquotehdrData = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "A") // Insert mode
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_quotation_hdr 'A',@company_code,'','','','','','','','','','','','',0,0,0,0,0,0,0,0,0,'','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_quotation_hdr_test 'A',@company_code,'','','','','','','','','','','','',0,0,0,0,0,0,0,0,0,'','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     res.json(result.recordset);
   } catch (err) {
     console.error("Error", err);
@@ -10856,7 +10860,7 @@ const quotedeletehdrData = async (req, res) => {
         .input("company_code", sql.NVarChar, company_code)
         .input("transaction_no", sql.NVarChar, transaction_no)
         .input("modified_by", sql.NVarChar, modified_by)
-        .query(`EXEC sp_quotation_hdr @mode,@company_code,'','','','','','','','','','',@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+        .query(`EXEC sp_quotation_hdr_test @mode,@company_code,'','','','','','','','','','',@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','','',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     } catch (err) {
       if (err.number === 547) {
         // Foreign key constraint violation
@@ -11970,7 +11974,7 @@ const getQuotationSearchData = async (req, res) => {
       .input("Entry_date", sql.NVarChar, Entry_date)
       .input("customer_name", sql.NVarChar, customer_name)
       .input("contact_person", sql.NVarChar, contact_person)
-      .query(`EXEC sp_quotation_hdr @mode,@company_code,@customer_name,'','','','','','','',@contact_person,@Entry_date,@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','','', NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_quotation_hdr_test @mode,@company_code,@customer_name,'','','','','','','',@contact_person,@Entry_date,@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','','','', NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
     // Send response
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset); // 200 OK if data is found
@@ -17712,7 +17716,7 @@ const addtaxInvoicehdr = async (req, res) => {
       .input("supplier_ref", sql.NVarChar, supplier_ref)
       .input("delivered_through", sql.NVarChar, delivered_through)
       .input("created_by", sql.NVarChar, created_by)
-      .query(`EXEC sp_taxInvoice_Header @mode, @company_code, @bill_date, @bill_no, @dely_chlno, @warehouse_code, @sales_type,
+      .query(`EXEC sp_taxInvoice_Header_test @mode, @company_code, @bill_date, @bill_no, @dely_chlno, @warehouse_code, @sales_type,
 @customer_code, @sale_amt, @less_frit, @less_disc, @less_amt, @net_amt, @excs_amt, @cess_amt, @dely_amt, @roff_amt, @othr_amt,
 @bill_amt, @tax_amount, @total_item, @total_qty, @pay_type, @broker_code, @tpot_code, @sman_code, @vehl_no, @mark_name,
 @payment_mode, @customer_name, @entry_no, @roff_acccode, @order_type, @deli_charge, @billTo_customer_name ,
@@ -17721,7 +17725,7 @@ const addtaxInvoicehdr = async (req, res) => {
 @shipTo_customer_addr_2, @shipTo_customer_addr_3, @shipTo_customer_addr_4, @shipTo_customer_state, @shipTo_customer_country,
 @shipTo_customer_mobile_no, @shipTo_contact_person,@tax_acc_code, @sale_amt_acc_code, @othr_amt_acc_code, @advance_amount, @shipTo_customer_code,
 @bal_amt,@invoice_type,@pending,@billTo_customer_gst_no,@ShipTo_customer_gst_no,@delivery_note,@dispatched_through,@destination,@po_no,@po_date,@document_type,
-@Performa_bill_no,@Eway_bill_no,@supplier_ref,@delivered_through,@created_by,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+@Performa_bill_no,@Eway_bill_no,@supplier_ref,@delivered_through,'',@created_by,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -17745,7 +17749,7 @@ const TaxInvoicehdrDelteData = async (req, res) => {
         .input("bill_no", bill_no)
         .input("invoice_type", invoice_type)
         .input("modified_by", modified_by)
-        .query(` EXEC sp_taxInvoice_Header 'D',@company_code,'',@bill_no,'','','','',0,0,0,0,0,0,0,0,0,0,0,0,0,0,'','','','','','','','','','','',0,'','','','','','','','','','','','','','','','','','','','','',0,'',0,@invoice_type,'','','','','','','','','','','','','','',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+        .query(` EXEC sp_taxInvoice_Header_test 'D',@company_code,'',@bill_no,'','','','',0,0,0,0,0,0,0,0,0,0,0,0,0,0,'','','','','','','','','','','',0,'','','','','','','','','','','','','','','','','','','','','',0,'',0,@invoice_type,'','','','','','','','','','','','','','','',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     } catch (err) {
       if (err.number === 547) {
         res.status(400).json("First Delete the Invoice Details and Tax Details Data");
@@ -17770,7 +17774,7 @@ const getAlltaxinvoicehdrData = async (req, res) => {
       .input("mode", sql.NVarChar, "A")
       .input("company_code", sql.NVarChar, company_code)
       .input("invoice_type", sql.NVarChar, invoice_type)
-      .query(`EXEC sp_taxInvoice_Header @mode,@company_code,'','','','','','',0,0,0,0,0,0,0,0,0,0,0,0,0,0,'','','','','','','','','','','',0,'','','','','','','','','','','','','','','','','','','','','',0,'',0,@invoice_type,'','','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_taxInvoice_Header_test @mode,@company_code,'','','','','','',0,0,0,0,0,0,0,0,0,0,0,0,0,0,'','','','','','','','','','','',0,'','','','','','','','','','','','','','','','','','','','','',0,'',0,@invoice_type,'','','','','','','','','','','','','','','',,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     res.json(result.recordset);
   } catch (err) {
     console.error("Error", err);
@@ -18072,7 +18076,7 @@ const gettaxsearchdata = async (req, res) => {
       .input("company_code", sql.NVarChar, company_code)
       .input("invoice_type", sql.NVarChar, invoice_type)
       .query(`
-        EXEC sp_taxInvoice_Header 'sc',@company_code,@bill_date,@bill_no,'','',@sales_type,'',0,0,0,0,0,0,0,0,0,0,0,0,0,0,@pay_type,'','','','','','','','','','',0,@billTo_customer_name,'','','','','','','','',@shipTo_customer_name,'','','','','','','','','','','',0,'',0,@invoice_type,'','','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
+        EXEC sp_taxInvoice_Header_test 'sc',@company_code,@bill_date,@bill_no,'','',@sales_type,'',0,0,0,0,0,0,0,0,0,0,0,0,0,0,@pay_type,'','','','','','','','','','',0,@billTo_customer_name,'','','','','','','','',@shipTo_customer_name,'','','','','','','','','','','',0,'',0,@invoice_type,'','','','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
     // Send response
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset); // 200 OK if data is found
@@ -23274,7 +23278,7 @@ const getDeletedQuotationSearchData = async (req, res) => {
       .input("Entry_date", sql.NVarChar, Entry_date)
       .input("customer_name", sql.NVarChar, customer_name)
       .input("contact_person", sql.NVarChar, contact_person)
-      .query(`EXEC sp_quotation_hdr @mode,@company_code,@customer_name,'','','','','','','',@contact_person,@Entry_date,@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','','', NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_quotation_hdr_test @mode,@company_code,@customer_name,'','','','','','','',@contact_person,@Entry_date,@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','','','', NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -23301,7 +23305,7 @@ const getDeletedTaxInvoiceSearchData = async (req, res) => {
       .input("shipTo_customer_name", sql.NVarChar, shipTo_customer_name)
       .input("company_code", sql.NVarChar, company_code)
       .input("invoice_type", sql.NVarChar, invoice_type)
-      .query(`EXEC sp_taxInvoice_Header @mode,@company_code,@bill_date,@bill_no,'','',@sales_type,'',0,0,0,0,0,0,0,0,0,0,0,0,0,0,@pay_type,'','','','','','','','','','',0,@billTo_customer_name,'','','','','','','','',@shipTo_customer_name,'','','','','','','','','','','',0,'',0,@invoice_type,'','','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
+      .query(`EXEC sp_taxInvoice_Header_test @mode,@company_code,@bill_date,@bill_no,'','',@sales_type,'',0,0,0,0,0,0,0,0,0,0,0,0,0,0,@pay_type,'','','','','','','','','','',0,@billTo_customer_name,'','','','','','','','',@shipTo_customer_name,'','','','','','','','','','','',0,'',0,@invoice_type,'','','','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -26903,7 +26907,7 @@ const TaxInvoiceUpdate = async (req, res) => {
     billTo_customer_addr_4, billTo_customer_state, billTo_customer_country, billTo_customer_mobile_no, billTo_contact_person, shipTo_customer_name, shipTo_customer_addr_1, shipTo_customer_addr_2, shipTo_customer_addr_3,
     shipTo_customer_addr_4, shipTo_customer_state, shipTo_customer_country, shipTo_customer_mobile_no, shipTo_contact_person, tax_acc_code, sale_amt_acc_code, othr_amt_acc_code, advance_amount, shipTo_customer_code,
     bal_amt, invoice_type, pending, billTo_customer_gst_no, ShipTo_customer_gst_no, delivery_note, dispatched_through, destination, po_no, po_date, document_type,
-    Performa_bill_no, Eway_bill_no, supplier_ref, delivered_through, created_by, modified_by } = req.body;
+    Performa_bill_no, Eway_bill_no, supplier_ref, delivered_through, authroization_status, created_by, modified_by } = req.body;
   try {
     const pool = await connection.connectToDatabase();
 
@@ -26981,9 +26985,10 @@ const TaxInvoiceUpdate = async (req, res) => {
       .input("Eway_bill_no", sql.NVarChar, Eway_bill_no)
       .input("supplier_ref", sql.NVarChar, supplier_ref)
       .input("delivered_through", sql.NVarChar, delivered_through)
+      .input("authroization_status", sql.NVarChar, authroization_status)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
-      .query(`EXEC sp_taxInvoice_Header @mode, @company_code, @bill_date, @bill_no, @dely_chlno, @warehouse_code, @sales_type,
+      .query(`EXEC sp_taxInvoice_Header_test @mode, @company_code, @bill_date, @bill_no, @dely_chlno, @warehouse_code, @sales_type,
               @customer_code, @sale_amt, @less_frit, @less_disc, @less_amt, @net_amt,@excs_amt, @cess_amt, @dely_amt, @roff_amt, @othr_amt,
               @bill_amt, @tax_amount, @total_item, @total_qty, @pay_type, @broker_code,@tpot_code, @sman_code, @vehl_no, @mark_name,
               @payment_mode, @customer_name, @entry_no, @roff_acccode, @order_type,@deli_charge, @billTo_customer_name ,
@@ -26992,7 +26997,7 @@ const TaxInvoiceUpdate = async (req, res) => {
               @shipTo_customer_addr_2, @shipTo_customer_addr_3, @shipTo_customer_addr_4,@shipTo_customer_state, @shipTo_customer_country,
               @shipTo_customer_mobile_no, @shipTo_contact_person,@tax_acc_code,@sale_amt_acc_code, @othr_amt_acc_code, @advance_amount, @shipTo_customer_code,
               @bal_amt,@invoice_type,@pending,@billTo_customer_gst_no,@ShipTo_customer_gst_no,@delivery_note,@dispatched_through,@destination,@po_no,@po_date,@document_type,
-              @Performa_bill_no,@Eway_bill_no,@supplier_ref,@delivered_through,@created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+              @Performa_bill_no,@Eway_bill_no,@supplier_ref,@delivered_through,@authroization_status,@created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     res.json({ success: true, message: "Data inserted successfully" });
   } catch (err) {
     console.error("Error", err);
@@ -32528,7 +32533,614 @@ const updateStatusPurchaseOrder = async (req, res) => {
   }
 };
 //Code ended by pavun on 26-10-2026 
+//Code added by SakthiGanesh J on 30-10-2026 
+// ==========================================
+// BANK STATEMENT & RECONCILIATION MODULE
+// ==========================================
 
+const uploadBankStatement = async (req, res) => {
+  const { 
+    BankStatementId, TransactionDate, BankAccountId, StatementStartDate, StatementEndDate, CurrencyCode, 
+    StatementFormat, ImportMethod, FileName, FilePath, FileSizeKB, OpeningBalance, ClosingBalance, 
+    TotalRecords, ValidRecords, InvalidRecords, ImportStatus, DuplicateCheckEnabled, AutoMapColumnsEnabled, 
+    ImportedDate, Remarks, udd_remarks, company_code, location_code, created_by, created_date,
+    transactions // CSV data array frontend-la irunthu varum
+  } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    
+    // 1. Insert Header
+    const headerResult = await pool.request()
+      .input("mode", sql.NVarChar, "I")
+      .input("BankStatementId", sql.NVarChar, BankStatementId || "")
+      .input("TransactionDate", sql.Date, TransactionDate)
+      .input("BankAccountId", sql.NVarChar, BankAccountId)
+      .input("StatementStartDate", sql.Date, StatementStartDate)
+      .input("StatementEndDate", sql.Date, StatementEndDate)
+      .input("CurrencyCode", sql.NVarChar, CurrencyCode)
+      .input("StatementFormat", sql.NVarChar, StatementFormat)
+      .input("ImportMethod", sql.NVarChar, ImportMethod)
+      .input("FileName", sql.NVarChar, FileName)
+      .input("FilePath", sql.NVarChar, FilePath || "")
+      .input("FileSizeKB", sql.Decimal(18, 2), FileSizeKB || 0)
+      .input("OpeningBalance", sql.Decimal(18, 2), OpeningBalance || 0)
+      .input("ClosingBalance", sql.Decimal(18, 2), ClosingBalance || 0)
+      .input("TotalRecords", sql.Int, transactions ? transactions.length : (TotalRecords || 0))
+      .input("ValidRecords", sql.Int, ValidRecords || 0)
+      .input("InvalidRecords", sql.Int, InvalidRecords || 0)
+      .input("ImportStatus", sql.NVarChar, ImportStatus || "Completed")
+      .input("DuplicateCheckEnabled", sql.Bit, DuplicateCheckEnabled || 1)
+      .input("AutoMapColumnsEnabled", sql.Bit, AutoMapColumnsEnabled || 1)
+      .input("ImportedDate", sql.Date, ImportedDate || new Date())
+      .input("Remarks", sql.NVarChar, Remarks || "")
+      .input("udd_remarks", sql.Bit, udd_remarks || 0)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("created_by", sql.NVarChar, created_by)
+      .input("created_date", sql.DateTime, created_date || new Date())
+      .query(`EXEC sp_BankStatementUpload @mode, @BankStatementId, @TransactionDate, @BankAccountId, @StatementStartDate, @StatementEndDate, @CurrencyCode, @StatementFormat, @ImportMethod, @FileName, @FilePath, @FileSizeKB, @OpeningBalance, @ClosingBalance, @TotalRecords, @ValidRecords, @InvalidRecords, @ImportStatus, @DuplicateCheckEnabled, @AutoMapColumnsEnabled, @ImportedDate, @Remarks, @udd_remarks, @company_code, @location_code, @created_by, @created_date, '', ''`);
+
+    // Get Generated Header ID (Make sure your SP returns the ID using SELECT @generatedtransaction_no)
+    let generatedBankStatementId = BankStatementId;
+    if (headerResult.recordset && headerResult.recordset.length > 0) {
+      generatedBankStatementId = Object.values(headerResult.recordset[0])[0];
+    }
+
+    // 2. Insert Transactions Row by Row
+    if (transactions && transactions.length > 0 && generatedBankStatementId) {
+      for (const txn of transactions) {
+        await pool.request()
+          .input("mode", sql.NVarChar, "I")
+          .input("StatementTransactionId", sql.NVarChar, "")
+          .input("BankStatementId", sql.NVarChar, generatedBankStatementId)
+          .input("TransactionDate", sql.Date, txn.TransactionDate || TransactionDate)
+          .input("ValueDate", sql.Date, txn.ValueDate || TransactionDate)
+          .input("BankReference", sql.NVarChar, txn.BankReference || "")
+          .input("Description", sql.NVarChar, txn.Description || "")
+          .input("DebitAmount", sql.Decimal(18, 2), txn.DebitAmount || 0)
+          .input("CreditAmount", sql.Decimal(18, 2), txn.CreditAmount || 0)
+          .input("BalanceAmount", sql.Decimal(18, 2), txn.BalanceAmount || 0)
+          .input("ERPReference", sql.NVarChar, "UNASSIGNED")
+          .input("ERPTransactionType", sql.NVarChar, "")
+          .input("TransactionType", sql.NVarChar, "")
+          .input("TransactionStatus", sql.NVarChar, "Unmatched")
+          .input("IsDuplicate", sql.Bit, 0)
+          .input("IsMatched", sql.Bit, 0)
+          .input("MatchedTransactionId", sql.NVarChar, "")
+          .input("ExceptionReason", sql.NVarChar, "")
+          .input("ImportedDate", sql.Date, ImportedDate || new Date())
+          .input("company_code", sql.NVarChar, company_code)
+          .input("location_code", sql.NVarChar, location_code)
+          .input("created_by", sql.NVarChar, created_by)
+          .input("created_date", sql.DateTime, created_date || new Date())
+          .query(`EXEC sp_BankStatementTransaction @mode, @StatementTransactionId, @BankStatementId, @TransactionDate, @ValueDate, @BankReference, @Description, @DebitAmount, @CreditAmount, @BalanceAmount, @ERPReference, @ERPTransactionType, @TransactionType, @TransactionStatus, @IsDuplicate, @IsMatched, @MatchedTransactionId, @ExceptionReason, @ImportedDate, @company_code, @location_code, @created_by, @created_date, '', ''`);
+      }
+    }
+
+    res.status(200).json({ 
+      success: true, 
+      message: "Bank Statement and Transactions inserted successfully", 
+      bankStatementId: generatedBankStatementId,
+      stagedTransactions: transactions // Send back to update React grid
+    });
+  } catch (err) {
+    console.error("Error during BankStatementUpload insert:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const getBankReconciliationData = async (req, res) => {
+  const { company_code, location_code, filter_status } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+    
+    // Fetch Header KPIs
+    const headerResult = await pool.request()
+      .input("mode", sql.NVarChar, "A")
+      .query(`EXEC sp_BankReconciliation @mode, '', '', '', '', '', '', '', '', 0, 0, 0, 0, '', '', '', '', '${company_code}', '${location_code}', '', '', '', ''`);
+
+    // Fetch Transactions
+    const detailsResult = await pool.request()
+      .input("mode", sql.NVarChar, "A")
+      .query(`EXEC sp_BankReconciliationTransaction @mode, '', '', '', 0, '', '', '', '', '', '', 0, 0, 0, '', '', '', '', '', '', '', '', '', '', '', '${company_code}', '${location_code}', '', '', '', ''`);
+
+    res.status(200).json({
+      summary: headerResult.recordset[0] || {},
+      transactions: detailsResult.recordset.filter(t => filter_status === 'All' || t.TransactionStatus === filter_status)
+    });
+  } catch (err) {
+    console.error("Error in getBankReconciliationData:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const toggleTransactionMatch = async (req, res) => {
+  const { company_code, location_code, modified_by, transactionId, isMatched } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+    await pool.request()
+      .input("mode", sql.NVarChar, "U")
+      .input("BankReconciliationTransaction", sql.NVarChar, transactionId)
+      .input("TransactionStatus", sql.NVarChar, isMatched ? 'Matched' : 'Unmatched')
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("modified_by", sql.NVarChar, modified_by)
+      .query(`EXEC sp_BankReconciliationTransaction @mode, @BankReconciliationTransaction, '', '', 0, '', '', '', '', '', '', 0, 0, 0, @TransactionStatus, '', '', '', '', '', '', '', '', '', '', @company_code, @location_code, '', '', @modified_by, ''`);
+
+    res.status(200).json({ success: true, message: "Status updated successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+//Code ended by SakthiGanesh J on 30-10-2026 
+
+//Code added by SakthiGanesh J on 30-10-2026 
+const BankStatementUploadInsert = async (req, res) => {
+  const { BankStatementId, TransactionDate, BankAccountId, StatementStartDate, StatementEndDate, CurrencyCode, StatementFormat, ImportMethod, FileName, FilePath, FileSizeKB, OpeningBalance, ClosingBalance, TotalRecords, ValidRecords, InvalidRecords, ImportStatus, DuplicateCheckEnabled, AutoMapColumnsEnabled, ImportedDate, Remarks, udd_remarks, company_code, location_code, created_by, created_date } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    const result = await pool
+    .request()
+      .input("mode", sql.NVarChar, "I")
+      .input("BankStatementId", sql.NVarChar, BankStatementId)
+      .input("TransactionDate", sql.Date, TransactionDate)
+      .input("BankAccountId", sql.NVarChar, BankAccountId)
+      .input("StatementStartDate", sql.Date, StatementStartDate)
+      .input("StatementEndDate", sql.Date, StatementEndDate)
+      .input("CurrencyCode", sql.NVarChar, CurrencyCode)
+      .input("StatementFormat", sql.NVarChar, StatementFormat)
+      .input("ImportMethod", sql.NVarChar, ImportMethod)
+      .input("FileName", sql.NVarChar, FileName)
+      .input("FilePath", sql.NVarChar, FilePath)
+      .input("FileSizeKB", sql.Decimal(18, 2), FileSizeKB)
+      .input("OpeningBalance", sql.Decimal(18, 2), OpeningBalance)
+      .input("ClosingBalance", sql.Decimal(18, 2), ClosingBalance)
+      .input("TotalRecords", sql.Int, TotalRecords)
+      .input("ValidRecords", sql.Int, ValidRecords)
+      .input("InvalidRecords", sql.Int, InvalidRecords)
+      .input("ImportStatus", sql.NVarChar, ImportStatus)
+      .input("DuplicateCheckEnabled", sql.Bit, DuplicateCheckEnabled)
+      .input("AutoMapColumnsEnabled", sql.Bit, AutoMapColumnsEnabled)
+      .input("ImportedDate", sql.Date, ImportedDate)
+      .input("Remarks", sql.NVarChar, Remarks)
+      .input("udd_remarks", sql.Bit, udd_remarks)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("created_by", sql.NVarChar, created_by)
+      .input("created_date", sql.DateTime, created_date)
+      .query(`EXEC sp_BankStatementUpload @mode, @BankStatementId, @TransactionDate, @BankAccountId, @StatementStartDate, @StatementEndDate, @CurrencyCode, @StatementFormat, @ImportMethod, @FileName, @FilePath, @FileSizeKB, @OpeningBalance, @ClosingBalance, @TotalRecords, @ValidRecords, @InvalidRecords, @ImportStatus, @DuplicateCheckEnabled, @AutoMapColumnsEnabled, @ImportedDate, @Remarks, @udd_remarks, @company_code, @location_code, @created_by, @created_date, '', ''`);
+
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json(err.message);
+    }
+  } catch (err) {
+    console.error("Error during BankStatementUpload insert:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const BankStatementUploadUpdate = async (req, res) => {
+  const { BankStatementId, TransactionDate, BankAccountId, StatementStartDate, StatementEndDate, CurrencyCode, StatementFormat, ImportMethod, FileName, FilePath, FileSizeKB, OpeningBalance, ClosingBalance, TotalRecords, ValidRecords, InvalidRecords, ImportStatus, DuplicateCheckEnabled, AutoMapColumnsEnabled, ImportedDate, Remarks, udd_remarks, company_code, location_code, modified_by, modified_date } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("mode", sql.NVarChar, "U")
+      .input("BankStatementId", sql.NVarChar, BankStatementId)
+      .input("TransactionDate", sql.Date, TransactionDate)
+      .input("BankAccountId", sql.NVarChar, BankAccountId)
+      .input("StatementStartDate", sql.Date, StatementStartDate)
+      .input("StatementEndDate", sql.Date, StatementEndDate)
+      .input("CurrencyCode", sql.NVarChar, CurrencyCode)
+      .input("StatementFormat", sql.NVarChar, StatementFormat)
+      .input("ImportMethod", sql.NVarChar, ImportMethod)
+      .input("FileName", sql.NVarChar, FileName)
+      .input("FilePath", sql.NVarChar, FilePath)
+      .input("FileSizeKB", sql.Decimal(18, 2), FileSizeKB)
+      .input("OpeningBalance", sql.Decimal(18, 2), OpeningBalance)
+      .input("ClosingBalance", sql.Decimal(18, 2), ClosingBalance)
+      .input("TotalRecords", sql.Int, TotalRecords)
+      .input("ValidRecords", sql.Int, ValidRecords)
+      .input("InvalidRecords", sql.Int, InvalidRecords)
+      .input("ImportStatus", sql.NVarChar, ImportStatus)
+      .input("DuplicateCheckEnabled", sql.Bit, DuplicateCheckEnabled)
+      .input("AutoMapColumnsEnabled", sql.Bit, AutoMapColumnsEnabled)
+      .input("ImportedDate", sql.Date, ImportedDate)
+      .input("Remarks", sql.NVarChar, Remarks)
+      .input("udd_remarks", sql.Bit, udd_remarks)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("modified_by", sql.NVarChar, modified_by)
+      .input("modified_date", sql.DateTime, modified_date)
+      .query(`EXEC sp_BankStatementUpload @mode, @BankStatementId, @TransactionDate, @BankAccountId, @StatementStartDate, @StatementEndDate, @CurrencyCode, @StatementFormat, @ImportMethod, @FileName, @FilePath, @FileSizeKB, @OpeningBalance, @ClosingBalance, @TotalRecords, @ValidRecords, @InvalidRecords, @ImportStatus, @DuplicateCheckEnabled, @AutoMapColumnsEnabled, @ImportedDate, @Remarks, @udd_remarks, @company_code, @location_code, '', '', @modified_by, @modified_date`);
+
+    res.status(200).json({ success: true, message: "BankStatementUpload updated successfully" });
+  } catch (err) {
+    console.error("Error during BankStatementUpload update:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const BankStatementUploadDelete = async (req, res) => {
+  const { BankStatementId, company_code, location_code } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("mode", sql.NVarChar, "D")
+      .input("BankStatementId", sql.NVarChar, BankStatementId)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .query(`EXEC sp_BankStatementUpload @mode, @BankStatementId, '', '', '', '', '', '', '', '', '', 0, 0, 0, 0, 0, 0, '', '', '', '', '', '', @company_code, @location_code, '', '', '', ''`);
+
+    res.status(200).json({ success: true, message: "BankStatementUpload deleted successfully" });
+  } catch (err) {
+    console.error("Error during BankStatementUpload delete:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const BankStatementTransactionInsert = async (req, res) => {
+  const { StatementTransactionId, BankStatementId, TransactionDate, ValueDate, BankReference, Description, DebitAmount, CreditAmount, BalanceAmount, ERPReference, ERPTransactionType, TransactionType, TransactionStatus, IsDuplicate, IsMatched, MatchedTransactionId, ExceptionReason, ImportedDate, company_code, location_code, created_by, created_date } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("mode", sql.NVarChar, "I")
+      .input("StatementTransactionId", sql.NVarChar, StatementTransactionId)
+      .input("BankStatementId", sql.NVarChar, BankStatementId)
+      .input("TransactionDate", sql.Date, TransactionDate)
+      .input("ValueDate", sql.Date, ValueDate)
+      .input("BankReference", sql.NVarChar, BankReference)
+      .input("Description", sql.NVarChar, Description)
+      .input("DebitAmount", sql.Decimal(18, 2), DebitAmount)
+      .input("CreditAmount", sql.Decimal(18, 2), CreditAmount)
+      .input("BalanceAmount", sql.Decimal(18, 2), BalanceAmount)
+      .input("ERPReference", sql.NVarChar, ERPReference)
+      .input("ERPTransactionType", sql.NVarChar, ERPTransactionType)
+      .input("TransactionType", sql.NVarChar, TransactionType)
+      .input("TransactionStatus", sql.NVarChar, TransactionStatus)
+      .input("IsDuplicate", sql.Bit, IsDuplicate)
+      .input("IsMatched", sql.Bit, IsMatched)
+      .input("MatchedTransactionId", sql.NVarChar, MatchedTransactionId)
+      .input("ExceptionReason", sql.NVarChar, ExceptionReason)
+      .input("ImportedDate", sql.Date, ImportedDate)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("created_by", sql.NVarChar, created_by)
+      .input("created_date", sql.DateTime, created_date)
+      .query(`EXEC sp_BankStatementTransaction @mode, @StatementTransactionId, @BankStatementId, @TransactionDate, @ValueDate, @BankReference, @Description, @DebitAmount, @CreditAmount, @BalanceAmount, @ERPReference, @ERPTransactionType, @TransactionType, @TransactionStatus, @IsDuplicate, @IsMatched, @MatchedTransactionId, @ExceptionReason, @ImportedDate, @company_code, @location_code, @created_by, @created_date, '', ''`);
+
+    res.status(200).json({ success: true, message: "BankStatementTransaction inserted successfully" });
+  } catch (err) {
+    console.error("Error during BankStatementTransaction insert:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const BankStatementTransactionUpdate = async (req, res) => {
+  const { StatementTransactionId, BankStatementId, TransactionDate, ValueDate, BankReference, Description, DebitAmount, CreditAmount, BalanceAmount, ERPReference, ERPTransactionType, TransactionType, TransactionStatus, IsDuplicate, IsMatched, MatchedTransactionId, ExceptionReason, ImportedDate, company_code, location_code, modified_by, modified_date } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("mode", sql.NVarChar, "U")
+      .input("StatementTransactionId", sql.NVarChar, StatementTransactionId)
+      .input("BankStatementId", sql.NVarChar, BankStatementId)
+      .input("TransactionDate", sql.Date, TransactionDate)
+      .input("ValueDate", sql.Date, ValueDate)
+      .input("BankReference", sql.NVarChar, BankReference)
+      .input("Description", sql.NVarChar, Description)
+      .input("DebitAmount", sql.Decimal(18, 2), DebitAmount)
+      .input("CreditAmount", sql.Decimal(18, 2), CreditAmount)
+      .input("BalanceAmount", sql.Decimal(18, 2), BalanceAmount)
+      .input("ERPReference", sql.NVarChar, ERPReference)
+      .input("ERPTransactionType", sql.NVarChar, ERPTransactionType)
+      .input("TransactionType", sql.NVarChar, TransactionType)
+      .input("TransactionStatus", sql.NVarChar, TransactionStatus)
+      .input("IsDuplicate", sql.Bit, IsDuplicate)
+      .input("IsMatched", sql.Bit, IsMatched)
+      .input("MatchedTransactionId", sql.NVarChar, MatchedTransactionId)
+      .input("ExceptionReason", sql.NVarChar, ExceptionReason)
+      .input("ImportedDate", sql.Date, ImportedDate)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("modified_by", sql.NVarChar, modified_by)
+      .input("modified_date", sql.DateTime, modified_date)
+      .query(`EXEC sp_BankStatementTransaction @mode, @StatementTransactionId, @BankStatementId, @TransactionDate, @ValueDate, @BankReference, @Description, @DebitAmount, @CreditAmount, @BalanceAmount, @ERPReference, @ERPTransactionType, @TransactionType, @TransactionStatus, @IsDuplicate, @IsMatched, @MatchedTransactionId, @ExceptionReason, @ImportedDate, @company_code, @location_code, '', '', @modified_by, @modified_date`);
+
+    res.status(200).json({ success: true, message: "BankStatementTransaction updated successfully" });
+  } catch (err) {
+    console.error("Error during BankStatementTransaction update:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const BankStatementTransactionDelete = async (req, res) => {
+  const { StatementTransactionId, BankStatementId, company_code, location_code } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("mode", sql.NVarChar, "D")
+      .input("StatementTransactionId", sql.NVarChar, StatementTransactionId)
+      .input("BankStatementId", sql.NVarChar, BankStatementId)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .query(`EXEC sp_BankStatementTransaction @mode, @StatementTransactionId, @BankStatementId, '', '', '', '', 0, 0, 0, '', '', '', '', '', '', 0, '', '', @company_code, @location_code, '', '', '', ''`);
+
+    res.status(200).json({ success: true, message: "BankStatementTransaction deleted successfully" });
+  } catch (err) {
+    console.error("Error during BankStatementTransaction delete:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const getBankStatementHistory = async (req, res) => {
+  const { company_code } = req.body;
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool.request()
+      .input("mode", sql.NVarChar, "A")
+      .input("company_code", sql.NVarChar, company_code)
+      .query(`EXEC sp_BankStatementUpload @mode, '', '', '', '', '', '', '', '', '', '', 0, 0, 0, 0, 0, 0, '', 0, 0, '', '', 0, @company_code, '', '', '', '', ''`);
+      
+    if (result.recordset && result.recordset.length > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(200).json([]); // Return empty array if no data
+    }
+  } catch (err) {
+    console.error("Error fetching history:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const BankReconciliationInsert = async (req, res) => {
+  const { ReconciliationId, TransactionDate, BankAccountId, BankStatementId, ReconciliationNumber, StatementStartDate, StatementEndDate, CurrencyCode, OpeningBalance, TotalCredits, TotalDebits, BankClosingBalance, ERPClosingBalance, ReconciliationStatus, ReconciliationDate, ReconciledBy, Remarks, company_code, location_code, created_by, created_date } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("mode", sql.NVarChar, "I")
+      .input("ReconciliationId", sql.NVarChar, ReconciliationId)
+      .input("TransactionDate", sql.Date, TransactionDate)
+      .input("BankAccountId", sql.NVarChar, BankAccountId)
+      .input("BankStatementId", sql.NVarChar, BankStatementId)
+      .input("ReconciliationNumber", sql.NVarChar, ReconciliationNumber)
+      .input("StatementStartDate", sql.NVarChar, StatementStartDate)
+      .input("StatementEndDate", sql.NVarChar, StatementEndDate)
+      .input("CurrencyCode", sql.NVarChar, CurrencyCode)
+      .input("OpeningBalance", sql.Decimal(18, 2), OpeningBalance)
+      .input("TotalCredits", sql.Decimal(18, 2), TotalCredits)
+      .input("TotalDebits", sql.Decimal(18, 2), TotalDebits)
+      .input("BankClosingBalance", sql.Decimal(18, 2), BankClosingBalance)
+      .input("ERPClosingBalance", sql.Decimal(18, 2), ERPClosingBalance)
+      .input("ReconciliationStatus", sql.NVarChar, ReconciliationStatus)
+      .input("ReconciliationDate", sql.DateTime, ReconciliationDate)
+      .input("ReconciledBy", sql.NVarChar, ReconciledBy)
+      .input("Remarks", sql.NVarChar, Remarks)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("created_by", sql.NVarChar, created_by)
+      .input("created_date", sql.DateTime, created_date)
+      .query(`EXEC sp_BankReconciliation @mode, @ReconciliationId, @TransactionDate, @BankAccountId, @BankStatementId, @ReconciliationNumber, @StatementStartDate, @StatementEndDate, @CurrencyCode, @OpeningBalance, @TotalCredits, @TotalDebits, @BankClosingBalance, @ERPClosingBalance, @ReconciliationStatus, @ReconciliationDate, @ReconciledBy, @Remarks, @company_code, @location_code, @created_by, @created_date, '', ''`);
+
+    res.status(200).json({ success: true, message: "BankReconciliation inserted successfully" });
+  } catch (err) {
+    console.error("Error during BankReconciliation insert:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const BankReconciliationUpdate = async (req, res) => {
+  const { ReconciliationId, TransactionDate, BankAccountId, BankStatementId, ReconciliationNumber, StatementStartDate, StatementEndDate, CurrencyCode, OpeningBalance, TotalCredits, TotalDebits, BankClosingBalance, ERPClosingBalance, ReconciliationStatus, ReconciliationDate, ReconciledBy, Remarks, company_code, location_code, modified_by, modified_date } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("mode", sql.NVarChar, "U")
+      .input("ReconciliationId", sql.NVarChar, ReconciliationId)
+      .input("TransactionDate", sql.Date, TransactionDate)
+      .input("BankAccountId", sql.NVarChar, BankAccountId)
+      .input("BankStatementId", sql.NVarChar, BankStatementId)
+      .input("ReconciliationNumber", sql.NVarChar, ReconciliationNumber)
+      .input("StatementStartDate", sql.NVarChar, StatementStartDate)
+      .input("StatementEndDate", sql.NVarChar, StatementEndDate)
+      .input("CurrencyCode", sql.NVarChar, CurrencyCode)
+      .input("OpeningBalance", sql.Decimal(18, 2), OpeningBalance)
+      .input("TotalCredits", sql.Decimal(18, 2), TotalCredits)
+      .input("TotalDebits", sql.Decimal(18, 2), TotalDebits)
+      .input("BankClosingBalance", sql.Decimal(18, 2), BankClosingBalance)
+      .input("ERPClosingBalance", sql.Decimal(18, 2), ERPClosingBalance)
+      .input("ReconciliationStatus", sql.NVarChar, ReconciliationStatus)
+      .input("ReconciliationDate", sql.DateTime, ReconciliationDate)
+      .input("ReconciledBy", sql.NVarChar, ReconciledBy)
+      .input("Remarks", sql.NVarChar, Remarks)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("modified_by", sql.NVarChar, modified_by)
+      .input("modified_date", sql.DateTime, modified_date)
+      .query(`EXEC sp_BankReconciliation @mode, @ReconciliationId, @TransactionDate, @BankAccountId, @BankStatementId, @ReconciliationNumber, @StatementStartDate, @StatementEndDate, @CurrencyCode, @OpeningBalance, @TotalCredits, @TotalDebits, @BankClosingBalance, @ERPClosingBalance, @ReconciliationStatus, @ReconciliationDate, @ReconciledBy, @Remarks, @company_code, @location_code, '', '', @modified_by, @modified_date`);
+
+    res.status(200).json({ success: true, message: "BankReconciliation updated successfully" });
+  } catch (err) {
+    console.error("Error during BankReconciliation update:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const BankReconciliationDelete = async (req, res) => {
+  const { ReconciliationId, BankStatementId, company_code, location_code } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("mode", sql.NVarChar, "D")
+      .input("ReconciliationId", sql.NVarChar, ReconciliationId)
+      .input("BankStatementId", sql.NVarChar, BankStatementId)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .query(`EXEC sp_BankReconciliation @mode, @ReconciliationId, '', '', @BankStatementId, '', '', '', '', 0, 0, 0, 0, 0, '', '', '', '', @company_code, @location_code, '', '', '', ''`);
+
+    res.status(200).json({ success: true, message: "BankReconciliation deleted successfully" });
+  } catch (err) {
+    console.error("Error during BankReconciliation delete:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const BankReconciliationTransactionInsert = async (req, res) => {
+  const { BankReconciliationTransaction, ReconciliationId, StatementTransactionId, ERPTransactionId, ERPReference, ERPTransactionType, TransactionDate, ValueDate, BankReference, Narration, DebitAmount, CreditAmount, BalanceAmount, TransactionStatus, MatchType, MatchReason, MatchedOn, MatchedBy, IsDuplicate, ExceptionType, ExceptionRemarks, ResolutionStatus, ResolvedBy, ResolvedOn, company_code, location_code, created_by, created_date } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("mode", sql.NVarChar, "I")
+      .input("BankReconciliationTransaction", sql.NVarChar, BankReconciliationTransaction)
+      .input("ReconciliationId", sql.NVarChar, ReconciliationId)
+      .input("StatementTransactionId", sql.NVarChar, StatementTransactionId)
+      .input("ERPTransactionId", sql.NVarChar, ERPTransactionId)
+      .input("ERPReference", sql.NVarChar, ERPReference)
+      .input("ERPTransactionType", sql.NVarChar, ERPTransactionType)
+      .input("TransactionDate", sql.Date, TransactionDate)
+      .input("ValueDate", sql.Date, ValueDate)
+      .input("BankReference", sql.NVarChar, BankReference)
+      .input("Narration", sql.NVarChar, Narration)
+      .input("DebitAmount", sql.Decimal(18, 2), DebitAmount)
+      .input("CreditAmount", sql.Decimal(18, 2), CreditAmount)
+      .input("BalanceAmount", sql.Decimal(18, 2), BalanceAmount)
+      .input("TransactionStatus", sql.NVarChar, TransactionStatus)
+      .input("MatchType", sql.NVarChar, MatchType)
+      .input("MatchReason", sql.NVarChar, MatchReason)
+      .input("MatchedOn", sql.Date, MatchedOn)
+      .input("MatchedBy", sql.NVarChar, MatchedBy)
+      .input("IsDuplicate", sql.Bit, IsDuplicate)
+      .input("ExceptionType", sql.NVarChar, ExceptionType)
+      .input("ExceptionRemarks", sql.NVarChar, ExceptionRemarks)
+      .input("ResolutionStatus", sql.NVarChar, ResolutionStatus)
+      .input("ResolvedBy", sql.NVarChar, ResolvedBy)
+      .input("ResolvedOn", sql.Date, ResolvedOn)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("created_by", sql.NVarChar, created_by)
+      .input("created_date", sql.DateTime, created_date)
+      .query(`EXEC sp_BankReconciliationTransaction @mode, @BankReconciliationTransaction, @ReconciliationId, @StatementTransactionId, @ERPTransactionId, @ERPReference, @ERPTransactionType, @TransactionDate, @ValueDate, @BankReference, @Narration, @DebitAmount, @CreditAmount, @BalanceAmount, @TransactionStatus, @MatchType, @MatchReason, @MatchedOn, @MatchedBy, @IsDuplicate, @ExceptionType, @ExceptionRemarks, @ResolutionStatus, @ResolvedBy, @ResolvedOn, @company_code, @location_code, @created_by, @created_date, '', ''`);
+
+    res.status(200).json({ success: true, message: "BankReconciliationTransaction inserted successfully" });
+  } catch (err) {
+    console.error("Error during BankReconciliationTransaction insert:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const BankReconciliationTransactionUpdate = async (req, res) => {
+  const { BankReconciliationTransaction, ReconciliationId, StatementTransactionId, ERPTransactionId, ERPReference, ERPTransactionType, TransactionDate, ValueDate, BankReference, Narration, DebitAmount, CreditAmount, BalanceAmount, TransactionStatus, MatchType, MatchReason, MatchedOn, MatchedBy, IsDuplicate, ExceptionType, ExceptionRemarks, ResolutionStatus, ResolvedBy, ResolvedOn, company_code, location_code, modified_by, modified_date } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("mode", sql.NVarChar, "U")
+      .input("BankReconciliationTransaction", sql.NVarChar, BankReconciliationTransaction)
+      .input("ReconciliationId", sql.NVarChar, ReconciliationId)
+      .input("StatementTransactionId", sql.NVarChar, StatementTransactionId)
+      .input("ERPTransactionId", sql.NVarChar, ERPTransactionId)
+      .input("ERPReference", sql.NVarChar, ERPReference)
+      .input("ERPTransactionType", sql.NVarChar, ERPTransactionType)
+      .input("TransactionDate", sql.Date, TransactionDate)
+      .input("ValueDate", sql.Date, ValueDate)
+      .input("BankReference", sql.NVarChar, BankReference)
+      .input("Narration", sql.NVarChar, Narration)
+      .input("DebitAmount", sql.Decimal(18, 2), DebitAmount)
+      .input("CreditAmount", sql.Decimal(18, 2), CreditAmount)
+      .input("BalanceAmount", sql.Decimal(18, 2), BalanceAmount)
+      .input("TransactionStatus", sql.NVarChar, TransactionStatus)
+      .input("MatchType", sql.NVarChar, MatchType)
+      .input("MatchReason", sql.NVarChar, MatchReason)
+      .input("MatchedOn", sql.Date, MatchedOn)
+      .input("MatchedBy", sql.NVarChar, MatchedBy)
+      .input("IsDuplicate", sql.Bit, IsDuplicate)
+      .input("ExceptionType", sql.NVarChar, ExceptionType)
+      .input("ExceptionRemarks", sql.NVarChar, ExceptionRemarks)
+      .input("ResolutionStatus", sql.NVarChar, ResolutionStatus)
+      .input("ResolvedBy", sql.NVarChar, ResolvedBy)
+      .input("ResolvedOn", sql.Date, ResolvedOn)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("modified_by", sql.NVarChar, modified_by)
+      .input("modified_date", sql.DateTime, modified_date)
+      .query(`EXEC sp_BankReconciliationTransaction @mode, @BankReconciliationTransaction, @ReconciliationId, @StatementTransactionId, @ERPTransactionId, @ERPReference, @ERPTransactionType, @TransactionDate, @ValueDate, @BankReference, @Narration, @DebitAmount, @CreditAmount, @BalanceAmount, @TransactionStatus, @MatchType, @MatchReason, @MatchedOn, @MatchedBy, @IsDuplicate, @ExceptionType, @ExceptionRemarks, @ResolutionStatus, @ResolvedBy, @ResolvedOn, @company_code, @location_code, '', '', @modified_by, @modified_date`);
+
+    res.status(200).json({ success: true, message: "BankReconciliationTransaction updated successfully" });
+  } catch (err) {
+    console.error("Error during BankReconciliationTransaction update:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const BankReconciliationTransactionDelete = async (req, res) => {
+  const { BankReconciliationTransaction, ReconciliationId, StatementTransactionId, company_code, location_code } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("mode", sql.NVarChar, "D")
+      .input("BankReconciliationTransaction", sql.NVarChar, BankReconciliationTransaction)
+      .input("ReconciliationId", sql.NVarChar, ReconciliationId)
+      .input("StatementTransactionId", sql.NVarChar, StatementTransactionId)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .query(`EXEC sp_BankReconciliationTransaction @mode, @BankReconciliationTransaction, @ReconciliationId, @StatementTransactionId, 0, '', '', '', '', '', '', 0, 0, 0, '', '', '', '', '', '', '', '', '', '', '', @company_code, @location_code, '', '', '', ''`);
+
+    res.status(200).json({ success: true, message: "BankReconciliationTransaction deleted successfully" });
+  } catch (err) {
+    console.error("Error during BankReconciliationTransaction delete:", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const get_ImportMethod = async (req, res) => {
+  const { company_code } = req.body;
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("company_code", sql.NVarChar, company_code)
+      .query(
+        "EXEC sp_attribute_Info 'F',@company_code,'Import Method','','','', '' , 0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL"
+      );
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const get_StatementFormat = async (req, res) => {
+  const { company_code } = req.body;
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("company_code", sql.NVarChar, company_code)
+      .query(
+        "EXEC sp_attribute_Info 'F',@company_code,'Statement Format','','','', '' , 0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL"
+      );
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+//Code ended by SakthiGanesh J on 30-10-2026 
 module.exports = {
   login,
   forgetPassword,
@@ -33569,6 +34181,24 @@ module.exports = {
   getReportSection,
   getReportLine,
   getCurrencyCode,
-  getChartOfAccountsSC
+  getChartOfAccountsSC,
+  uploadBankStatement,
+  getBankReconciliationData,
+  toggleTransactionMatch, 
+  BankStatementUploadInsert, 
+  BankStatementUploadUpdate, 
+  BankStatementUploadDelete,
+  BankStatementTransactionInsert, 
+  BankStatementTransactionUpdate, 
+  BankStatementTransactionDelete,
+  getBankStatementHistory,
+  BankReconciliationInsert, 
+  BankReconciliationUpdate, 
+  BankReconciliationDelete,
+  BankReconciliationTransactionInsert, 
+  BankReconciliationTransactionUpdate, 
+  BankReconciliationTransactionDelete,
+  get_ImportMethod,
+  get_StatementFormat
 
 };

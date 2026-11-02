@@ -3771,6 +3771,7 @@ const AuthorizedTaxDetails = async () => {
                     <Select
                       id="returnType"
                       className="exp-input-field col-md-6 mt-2"
+                      classNamePrefix="react-select"
                       placeholder=""
                       required
                       value={selectedscreens}
@@ -3897,11 +3898,12 @@ const AuthorizedTaxDetails = async () => {
               <div className="row  ms-3 me-3">
                 {showDropdown && (
                   <div className="col-md-3 form-group mb-2">
-     <label className={`${deleteError && !selectedStatus   ? 'red' : ''}`}>Status<span className="text-danger">*</span></label>
+                  <label className={`${deleteError && !selectedStatus   ? 'red' : ''}`}>Status<span className="text-danger">*</span></label>
                     <div class="exp-form-floating">
                        <div title="Select the Status">
                       <Select
                         id="returnType"
+                        classNamePrefix="react-select"
                         className="exp-input-field"
                         placeholder="Select an option"
                         options={status}
@@ -3982,6 +3984,7 @@ const AuthorizedTaxDetails = async () => {
                     <div title="Select the pay type">
                     <Select
                       id="payType"
+                      classNamePrefix="react-select"
                       value={selectedPay}
                       onChange={handleChangePay}
                       options={filteredOptionPay}
@@ -4003,6 +4006,7 @@ const AuthorizedTaxDetails = async () => {
                     <div title="Select the Sales type">
                     <Select
                       id="salesType"
+                      classNamePrefix="react-select"
                       value={selectedSales}
                       onChange={handleChangeSales}
                       options={filteredOptionSales}
@@ -4024,6 +4028,7 @@ const AuthorizedTaxDetails = async () => {
                      <div title="Select the Order Type">
                     <Select
                       id="ordertype"
+                      classNamePrefix="react-select"
                       value={selectedOrder}
                       onChange={handleChangeOrder}
                       options={filteredOptionOrder}
@@ -4082,6 +4087,7 @@ const AuthorizedTaxDetails = async () => {
                      <div title="Select the Warehouse">
                     <Select
                       id="returnType"
+                      classNamePrefix="react-select"
                       className="exp-input-field"
                       placeholder=""
                       required
@@ -4100,6 +4106,7 @@ const AuthorizedTaxDetails = async () => {
                      <div title="Select the Sales mode">
                     <Select
                       id="salesMode"
+                      classNamePrefix="react-select"
                       className="exp-input-field"
                       placeholder=""
                       required
@@ -4210,6 +4217,7 @@ const AuthorizedTaxDetails = async () => {
                       <label htmlFor="totalBillAmount" className="">Item Code</label>
                       <Select
                         id="salesMode"
+                        classNamePrefix="react-select"
                         className="exp-input-field"
                         placeholder=""
                         required
@@ -4235,12 +4243,13 @@ const AuthorizedTaxDetails = async () => {
                   </div>
                 </div>
                 <div className="col-md-6">
-                  <div className="ag-theme-alpine" style={{ height: 200, width: "100%" }}>
+                  <div className="ag-theme-alpine" style={{ height: 155, width: "100%" }}>
                     <AgGridReact
                       columnDefs={columnDefsTermsConditions}
                       rowData={rowDataTerms}
                       defaultColDef={{ editable: !showExcelButton }}
-                      rowHeight={30}
+                      headerHeight={28}
+                      rowHeight={25}
                       onRowClicked={handleRowClicked}
                     />
                   </div>
@@ -4278,7 +4287,7 @@ const AuthorizedTaxDetails = async () => {
                   </icon>
                 </div>
               </div>
-              <div className="ag-theme-alpine" style={{ height: 437, width: "100%" }}>
+              <div className="ag-theme-alpine" style={{ height: 280, width: "100%" }}>
                 <AgGridReact
                   columnDefs={activeTable === 'myTable' ? columnDefs : columnDefsTax}
                   rowData={activeTable === 'myTable' ? rowData : rowDataTax}
@@ -4292,6 +4301,8 @@ const AuthorizedTaxDetails = async () => {
                     handleCellValueChanged(event);
                   }}
                   onRowClicked={handleRowClicked}
+                  headerHeight={28}
+                  rowHeight={25}
                 />
               </div>
             </div>
@@ -4327,6 +4338,7 @@ const AuthorizedTaxDetails = async () => {
                 <div class="exp-form-floating">
                   <Select
                     id="returnType"
+                    classNamePrefix="react-select"
                     className="exp-input-field"
                     placeholder=""
                     required
@@ -4601,7 +4613,8 @@ const AuthorizedTaxDetails = async () => {
                   <AgGridReact
                     columnDefs={deletedTermsConditions}
                     rowData={deletedRowDataTerms}
-                    rowHeight={28}
+                    headerHeight={28}
+                    rowHeight={25}
                     onRowClicked={handleRowClicked}
                   />
                 </div>
@@ -4625,12 +4638,14 @@ const AuthorizedTaxDetails = async () => {
                 </purButton>
               </div>
             </div>
-            <div className="ag-theme-alpine" style={{ height: 437, width: "100%" }}>
+            <div className="ag-theme-alpine" style={{ height: 280, width: "100%" }}>
               <AgGridReact
                 columnDefs={activeTable === 'myTable' ? columnDeletdDef : columnDelDefsTax}
                 rowData={activeTable === 'myTable' ? rowDataDelete : rowDataTaxDelete}
                 defaultColDef={{ editable: true, resizable: true }}
                 rowSelection="Single"
+                headerHeight={28}
+                rowHeight={25}
               />
             </div>
           </div>

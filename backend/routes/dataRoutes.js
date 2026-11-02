@@ -307,7 +307,7 @@ router.post("/addAccountName",dataController.addAccountName)
 router.post("/getAccNameSearch",dataController.getAccNameSearch)
 router.post("/updateAccName",dataController.updateAccName)
 router.post("/AccNameDelete",dataController.AccNameDelete)
-router.get("/AllAccNameData",dataController.getAllAccNameData)
+router.post("/AllAccNameData",dataController.getAllAccNameData)
 router.post("/getsalesreturnsearchViewdata",dataController.getsalesreturnsearchViewdata)
 router.post("/SalesReturnTaxView",dataController.SalesReturnTaxView)
 router.post("/SalesReturnDetailView",dataController.SalesReturnDetailView)
@@ -1062,6 +1062,27 @@ router.post("/insertReceivedGoods", dataController.insertReceivedGoods)
 router.post("/getAmendmentNumberDrop", dataController.getAmendmentNumberDrop)
 router.post("/authorizeReceivedGoods", dataController.authorizeReceivedGoods)
 router.post("/updateStatusPurchaseOrder", dataController.updateStatusPurchaseOrder)
+// ==========================================
+// BANKING & RECONCILIATION ROUTES
+// ==========================================
+router.post("/uploadBankStatement", dataController.uploadBankStatement);
+router.post("/getBankReconciliationData", dataController.getBankReconciliationData);
+router.post("/toggleTransactionMatch", dataController.toggleTransactionMatch);
+router.post("/BankStatementUploadInsert", dataController.BankStatementUploadInsert);
+router.post("/BankStatementUploadUpdate", dataController.BankStatementUploadUpdate);
+router.post("/BankStatementUploadDelete", dataController.BankStatementUploadDelete);
+router.post("/BankStatementTransactionInsert", dataController.BankStatementTransactionInsert);
+router.post("/BankStatementTransactionUpdate", dataController.BankStatementTransactionUpdate);
+router.post("/BankStatementTransactionDelete", dataController.BankStatementTransactionDelete);
+router.post("/getBankStatementHistory", dataController.getBankStatementHistory);
+router.post("/BankReconciliationInsert", dataController.BankReconciliationInsert);
+router.post("/BankReconciliationUpdate", dataController.BankReconciliationUpdate);
+router.post("/BankReconciliationDelete", dataController.BankReconciliationDelete);
+router.post("/BankReconciliationTransactionInsert", dataController.BankReconciliationTransactionInsert);
+router.post("/BankReconciliationTransactionUpdate", dataController.BankReconciliationTransactionUpdate);
+router.post("/BankReconciliationTransactionDelete", dataController.BankReconciliationTransactionDelete);
+router.post("/get_StatementFormat", dataController.get_StatementFormat);
+router.post("/get_ImportMethod", dataController.get_ImportMethod);
 
 
 module.exports = router;
