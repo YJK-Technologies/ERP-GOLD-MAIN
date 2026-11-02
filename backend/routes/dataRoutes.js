@@ -1083,6 +1083,7 @@ router.post("/BankReconciliationTransactionUpdate", dataController.BankReconcili
 router.post("/BankReconciliationTransactionDelete", dataController.BankReconciliationTransactionDelete);
 router.post("/get_StatementFormat", dataController.get_StatementFormat);
 router.post("/get_ImportMethod", dataController.get_ImportMethod);
+router.get("/getWarehouseCodeDrop", dataController.getWarehouseCodeDrop);
 
 
 module.exports = router;

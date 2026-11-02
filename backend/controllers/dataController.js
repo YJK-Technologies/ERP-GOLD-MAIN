@@ -33141,6 +33141,27 @@ const get_StatementFormat = async (req, res) => {
   }
 };
 //Code ended by SakthiGanesh J on 30-10-2026 
+
+//Code added by Dinesh Gokul on 02-11-2026 
+const getWarehouseCodeDrop = async (req, res) => {
+  try {
+    await connection.connectToDatabase();
+    const company_code = req.query.company_code; // Get company code from request
+    const request = new sql.Request();
+    request.input("company_code", sql.NVarChar, company_code);
+    const result = await request.query(`
+      EXEC sp_warehouse_info  'F', @company_code, '', '', '', '', '', '', '', '', '', '', '', '', '', ''
+    `);
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({
+      message: err.message || "Internal Server Error"
+    });
+  }
+};
+//Code ended by Dinesh Gokul on 02-11-2026 
 module.exports = {
   login,
   forgetPassword,
@@ -34199,6 +34220,7 @@ module.exports = {
   BankReconciliationTransactionUpdate, 
   BankReconciliationTransactionDelete,
   get_ImportMethod,
-  get_StatementFormat
+  get_StatementFormat,
+  getWarehouseCodeDrop
 
 };

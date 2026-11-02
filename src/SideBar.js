@@ -2077,6 +2077,32 @@ const Sidebar = () => {
                   </Link>
                 )}
               </div>
+              <div className=" ms-3">
+                {screenType.includes("DataWiseStock") && (
+                  <Link
+                    to="/ItemLedgerRep"
+                    className="nav-link"
+                    title="Data Wise Item Stock"
+                  >
+                    <div class="menu-item">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        fill="currentColor"
+                        className="me-4"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4zM12 14c3.87 0 7 1.28 7 3v1H5v-1c0-1.72 3.13-3 7-3z" />
+                      </svg>
+                      <span className={collapsed ? "hidden" : ""}>
+                        {" "}
+                        Item Ledger Analysis
+                      </span>
+                    </div>
+                  </Link>
+                )}
+              </div>
             </div>
           </>
         )}
