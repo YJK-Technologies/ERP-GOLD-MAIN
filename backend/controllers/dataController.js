@@ -33523,6 +33523,31 @@ const searchCustomerReceiptAccDet = async (req, res) => {
   }
 };
 //Code ended by SakthiGanesh on 03-11-2026 
+
+//Code added by Dinesh Gokul on 04-11-2026 
+const getCurrencyCodeDrop = async (req, res) => {
+  const { company_code, location_code } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "CC")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .query(`EXEC sp_Currency @mode, 0, '', '', '', 0, '', '', '', @company_code, @location_code, '', '', '', ''`);
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json("Data not found");
+    }
+  } catch (err) {
+    console.error("Error", err.message);
+    return res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+//Code ended by Dinesh Gokul on 04-11-2026 
+
 module.exports = {
   login,
   forgetPassword,
@@ -34594,6 +34619,7 @@ module.exports = {
   addCustomerReceiptAccDet,
   updCustomerReceiptAccDet,
   deleteCustomerReceiptAccDet,
-  searchCustomerReceiptAccDet
+  searchCustomerReceiptAccDet,
+  getCurrencyCodeDrop
 
 };

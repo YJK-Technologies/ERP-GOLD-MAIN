@@ -212,6 +212,7 @@ import BankStatement from './BankStatement.js'
 import BankReconciliation from './BankReconciliation.js'
 import ItemLedgerRep from './ItemLedgerReport.js'
 import CustomerReceipts from './CustomerReceipts.js'
+import CustomerLedger from './CustomerLedger.js'
 
 function Main() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
@@ -464,6 +465,7 @@ function Main() {
      { path: "/BankReconciliation", component: <BankReconciliation /> },
      { path: "/ItemLedgerRep", component: <ItemLedgerRep /> },
      { path: "/CustomerReceipts", component: <CustomerReceipts /> },
+     { path: "/CustomerLedger", component: <CustomerLedger /> },
   ];
  
   return (

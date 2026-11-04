@@ -68,7 +68,7 @@ function SalesReturn() {
   const [showAsterisk, setShowAsterisk] = useState(false);
   const [authError, setAuthError] = useState("");
   const [transaction_no, settransaction_no] = useState("");
-  
+
 
   //code added by Harish purpose of set user permisssion
   const permissions = JSON.parse(sessionStorage.getItem('permissions')) || {};
@@ -100,71 +100,71 @@ function SalesReturn() {
   };
 
 
-  
-    useEffect(() => {
-          const handleKeyDown = (e) => {
-            // 1. Ensure keys only trigger on F-keys
-            if (!['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F8'].includes(e.key)) {
-              return;
-            }
-      
-            // 2. Prevent default browser shortcut actions (e.g., F1 Help, F5 Refresh)
-            e.preventDefault();
-            e.stopPropagation();
-      
-            // 3. Prevent execution if screen is currently loading
-            if (loading) return;
-      
-            switch (e.key) {
-              case 'F1':
-                // Open Item Search Popup
-                setOpen(true); 
-                break;
-      
-              // case 'F2':
-              //   // Open Customer Search Popup
-              //   setOpen2(true); 
-              //   break;
-      
-              case 'F3':
-                // New / Reset Sales Invoice Form
-                if (window.confirm("Start a new adjustment? Unsaved changes will be lost.")) {
-                  handleReload(); 
-                }
-                break;  
-      
-              case 'F4':
-                // Save / Complete Invoice (Same logic as Save Button)
-                handleSaveButtonClick(); 
-                break;
-      
-              case 'F5':
-                // Search Existing Invoices to Edit
-                setOpen1(true); 
-                break;
-                
-              case 'F8':
-                // Print Invoice
-                if (showExcelButton && transaction_no) {
-                  generateReport();
-                } else {
-                  alert("Please save the invoice before printing.");
-                }
-                break;
-      
-              default:
-                break;
-            }
-          };
-      
-          // Attach listener
-          window.addEventListener('keydown', handleKeyDown);
-      
-          // Clean up listener on unmount
-          return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-          };
-        }, [loading, showExcelButton, transaction_no, rowData]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // 1. Ensure keys only trigger on F-keys
+      if (!['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F8'].includes(e.key)) {
+        return;
+      }
+
+      // 2. Prevent default browser shortcut actions (e.g., F1 Help, F5 Refresh)
+      e.preventDefault();
+      e.stopPropagation();
+
+      // 3. Prevent execution if screen is currently loading
+      if (loading) return;
+
+      switch (e.key) {
+        case 'F1':
+          // Open Item Search Popup
+          setOpen(true);
+          break;
+
+        // case 'F2':
+        //   // Open Customer Search Popup
+        //   setOpen2(true); 
+        //   break;
+
+        case 'F3':
+          // New / Reset Sales Invoice Form
+          if (window.confirm("Start a new adjustment? Unsaved changes will be lost.")) {
+            handleReload();
+          }
+          break;
+
+        case 'F4':
+          // Save / Complete Invoice (Same logic as Save Button)
+          handleSaveButtonClick();
+          break;
+
+        case 'F5':
+          // Search Existing Invoices to Edit
+          setOpen1(true);
+          break;
+
+        case 'F8':
+          // Print Invoice
+          if (showExcelButton && transaction_no) {
+            generateReport();
+          } else {
+            alert("Please save the invoice before printing.");
+          }
+          break;
+
+        default:
+          break;
+      }
+    };
+
+    // Attach listener
+    window.addEventListener('keydown', handleKeyDown);
+
+    // Clean up listener on unmount
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [loading, showExcelButton, transaction_no, rowData]);
 
   const onCellValueChanged = (params) => {
     if (params.colDef.field === 'returnQty') {
@@ -444,7 +444,8 @@ function SalesReturn() {
       headerName: 'S.No',
       field: 'serialNumber',
       maxWidth: 80,
-      editable: false
+      editable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: '',
@@ -480,7 +481,8 @@ function SalesReturn() {
       // minWidth: 150,
       // maxWidth: 150,
       filter: true,
-      editable: false
+      editable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Warehouse',
@@ -496,7 +498,8 @@ function SalesReturn() {
       editable: false,
       // maxWidth: 170,
       filter: true,
-      editable: false
+      editable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Return Qty',
@@ -505,6 +508,7 @@ function SalesReturn() {
       filter: true,
       // maxWidth: 170,
       valueSetter: qtyValueSetter,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Total Weight ',
@@ -512,7 +516,8 @@ function SalesReturn() {
       editable: false,
       filter: true,
       // maxWidth: 170,
-      editable: false
+      editable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Return Weight',
@@ -520,7 +525,8 @@ function SalesReturn() {
       editable: false,
       filter: true,
       // maxWidth: 170,
-      editable: false
+      editable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Unit Price',
@@ -528,7 +534,8 @@ function SalesReturn() {
       editable: false,
       filter: true,
       // maxWidth: 170,
-      editable: false
+      editable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Tax Amount',
@@ -536,7 +543,8 @@ function SalesReturn() {
       editable: false,
       filter: true,
       // maxWidth: 130,
-      editable: false
+      editable: false,
+      cellStyle: { textAlign: 'right' },
     },
 
     {
@@ -545,7 +553,8 @@ function SalesReturn() {
       editable: false,
       filter: true,
       // maxWidth: 130,
-      editable: false
+      editable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Sales Tax Type',
@@ -572,7 +581,8 @@ function SalesReturn() {
       // maxWidth: 150,
       filter: true,
       hide: true,
-      editable: false
+      editable: false,
+      cellStyle: { textAlign: 'right' },
     },
   ];
 
@@ -582,13 +592,15 @@ function SalesReturn() {
       headerName: 'S.No',
       field: 'ItemSNO',
       maxWidth: 80,
-      editable: false
+      editable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Tax S.No',
       field: 'TaxSNO',
       maxWidth: 120,
-      editable: false
+      editable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Item Code',
@@ -606,13 +618,15 @@ function SalesReturn() {
       headerName: 'Tax %',
       field: 'TaxPercentage',
       // minWidth: 401,
-      editable: false
+      editable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Tax Amount',
       field: 'TaxAmount',
       // minWidth: 401,
-      editable: false
+      editable: false,
+      cellStyle: { textAlign: 'right' },
     }
   ];
 
@@ -1165,7 +1179,7 @@ function SalesReturn() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ transaction_no: code,company_code: sessionStorage.getItem('selectedCompanyCode') }) // Send company_no and company_name as search criteria
+        body: JSON.stringify({ transaction_no: code, company_code: sessionStorage.getItem('selectedCompanyCode') }) // Send company_no and company_name as search criteria
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -1660,223 +1674,223 @@ function SalesReturn() {
     }
   };
 
-// const handleExcelDownload = () => {
-//   const filteredRowData = rowData.filter(
-//     row =>
-//       row.returnQty > 0 &&
-//       row.totalReturnAmt > 0 &&
-//       row.itemAmt > 0
-//   );
+  // const handleExcelDownload = () => {
+  //   const filteredRowData = rowData.filter(
+  //     row =>
+  //       row.returnQty > 0 &&
+  //       row.totalReturnAmt > 0 &&
+  //       row.itemAmt > 0
+  //   );
 
-//   const filteredRowDataTax = rowDataTax.filter(
-//     taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0
-//   );
+  //   const filteredRowDataTax = rowDataTax.filter(
+  //     taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0
+  //   );
 
-//   const headerData = [{
-//     "Customer Name": customerName,
-//     "Customer Code": customerCode,
-//     "Return Date": return_date,
-//     "Return Reason": return_reason,
-//     "Return Person": return_person,
-//     "Bill Date": billDate,
-//     "Bill No": billNo,
-//     "Pay Type": payType,
-//     "Sales Type": salesType,
-//     "Sales Amount": saleAmount,
-//     "Tax Amount": TotalTax,
-//     "Total Amount": totalAmount,
-//     "Rounded Off": roundOff,
-//   }];
+  //   const headerData = [{
+  //     "Customer Name": customerName,
+  //     "Customer Code": customerCode,
+  //     "Return Date": return_date,
+  //     "Return Reason": return_reason,
+  //     "Return Person": return_person,
+  //     "Bill Date": billDate,
+  //     "Bill No": billNo,
+  //     "Pay Type": payType,
+  //     "Sales Type": salesType,
+  //     "Sales Amount": saleAmount,
+  //     "Tax Amount": TotalTax,
+  //     "Total Amount": totalAmount,
+  //     "Rounded Off": roundOff,
+  //   }];
 
-//   // Header Sheet
-//   const headerSheet = XLSX.utils.aoa_to_sheet([
-//     ["Sales Return"],
-//     [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
-//     [],
-//   ]);
+  //   // Header Sheet
+  //   const headerSheet = XLSX.utils.aoa_to_sheet([
+  //     ["Sales Return"],
+  //     [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
+  //     [],
+  //   ]);
 
-//   XLSX.utils.sheet_add_json(headerSheet, headerData, {
-//     origin: "A4",
-//   });
+  //   XLSX.utils.sheet_add_json(headerSheet, headerData, {
+  //     origin: "A4",
+  //   });
 
-//   // Merge Heading
-//   headerSheet["!merges"] = [
-//     {
-//       s: { r: 0, c: 0 }, // A1
-//       e: { r: 0, c: 9 }, // J1
-//     },
-//     {
-//       s: { r: 1, c: 0 }, // A2
-//       e: { r: 1, c: 9 }, // J2
-//     },
-//   ];
+  //   // Merge Heading
+  //   headerSheet["!merges"] = [
+  //     {
+  //       s: { r: 0, c: 0 }, // A1
+  //       e: { r: 0, c: 9 }, // J1
+  //     },
+  //     {
+  //       s: { r: 1, c: 0 }, // A2
+  //       e: { r: 1, c: 9 }, // J2
+  //     },
+  //   ];
 
-//   // Detail Sheets
-//   const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
-//   const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
+  //   // Detail Sheets
+  //   const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
+  //   const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
 
-//   // Auto Fit Function
-//   const autoFitColumns = (worksheet, data) => {
-//     if (!data || data.length === 0) return;
+  //   // Auto Fit Function
+  //   const autoFitColumns = (worksheet, data) => {
+  //     if (!data || data.length === 0) return;
 
-//     const cols = [];
+  //     const cols = [];
 
-//     data.forEach((row) => {
-//       Object.keys(row).forEach((key, i) => {
-//         const value = row[key] == null ? "" : row[key].toString();
+  //     data.forEach((row) => {
+  //       Object.keys(row).forEach((key, i) => {
+  //         const value = row[key] == null ? "" : row[key].toString();
 
-//         cols[i] = Math.max(
-//           cols[i] || key.length,
-//           key.length,
-//           value.length
-//         );
-//       });
-//     });
+  //         cols[i] = Math.max(
+  //           cols[i] || key.length,
+  //           key.length,
+  //           value.length
+  //         );
+  //       });
+  //     });
 
-//     worksheet["!cols"] = cols.map(width => ({
-//       wch: width + 5,
-//     }));
-//   };
+  //     worksheet["!cols"] = cols.map(width => ({
+  //       wch: width + 5,
+  //     }));
+  //   };
 
-//   // Apply Auto Width
-//   autoFitColumns(headerSheet, headerData);
-//   autoFitColumns(rowDataSheet, filteredRowData);
-//   autoFitColumns(rowDataTaxSheet, filteredRowDataTax);
+  //   // Apply Auto Width
+  //   autoFitColumns(headerSheet, headerData);
+  //   autoFitColumns(rowDataSheet, filteredRowData);
+  //   autoFitColumns(rowDataTaxSheet, filteredRowDataTax);
 
-//   // Workbook
-//   const workbook = XLSX.utils.book_new();
-//   XLSX.utils.book_append_sheet(workbook, headerSheet, "Sales Return Header");
-//   XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Sales Return Details");
-//   XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Sales Return Tax Details");
+  //   // Workbook
+  //   const workbook = XLSX.utils.book_new();
+  //   XLSX.utils.book_append_sheet(workbook, headerSheet, "Sales Return Header");
+  //   XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Sales Return Details");
+  //   XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Sales Return Tax Details");
 
-//   XLSX.writeFile(workbook, "Sales_Return_Data.xlsx");
-//   };
-  
-const handleExcelDownload = () => {
-  const filteredRowData = rowData.filter(
-    row =>
-      row.returnQty > 0 &&
-      row.totalReturnAmt > 0 &&
-      row.itemAmt > 0
-  );
+  //   XLSX.writeFile(workbook, "Sales_Return_Data.xlsx");
+  //   };
 
-  const filteredRowDataTax = rowDataTax.filter(
-    taxRow =>
-      taxRow.TaxAmount > 0 &&
-      taxRow.TaxPercentage > 0
-  );
-
-  const headerData = [{
-    "Customer Name": customerName,
-    "Customer Code": customerCode,
-    "Return Date": return_date,
-    "Return Reason": return_reason,
-    "Return Person": return_person,
-    "Bill Date": billDate,
-    "Bill No": billNo,
-    "Pay Type": payType,
-    "Sales Type": salesType,
-    "Sales Amount": saleAmount,
-    "Tax Amount": TotalTax,
-    "Total Amount": totalAmount,
-    "Rounded Off": roundOff,
-  }];
-  // =========================================================
-  // FUNCTION TO CONVERT GRID DATA USING headerName
-  // =========================================================
-  const convertGridDataToExcel = (data, columnDefs) => {
-    if (!data || data.length === 0) {
-      return [];
-    }
-    // Only include columns which are visible in AG Grid
-    const visibleColumns = columnDefs.filter(
-      col => col.field && col.hide !== true && col.field !== "delete"
+  const handleExcelDownload = () => {
+    const filteredRowData = rowData.filter(
+      row =>
+        row.returnQty > 0 &&
+        row.totalReturnAmt > 0 &&
+        row.itemAmt > 0
     );
-    return data.map(row => {
-      const excelRow = {};
 
-      visibleColumns.forEach(col => {
-        const field = col.field;
-        const headerName = col.headerName || field;
+    const filteredRowDataTax = rowDataTax.filter(
+      taxRow =>
+        taxRow.TaxAmount > 0 &&
+        taxRow.TaxPercentage > 0
+    );
 
-        excelRow[headerName] = row[field] ?? "";
+    const headerData = [{
+      "Customer Name": customerName,
+      "Customer Code": customerCode,
+      "Return Date": return_date,
+      "Return Reason": return_reason,
+      "Return Person": return_person,
+      "Bill Date": billDate,
+      "Bill No": billNo,
+      "Pay Type": payType,
+      "Sales Type": salesType,
+      "Sales Amount": saleAmount,
+      "Tax Amount": TotalTax,
+      "Total Amount": totalAmount,
+      "Rounded Off": roundOff,
+    }];
+    // =========================================================
+    // FUNCTION TO CONVERT GRID DATA USING headerName
+    // =========================================================
+    const convertGridDataToExcel = (data, columnDefs) => {
+      if (!data || data.length === 0) {
+        return [];
+      }
+      // Only include columns which are visible in AG Grid
+      const visibleColumns = columnDefs.filter(
+        col => col.field && col.hide !== true && col.field !== "delete"
+      );
+      return data.map(row => {
+        const excelRow = {};
+
+        visibleColumns.forEach(col => {
+          const field = col.field;
+          const headerName = col.headerName || field;
+
+          excelRow[headerName] = row[field] ?? "";
+        });
+
+        return excelRow;
       });
+    };
 
-      return excelRow;
-    });
+    // =========================================================
+    // SALES RETURN DETAILS
+    // =========================================================
+    const excelDetailData = convertGridDataToExcel(filteredRowData, columnDefs);
+
+    // =========================================================
+    // SALES RETURN TAX DETAILS
+    // =========================================================
+    const excelTaxData = convertGridDataToExcel(filteredRowDataTax, columnDefsTax);
+
+    // =========================================================
+    // HEADER SHEET
+    // =========================================================
+    const headerSheet = XLSX.utils.aoa_to_sheet([
+      ["Sales Return"],
+      [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
+      [],
+    ]);
+
+    XLSX.utils.sheet_add_json(headerSheet, headerData, { origin: "A4", });
+
+    // Merge Heading
+    headerSheet["!merges"] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 9 }, },
+    { s: { r: 1, c: 0 }, e: { r: 1, c: 9 }, },
+    ];
+
+    // =========================================================
+    // DETAIL SHEETS
+    // =========================================================
+    const rowDataSheet = XLSX.utils.json_to_sheet(excelDetailData);
+    const rowDataTaxSheet = XLSX.utils.json_to_sheet(excelTaxData);
+
+    // =========================================================
+    // AUTO FIT COLUMNS
+    // =========================================================
+    const autoFitColumns = (worksheet, data) => {
+      if (!data || data.length === 0) return;
+      const cols = [];
+      data.forEach(row => {
+        Object.keys(row).forEach((key, i) => {
+          const value =
+            row[key] == null
+              ? ""
+              : row[key].toString();
+
+          cols[i] = Math.max(
+            cols[i] || 0,
+            key.length,
+            value.length
+          );
+        });
+      });
+      worksheet["!cols"] = cols.map(width => ({
+        wch: width + 5,
+      }));
+    };
+    // Apply Auto Width
+    autoFitColumns(headerSheet, headerData);
+    autoFitColumns(rowDataSheet, excelDetailData);
+    autoFitColumns(rowDataTaxSheet, excelTaxData);
+    // =========================================================
+    // WORKBOOK
+    // =========================================================
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, headerSheet, "Sales Return Header");
+    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Sales Return Details");
+    XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Sales Return Tax Details");
+    XLSX.writeFile(workbook, "Sales_Return_Data.xlsx");
   };
 
-  // =========================================================
-  // SALES RETURN DETAILS
-  // =========================================================
-  const excelDetailData = convertGridDataToExcel( filteredRowData, columnDefs );
-
-  // =========================================================
-  // SALES RETURN TAX DETAILS
-  // =========================================================
-  const excelTaxData = convertGridDataToExcel( filteredRowDataTax, columnDefsTax );
-
-  // =========================================================
-  // HEADER SHEET
-  // =========================================================
-  const headerSheet = XLSX.utils.aoa_to_sheet([
-    ["Sales Return"],
-    [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
-    [],
-  ]);
-
-  XLSX.utils.sheet_add_json(headerSheet, headerData, {origin: "A4",});
-
-  // Merge Heading
-  headerSheet["!merges"] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 9 },},
-    { s: { r: 1, c: 0 }, e: { r: 1, c: 9 },},
-  ];
-
-  // =========================================================
-  // DETAIL SHEETS
-  // =========================================================
-  const rowDataSheet = XLSX.utils.json_to_sheet(excelDetailData);
-  const rowDataTaxSheet = XLSX.utils.json_to_sheet(excelTaxData);
-
-  // =========================================================
-  // AUTO FIT COLUMNS
-  // =========================================================
-  const autoFitColumns = (worksheet, data) => {
-    if (!data || data.length === 0) return;
-    const cols = [];
-    data.forEach(row => {
-      Object.keys(row).forEach((key, i) => {
-        const value =
-          row[key] == null
-            ? ""
-            : row[key].toString();
-
-        cols[i] = Math.max(
-          cols[i] || 0,
-          key.length,
-          value.length
-        );
-      });
-    });
-    worksheet["!cols"] = cols.map(width => ({
-      wch: width + 5,
-    }));
-  };
-  // Apply Auto Width
-  autoFitColumns(headerSheet, headerData);
-  autoFitColumns(rowDataSheet, excelDetailData);
-  autoFitColumns(rowDataTaxSheet, excelTaxData);
-  // =========================================================
-  // WORKBOOK
-  // =========================================================
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet( workbook, headerSheet, "Sales Return Header" );
-  XLSX.utils.book_append_sheet( workbook, rowDataSheet, "Sales Return Details" );
-  XLSX.utils.book_append_sheet( workbook, rowDataTaxSheet, "Sales Return Tax Details" );
-  XLSX.writeFile( workbook, "Sales_Return_Data.xlsx" );
-};
-
-const handleKeyDown = async (e, nextFieldRef, value, hasValueChanged, setHasValueChanged) => {
+  const handleKeyDown = async (e, nextFieldRef, value, hasValueChanged, setHasValueChanged) => {
     if (e.key === 'Enter') {
       // Check if the value has changed and handle the search logic
       if (hasValueChanged) {
@@ -1906,201 +1920,201 @@ const handleKeyDown = async (e, nextFieldRef, value, hasValueChanged, setHasValu
   };
 
   const handleAuthorizedButtonClick = async () => {
-  if (!selectedStatus || !return_no) {
-    setAuthError(" ");
-    toast.warning("Error: Missing required fields");
-    return;
-  }
-
-  setLoading(true);
-
-  try {
-
-    // =========================
-    // 1. AUTHORIZE HEADER
-    // =========================
-
-    const headerResult = await AuthorizedHeader();
-
-    if (headerResult !== true) {
-      toast.error(headerResult);
+    if (!selectedStatus || !return_no) {
+      setAuthError(" ");
+      toast.warning("Error: Missing required fields");
       return;
     }
 
-    // =========================
-    // 2. AUTHORIZE DETAILS
-    // =========================
+    setLoading(true);
 
-    const detailResult = await AuthorizedDetails();
+    try {
 
-    if (detailResult !== true) {
-      toast.error(detailResult);
-      return;
-    }
+      // =========================
+      // 1. AUTHORIZE HEADER
+      // =========================
 
-    // =========================
-    // 3. AUTHORIZE TAX DETAILS
-    // =========================
+      const headerResult = await AuthorizedHeader();
 
-    const taxDetailResult = await AuthorizedTaxDetails();
+      if (headerResult !== true) {
+        toast.error(headerResult);
+        return;
+      }
 
-    if (taxDetailResult !== true) {
-      toast.error(taxDetailResult);
-      return;
-    }
+      // =========================
+      // 2. AUTHORIZE DETAILS
+      // =========================
 
-    // =========================
-    // ALL SUCCESS
-    // =========================
+      const detailResult = await AuthorizedDetails();
 
-    console.log("All API calls completed successfully");
+      if (detailResult !== true) {
+        toast.error(detailResult);
+        return;
+      }
 
-    toast.success(
-      `Data ${selectedStatus.label} Successfully`,
-      {
-        autoClose: true,
-        onClose: () => {
-          window.location.reload();
+      // =========================
+      // 3. AUTHORIZE TAX DETAILS
+      // =========================
+
+      const taxDetailResult = await AuthorizedTaxDetails();
+
+      if (taxDetailResult !== true) {
+        toast.error(taxDetailResult);
+        return;
+      }
+
+      // =========================
+      // ALL SUCCESS
+      // =========================
+
+      console.log("All API calls completed successfully");
+
+      toast.success(
+        `Data ${selectedStatus.label} Successfully`,
+        {
+          autoClose: true,
+          onClose: () => {
+            window.location.reload();
+          }
         }
-      }
-    );
+      );
 
-  } catch (error) {
+    } catch (error) {
 
-    console.error(
-      "Error executing authorization:",
-      error
-    );
+      console.error(
+        "Error executing authorization:",
+        error
+      );
 
-    toast.error(
-      error.message ||
-      "An error occurred while authorizing data."
-    );
+      toast.error(
+        error.message ||
+        "An error occurred while authorizing data."
+      );
 
-  } finally {
-    setLoading(false);
-  }
-};
-
-const AuthorizedHeader = async () => {
-  try {
-    const response = await fetch(
-      `${config.apiBaseUrl}/SalesReturnAuthHdr`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          return_no: return_no,
-          company_code: sessionStorage.getItem("selectedCompanyCode"),
-          authroization_status: selectedStatus.value
-        })
-      }
-    );
-
-    const responseData = await response.json();
-
-    console.log("AuthorizedHeader response:", responseData);
-
-    if (response.ok) {
-      return true;
+    } finally {
+      setLoading(false);
     }
+  };
 
-    return (
-      responseData?.details ||
-      responseData?.message ||
-      (typeof responseData === "string"
-        ? responseData
-        : "Failed to authorize header.")
-    );
+  const AuthorizedHeader = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseUrl}/SalesReturnAuthHdr`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            return_no: return_no,
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
+            authroization_status: selectedStatus.value
+          })
+        }
+      );
 
-  } catch (error) {
-    console.error("AuthorizedHeader Error:", error);
+      const responseData = await response.json();
 
-    return error.message || "Error authorizing header.";
-  }
-};
+      console.log("AuthorizedHeader response:", responseData);
 
-const AuthorizedDetails = async () => {
-  try {
-    const response = await fetch(
-      `${config.apiBaseUrl}/SalesReturnAuthDetail`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          return_no: return_no,
-          company_code: sessionStorage.getItem("selectedCompanyCode"),
-          authroization_status: selectedStatus.value
-        })
+      if (response.ok) {
+        return true;
       }
-    );
 
-    const responseData = await response.json();
+      return (
+        responseData?.details ||
+        responseData?.message ||
+        (typeof responseData === "string"
+          ? responseData
+          : "Failed to authorize header.")
+      );
 
-    console.log("AuthorizedDetails response:", responseData);
+    } catch (error) {
+      console.error("AuthorizedHeader Error:", error);
 
-    if (response.ok) {
-      return true;
+      return error.message || "Error authorizing header.";
     }
+  };
 
-    return (
-      responseData?.details ||
-      responseData?.message ||
-      (typeof responseData === "string"
-        ? responseData
-        : "Failed to authorize details.")
-    );
+  const AuthorizedDetails = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseUrl}/SalesReturnAuthDetail`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            return_no: return_no,
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
+            authroization_status: selectedStatus.value
+          })
+        }
+      );
 
-  } catch (error) {
-    console.error("AuthorizedDetails Error:", error);
+      const responseData = await response.json();
 
-    return error.message || "Error authorizing details.";
-  }
-};
+      console.log("AuthorizedDetails response:", responseData);
 
-const AuthorizedTaxDetails = async () => {
-  try {
-    const response = await fetch(
-      `${config.apiBaseUrl}/SalesReturnAuthTaxDetail`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          return_no: return_no,
-          company_code: sessionStorage.getItem("selectedCompanyCode"),
-          authroization_status: selectedStatus.value
-        })
+      if (response.ok) {
+        return true;
       }
-    );
 
-    const responseData = await response.json();
+      return (
+        responseData?.details ||
+        responseData?.message ||
+        (typeof responseData === "string"
+          ? responseData
+          : "Failed to authorize details.")
+      );
 
-    console.log("AuthorizedTaxDetails response:", responseData);
+    } catch (error) {
+      console.error("AuthorizedDetails Error:", error);
 
-    if (response.ok) {
-      return true;
+      return error.message || "Error authorizing details.";
     }
+  };
 
-    return (
-      responseData?.details ||
-      responseData?.message ||
-      (typeof responseData === "string"
-        ? responseData
-        : "Failed to authorize tax details.")
-    );
+  const AuthorizedTaxDetails = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiBaseUrl}/SalesReturnAuthTaxDetail`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            return_no: return_no,
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
+            authroization_status: selectedStatus.value
+          })
+        }
+      );
 
-  } catch (error) {
-    console.error("AuthorizedTaxDetails Error:", error);
+      const responseData = await response.json();
 
-    return error.message || "Error authorizing tax details.";
-  }
-};
+      console.log("AuthorizedTaxDetails response:", responseData);
+
+      if (response.ok) {
+        return true;
+      }
+
+      return (
+        responseData?.details ||
+        responseData?.message ||
+        (typeof responseData === "string"
+          ? responseData
+          : "Failed to authorize tax details.")
+      );
+
+    } catch (error) {
+      console.error("AuthorizedTaxDetails Error:", error);
+
+      return error.message || "Error authorizing tax details.";
+    }
+  };
 
   // const handleAuthorizedButtonClick = async () => {
   //   if (!selectedStatus || !return_no) {
@@ -2315,7 +2329,7 @@ const AuthorizedTaxDetails = async () => {
                     onChange={handleChangeStatus}
                     getOptionLabel={(option) => option.label || ""}
                     getOptionValue={(option) => option.value || ""}
-                    styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                    styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                   />
                 </div>
               </div>
@@ -2532,6 +2546,7 @@ const AuthorizedTaxDetails = async () => {
                   onChange={(e) => setTotalSaleAmount(e.target.value)}
                   autoComplete="off"
                   readOnly
+                  style={{ textAlign: "right" }}
                 />
               </div>
             </div>
@@ -2552,6 +2567,7 @@ const AuthorizedTaxDetails = async () => {
                   onChange={(e) => setTotalTax(e.target.value)}
                   autoComplete="off"
                   readOnly
+                  style={{ textAlign: "right" }}
                 />
               </div>
             </div>
@@ -2572,6 +2588,7 @@ const AuthorizedTaxDetails = async () => {
                   onChange={(e) => setRoundOff(e.target.value)}
                   autoComplete="off"
                   readOnly
+                  style={{ textAlign: "right" }}
                 />
               </div>
             </div>
@@ -2592,6 +2609,7 @@ const AuthorizedTaxDetails = async () => {
                   onChange={(e) => setTotalAmount(e.target.value)}
                   autoComplete="off"
                   readOnly
+                  style={{ textAlign: "right" }}
                 />
               </div>
             </div>
@@ -2627,6 +2645,8 @@ const AuthorizedTaxDetails = async () => {
 
               }}
               onRowClicked={handleRowClicked}
+              headerHeight={28}
+              rowHeight={25}
             />
           </div>
         </div>

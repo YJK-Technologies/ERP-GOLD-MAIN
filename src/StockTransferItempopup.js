@@ -47,6 +47,7 @@ const columnDefs = [
     editable: false,
     cellStyle: { textAlign: "center" },
     //minWidth: 150,
+    cellStyle: { textAlign: 'right' },
 
   },
   {
@@ -79,6 +80,7 @@ const columnDefs = [
     editable: false,
     cellStyle: { textAlign: "center" },
     //minWidth: 150,
+    cellStyle: { textAlign: 'right' },
 
   },
   {
@@ -87,6 +89,7 @@ const columnDefs = [
     editable: false,
     cellStyle: { textAlign: "center" },
     //minWidth: 150,
+    cellStyle: { textAlign: 'right' },
 
   },
   {
@@ -95,6 +98,7 @@ const columnDefs = [
     editable: false,
     cellStyle: { textAlign: "center" },
     //minWidth: 150,
+    cellStyle: { textAlign: 'right' },
 
   },
   {
@@ -103,6 +107,7 @@ const columnDefs = [
     editable: false,
     cellStyle: { textAlign: "center" },
     //minWidth: 150,
+    cellStyle: { textAlign: 'right' },
 
   },
   {
@@ -183,6 +188,7 @@ const columnDefs = [
     editable: false,
     cellStyle: { textAlign: "center" },
     //minWidth: 150,
+    cellStyle: { textAlign: 'right' },
 
   },
 ];
@@ -413,7 +419,7 @@ export default function StockTransferItemPopup({ open, handleClose, handleItem }
                             <input
                               type='text'
                               id='ItemCode'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               maxLength={18}
                               title='Enter the Item Code'
                               placeholder=' Item Code'
@@ -427,7 +433,7 @@ export default function StockTransferItemPopup({ open, handleClose, handleItem }
                             <input
                               type='text'
                               id='Variant'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               title='Enter the Variant'
                               placeholder=' Variant'
                               maxLength={18}
@@ -441,7 +447,7 @@ export default function StockTransferItemPopup({ open, handleClose, handleItem }
                             <input
                               type='text'
                               id='ItemName'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               title='Enter the Item Name'
                               placeholder=' Item Name'
                               maxLength={40}
@@ -455,7 +461,7 @@ export default function StockTransferItemPopup({ open, handleClose, handleItem }
                             <input
                               type='text'
                               id='ShortName'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               title='Enter the Short Name'
                               placeholder=' Short Name'
                               maxLength={50}
@@ -473,6 +479,7 @@ export default function StockTransferItemPopup({ open, handleClose, handleItem }
                                 onChange={handleChangeBrand}
                                 options={filteredOptionBrand}
                                 className="exp-input-field"
+                                classNamePrefix="react-select"
                                 placeholder="Our Brand"
                                 isClearable
                               />
@@ -486,6 +493,7 @@ export default function StockTransferItemPopup({ open, handleClose, handleItem }
                                 onChange={handleChangeStatus}
                                 options={filteredOptionStatus}
                                 className="exp-input-field"
+                                classNamePrefix="react-select"
                                 placeholder="Status"
                                 isClearable
                               />
@@ -513,6 +521,8 @@ export default function StockTransferItemPopup({ open, handleClose, handleItem }
                             pagination
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+                            rowHeight={25}
                           />
                         </div>
                       </div>
@@ -548,7 +558,7 @@ export default function StockTransferItemPopup({ open, handleClose, handleItem }
                             <input
                               type='text'
                               id='ItemCode'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               maxLength={18}
                               placeholder=' Item Code'
                               value={Item_code}
@@ -561,7 +571,7 @@ export default function StockTransferItemPopup({ open, handleClose, handleItem }
                             <input
                               type='text'
                               id='Variant'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               placeholder=' Variant'
                               maxLength={18}
                               value={Item_variant}
@@ -574,7 +584,7 @@ export default function StockTransferItemPopup({ open, handleClose, handleItem }
                             <input
                               type='text'
                               id='ItemName'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               placeholder=' Item Name'
                               maxLength={40}
                               value={Item_name}
@@ -587,7 +597,7 @@ export default function StockTransferItemPopup({ open, handleClose, handleItem }
                             <input
                               type='text'
                               id='ShortName'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               placeholder=' Short Name'
                               maxLength={50}
                               value={Item_short_name}
@@ -604,6 +614,7 @@ export default function StockTransferItemPopup({ open, handleClose, handleItem }
                                 onChange={handleChangeBrand}
                                 options={filteredOptionBrand}
                                 className="exp-input-field"
+                                classNamePrefix="react-select"
                                 placeholder="Our Brand"
                                 isClearable
                               />
@@ -617,6 +628,7 @@ export default function StockTransferItemPopup({ open, handleClose, handleItem }
                                 onChange={handleChangeStatus}
                                 options={filteredOptionStatus}
                                 className="exp-input-field"
+                                classNamePrefix="react-select"
                                 placeholder="Status"
                                 isClearable
                               />
@@ -644,6 +656,8 @@ export default function StockTransferItemPopup({ open, handleClose, handleItem }
                             pagination
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+                            rowHeight={25}
                           />
                         </div>
                       </div>

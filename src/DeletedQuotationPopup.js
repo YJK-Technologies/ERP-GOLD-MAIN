@@ -71,6 +71,7 @@ const columnDefs = [
     headerName: "Contact Number",
     field: "customer_mobile_no",
     editable: false,
+    cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "Contact Person",
@@ -86,21 +87,25 @@ const columnDefs = [
     headerName: "Purchase Amount",
     field: "purchase_amount",
     editable: false,
+    cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "Tax Amount",
     field: "tax_amount",
     editable: false,
+    cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "Round Off",
     field: "rounded_off",
     editable: false,
+    cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "Total Amount",
     field: "total_amount",
     editable: false,
+    cellStyle: { textAlign: 'right' },
   },
 ];
 
@@ -113,7 +118,7 @@ const defaultColDef = {
   filter: true,
 };
 
-export default function QuotationPopup({ open, handleClose, handleDeletedQuotationData  }) {
+export default function QuotationPopup({ open, handleClose, handleDeletedQuotationData }) {
 
   const [rowData, setRowData] = useState([]);
   const [transaction_no, settransaction_no] = useState("");
@@ -357,6 +362,8 @@ export default function QuotationPopup({ open, handleClose, handleDeletedQuotati
                             pagination='true'
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+                            rowHeight={25}
                           />
                         </div>
                       </div>
@@ -457,6 +464,8 @@ export default function QuotationPopup({ open, handleClose, handleDeletedQuotati
                               pagination='true'
                               onSelectionChanged={handleRowSelected}
                               onRowDoubleClicked={handleRowDoubleClick}
+                              headerHeight={28}
+                              rowHeight={25}
                             />
                           </div>
                         </div>

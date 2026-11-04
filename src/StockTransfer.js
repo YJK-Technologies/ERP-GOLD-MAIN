@@ -2384,6 +2384,8 @@ function StockTransfer() {
               onColumnMoved={onColumnMoved}
               RowData={gridData}
               onRowSelected={onRowSelected}
+              headerHeight={28}
+                            rowHeight={25}
 
             />
           </div>
