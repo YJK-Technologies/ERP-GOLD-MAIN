@@ -1084,6 +1084,19 @@ router.post("/BankReconciliationTransactionDelete", dataController.BankReconcili
 router.post("/get_StatementFormat", dataController.get_StatementFormat);
 router.post("/get_ImportMethod", dataController.get_ImportMethod);
 router.get("/getWarehouseCodeDrop", dataController.getWarehouseCodeDrop);
+router.post("/addCustomerReceiptHdr", dataController.addCustomerReceiptHdr);
+router.post("/updCustomerReceiptHdr", dataController.updCustomerReceiptHdr);
+router.post("/deleteCustomerReceiptHdr", dataController.deleteCustomerReceiptHdr);
+router.post("/getAllCustomerReceiptHdr", dataController.getAllCustomerReceiptHdr);
+router.post("/addCustomerReceiptInvDet", dataController.addCustomerReceiptInvDet);
+router.post("/updCustomerReceiptInvDet", dataController.updCustomerReceiptInvDet);
+router.post("/deleteCustomerReceiptInvDet", dataController.deleteCustomerReceiptInvDet);
+router.post("/searchCustomerReceiptInvDet", dataController.searchCustomerReceiptInvDet);
+router.post("/addCustomerReceiptAccDet", dataController.addCustomerReceiptAccDet);
+router.post("/updCustomerReceiptAccDet", dataController.updCustomerReceiptAccDet);
+router.post("/deleteCustomerReceiptAccDet", dataController.deleteCustomerReceiptAccDet);
+router.post("/searchCustomerReceiptAccDet", dataController.searchCustomerReceiptAccDet);
+
 
 
 module.exports = router;
