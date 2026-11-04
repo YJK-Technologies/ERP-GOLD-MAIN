@@ -124,34 +124,34 @@ function Sales() {
       switch (e.key) {
         case 'F1':
           // Open Item Search Popup
-          setOpen(true); 
+          setOpen(true);
           break;
 
         case 'F2':
           // Open Customer Search Popup
-          setOpen2(true); 
+          setOpen2(true);
           break;
 
         case 'F3':
           // New / Reset Sales Invoice Form
           if (window.confirm("Start a new sales invoice? Unsaved changes will be lost.")) {
-            handleReload(); 
+            handleReload();
           }
-          break;  
+          break;
 
         case 'F4':
           // Save / Complete Invoice (Same logic as Save Button)
-          handleSaveButtonClick(); 
+          handleSaveButtonClick();
           break;
 
         case 'F5':
           // Search Existing Invoices to Edit
-          setOpen3(true); 
+          setOpen3(true);
           break;
 
         case 'F6':
           // Delete selected line item in AG Grid
-          if ( billNo) {
+          if (billNo) {
             handleDeleteButtonClick();
           } else {
             alert("Please save the invoice before deleting.");
@@ -181,12 +181,12 @@ function Sales() {
     };
   }, [loading, printButtonVisible, billNo, rowData]);
 
-    // For default warehouse
-    useEffect(() => {
+  // For default warehouse
+  useEffect(() => {
     if (!selectedWarehouse) {
       return;
     }
-  
+
     setRowData(prevRowData =>
       prevRowData.map(row => {
         // Only set default warehouse if the row has no warehouse
@@ -194,10 +194,10 @@ function Sales() {
           return {
             ...row,
             warehouse: selectedWarehouse.value,
-           
+
           };
         }
-  
+
         // Keep existing warehouse value
         return row;
       })
@@ -540,7 +540,7 @@ function Sales() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code, Item_code: params.data.itemCode, type:salesMode, transactiontype: salesType })
+        body: JSON.stringify({ company_code, Item_code: params.data.itemCode, type: salesMode, transactiontype: salesType })
       });
 
       if (response.ok) {
@@ -723,7 +723,7 @@ function Sales() {
       toast.error('Error inserting data: ' + error.message);
       setCustomerCode('');
       setCustomerName('');
-    }finally {
+    } finally {
       setLoading(false);
     }
 
@@ -998,7 +998,8 @@ function Sales() {
       field: 'serialNumber',
       maxWidth: 80,
       sortable: false,
-      editable: false
+      editable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: '',
@@ -1101,6 +1102,7 @@ function Sales() {
       // maxWidth: 150,
       filter: true,
       sortable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Warehouse',
@@ -1167,6 +1169,7 @@ function Sales() {
         maxLength: 18,
       },
       sortable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Discount %',
@@ -1179,6 +1182,7 @@ function Sales() {
         maxLength: 18,
       },
       sortable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Total Weight',
@@ -1188,6 +1192,7 @@ function Sales() {
       // maxWidth: 150,
       filter: true,
       sortable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Unit Price',
@@ -1199,6 +1204,7 @@ function Sales() {
         maxLength: 18,
       },
       sortable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Discount Amount',
@@ -1208,6 +1214,7 @@ function Sales() {
       // maxWidth: 180,
       filter: true,
       sortable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Tax Amount',
@@ -1217,6 +1224,7 @@ function Sales() {
       // maxWidth: 150,
       filter: true,
       sortable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Total',
@@ -1226,6 +1234,7 @@ function Sales() {
       // minWidth: 135,
       // maxWidth: 175,
       sortable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Purchase Tax Type',
@@ -1253,6 +1262,7 @@ function Sales() {
       filter: true,
       sortable: false,
       hide: true,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'KeyField',
@@ -1271,11 +1281,13 @@ function Sales() {
       headerName: 'S.No',
       field: 'ItemSNO',
       maxWidth: 80,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Tax S.No',
       field: 'TaxSNO',
       maxWidth: 120,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Item Code',
@@ -1291,11 +1303,13 @@ function Sales() {
       headerName: 'Tax %',
       field: 'TaxPercentage',
       // minWidth: 401
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Tax Amount',
       field: 'TaxAmount',
       // minWidth: 401,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Keyfield',
@@ -1417,7 +1431,7 @@ function Sales() {
       toast.warning('please check purchase Qty, Unit price and Total values are greaterthan Zero');
       return;
     }
-setLoading(true)
+    setLoading(true)
     try {
       const Header = {
         company_code: sessionStorage.getItem('selectedCompanyCode'),
@@ -1466,7 +1480,7 @@ setLoading(true)
     } catch (error) {
       console.error("Error inserting data:", error);
       toast.error("Error inserting data: " + error.message);
-    }finally {
+    } finally {
       setLoading(false);
     }
 
@@ -1908,7 +1922,7 @@ setLoading(true)
       }
     } catch (error) {
       console.error("Error fetching search data:", error);
-    }finally {
+    } finally {
       setLoading(false);
     }
 
@@ -2115,7 +2129,7 @@ setLoading(true)
       const taxData = await PrintSumTax();
       const TCPrintData = await PrintTCPrintData();
 
-      if (headerData && detailData && taxData ) {
+      if (headerData && detailData && taxData) {
         console.log("All required  API calls completed successfully");
 
         sessionStorage.setItem('SheaderData', JSON.stringify(headerData));
@@ -2131,7 +2145,7 @@ setLoading(true)
     } catch (error) {
       console.error("Error executing API calls:", error);
       toast.error('Error inserting data: ' + error.message);
-    }finally {
+    } finally {
       setLoading(false);
     }
 
@@ -2197,7 +2211,7 @@ setLoading(true)
     }
   };
 
-    const deleteTermsandCondition = async () => {
+  const deleteTermsandCondition = async () => {
     try {
       const response = await fetch(`${config.apiBaseUrl}/deleteSalesTermsandCondition`, {
         method: "POST",
@@ -2618,15 +2632,15 @@ setLoading(true)
       }
     } catch (error) {
       console.error("Error fetching search data:", error);
-    }finally {
+    } finally {
       setLoading(false);
     }
 
   };
 
   const SalesDeleteDetail = async (BillNo) => {
-        setLoading(true);
-        try {
+    setLoading(true);
+    try {
       const response = await fetch(`${config.apiBaseUrl}/saledelsearchitem`, {
         method: "POST",
         headers: {
@@ -2680,13 +2694,13 @@ setLoading(true)
       }
     } catch (error) {
       console.error("Error fetching search data:", error);
-    }finally {
+    } finally {
       setLoading(false);
     }
 
   };
 
-    const saledDeletedTerms = async (BillNo) => {
+  const saledDeletedTerms = async (BillNo) => {
     try {
       const response = await fetch(`${config.apiBaseUrl}/getDeletedTermsSales`, {
         method: "POST",
@@ -2872,7 +2886,7 @@ setLoading(true)
       }
     } catch (error) {
       console.error("Error fetching search data:", error);
-    }finally {
+    } finally {
       setLoading(false);
     }
 
@@ -3116,136 +3130,136 @@ setLoading(true)
   //   XLSX.writeFile(workbook, "Sales data.xlsx");
   // };
 
- // =========================================================
-// FUNCTION TO CONVERT GRID DATA USING headerName
-// =========================================================
-const convertGridDataToExcel = (data, columnDefs) => {
-  if (!data || data.length === 0) {
-    return [];
-  }
+  // =========================================================
+  // FUNCTION TO CONVERT GRID DATA USING headerName
+  // =========================================================
+  const convertGridDataToExcel = (data, columnDefs) => {
+    if (!data || data.length === 0) {
+      return [];
+    }
 
-  // Only include visible AG Grid columns
-  const visibleColumns = columnDefs.filter(
-    col =>
-      col.field &&
-      col.hide !== true &&
-      col.field !== "delete"
-  );
+    // Only include visible AG Grid columns
+    const visibleColumns = columnDefs.filter(
+      col =>
+        col.field &&
+        col.hide !== true &&
+        col.field !== "delete"
+    );
 
-  return data.map(row => {
-    const excelRow = {};
+    return data.map(row => {
+      const excelRow = {};
 
-    visibleColumns.forEach(col => {
-      const field = col.field;
-      const headerName = col.headerName || field;
+      visibleColumns.forEach(col => {
+        const field = col.field;
+        const headerName = col.headerName || field;
 
-      excelRow[headerName] = row[field] ?? "";
+        excelRow[headerName] = row[field] ?? "";
+      });
+
+      return excelRow;
     });
-
-    return excelRow;
-  });
-};
+  };
 
   const handleExcelDownload = () => {
-  const filteredRowData = rowData.filter(
-    row =>
-      row.salesQty > 0 &&
-      row.TotalItemAmount > 0 &&
-      row.purchaseAmt > 0
-  );
+    const filteredRowData = rowData.filter(
+      row =>
+        row.salesQty > 0 &&
+        row.TotalItemAmount > 0 &&
+        row.purchaseAmt > 0
+    );
 
-  const filteredRowDataTax = rowDataTax.filter(
-    taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0
-  );
+    const filteredRowDataTax = rowDataTax.filter(
+      taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0
+    );
 
-  const headerData = [{
-    "Customer Code": customerCode,
-    "Customer Name": customerName,
-    "Pay Type": payType,
-    "Sales Type": salesType,
-    "Order Type": orderType,
-    "Bill No": billNo,
-    "Bill Date": billDate,
-    "Sales Amount": Totalsales,
-    "Tax Amount": TotalTax,
-    "Bill Amount": TotalBill,
-    "Rounded Off": round_difference,
-    "Delivery Challan No": delvychellanno,
-  }];
+    const headerData = [{
+      "Customer Code": customerCode,
+      "Customer Name": customerName,
+      "Pay Type": payType,
+      "Sales Type": salesType,
+      "Order Type": orderType,
+      "Bill No": billNo,
+      "Bill Date": billDate,
+      "Sales Amount": Totalsales,
+      "Tax Amount": TotalTax,
+      "Bill Amount": TotalBill,
+      "Rounded Off": round_difference,
+      "Delivery Challan No": delvychellanno,
+    }];
 
-  // Header Sheet
-  const headerSheet = XLSX.utils.aoa_to_sheet([
-    ["Sales"],
-    [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
-    [],
-  ]);
+    // Header Sheet
+    const headerSheet = XLSX.utils.aoa_to_sheet([
+      ["Sales"],
+      [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
+      [],
+    ]);
 
-  XLSX.utils.sheet_add_json(headerSheet, headerData, {
-    origin: "A4",
-  });
-
-  // Merge Heading
-  headerSheet["!merges"] = [
-    {
-      s: { r: 0, c: 0 },
-      e: { r: 0, c: 9 },
-    },
-    {
-      s: { r: 1, c: 0 },
-      e: { r: 1, c: 9 },
-    },
-  ];
-
-// Detail Sheets
-const salesExcelData = convertGridDataToExcel(
-  filteredRowData,
-  columnDefs
-);
-
-const taxExcelData = convertGridDataToExcel(
-  filteredRowDataTax,
-  columnDefsTax
-);
-
-const rowDataSheet = XLSX.utils.json_to_sheet(salesExcelData);
-const rowDataTaxSheet = XLSX.utils.json_to_sheet(taxExcelData);
-
-  // Auto Fit Function
-  const autoFitColumns = (worksheet, data) => {
-    if (!data || data.length === 0) return;
-
-    const cols = [];
-
-    data.forEach((row) => {
-      Object.keys(row).forEach((key, i) => {
-        const value = row[key] == null ? "" : row[key].toString();
-
-        cols[i] = Math.max(
-          cols[i] || key.length,
-          key.length,
-          value.length
-        );
-      });
+    XLSX.utils.sheet_add_json(headerSheet, headerData, {
+      origin: "A4",
     });
 
-    worksheet["!cols"] = cols.map(width => ({
-      wch: width + 5,
-    }));
+    // Merge Heading
+    headerSheet["!merges"] = [
+      {
+        s: { r: 0, c: 0 },
+        e: { r: 0, c: 9 },
+      },
+      {
+        s: { r: 1, c: 0 },
+        e: { r: 1, c: 9 },
+      },
+    ];
+
+    // Detail Sheets
+    const salesExcelData = convertGridDataToExcel(
+      filteredRowData,
+      columnDefs
+    );
+
+    const taxExcelData = convertGridDataToExcel(
+      filteredRowDataTax,
+      columnDefsTax
+    );
+
+    const rowDataSheet = XLSX.utils.json_to_sheet(salesExcelData);
+    const rowDataTaxSheet = XLSX.utils.json_to_sheet(taxExcelData);
+
+    // Auto Fit Function
+    const autoFitColumns = (worksheet, data) => {
+      if (!data || data.length === 0) return;
+
+      const cols = [];
+
+      data.forEach((row) => {
+        Object.keys(row).forEach((key, i) => {
+          const value = row[key] == null ? "" : row[key].toString();
+
+          cols[i] = Math.max(
+            cols[i] || key.length,
+            key.length,
+            value.length
+          );
+        });
+      });
+
+      worksheet["!cols"] = cols.map(width => ({
+        wch: width + 5,
+      }));
+    };
+
+    // Apply Auto Width
+    autoFitColumns(headerSheet, headerData);
+    autoFitColumns(rowDataSheet, salesExcelData);
+    autoFitColumns(rowDataTaxSheet, taxExcelData);
+
+    // Workbook
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Sales Details");
+    XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Tax Details");
+
+    XLSX.writeFile(workbook, "Sales_Data.xlsx");
   };
-  
-// Apply Auto Width
-autoFitColumns(headerSheet, headerData);
-autoFitColumns(rowDataSheet, salesExcelData);
-autoFitColumns(rowDataTaxSheet, taxExcelData);
-
-  // Workbook
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
-  XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Sales Details");
-  XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Tax Details");
-
-  XLSX.writeFile(workbook, "Sales_Data.xlsx");
-};
 
   const handleKeyDown = async (e, nextFieldRef, value, hasValueChanged, setHasValueChanged) => {
     if (e.key === 'Enter') {
@@ -3291,7 +3305,7 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
   };
 
   const handleAuthorizedButtonClick = async () => {
-        if ( !billNo || !selectedStatus) {
+    if (!billNo || !selectedStatus) {
       setDeleteError(" ");
       toast.warning('Error: Missing required fields');
       return;
@@ -3304,7 +3318,7 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
       console.log("All functions executed successfully.");
     } catch (error) {
       console.error("Error executing handleAuthorizedButtonClick:", error);
-    }finally {
+    } finally {
       setLoading(false);
     }
 
@@ -3314,26 +3328,26 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
     const responseText = await response.text();
 
     if (!responseText) {
-        return `Request failed with status ${response.status}`;
+      return `Request failed with status ${response.status}`;
     }
 
     try {
-        const data = JSON.parse(responseText);
+      const data = JSON.parse(responseText);
 
-        return (
-            data.message ||
-            data.error ||
-            data.details ||
-            data.title ||
-            responseText
-        );
+      return (
+        data.message ||
+        data.error ||
+        data.details ||
+        data.title ||
+        responseText
+      );
     } catch {
-        return responseText;
+      return responseText;
     }
-};
+  };
 
   // const AuthorizedHeader = async () => {
-    
+
   //   try {
   //     const response = await fetch(`${config.apiBaseUrl}/SalesAuthHdr`, {
   //       method: "POST",
@@ -3357,36 +3371,36 @@ autoFitColumns(rowDataTaxSheet, taxExcelData);
   //   }
   // };
 
-  
-const AuthorizedHeader = async () => {
+
+  const AuthorizedHeader = async () => {
     try {
-        const response = await fetch(`${config.apiBaseUrl}/SalesAuthHdr`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                bill_no: billNo,
-                company_code: sessionStorage.getItem("selectedCompanyCode"),
-                authroization_status: selectedStatus.value
-            })
-        });
+      const response = await fetch(`${config.apiBaseUrl}/SalesAuthHdr`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          bill_no: billNo,
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          authroization_status: selectedStatus.value
+        })
+      });
 
-        if (response.ok) {
-            console.log("Rows updated successfully:", billNo);
-            return true;
-        }
+      if (response.ok) {
+        console.log("Rows updated successfully:", billNo);
+        return true;
+      }
 
-        const errorMessage = await getBackendErrorMessage(response);
-        toast.warning(errorMessage);
-        return false;
+      const errorMessage = await getBackendErrorMessage(response);
+      toast.warning(errorMessage);
+      return false;
 
     } catch (error) {
-        console.error("Error executing AuthorizedHeader:", error);
-        toast.error(error.message || "Network error while authorizing sales header.");
-        return false;
+      console.error("Error executing AuthorizedHeader:", error);
+      toast.error(error.message || "Network error while authorizing sales header.");
+      return false;
     }
-};
+  };
 
 
   // const AuthorizedDetails = async () => {
@@ -3413,36 +3427,36 @@ const AuthorizedHeader = async () => {
   //   }
   // };
 
-  
-const AuthorizedDetails = async () => {
+
+  const AuthorizedDetails = async () => {
     try {
-        const response = await fetch(`${config.apiBaseUrl}/SalesAuthDetail`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                bill_no: billNo,
-                company_code: sessionStorage.getItem("selectedCompanyCode"),
-                authroization_status: selectedStatus.value
-            })
-        });
+      const response = await fetch(`${config.apiBaseUrl}/SalesAuthDetail`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          bill_no: billNo,
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          authroization_status: selectedStatus.value
+        })
+      });
 
-        if (response.ok) {
-            console.log("Rows updated successfully:", billNo);
-            return true;
-        }
+      if (response.ok) {
+        console.log("Rows updated successfully:", billNo);
+        return true;
+      }
 
-        const errorMessage = await getBackendErrorMessage(response);
-        toast.warning(errorMessage);
-        return false;
+      const errorMessage = await getBackendErrorMessage(response);
+      toast.warning(errorMessage);
+      return false;
 
     } catch (error) {
-        console.error("Error executing AuthorizedDetails:", error);
-        toast.error(error.message || "Network error while authorizing sales details.");
-        return false;
+      console.error("Error executing AuthorizedDetails:", error);
+      toast.error(error.message || "Network error while authorizing sales details.");
+      return false;
     }
-};
+  };
 
 
   // const AuthorizedTaxDetails = async () => {
@@ -3469,36 +3483,36 @@ const AuthorizedDetails = async () => {
   //   }
   // };
 
-  
-const AuthorizedTaxDetails = async () => {
+
+  const AuthorizedTaxDetails = async () => {
     try {
-        const response = await fetch(`${config.apiBaseUrl}/SalesAuthTaxDetail`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                bill_no: billNo,
-                company_code: sessionStorage.getItem("selectedCompanyCode"),
-                authroization_status: selectedStatus.value
-            })
-        });
+      const response = await fetch(`${config.apiBaseUrl}/SalesAuthTaxDetail`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          bill_no: billNo,
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          authroization_status: selectedStatus.value
+        })
+      });
 
-        if (response.ok) {
-            console.log("Rows updated successfully:", billNo);
-            return true;
-        }
+      if (response.ok) {
+        console.log("Rows updated successfully:", billNo);
+        return true;
+      }
 
-        const errorMessage = await getBackendErrorMessage(response);
-        toast.warning(errorMessage);
-        return false;
+      const errorMessage = await getBackendErrorMessage(response);
+      toast.warning(errorMessage);
+      return false;
 
     } catch (error) {
-        console.error("Error executing AuthorizedTaxDetails:", error);
-        toast.error(error.message || "Network error while authorizing sales tax details.");
-        return false;
+      console.error("Error executing AuthorizedTaxDetails:", error);
+      toast.error(error.message || "Network error while authorizing sales tax details.");
+      return false;
     }
-};
+  };
 
 
   const navigateToSalesSettings = () => {
@@ -3576,6 +3590,7 @@ const AuthorizedTaxDetails = async () => {
       maxWidth: 70,
       valueGetter: (params) => params.node.rowIndex + 1,
       sortable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: '',
@@ -3758,7 +3773,7 @@ const AuthorizedTaxDetails = async () => {
       {Screens === 'Add' ? (
         <div className="container-fluid Topnav-screen">
           <div>
-                  {loading && <LoadingScreen />}
+            {loading && <LoadingScreen />}
             <ToastContainer position="top-right" className="toast-design" theme="colored" />
             <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
               <div class="d-flex justify-content-between">
@@ -3767,19 +3782,19 @@ const AuthorizedTaxDetails = async () => {
                 </div>
                 <div className="d-flex justify-content-end purbut me-3">
                   <div class="exp-form-floating">
-                     <div title="Select the Screen">
-                    <Select
-                      id="returnType"
-                      className="exp-input-field col-md-6 mt-2"
-                      classNamePrefix="react-select"
-                      placeholder=""
-                      required
-                      value={selectedscreens}
-                      onChange={handleChangeScreens}
-                      options={filteredOptionScreens}
-                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
-                    />
-                  </div>
+                    <div title="Select the Screen">
+                      <Select
+                        id="returnType"
+                        className="exp-input-field col-md-6 mt-2"
+                        classNamePrefix="react-select"
+                        placeholder=""
+                        required
+                        value={selectedscreens}
+                        onChange={handleChangeScreens}
+                        options={filteredOptionScreens}
+                        styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                      />
+                    </div>
                   </div>
                   {buttonsVisible && ['add', 'all permission'].some(permission => sales.includes(permission)) && (
                     <savebutton className="purbut" onClick={handleSaveButtonClick} title='Save'>
@@ -3787,16 +3802,16 @@ const AuthorizedTaxDetails = async () => {
                     </savebutton>
                   )}
                   {authorizeButton && (
-                  <savebutton className="purbut" onClick={handleAuthorizedButtonClick} title="Authorization">
-                    <i class="fa-solid fa-check"></i>
-                  </savebutton>
+                    <savebutton className="purbut" onClick={handleAuthorizedButtonClick} title="Authorization">
+                      <i class="fa-solid fa-check"></i>
+                    </savebutton>
                   )}
-                  {deleteButtonVisible &&['delete', 'all permission'].some(permission => sales.includes(permission)) && (
+                  {deleteButtonVisible && ['delete', 'all permission'].some(permission => sales.includes(permission)) && (
                     <delbutton className="purbut" onClick={handleDeleteButtonClick} title='Delete'>
                       <i class="fa-solid fa-trash"></i>
                     </delbutton>
                   )}
-                  {printButtonVisible &&['all permission', 'view'].some(permission => sales.includes(permission)) && (
+                  {printButtonVisible && ['all permission', 'view'].some(permission => sales.includes(permission)) && (
                     <printbutton className="purbut" title="Print" onClick={generateReport}>
                       <i class="fa-solid fa-file-pdf"></i>
                     </printbutton>
@@ -3809,19 +3824,19 @@ const AuthorizedTaxDetails = async () => {
                   <printbutton className="purbut" onClick={handleReload} title='Reload'>
                     <i class="fa-solid fa-arrow-rotate-right"></i>
                   </printbutton>
-                         <a className='border-none text-dark p-1 mt-2' title='Setting' onClick={navigateToSalesSettings} style={{ cursor: "pointer" }}>
-                      <svg xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="feather feather-settings">
-                        <circle cx="12" cy="12" r="3"></circle>
-                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 
+                  <a className='border-none text-dark p-1 mt-2' title='Setting' onClick={navigateToSalesSettings} style={{ cursor: "pointer" }}>
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="feather feather-settings">
+                      <circle cx="12" cy="12" r="3"></circle>
+                      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 
            1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 
            1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 
            1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 
@@ -3833,8 +3848,8 @@ const AuthorizedTaxDetails = async () => {
            1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.09a1.65 
            1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 
            0-1.51 1z"/>
-                      </svg>
-                    </a>
+                    </svg>
+                  </a>
                 </div>
               </div>
               <div class="mobileview">
@@ -3857,11 +3872,11 @@ const AuthorizedTaxDetails = async () => {
                         </li>
                       )}
                       {authorizeButton && (
-                      <li class="iconbutton d-flex justify-content-center text-success">
-                        <icon class="icon" onClick={handleAuthorizedButtonClick}>
-                          <i class="fa-solid fa-check"></i>
-                        </icon>
-                      </li>
+                        <li class="iconbutton d-flex justify-content-center text-success">
+                          <icon class="icon" onClick={handleAuthorizedButtonClick}>
+                            <i class="fa-solid fa-check"></i>
+                          </icon>
+                        </li>
                       )}
                       <li class="iconbutton  d-flex justify-content-center text-danger">
                         {['delete', 'all permission'].some(permission => sales.includes(permission)) && (
@@ -3898,22 +3913,22 @@ const AuthorizedTaxDetails = async () => {
               <div className="row  ms-3 me-3">
                 {showDropdown && (
                   <div className="col-md-3 form-group mb-2">
-                  <label className={`${deleteError && !selectedStatus   ? 'red' : ''}`}>Status<span className="text-danger">*</span></label>
+                    <label className={`${deleteError && !selectedStatus ? 'red' : ''}`}>Status<span className="text-danger">*</span></label>
                     <div class="exp-form-floating">
-                       <div title="Select the Status">
-                      <Select
-                        id="returnType"
-                        classNamePrefix="react-select"
-                        className="exp-input-field"
-                        placeholder="Select an option"
-                        options={status}
-                        value={selectedStatus}
-                        onChange={handleChangeStatus}
-                        getOptionLabel={(option) => option.label || ""}
-                        getOptionValue={(option) => option.value || ""}
-                        styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
-                      />
-                    </div>
+                      <div title="Select the Status">
+                        <Select
+                          id="returnType"
+                          classNamePrefix="react-select"
+                          className="exp-input-field"
+                          placeholder="Select an option"
+                          options={status}
+                          value={selectedStatus}
+                          onChange={handleChangeStatus}
+                          getOptionLabel={(option) => option.label || ""}
+                          getOptionValue={(option) => option.value || ""}
+                          styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                        />
+                      </div>
                     </div>
                   </div>
                 )}
@@ -3982,21 +3997,21 @@ const AuthorizedTaxDetails = async () => {
                   <div className="exp-form-floating">
                     <label htmlFor="" className={`${error && !payType ? 'red' : ''}`}>Pay Type{!showAsterisk && <span className="text-danger">*</span>}</label>
                     <div title="Select the pay type">
-                    <Select
-                      id="payType"
-                      classNamePrefix="react-select"
-                      value={selectedPay}
-                      onChange={handleChangePay}
-                      options={filteredOptionPay}
-                      className="exp-input-field"
-                      placeholder=""
-                      required
-                      data-tip="Please select a payment type"
-                      autoComplete="off"
-                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
-                    // ref={paytype}
-                    // onKeyDown={(e) => handleKeyDown(e, SaleS, paytype)}
-                    />
+                      <Select
+                        id="payType"
+                        classNamePrefix="react-select"
+                        value={selectedPay}
+                        onChange={handleChangePay}
+                        options={filteredOptionPay}
+                        className="exp-input-field"
+                        placeholder=""
+                        required
+                        data-tip="Please select a payment type"
+                        autoComplete="off"
+                        styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                      // ref={paytype}
+                      // onKeyDown={(e) => handleKeyDown(e, SaleS, paytype)}
+                      />
                     </div>
                   </div>
                 </div>
@@ -4004,44 +4019,44 @@ const AuthorizedTaxDetails = async () => {
                   <div className="exp-form-floating">
                     <label htmlFor="" className={`${error && !salesType ? 'red' : ''}`}>Sales Type{!showAsterisk && <span className="text-danger">*</span>}</label>
                     <div title="Select the Sales type">
-                    <Select
-                      id="salesType"
-                      classNamePrefix="react-select"
-                      value={selectedSales}
-                      onChange={handleChangeSales}
-                      options={filteredOptionSales}
-                      className="exp-input-field"
-                      placeholder=""
-                      required
-                      data-tip="Please select a payment type"
-                      autoComplete="off"
-                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
-                    // ref={SaleS}
-                    // onKeyDown={(e) => handleKeyDown(e, order, SaleS)}
-                    />
-                  </div>
+                      <Select
+                        id="salesType"
+                        classNamePrefix="react-select"
+                        value={selectedSales}
+                        onChange={handleChangeSales}
+                        options={filteredOptionSales}
+                        className="exp-input-field"
+                        placeholder=""
+                        required
+                        data-tip="Please select a payment type"
+                        autoComplete="off"
+                        styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                      // ref={SaleS}
+                      // onKeyDown={(e) => handleKeyDown(e, order, SaleS)}
+                      />
+                    </div>
                   </div>
                 </div>
                 <div className="col-md-3 form-group mb-2">
                   <div className="exp-form-floating">
                     <label htmlFor="" >Order Type</label>
-                     <div title="Select the Order Type">
-                    <Select
-                      id="ordertype"
-                      classNamePrefix="react-select"
-                      value={selectedOrder}
-                      onChange={handleChangeOrder}
-                      options={filteredOptionOrder}
-                      className="exp-input-field"
-                      placeholder=""
-                      required
-                      data-tip="Please select a payment type"
-                      autoComplete="off"
-                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
-                    // ref={order}
-                    // onKeyDown={(e) => handleKeyDown(e, billdate, order)}
-                    />
-                  </div>
+                    <div title="Select the Order Type">
+                      <Select
+                        id="ordertype"
+                        classNamePrefix="react-select"
+                        value={selectedOrder}
+                        onChange={handleChangeOrder}
+                        options={filteredOptionOrder}
+                        className="exp-input-field"
+                        placeholder=""
+                        required
+                        data-tip="Please select a payment type"
+                        autoComplete="off"
+                        styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                      // ref={order}
+                      // onKeyDown={(e) => handleKeyDown(e, billdate, order)}
+                      />
+                    </div>
                   </div>
                 </div>
                 <div className="col-md-3 form-group mb-2 ">
@@ -4084,39 +4099,39 @@ const AuthorizedTaxDetails = async () => {
                 <div className="col-md-3 form-group mb-2">
                   <label for="">Default Warehouse</label>
                   <div class="exp-form-floating">
-                     <div title="Select the Warehouse">
-                    <Select
-                      id="returnType"
-                      classNamePrefix="react-select"
-                      className="exp-input-field"
-                      placeholder=""
-                      required
-                      value={selectedWarehouse}
-                      onChange={handleChangeWarehouse}
-                      options={filteredOptionWarehouse}
-                      data-tip="Please select a default warehouse"
-                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
-                    />
-                  </div>
+                    <div title="Select the Warehouse">
+                      <Select
+                        id="returnType"
+                        classNamePrefix="react-select"
+                        className="exp-input-field"
+                        placeholder=""
+                        required
+                        value={selectedWarehouse}
+                        onChange={handleChangeWarehouse}
+                        options={filteredOptionWarehouse}
+                        data-tip="Please select a default warehouse"
+                        styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                      />
+                    </div>
                   </div>
                 </div>
                 <div className="col-md-3 form-group mb-2">
                   <label for="">Sales Mode</label>
                   <div class="exp-form-floating">
-                     <div title="Select the Sales mode">
-                    <Select
-                      id="salesMode"
-                      classNamePrefix="react-select"
-                      className="exp-input-field"
-                      placeholder=""
-                      required
-                      value={selectedSalesMode}
-                      onChange={handleChangeSalesMode}
-                      options={filteredOptionSalesMode}
-                      isDisabled={isLocked}
-                      styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
-                    />
-                  </div>
+                    <div title="Select the Sales mode">
+                      <Select
+                        id="salesMode"
+                        classNamePrefix="react-select"
+                        className="exp-input-field"
+                        placeholder=""
+                        required
+                        value={selectedSalesMode}
+                        onChange={handleChangeSalesMode}
+                        options={filteredOptionSalesMode}
+                        isDisabled={isLocked}
+                        styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -4142,6 +4157,7 @@ const AuthorizedTaxDetails = async () => {
                             }
                           }}
                           autoComplete="off"
+                          style={{ textAlign: "right" }}
                         />
                       </div>
                     </div>
@@ -4155,6 +4171,7 @@ const AuthorizedTaxDetails = async () => {
                           value={returnAmount}
                           onChange={(e) => setReturnAmount(e.target.value)}
                           autoComplete="off"
+                          style={{ textAlign: "right" }}
                         />
                       </div>
                     </div>
@@ -4169,6 +4186,7 @@ const AuthorizedTaxDetails = async () => {
                           className="form-control exp-input-field"
                           value={Totalsales}
                           readOnly
+                          style={{ textAlign: "right" }}
                         />
                       </div>
                     </div>
@@ -4181,6 +4199,7 @@ const AuthorizedTaxDetails = async () => {
                           className="form-control exp-input-field"
                           value={TotalTax}
                           readOnly
+                          style={{ textAlign: "right" }}
                         />
                       </div>
                     </div>
@@ -4195,6 +4214,7 @@ const AuthorizedTaxDetails = async () => {
                           className="form-control exp-input-field"
                           value={round_difference}
                           readOnly
+                          style={{ textAlign: "right" }}
                         />
                       </div>
                     </div>
@@ -4207,39 +4227,40 @@ const AuthorizedTaxDetails = async () => {
                           className="form-control exp-input-field"
                           value={TotalBill}
                           readOnly
+                          style={{ textAlign: "right" }}
                         />
                       </div>
                     </div>
                   </div>
                   <div className="row">
-                  <div className="col-md-6 mb-2">
-                    <div className="exp-form-floating">
-                      <label htmlFor="totalBillAmount" className="">Item Code</label>
-                      <Select
-                        id="salesMode"
-                        classNamePrefix="react-select"
-                        className="exp-input-field"
-                        placeholder=""
-                        required
-                        title="Please select the item code"
-                        value={selectedItem}
-                        onChange={handleChangeItem}
-                        options={filteredOptionItem}
-                        styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
-                      />
+                    <div className="col-md-6 mb-2">
+                      <div className="exp-form-floating">
+                        <label htmlFor="totalBillAmount" className="">Item Code</label>
+                        <Select
+                          id="salesMode"
+                          classNamePrefix="react-select"
+                          className="exp-input-field"
+                          placeholder=""
+                          required
+                          title="Please select the item code"
+                          value={selectedItem}
+                          onChange={handleChangeItem}
+                          options={filteredOptionItem}
+                          styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <div className="d-none">
-                    <div className="exp-form-floating">
-                      <label htmlFor="customername" className="">Screen Type</label>
-                      <input
-                        id="customername"
-                        className="form-control"
-                        value={Type}
-                        onChange={(e) => setType(e.target.value)}
-                      />
+                    <div className="d-none">
+                      <div className="exp-form-floating">
+                        <label htmlFor="customername" className="">Screen Type</label>
+                        <input
+                          id="customername"
+                          className="form-control"
+                          value={Type}
+                          onChange={(e) => setType(e.target.value)}
+                        />
+                      </div>
                     </div>
-                  </div>
                   </div>
                 </div>
                 <div className="col-md-6">
@@ -4291,7 +4312,7 @@ const AuthorizedTaxDetails = async () => {
                 <AgGridReact
                   columnDefs={activeTable === 'myTable' ? columnDefs : columnDefsTax}
                   rowData={activeTable === 'myTable' ? rowData : rowDataTax}
-                  defaultColDef={{ flex:true }}
+                  defaultColDef={{ flex: true }}
                   rowSelection="Single"
                   onSelectionChanged={() => console.log('Selection Changed')}
                   onCellValueChanged={async (event) => {
@@ -4346,7 +4367,7 @@ const AuthorizedTaxDetails = async () => {
                     onChange={handleChangeScreens}
                     options={filteredOptionScreens}
                     data-tip="Please select a default warehouse"
-                    styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                    styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                   />
                 </div>
               </div>
@@ -4520,6 +4541,7 @@ const AuthorizedTaxDetails = async () => {
                         readOnly
                         value={deletedPaidAmount}
                         autoComplete="off"
+                        style={{ textAlign: "right" }}
                       />
                     </div>
                   </div>
@@ -4536,6 +4558,7 @@ const AuthorizedTaxDetails = async () => {
                         readOnly
                         value={deletedReturnAmount}
                         autoComplete="off"
+                        style={{ textAlign: "right" }}
                       />
                     </div>
                   </div>
@@ -4553,6 +4576,7 @@ const AuthorizedTaxDetails = async () => {
                         value={deleteTotalsales}
                         readOnly
                         autoComplete="off"
+                        style={{ textAlign: "right" }}
                       />
                     </div>
                   </div>
@@ -4569,6 +4593,7 @@ const AuthorizedTaxDetails = async () => {
                         value={deleteTotalTax}
                         readOnly
                         autoComplete="off"
+                        style={{ textAlign: "right" }}
                       />
                     </div>
                   </div>
@@ -4587,6 +4612,7 @@ const AuthorizedTaxDetails = async () => {
                         value={deleteRoundedDifference}
                         readOnly
                         autoComplete="off"
+                        style={{ textAlign: "right" }}
                       />
                     </div>
                   </div>
@@ -4603,6 +4629,7 @@ const AuthorizedTaxDetails = async () => {
                         value={deleteTotalBill}
                         readOnly
                         autoComplete="off"
+                        style={{ textAlign: "right" }}
                       />
                     </div>
                   </div>

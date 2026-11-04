@@ -98,6 +98,7 @@ const columnDefs = [
     editable: false,
     //minWidth: 200,
     //maxWidth: 200,
+    cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "GST No",
@@ -168,6 +169,7 @@ const columnDefs = [
     editable: false,
     //minWidth: 200,
     //maxWidth: 200,
+    cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "ShipTo GST No",
@@ -189,6 +191,7 @@ const columnDefs = [
     editable: false,
     //minWidth: 200,
     //maxWidth: 200,
+    cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "Total Tax",
@@ -196,6 +199,7 @@ const columnDefs = [
     editable: false,
     //minWidth: 200,
     //maxWidth: 200,
+    cellStyle: { textAlign: 'right' },
   },
 
   {
@@ -204,6 +208,7 @@ const columnDefs = [
     editable: false,
     //minWidth: 200,
     //maxWidth: 200,
+    cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "Total Bill Amount",
@@ -211,6 +216,7 @@ const columnDefs = [
     editable: false,
     //minWidth: 200,
     //maxWidth: 200,
+    cellStyle: { textAlign: 'right' },
   },
 ];
 

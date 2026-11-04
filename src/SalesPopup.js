@@ -70,6 +70,7 @@ const columnDefs = [
     editable: false,
     //minWidth: 150,
     //maxWidth: 250,
+    cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "Bill Amount",
@@ -77,6 +78,7 @@ const columnDefs = [
     editable: false,
     //minWidth: 150,
     //maxWidth: 250,
+    cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "Pay Type",
@@ -98,6 +100,7 @@ const columnDefs = [
     editable: false,
     //minWidth: 150,
     //maxWidth: 250,
+    cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "Return Amount",
@@ -105,6 +108,7 @@ const columnDefs = [
     editable: false,
     //minWidth: 150,
     //maxWidth: 250,
+    cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "Sales Mode",
@@ -127,6 +131,7 @@ const columnDefs = [
     editable: false,
     //minWidth: 150,
     //maxWidth: 250,
+    cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "Tax Amount",
@@ -134,6 +139,7 @@ const columnDefs = [
     editable: false,
     //minWidth: 150,
     //maxWidth: 250,
+    cellStyle: { textAlign: 'right' },
   },
 ];
 
