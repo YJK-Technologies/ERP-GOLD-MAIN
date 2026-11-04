@@ -33162,6 +33162,367 @@ const getWarehouseCodeDrop = async (req, res) => {
   }
 };
 //Code ended by Dinesh Gokul on 02-11-2026 
+//Code added by SakthiGanesh on 03-11-2026 
+// ==========================================
+// CUSTOMER RECEIPT HEADER CONTROLLERS
+// ==========================================
+
+const addCustomerReceiptHdr = async (req, res) => {
+const {
+    company_code, receipt_date, customer_code, financial_year, receipt_type,
+    payment_mode, bank_acc_code, value_date, transaction_ref_no, instrument_no,
+    instrument_date, received_amount, tds_deducted, bank_charges, narration,
+    status, gl_status, location_code, created_by
+  } = req.body;
+  
+  let pool;
+  try {
+    pool = await sql.connect(dbConfig);
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "I")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("receipt_date", sql.Date, receipt_date)
+      .input("receipt_no", sql.NVarChar, "") // Auto-generated in SP
+      .input("customer_code", sql.NVarChar, customer_code)
+      .input("financial_year", sql.NVarChar, financial_year)
+      .input("receipt_type", sql.NVarChar, receipt_type)
+      .input("payment_mode", sql.NVarChar, payment_mode)
+      .input("bank_acc_code", sql.NVarChar, bank_acc_code)
+      .input("value_date", sql.Date, value_date)
+      .input("transaction_ref_no", sql.NVarChar, transaction_ref_no)
+      .input("instrument_no", sql.NVarChar, instrument_no)
+      .input("instrument_date", sql.Date, instrument_date)
+      .input("received_amount", sql.Decimal(14, 2), received_amount)
+      .input("tds_deducted", sql.Decimal(14, 2), tds_deducted)
+      .input("bank_charges", sql.Decimal(14, 2), bank_charges)
+      .input("narration", sql.NVarChar, narration)
+      .input("status", sql.NVarChar, status)
+      .input("gl_status", sql.NVarChar, gl_status)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("created_by", sql.NVarChar, created_by)
+      .input("modified_by", sql.NVarChar, "")
+      .query(`EXEC sp_customer_receipt_hdr @mode, @company_code, @receipt_date, @receipt_no, @customer_code, 
+        @financial_year, @receipt_type, @payment_mode, @bank_acc_code, 
+        @value_date, @transaction_ref_no, @instrument_no, @instrument_date, 
+        @received_amount, @tds_deducted, @bank_charges, @narration, 
+        @status, @gl_status, @location_code, @created_by, @modified_by`);
+
+    if (result.recordset && result.recordset.length > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json("Data not found");
+    }
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const updCustomerReceiptHdr = async (req, res) => {
+const {
+    company_code, receipt_date, receipt_no, customer_code, financial_year, receipt_type,
+    payment_mode, bank_acc_code, value_date, transaction_ref_no, instrument_no,
+    instrument_date, received_amount, tds_deducted, bank_charges, narration,
+    status, gl_status, location_code, modified_by
+  } = req.body;
+
+  let pool;
+  try {
+    pool = await sql.connect(dbConfig);
+    await pool
+      .request()
+      .input("mode", sql.NVarChar, "U")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("receipt_date", sql.Date, receipt_date)
+      .input("receipt_no", sql.NVarChar, receipt_no)
+      .input("customer_code", sql.NVarChar, customer_code)
+      .input("financial_year", sql.NVarChar, financial_year)
+      .input("receipt_type", sql.NVarChar, receipt_type)
+      .input("payment_mode", sql.NVarChar, payment_mode)
+      .input("bank_acc_code", sql.NVarChar, bank_acc_code)
+      .input("value_date", sql.Date, value_date)
+      .input("transaction_ref_no", sql.NVarChar, transaction_ref_no)
+      .input("instrument_no", sql.NVarChar, instrument_no)
+      .input("instrument_date", sql.Date, instrument_date)
+      .input("received_amount", sql.Decimal(14, 2), received_amount)
+      .input("tds_deducted", sql.Decimal(14, 2), tds_deducted)
+      .input("bank_charges", sql.Decimal(14, 2), bank_charges)
+      .input("narration", sql.NVarChar, narration)
+      .input("status", sql.NVarChar, status)
+      .input("gl_status", sql.NVarChar, gl_status)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("created_by", sql.NVarChar, "")
+      .input("modified_by", sql.NVarChar, modified_by)
+      .query(`EXEC sp_customer_receipt_hdr @mode, @company_code, @receipt_date, @receipt_no, @customer_code, 
+        @financial_year, @receipt_type, @payment_mode, @bank_acc_code, 
+        @value_date, @transaction_ref_no, @instrument_no, @instrument_date, 
+        @received_amount, @tds_deducted, @bank_charges, @narration, 
+        @status, @gl_status, @location_code, @created_by, @modified_by`);
+        
+    res.json({ success: true, message: "Data updated successfully" });
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const deleteCustomerReceiptHdr = async (req, res) => {
+const { company_code, receipt_no, modified_by } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    try {
+      await pool
+        .request()
+        .input("mode", sql.NVarChar, "D")
+        .input("company_code", sql.NVarChar, company_code)
+        .input("receipt_no", sql.NVarChar, receipt_no)
+        .input("modified_by", sql.NVarChar, modified_by)
+        .query(`EXEC sp_customer_receipt_hdr @mode, @company_code, '', @receipt_no, '', '', '', '', '', 
+          NULL, '', '', NULL, 0, 0, 0, '', '', '', '', '', @modified_by`);
+    } catch (error) {
+      if (error.number === 547) {
+        res.status(400).json("First delete the Customer Receipt details.");
+        return;
+      } else {
+        throw error; 
+      }
+    }
+    res.status(200).json("Customer receipt deleted successfully");
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const getAllCustomerReceiptHdr = async (req, res) => {
+  const { company_code } = req.body;
+  
+  let pool;
+  try {
+    pool = await sql.connect(dbConfig);
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "A")
+      .input("company_code", sql.NVarChar, company_code)
+      .query(`EXEC sp_customer_receipt_hdr @mode, @company_code, '', '', '', '', '', '', '', NULL, '', '', NULL, 
+        0, 0, 0, '', '', '', '', '', ''`);
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+// ==========================================
+// CUSTOMER RECEIPT INVOICE DETAILS CONTROLLERS
+// ==========================================
+
+const addCustomerReceiptInvDet = async (req, res) => {
+  const {
+    receipt_no, invoice_no, invoice_date, due_date, invoice_amount, previous_receipts,
+    credit_notes, outstanding_amount, allocate_amount, balance_after, company_code,
+    location_code, keyfield_header, keyfield, created_by
+  } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "I")
+      .input("receipt_no", sql.NVarChar, receipt_no)
+      .input("invoice_no", sql.NVarChar, invoice_no)
+      .input("invoice_date", sql.NVarChar, invoice_date)
+      .input("due_date", sql.NVarChar, due_date)
+      .input("invoice_amount", sql.Decimal(14, 2), invoice_amount)
+      .input("previous_receipts", sql.Decimal(14, 2), previous_receipts)
+      .input("credit_notes", sql.Decimal(14, 2), credit_notes)
+      .input("outstanding_amount", sql.Decimal(14, 2), outstanding_amount)
+      .input("allocate_amount", sql.Decimal(14, 2), allocate_amount)
+      .input("balance_after", sql.Decimal(14, 2), balance_after)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("keyfield_header", sql.NVarChar, keyfield_header)
+      .input("keyfield", sql.NVarChar, keyfield)
+      .input("created_by", sql.NVarChar, created_by)
+      .query(`EXEC sp_customer_receipt_inv_det @mode, 0, @receipt_no, @invoice_no, @invoice_date, @due_date, @invoice_amount, @previous_receipts, @credit_notes, @outstanding_amount, @allocate_amount, @balance_after, @company_code, @location_code, @keyfield_header, @keyfield, @created_by`);
+    
+    res.status(200).json("Invoice Detail Created Successfully");
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const updCustomerReceiptInvDet = async (req, res) => {
+  const {
+    receipt_no, invoice_no, allocate_amount, balance_after, company_code, created_by
+  } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "U")
+      .input("receipt_no", sql.NVarChar, receipt_no)
+      .input("invoice_no", sql.NVarChar, invoice_no)
+      .input("allocate_amount", sql.Decimal(14, 2), allocate_amount)
+      .input("balance_after", sql.Decimal(14, 2), balance_after)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("created_by", sql.NVarChar, created_by)
+      .query(`EXEC sp_customer_receipt_inv_det @mode, 0, @receipt_no, @invoice_no, '', '', 0, 0, 0, 0, @allocate_amount, @balance_after, @company_code, '', '', '', @created_by`);
+    
+    res.status(200).json("Invoice Detail Updated Successfully");
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const deleteCustomerReceiptInvDet = async (req, res) => {
+  const { receipt_no, invoice_no, company_code } = req.body;
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool
+      .request()
+      .input("mode", sql.NVarChar, "D")
+      .input("receipt_no", sql.NVarChar, receipt_no)
+      .input("invoice_no", sql.NVarChar, invoice_no)
+      .input("company_code", sql.NVarChar, company_code)
+      .query(`EXEC sp_customer_receipt_inv_det @mode, 0, @receipt_no, @invoice_no, '', '', 0, 0, 0, 0, 0, 0, @company_code, '', '', '', ''`);
+    
+    res.status(200).json("Invoice Detail Deleted Successfully");
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const searchCustomerReceiptInvDet = async (req, res) => {
+  const { receipt_no, invoice_no, company_code } = req.body;
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "SC")
+      .input("receipt_no", sql.NVarChar, receipt_no)
+      .input("invoice_no", sql.NVarChar, invoice_no)
+      .input("company_code", sql.NVarChar, company_code)
+      .query(`EXEC sp_customer_receipt_inv_det @mode, 0, @receipt_no, @invoice_no, '', '', 0, 0, 0, 0, 0, 0, @company_code, '', '', '', ''`);
+    
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json("Data not found");
+    }
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+// ==========================================
+// CUSTOMER RECEIPT ACCOUNT DETAILS CONTROLLERS
+// ==========================================
+
+const addCustomerReceiptAccDet = async (req, res) => {
+  const {
+    receipt_no, account_code, amount, narration, company_code,
+    location_code, keyfield_header, keyfield, created_by
+  } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "I")
+      .input("receipt_no", sql.NVarChar, receipt_no)
+      .input("account_code", sql.NVarChar, account_code)
+      .input("amount", sql.Decimal(14, 2), amount)
+      .input("narration", sql.NVarChar, narration)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("keyfield_header", sql.NVarChar, keyfield_header)
+      .input("keyfield", sql.NVarChar, keyfield)
+      .input("created_by", sql.NVarChar, created_by)
+      .query(`EXEC sp_customer_receipt_acc_det @mode, 0, @receipt_no, @account_code, @amount, @narration, @company_code, @location_code, @keyfield_header, @keyfield, @created_by`);
+    
+    res.status(200).json("Account Detail Created Successfully");
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const updCustomerReceiptAccDet = async (req, res) => {
+  const {
+    receipt_no, account_code, amount, narration, company_code, created_by
+  } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "U")
+      .input("receipt_no", sql.NVarChar, receipt_no)
+      .input("account_code", sql.NVarChar, account_code)
+      .input("amount", sql.Decimal(14, 2), amount)
+      .input("narration", sql.NVarChar, narration)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("created_by", sql.NVarChar, created_by)
+      .query(`EXEC sp_customer_receipt_acc_det @mode, 0, @receipt_no, @account_code, @amount, @narration, @company_code, '', '', '', @created_by`);
+    
+    res.status(200).json("Account Detail Updated Successfully");
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const deleteCustomerReceiptAccDet = async (req, res) => {
+  const { receipt_no, account_code, company_code } = req.body;
+  try {
+    const pool = await connection.connectToDatabase();
+    await pool
+      .request()
+      .input("mode", sql.NVarChar, "D")
+      .input("receipt_no", sql.NVarChar, receipt_no)
+      .input("account_code", sql.NVarChar, account_code)
+      .input("company_code", sql.NVarChar, company_code)
+      .query(`EXEC sp_customer_receipt_acc_det @mode, 0, @receipt_no, @account_code, 0, '', @company_code, '', '', '', ''`);
+    
+    res.status(200).json("Account Detail Deleted Successfully");
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const searchCustomerReceiptAccDet = async (req, res) => {
+  const { receipt_no, account_code, company_code } = req.body;
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "SC")
+      .input("receipt_no", sql.NVarChar, receipt_no)
+      .input("account_code", sql.NVarChar, account_code)
+      .input("company_code", sql.NVarChar, company_code)
+      .query(`EXEC sp_customer_receipt_acc_det @mode, 0, @receipt_no, @account_code, 0, '', @company_code, '', '', '', ''`);
+    
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json("Data not found");
+    }
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+//Code ended by SakthiGanesh on 03-11-2026 
 module.exports = {
   login,
   forgetPassword,
@@ -34221,6 +34582,18 @@ module.exports = {
   BankReconciliationTransactionDelete,
   get_ImportMethod,
   get_StatementFormat,
-  getWarehouseCodeDrop
+  getWarehouseCodeDrop,
+  addCustomerReceiptHdr,
+  updCustomerReceiptHdr,
+  deleteCustomerReceiptHdr,
+  getAllCustomerReceiptHdr,
+  addCustomerReceiptInvDet,
+  updCustomerReceiptInvDet,
+  deleteCustomerReceiptInvDet,
+  searchCustomerReceiptInvDet,
+  addCustomerReceiptAccDet,
+  updCustomerReceiptAccDet,
+  deleteCustomerReceiptAccDet,
+  searchCustomerReceiptAccDet
 
 };
