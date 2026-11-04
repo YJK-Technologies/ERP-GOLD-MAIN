@@ -887,6 +887,7 @@ function Quotation() {
       cellEditorParams: {
         maxLength: 10,
       },
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: "Ref.Image",
@@ -918,6 +919,7 @@ function Quotation() {
       editable: true,
       filter: true,
       sortable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: "HSN",
@@ -926,6 +928,7 @@ function Quotation() {
       filter: true,
       sortable: false,
       // minWidth: 150,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: "Tax Amount",
@@ -934,6 +937,7 @@ function Quotation() {
       // minWidth: 150,
       filter: true,
       sortable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: "Total",
@@ -942,6 +946,7 @@ function Quotation() {
       // minWidth: 150,
       filter: true,
       sortable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: "Purchase Tax Type",
@@ -986,6 +991,7 @@ function Quotation() {
       maxWidth: 250,
       sortable: false,
       editable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: "Tax S.No",
@@ -993,6 +999,7 @@ function Quotation() {
       maxWidth: 170,
       sortable: false,
       editable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: "Item Code",
@@ -1014,6 +1021,7 @@ function Quotation() {
       // minWidth: 250,
       sortable: false,
       editable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: "Tax Amount",
@@ -1021,6 +1029,7 @@ function Quotation() {
       // minWidth: 301,
       sortable: false,
       editable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: "Keyfield",
@@ -1060,6 +1069,7 @@ function Quotation() {
       sortable: false,
       minHeight: 50,
       maxHeight: 50,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: "",
@@ -2858,332 +2868,337 @@ function Quotation() {
 
   return (
     <div className="">
-        <div className="container-fluid Topnav-screen">
-          {loading && <LoadingScreen />}
-          <ToastContainer position="top-right" className="toast-design" theme="colored" />
-          <div>
-            <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
-              <div class="d-flex justify-content-between">
+      <div className="container-fluid Topnav-screen">
+        {loading && <LoadingScreen />}
+        <ToastContainer position="top-right" className="toast-design" theme="colored" />
+        <div>
+          <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
+            <div class="d-flex justify-content-between">
+              <div className="d-flex justify-content-start">
+                <h1 align="left" className="purbut me-5">
+                  Quotation
+                </h1>
+              </div>
+              <div className="d-flex justify-content-end purbut me-3">
+                <div class="exp-form-floating">
+                  <Select
+                    id="returnType"
+                    className="exp-input-field col-md-6 mt-2"
+                    classNamePrefix="react-select"
+                    placeholder=""
+                    required
+                    value={selectedscreens}
+                    onChange={handleChangeScreens}
+                    options={filteredOptionScreens}
+                    data-tip="Please select a default warehouse"
+                    styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                  />
+                </div>
+                {
+                  ["add", "all permission"].some((permission) =>
+                    quotationPermission.includes(permission),
+                  ) && (
+                    <savebutton className="purbut" onClick={handleMasterAction} title="Save" >
+                      <i class="fa-regular fa-floppy-disk"></i>
+                    </savebutton>
+                  )}
+                {["all permission", "view"].some((permission) =>
+                  quotationPermission.includes(permission),
+                ) && (
+                    <printbutton className="purbut" title="Print" onClick={generateReport} >
+                      <i class="fa-solid fa-file-pdf"></i>
+                    </printbutton>
+                  )}
+                {showExcelButton && (
+                  <printbutton className="purbut" title="Excel" onClick={handleExcelDownload} >
+                    <i class="fa-solid fa-file-excel"></i>
+                  </printbutton>
+                )}
+                <printbutton className="purbut" title="Reload" onClick={handleReload} >
+                  <i class="fa-solid fa-arrow-rotate-right"></i>
+                </printbutton>
+              </div>
+            </div>
+            <div class="mobileview">
+              <div class="d-flex justify-content-between ">
                 <div className="d-flex justify-content-start">
-                  <h1 align="left" className="purbut me-5">
+                  <h1 align="left" className="h1">
                     Quotation
                   </h1>
                 </div>
-                <div className="d-flex justify-content-end purbut me-3">
-                  <div class="exp-form-floating">
-                    <Select
-                      id="returnType"
-                      className="exp-input-field col-md-6 mt-2"
-                      placeholder=""
-                      required
-                      value={selectedscreens}
-                      onChange={handleChangeScreens}
-                      options={filteredOptionScreens}
-                      data-tip="Please select a default warehouse"
-                      styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
-                    />
-                  </div>
-                  {
-                    ["add", "all permission"].some((permission) =>
-                      quotationPermission.includes(permission),
-                    ) && (
-                      <savebutton className="purbut" onClick={handleMasterAction} title="Save" >
-                        <i class="fa-regular fa-floppy-disk"></i>
-                      </savebutton>
-                    )}
-                  {["all permission", "view"].some((permission) =>
-                    quotationPermission.includes(permission),
-                  ) && (
-                      <printbutton className="purbut" title="Print" onClick={generateReport} >
-                        <i class="fa-solid fa-file-pdf"></i>
-                      </printbutton>
-                    )}
-                  {showExcelButton && (
-                    <printbutton className="purbut" title="Excel" onClick={handleExcelDownload} >
-                      <i class="fa-solid fa-file-excel"></i>
-                    </printbutton>
-                  )}
-                  <printbutton className="purbut" title="Reload" onClick={handleReload} >
-                    <i class="fa-solid fa-arrow-rotate-right"></i>
-                  </printbutton>
-                </div>
-              </div>
-              <div class="mobileview">
-                <div class="d-flex justify-content-between ">
-                  <div className="d-flex justify-content-start">
-                    <h1 align="left" className="h1">
-                      Quotation
-                    </h1>
-                  </div>
-                  <div class="dropdown mt-1 ms-5" style={{ paddingLeft: 0 }}>
-                    <button  class="btn btn-primary dropdown-toggle p-1 ms-3"  type="button"  data-bs-toggle="dropdown"
+                <div class="dropdown mt-1 ms-5" style={{ paddingLeft: 0 }}>
+                  <button class="btn btn-primary dropdown-toggle p-1 ms-3" type="button" data-bs-toggle="dropdown"
                     aria-expanded="false">
-                      <i class="fa-solid fa-list"></i>
-                    </button>
-                    <ul class="dropdown-menu menu">
-                      {buttonsVisible && (
-                        <li class="iconbutton d-flex justify-content-center text-success">
-                          {["add", "all permission"].some((permission) =>
-                            quotationPermission.includes(permission),
-                          ) && (
-                              <icon class="icon" onClick={handleMasterAction}>
-                                <i class="fa-regular fa-floppy-disk"></i>
-                              </icon>
-                            )}
-                        </li>
-                      )}
-                      <li class="iconbutton  d-flex justify-content-center text-warning">
-                        {["all permission", "view"].some((permission) =>
+                    <i class="fa-solid fa-list"></i>
+                  </button>
+                  <ul class="dropdown-menu menu">
+                    {buttonsVisible && (
+                      <li class="iconbutton d-flex justify-content-center text-success">
+                        {["add", "all permission"].some((permission) =>
                           quotationPermission.includes(permission),
                         ) && (
-                            <icon class="icon" onClick={generateReport}>
-                              <i class="fa-solid fa-file-pdf"></i>
+                            <icon class="icon" onClick={handleMasterAction}>
+                              <i class="fa-regular fa-floppy-disk"></i>
                             </icon>
                           )}
                       </li>
-                      {showExcelButton && (
-                        <li class="iconbutton  d-flex justify-content-center">
-                          <icon class="icon" onClick={handleExcelDownload}>
-                            <i class="fa-solid fa-file-excel"></i>
+                    )}
+                    <li class="iconbutton  d-flex justify-content-center text-warning">
+                      {["all permission", "view"].some((permission) =>
+                        quotationPermission.includes(permission),
+                      ) && (
+                          <icon class="icon" onClick={generateReport}>
+                            <i class="fa-solid fa-file-pdf"></i>
                           </icon>
-                        </li>
-                      )}
+                        )}
+                    </li>
+                    {showExcelButton && (
                       <li class="iconbutton  d-flex justify-content-center">
-                        <icon class="icon" onClick={handleReload}>
-                          <i class="fa-solid fa-arrow-rotate-right"></i>
+                        <icon class="icon" onClick={handleExcelDownload}>
+                          <i class="fa-solid fa-file-excel"></i>
                         </icon>
                       </li>
-                    </ul>
-                  </div>
+                    )}
+                    <li class="iconbutton  d-flex justify-content-center">
+                      <icon class="icon" onClick={handleReload}>
+                        <i class="fa-solid fa-arrow-rotate-right"></i>
+                      </icon>
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
-            <div className="shadow-lg p-1 bg-body-tertiary rounded  pt-3 pb-4">
-              <div className="row ms-3 me-3">
-                {/* <div className=""> */}
-                <div className="col-md-4 form-group mb-2">
-                  <label className={`${deleteError && !transactionNo ? "red" : ""}`} >
-                    Transaction No {showAsterisk && <span className="text-danger">*</span>}
+          </div>
+          <div className="shadow-lg p-1 bg-body-tertiary rounded  pt-3 pb-4">
+            <div className="row ms-3 me-3">
+              {/* <div className=""> */}
+              <div className="col-md-4 form-group mb-2">
+                <label className={`${deleteError && !transactionNo ? "red" : ""}`} >
+                  Transaction No {showAsterisk && <span className="text-danger">*</span>}
+                </label>
+                <div className="exp-form-floating">
+                  <div class="d-flex justify-content-end">
+                    <input
+                      id="RefNo"
+                      className="exp-input-field form-control justify-content-start"
+                      type="text"
+                      placeholder=""
+                      title="Enter the Transaction No"
+                      required
+                      value={transactionNo}
+                      onChange={(e) => setTransactionNo(e.target.value)}
+                      maxLength={50}
+                      onKeyPress={handleKeyPressRef}
+                      autoComplete="off"
+                    />
+                    <div className="position-absolute mt-1 me-2">
+                      <span className="icon searchIcon" title="Quotation Help" onClick={handlePurchase} >
+                        <i class="fa fa-search"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-4 form-group mb-2 ">
+                <div class="exp-form-floating">
+                  <label for="" className={`${error && !entryDate ? "red" : ""}`} >
+                    Transaction Date {!showAsterisk && <span className="text-danger">*</span>}
                   </label>
-                  <div className="exp-form-floating">
-                    <div class="d-flex justify-content-end">
-                      <input
-                        id="RefNo"
-                        className="exp-input-field form-control justify-content-start"
-                        type="text"
-                        placeholder=""
-                        title="Enter the Transaction No"
-                        required
-                        value={transactionNo}
-                        onChange={(e) => setTransactionNo(e.target.value)}
-                        maxLength={50}
-                        onKeyPress={handleKeyPressRef}
-                        autoComplete="off"
-                      />
-                      <div className="position-absolute mt-1 me-2">
-                        <span className="icon searchIcon" title="Quotation Help" onClick={handlePurchase} >
-                          <i class="fa fa-search"></i>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-md-4 form-group mb-2 ">
-                  <div class="exp-form-floating">
-                    <label for="" className={`${error && !entryDate ? "red" : ""}`} >
-                      Transaction Date {!showAsterisk && <span className="text-danger">*</span>}
-                    </label>
-                    <input
-                      name="transactionDate"
-                      id="entryDate"
-                      className="exp-input-field form-control"
-                      type="date"
-                      placeholder=""
-                      title="Enter the Transaction Date"
-                      required
-                      min={financialYearStart}
-                      max={financialYearEnd}
-                      value={entryDate}
-                      onChange={handleDateChange}
-                    />
-                  </div>
-                </div>
-                {/* </div> */}
-              </div>
-              <div className="row ms-2 me-3 g-0">
-                <div className="col-md-6">
-                  <div className="ag-theme-alpine" style={{ height: 155, width: "100%" }} >
-                    <AgGridReact
-                      columnDefs={columnDefsTermsConditions}
-                      rowData={rowDataTerms}
-                      defaultColDef={{ editable: true, resizable: true }}
-                      onGridReady={onGridReady}
-                      rowHeight={25}
-                      headerHeight={28}
-                      onRowClicked={handleRowClicked}
-                      onColumnMoved={onColumnMoved}
-                    />
-                  </div>
-                </div>
-                <div className="col-md-6">
-                  <div className="ag-theme-alpine" style={{ height: 155, width: "100%" }} >
-                    <AgGridReact
-                      columnDefs={columnPatch}
-                      rowData={rowdatapatch}
-                      defaultColDef={{ flex: 1 }}
-                      rowHeight={25}
-                      headerHeight={28}
-                    />
-                  </div>
+                  <input
+                    name="transactionDate"
+                    id="entryDate"
+                    className="exp-input-field form-control"
+                    type="date"
+                    placeholder=""
+                    title="Enter the Transaction Date"
+                    required
+                    min={financialYearStart}
+                    max={financialYearEnd}
+                    value={entryDate}
+                    onChange={handleDateChange}
+                  />
                 </div>
               </div>
-              <div className="ag-theme-alpine mt-2" style={{ height: 210, width: "100%" }} >
-                <AgGridReact
-                  columnDefs={columnHeader}
-                  rowData={headerRowData}
-                  defaultColDef={{ flex: 1 }}
-                  headerHeight={28}
-                  rowHeight={25}
-                />
+              {/* </div> */}
+            </div>
+            <div className="row ms-2 me-3 g-0">
+              <div className="col-md-6">
+                <div className="ag-theme-alpine" style={{ height: 155, width: "100%" }} >
+                  <AgGridReact
+                    columnDefs={columnDefsTermsConditions}
+                    rowData={rowDataTerms}
+                    defaultColDef={{ editable: true, resizable: true }}
+                    onGridReady={onGridReady}
+                    rowHeight={25}
+                    headerHeight={28}
+                    onRowClicked={handleRowClicked}
+                    onColumnMoved={onColumnMoved}
+                  />
+                </div>
+              </div>
+              <div className="col-md-6">
+                <div className="ag-theme-alpine" style={{ height: 155, width: "100%" }} >
+                  <AgGridReact
+                    columnDefs={columnPatch}
+                    rowData={rowdatapatch}
+                    defaultColDef={{ flex: 1 }}
+                    rowHeight={25}
+                    headerHeight={28}
+                  />
+                </div>
               </div>
             </div>
-            <div className="shadow-lg p-1 bg-body-tertiary rounded mt-2 pt-3 pb-4" align="left" >
-              <div className="row ms-3 me-3">
-                <div className="col-md-3 form-group mb-2">
-                  <div class="exp-form-floating">
-                    <label for="" class="exp-form-labels" className="partyName">
-                      Total
-                    </label>
-                    <input
-                      id="totalPurchaseAmount"
-                      class="exp-input-field form-control input"
-                      type="text"
-                      title="Enter the Total"
-                      placeholder=""
-                      required
-                      value={TotalPurchase}
-                      onChange={(e) => setTotalPurchase(e.target.value)}
-                      readOnly
-                    />
-                  </div>
+            <div className="ag-theme-alpine mt-2" style={{ height: 210, width: "100%" }} >
+              <AgGridReact
+                columnDefs={columnHeader}
+                rowData={headerRowData}
+                defaultColDef={{ flex: 1 }}
+                headerHeight={28}
+                rowHeight={25}
+              />
+            </div>
+          </div>
+          <div className="shadow-lg p-1 bg-body-tertiary rounded mt-2 pt-3 pb-4" align="left" >
+            <div className="row ms-3 me-3">
+              <div className="col-md-3 form-group mb-2">
+                <div class="exp-form-floating">
+                  <label for="" class="exp-form-labels" className="partyName">
+                    Total
+                  </label>
+                  <input
+                    id="totalPurchaseAmount"
+                    class="exp-input-field form-control input"
+                    type="text"
+                    title="Enter the Total"
+                    placeholder=""
+                    required
+                    value={TotalPurchase}
+                    onChange={(e) => setTotalPurchase(e.target.value)}
+                    readOnly
+                    style={{ textAlign: "right" }}
+                  />
                 </div>
-                <div className="col-md-3 form-group mb-2">
-                  <div class="exp-form-floating">
-                    <label for="" class="exp-form-labels" className="partyName">
-                      Total Tax
-                    </label>
-                    <input
-                      name="totalTaxAmount"
-                      id="totalTaxAmount"
-                      text="text"
-                      title="Enter the Total tax"
-                      className="exp-input-field form-control input"
-                      placeholder=""
-                      required
-                      value={TotalTax}
-                      onChange={(e) => setTotalTax(e.target.value)}
-                      readOnly
-                    />
-                  </div>
+              </div>
+              <div className="col-md-3 form-group mb-2">
+                <div class="exp-form-floating">
+                  <label for="" class="exp-form-labels" className="partyName">
+                    Total Tax
+                  </label>
+                  <input
+                    name="totalTaxAmount"
+                    id="totalTaxAmount"
+                    text="text"
+                    title="Enter the Total tax"
+                    className="exp-input-field form-control input"
+                    placeholder=""
+                    required
+                    value={TotalTax}
+                    onChange={(e) => setTotalTax(e.target.value)}
+                    readOnly
+                    style={{ textAlign: "right" }}
+                  />
                 </div>
-                <div className="col-md-3 form-group mb-2">
-                  <div class="exp-form-floating">
-                    <label for="" class="exp-form-labels" className="partyName">
-                      Round Off
-                    </label>
-                    <input
-                      name=""
-                      id="roundOff"
-                      type="text"
-                      className="exp-input-field form-control input"
-                      placeholder=""
-                      title="Enter the Round off"
-                      required
-                      value={round_difference}
-                      onChange={(e) => setRoundDifference(e.target.value)}
-                      readOnly
-                    />
-                  </div>
+              </div>
+              <div className="col-md-3 form-group mb-2">
+                <div class="exp-form-floating">
+                  <label for="" class="exp-form-labels" className="partyName">
+                    Round Off
+                  </label>
+                  <input
+                    name=""
+                    id="roundOff"
+                    type="text"
+                    className="exp-input-field form-control input"
+                    placeholder=""
+                    title="Enter the Round off"
+                    required
+                    value={round_difference}
+                    onChange={(e) => setRoundDifference(e.target.value)}
+                    readOnly
+                    style={{ textAlign: "right" }}
+                  />
                 </div>
-                <div className="col-md-3 form-group mb-2">
-                  <div class="exp-form-floating">
-                    <label for="" class="exp-form-labels" className="partyName">
-                      Grand Total
-                    </label>
-                    <input
-                      name=""
-                      id="totalBillAmount"
-                      title="Enter the Grand total"
-                      type="text"
-                      className="exp-input-field form-control input"
-                      placeholder=""
-                      required
-                      value={TotalBill}
-                      onChange={(e) => setTotalBill(e.target.value)}
-                      readOnly
-                    />
-                  </div>
+              </div>
+              <div className="col-md-3 form-group mb-2">
+                <div class="exp-form-floating">
+                  <label for="" class="exp-form-labels" className="partyName">
+                    Grand Total
+                  </label>
+                  <input
+                    name=""
+                    id="totalBillAmount"
+                    title="Enter the Grand total"
+                    type="text"
+                    className="exp-input-field form-control input"
+                    placeholder=""
+                    required
+                    value={TotalBill}
+                    onChange={(e) => setTotalBill(e.target.value)}
+                    readOnly
+                    style={{ textAlign: "right" }}
+                  />
                 </div>
-                <div className="col-md-3 form-group mb-2" style={{ justifyContent: "center" }} >
-                  <label htmlFor="party_code">Product/Items Filter</label>
-                  <div className="exp-form-floating">
-                    <div title="Select the Product/Items Filter">
-                      <div class="d-flex justify-content-between">
-                        <Select
-                          id="Product"
-                          value={selectedProduct}
-                          onChange={handleChangeProduct}
-                          options={filteredOptionProduct}
-                          className="exp-input-field"
-                          placeholder=""
-                          required
-                          title="Please select the product/items filter"
-                          classNamePrefix="react-select"
-                          styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-md-3 form-group mb-2" style={{ justifyContent: "center" }} >
-                  <label htmlFor="party_code">Product/Items Name</label>
-                  <div className="exp-form-floating">
-                    <div title="Select the Product/Items Name">
-                      <div class="d-flex justify-content-between">
-                        <Select
-                          className="exp-input-field"
-                          id="itemCode"
-                          required
-                          placeholder=""
-                          maxLength={18}
-                          autoComplete="off"
-                          options={dynamicOptions}
-                          onChange={handleChangeDynamicOption}
-                          classNamePrefix="react-select"
-                          title="Please select the product/items name"
-                          styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
-                        />
-                      </div>
+              </div>
+              <div className="col-md-3 form-group mb-2" style={{ justifyContent: "center" }} >
+                <label htmlFor="party_code">Product/Items Filter</label>
+                <div className="exp-form-floating">
+                  <div title="Select the Product/Items Filter">
+                    <div class="d-flex justify-content-between">
+                      <Select
+                        id="Product"
+                        value={selectedProduct}
+                        onChange={handleChangeProduct}
+                        options={filteredOptionProduct}
+                        className="exp-input-field"
+                        placeholder=""
+                        required
+                        title="Please select the product/items filter"
+                        classNamePrefix="react-select"
+                        styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                      />
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="d-flex justify-content-between ms-2" style={{ marginBlock: "", marginTop: "10px" }} >
-                <div align="left" class="d-flex justify-content-start" style={{ marginLeft: "25px" }} >
-                  <purButton type="button" title="Product / Item Details"
-                    className={`"toggle-btn"  ${activeTable === "myTable" ? "active" : ""}`}
-                    onClick={() => handleToggleTable("myTable")}
-                  >
-                    Product / Item Details
-                  </purButton>
-                  <purButton type="button" title="Tax Details"
-                    className={`"toggle-btn" ${activeTable === "tax" ? "active" : ""}`}
-                    onClick={() => handleToggleTable("tax")}
-                  >
-                    Tax Details
-                  </purButton>
+              <div className="col-md-3 form-group mb-2" style={{ justifyContent: "center" }} >
+                <label htmlFor="party_code">Product/Items Name</label>
+                <div className="exp-form-floating">
+                  <div title="Select the Product/Items Name">
+                    <div class="d-flex justify-content-between">
+                      <Select
+                        className="exp-input-field"
+                        id="itemCode"
+                        required
+                        placeholder=""
+                        maxLength={18}
+                        autoComplete="off"
+                        options={dynamicOptions}
+                        onChange={handleChangeDynamicOption}
+                        classNamePrefix="react-select"
+                        title="Please select the product/items name"
+                        styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                      />
+                    </div>
+                  </div>
                 </div>
-                {/* <div
+              </div>
+            </div>
+            <div class="d-flex justify-content-between ms-2" style={{ marginBlock: "", marginTop: "10px" }} >
+              <div align="left" class="d-flex justify-content-start" style={{ marginLeft: "25px" }} >
+                <purButton type="button" title="Product / Item Details"
+                  className={`"toggle-btn"  ${activeTable === "myTable" ? "active" : ""}`}
+                  onClick={() => handleToggleTable("myTable")}
+                >
+                  Product / Item Details
+                </purButton>
+                <purButton type="button" title="Tax Details"
+                  className={`"toggle-btn" ${activeTable === "tax" ? "active" : ""}`}
+                  onClick={() => handleToggleTable("tax")}
+                >
+                  Tax Details
+                </purButton>
+              </div>
+              {/* <div
               align=""
               class="d-flex justify-content-end"
               style={{ marginRight: "50px" }}
@@ -3199,58 +3214,58 @@ function Quotation() {
                 <FontAwesomeIcon icon={faMinus} />
               </icon>
             </div> */}
-              </div>
-              <div className="ag-theme-alpine" style={{ height: 280, width: "100%" }} >
-                <AgGridReact
-                  columnDefs={activeTable === "myTable" ? columnDefs : columnDefsTax}
-                  rowData={activeTable === "myTable" ? rowData : rowDataTax}
-                  // getRowId={(params) => String(params.data.serialNumber)}
-                  defaultColDef={{ editable: true, resizable: true }}
-                  onCellValueChanged={async (event) => {
-                    if (
-                      event.colDef.field === "purchaseQty" ||
-                      event.colDef.field === "purchaseAmt"
-                    ) {
-                      await ItemAmountCalculation(event);
-                    }
-                    handleCellValueChanged(event);
-                  }}
-                  onGridReady={onGridReady}
-                  onRowClicked={handleRowClicked}
-                  onColumnMoved={onColumnMoved}
-                  headerHeight={28}
-                  rowHeight={25}
-                />
-              </div>
             </div>
-          </div>
-          <div>
-            <QuotationItemPopup open={open} handleClose={handleClose} handleItem={handleItem} />
-            <QuotationCustomerPopup open={open2} handleClose={handleClose} handleVendor={handleVendor} />
-            <QuotationPopup open={open3} handleClose={handleClose} handleQuotationData={handleQuotationData} />
-          </div>
-          <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
-            <div className="row ms-2">
-              <div className="d-flex justify-content-start">
-                <p className="col-md-6">
-                  {labels.createdBy}: {additionalData.created_by}
-                </p>
-                <p className="col-md-6">
-                  {labels.createdDate}: {additionalData.created_date}
-                </p>
-              </div>
-              <div className="d-flex justify-content-start">
-                <p className="col-md-6">
-                  {labels.modifiedBy}: {additionalData.modified_by}
-                </p>
-                <p className="col-md-6">
-                  {" "}
-                  {labels.modifiedDate}: {additionalData.modified_date}
-                </p>
-              </div>
+            <div className="ag-theme-alpine" style={{ height: 280, width: "100%" }} >
+              <AgGridReact
+                columnDefs={activeTable === "myTable" ? columnDefs : columnDefsTax}
+                rowData={activeTable === "myTable" ? rowData : rowDataTax}
+                // getRowId={(params) => String(params.data.serialNumber)}
+                defaultColDef={{ editable: true, resizable: true }}
+                onCellValueChanged={async (event) => {
+                  if (
+                    event.colDef.field === "purchaseQty" ||
+                    event.colDef.field === "purchaseAmt"
+                  ) {
+                    await ItemAmountCalculation(event);
+                  }
+                  handleCellValueChanged(event);
+                }}
+                onGridReady={onGridReady}
+                onRowClicked={handleRowClicked}
+                onColumnMoved={onColumnMoved}
+                headerHeight={28}
+                rowHeight={25}
+              />
             </div>
           </div>
         </div>
+        <div>
+          <QuotationItemPopup open={open} handleClose={handleClose} handleItem={handleItem} />
+          <QuotationCustomerPopup open={open2} handleClose={handleClose} handleVendor={handleVendor} />
+          <QuotationPopup open={open3} handleClose={handleClose} handleQuotationData={handleQuotationData} />
+        </div>
+        <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
+          <div className="row ms-2">
+            <div className="d-flex justify-content-start">
+              <p className="col-md-6">
+                {labels.createdBy}: {additionalData.created_by}
+              </p>
+              <p className="col-md-6">
+                {labels.createdDate}: {additionalData.created_date}
+              </p>
+            </div>
+            <div className="d-flex justify-content-start">
+              <p className="col-md-6">
+                {labels.modifiedBy}: {additionalData.modified_by}
+              </p>
+              <p className="col-md-6">
+                {" "}
+                {labels.modifiedDate}: {additionalData.modified_date}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

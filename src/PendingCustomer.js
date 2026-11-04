@@ -173,7 +173,8 @@ function AssetsReturn({ }) {
             //minWidth: 180,
             filter: true,
             sortable: false,
-            editable: false
+            editable: false,
+            cellStyle: { textAlign: 'right' },
         },
         {
             headerName: 'Paid',
@@ -182,7 +183,8 @@ function AssetsReturn({ }) {
             //minWidth: 180,
             filter: true,
             sortable: false,
-            editable: false
+            editable: false,
+            cellStyle: { textAlign: 'right' },
         },
         {
             headerName: 'Balance Amount',
@@ -191,7 +193,8 @@ function AssetsReturn({ }) {
             //minWidth: 180,
             filter: true,
             sortable: false,
-            editable: false
+            editable: false,
+            cellStyle: { textAlign: 'right' },
         },
         {
             headerName: 'Received Amount',
@@ -199,7 +202,8 @@ function AssetsReturn({ }) {
             editable: true,
             //minWidth: 180,
             filter: true,
-            sortable: false
+            sortable: false,
+            cellStyle: { textAlign: 'right' },
         },
         {
             headerName: 'Keyfield',

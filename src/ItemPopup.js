@@ -37,7 +37,7 @@ const columnDefs = [
     headerName: "Item Weight",
     field: "Item_wigh",
     editable: false,
-    cellStyle: { textAlign: "center" },
+    cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "Base UOM",
@@ -61,25 +61,25 @@ const columnDefs = [
     headerName: "Without Tax",
     field: "Item_Last_salesRate_ExTax",
     editable: false,
-    cellStyle: { textAlign: "center" },
+    cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "With Tax",
     field: "Item_Last_salesRate_IncludingTax",
     editable: false,
-    cellStyle: { textAlign: "center" },
+    cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "Purchase Price",
     field: "Item_std_purch_price",
     editable: false,
-    cellStyle: { textAlign: "center" },
+    cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "Sales Price",
     field: "Item_std_sales_price",
     editable: false,
-    cellStyle: { textAlign: "center" },
+    cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "Stock Code",
@@ -139,7 +139,7 @@ const columnDefs = [
     headerName: "combined_tax_percent",
     field: "combined_tax_percent",
     editable: false,
-    cellStyle: { textAlign: "center" },
+    cellStyle: { textAlign: 'right' },
   },
 ];
 

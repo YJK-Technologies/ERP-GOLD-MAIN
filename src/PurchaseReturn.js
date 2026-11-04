@@ -58,65 +58,65 @@ function PurchaseReturn() {
   const [showExcelButton, setShowExcelButton] = useState(false);
   const [saveButtonVisible, setSaveButtonVisible] = useState(true);
   const [authButtonVisible, setAuthButtonVisible] = useState(false);
-  const [printButtonVisible, setPrintButtonVisible]= useState(false);
+  const [printButtonVisible, setPrintButtonVisible] = useState(false);
   const [status, setStatus] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState(null);
 
 
-   useEffect(() => {
-          const handleKeyDown = (e) => {
-            // 1. Ensure keys only trigger on F-keys
-            if (!['F1', 'F3', 'F4', 'F5', 'F6', 'F8'].includes(e.key)) {
-              return;
-            }
-      
-            // 2. Prevent default browser shortcut actions (e.g., F1 Help, F5 Refresh)
-            e.preventDefault();
-            e.stopPropagation();
-      
-            // 3. Prevent execution if screen is currently loading
-            if (loading) return;
-      
-            switch (e.key) {
-              case 'F1':
-                // Open Item Search Popup
-                setOpen(true); 
-                break;
-      
-             
-      
-              case 'F3':
-                // New / Reset Sales Invoice Form
-                if (window.confirm("Start a new adjustment? Unsaved changes will be lost.")) {
-                  handleReload(); 
-                }
-                break;  
-      
-              case 'F4':
-                // Save / Complete Invoice (Same logic as Save Button)
-                handleSaveButtonClick(); 
-                break;
-      
-              case 'F5':
-                // Search Existing Invoices to Edit
-                setOpen1(true); 
-                break;
-      
-            
-              default:
-                break;
-            }
-          };
-      
-          // Attach listener
-          window.addEventListener('keydown', handleKeyDown);
-      
-          // Clean up listener on unmount
-          return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-          };
-        }, [loading, showExcelButton, transaction_no, rowData]);
-      
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // 1. Ensure keys only trigger on F-keys
+      if (!['F1', 'F3', 'F4', 'F5', 'F6', 'F8'].includes(e.key)) {
+        return;
+      }
+
+      // 2. Prevent default browser shortcut actions (e.g., F1 Help, F5 Refresh)
+      e.preventDefault();
+      e.stopPropagation();
+
+      // 3. Prevent execution if screen is currently loading
+      if (loading) return;
+
+      switch (e.key) {
+        case 'F1':
+          // Open Item Search Popup
+          setOpen(true);
+          break;
+
+
+
+        case 'F3':
+          // New / Reset Sales Invoice Form
+          if (window.confirm("Start a new adjustment? Unsaved changes will be lost.")) {
+            handleReload();
+          }
+          break;
+
+        case 'F4':
+          // Save / Complete Invoice (Same logic as Save Button)
+          handleSaveButtonClick();
+          break;
+
+        case 'F5':
+          // Search Existing Invoices to Edit
+          setOpen1(true);
+          break;
+
+
+        default:
+          break;
+      }
+    };
+
+    // Attach listener
+    window.addEventListener('keydown', handleKeyDown);
+
+    // Clean up listener on unmount
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [loading, showExcelButton, transaction_no, rowData]);
+
 
   //code added by Harish purpose of set user permisssion
   const permissions = JSON.parse(sessionStorage.getItem('permissions')) || {};
@@ -245,7 +245,7 @@ function PurchaseReturn() {
         } else if (response.status === 404) {
           console.log("Data not found");
         } else {
-          console.log("Bad request"); 
+          console.log("Bad request");
         }
       } catch (error) {
         console.error("Error fetching search data:", error);
@@ -264,7 +264,7 @@ function PurchaseReturn() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ Tax_amount: formattedTotalTaxAmounts,  company_code:sessionStorage.getItem("selectedCompanyCode"),Putchase_amount: formattedTotalItemAmounts }),
+          body: JSON.stringify({ Tax_amount: formattedTotalTaxAmounts, company_code: sessionStorage.getItem("selectedCompanyCode"), Putchase_amount: formattedTotalItemAmounts }),
         });
         if (response.ok) {
           const data = await response.json();
@@ -302,7 +302,7 @@ function PurchaseReturn() {
 
     const updatedRowDataWithNewSerials = updatedRowData.map((row, index) => ({
       ...row,
-      serialNumber: index + 1 
+      serialNumber: index + 1
     }));
     setRowData(updatedRowDataWithNewSerials);
 
@@ -335,7 +335,7 @@ function PurchaseReturn() {
       let newValue = parseFloat(params.newValue);
 
       if (isNaN(newValue) || newValue < 0 || newValue > purchaseQty) {
-        newValue = 0; 
+        newValue = 0;
         params.node.setDataValue('returnQty', newValue);
         params.api.refreshCells({ rowNodes: [params.node], columns: ['returnQty'] }); // Refresh cell
 
@@ -379,7 +379,7 @@ function PurchaseReturn() {
     }
 
     params.data.returnQty = newValue;
-    return true; 
+    return true;
   }
 
 
@@ -390,6 +390,7 @@ function PurchaseReturn() {
       field: 'serialNumber',
       maxWidth: 80,
       editable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: '',
@@ -425,6 +426,7 @@ function PurchaseReturn() {
       // maxWidth: 150,
       filter: true,
       editable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Warehouse',
@@ -441,6 +443,7 @@ function PurchaseReturn() {
       filter: true,
       // maxWidth: 140,
       editable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Return Qty',
@@ -453,6 +456,7 @@ function PurchaseReturn() {
       cellEditorParams: {
         maxLength: 10,
       },
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Total  Weight',
@@ -461,6 +465,7 @@ function PurchaseReturn() {
       // maxWidth: 140,
       filter: true,
       editable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Return Weight',
@@ -469,6 +474,7 @@ function PurchaseReturn() {
       // maxWidth: 160,
       filter: true,
       editable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Unit Price',
@@ -477,6 +483,7 @@ function PurchaseReturn() {
       // maxWidth: 170,
       filter: true,
       editable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Tax Amount',
@@ -485,6 +492,7 @@ function PurchaseReturn() {
       // maxWidth: 130,
       filter: true,
       editable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Total',
@@ -493,6 +501,7 @@ function PurchaseReturn() {
       filter: true,
       // maxWidth: 120,
       editable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Tax Type',
@@ -520,6 +529,7 @@ function PurchaseReturn() {
       filter: true,
       hide: true,
       editable: false,
+      cellStyle: { textAlign: 'right' },
     },
   ];
 
@@ -554,12 +564,14 @@ function PurchaseReturn() {
       field: 'TaxPercentage',
       // minWidth: 401,
       editable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Tax Amount',
       field: 'TaxAmount',
       // minWidth: 401,
       editable: false,
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: 'Tax Amount',
@@ -571,7 +583,7 @@ function PurchaseReturn() {
   ];
 
   const handleSaveButtonClick = async () => {
-    if (!vendorcode || !returnDate || !returnreason || !returnperson||!purch_autono || !transactionDate) {
+    if (!vendorcode || !returnDate || !returnreason || !returnperson || !purch_autono || !transactionDate) {
       setError(" ");
       toast.warning('Error: Missing required fields');
       return;
@@ -633,7 +645,7 @@ function PurchaseReturn() {
     } catch (error) {
       console.error("Error inserting data:", error);
       toast.error('Error inserting data: ' + error.message);
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -757,7 +769,7 @@ function PurchaseReturn() {
       const entrydate = document.getElementById('entryDate');
       if (entrydate) {
         entrydate.value = Entrydate;
-        setEntryDate(formatDate(Entrydate));  
+        setEntryDate(formatDate(Entrydate));
       } else {
         console.error('entry element not found');
       }
@@ -765,7 +777,7 @@ function PurchaseReturn() {
       const transactiondate = document.getElementById('transactiondate');
       if (transactiondate) {
         transactiondate.value = TransactionDate;
-        setTransactionDate(formatDate(TransactionDate)); 
+        setTransactionDate(formatDate(TransactionDate));
       } else {
         console.error('entry element not found');
       }
@@ -942,7 +954,7 @@ function PurchaseReturn() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ return_no: returnNo,company_code: sessionStorage.getItem('selectedCompanyCode') }),
+        body: JSON.stringify({ return_no: returnNo, company_code: sessionStorage.getItem('selectedCompanyCode') }),
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -1000,78 +1012,78 @@ function PurchaseReturn() {
         return;
       }
 
-       const searchData = await response.json();
-        setSaveButtonVisible(true)
-        setPrintButtonVisible(false)
-        setShowExcelButton(true)
-        if (searchData.table1 && searchData.table1.length > 0) {
-          const item = searchData.table1[0];
-          setEntryDate(formatDate(item.Entry_date));
-          setPayType(item.pay_type);
-          setPurchaseType(item.purchase_type);
-          setTransactionDate(formatDate(item.transaction_date));
-          setPurch_autono(item.transaction_no);
-          setvendor_code(item.vendor_code);
-        } else {
-          console.log("Table 1 is empty or not found");
-          clearFormFields();
-        }
+      const searchData = await response.json();
+      setSaveButtonVisible(true)
+      setPrintButtonVisible(false)
+      setShowExcelButton(true)
+      if (searchData.table1 && searchData.table1.length > 0) {
+        const item = searchData.table1[0];
+        setEntryDate(formatDate(item.Entry_date));
+        setPayType(item.pay_type);
+        setPurchaseType(item.purchase_type);
+        setTransactionDate(formatDate(item.transaction_date));
+        setPurch_autono(item.transaction_no);
+        setvendor_code(item.vendor_code);
+      } else {
+        console.log("Table 1 is empty or not found");
+        clearFormFields();
+      }
 
-        if (searchData.table2 && searchData.table2.length > 0) {
-          const updatedRowData = searchData.table2.map(item => {
-            const taxDetailsList = searchData.table3.filter(taxItem => taxItem.item_code === item.item_code);
-            const taxType = taxDetailsList.map(taxItem => taxItem.tax_name_details).join(",");
-            const taxPer = taxDetailsList.map(taxItem => taxItem.tax_per).join(",");
-            const taxDetails = taxDetailsList.length > 0 ? taxDetailsList[0].tax_type : null;
+      if (searchData.table2 && searchData.table2.length > 0) {
+        const updatedRowData = searchData.table2.map(item => {
+          const taxDetailsList = searchData.table3.filter(taxItem => taxItem.item_code === item.item_code);
+          const taxType = taxDetailsList.map(taxItem => taxItem.tax_name_details).join(",");
+          const taxPer = taxDetailsList.map(taxItem => taxItem.tax_per).join(",");
+          const taxDetails = taxDetailsList.length > 0 ? taxDetailsList[0].tax_type : null;
 
-            setVendorName(item.vendor_name);
+          setVendorName(item.vendor_name);
 
-            return {
-              serialNumber: item.ItemSNo,
-              itemCode: item.item_code,
-              itemName: item.item_name,
-              unitWeight: item.weight,
-              warehouse: item.warehouse_code,
-              purchaseQty: item.bill_qty,
-              itemTotalWeight: parseFloat(item.total_weight).toFixed(2),
-              purchaseAmt: item.item_amt,
-              TotalTaxAmount: parseFloat(item.tax_amount).toFixed(2),
-              TotalItemAmount: parseFloat(item.bill_rate).toFixed(2),
-              taxType: taxType || null,
-              taxPer: taxPer || null,
-              taxDetails: taxDetails || null
-            };
-          });
+          return {
+            serialNumber: item.ItemSNo,
+            itemCode: item.item_code,
+            itemName: item.item_name,
+            unitWeight: item.weight,
+            warehouse: item.warehouse_code,
+            purchaseQty: item.bill_qty,
+            itemTotalWeight: parseFloat(item.total_weight).toFixed(2),
+            purchaseAmt: item.item_amt,
+            TotalTaxAmount: parseFloat(item.tax_amount).toFixed(2),
+            TotalItemAmount: parseFloat(item.bill_rate).toFixed(2),
+            taxType: taxType || null,
+            taxPer: taxPer || null,
+            taxDetails: taxDetails || null
+          };
+        });
 
-          setRowData(updatedRowData);
-        } else {
-          console.log("Table 2 is empty or not found");
-          setRowData([]);
-        }
+        setRowData(updatedRowData);
+      } else {
+        console.log("Table 2 is empty or not found");
+        setRowData([]);
+      }
 
-        if (searchData.table3 && searchData.table3.length > 0) {
-          const updatedRowDataTax = searchData.table3.map(item => {
-            return {
-              ItemSNO: item.ItemSNo,
-              TaxSNO: item.TaxSNo,
-              Item_code: item.item_code,
-              TaxType: item.tax_name_details,
-              TaxPercentage: item.tax_per,
-              TaxAmount: item.tax_amt,
-              TaxName: item.tax_type
-            };
-          });
+      if (searchData.table3 && searchData.table3.length > 0) {
+        const updatedRowDataTax = searchData.table3.map(item => {
+          return {
+            ItemSNO: item.ItemSNo,
+            TaxSNO: item.TaxSNo,
+            Item_code: item.item_code,
+            TaxType: item.tax_name_details,
+            TaxPercentage: item.tax_per,
+            TaxAmount: item.tax_amt,
+            TaxName: item.tax_type
+          };
+        });
 
-          setRowDataTax(updatedRowDataTax);
-        } else {
-          console.log("Table 3 is empty or not found");
-          setRowDataTax([]);
-        }
+        setRowDataTax(updatedRowDataTax);
+      } else {
+        console.log("Table 3 is empty or not found");
+        setRowDataTax([]);
+      }
 
-        console.log("Data fetched successfully");
+      console.log("Data fetched successfully");
     } catch (error) {
       console.error("Error fetching search data:", error);
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -1168,7 +1180,7 @@ function PurchaseReturn() {
 
   const generateReport = async () => {
     setStatus('Generating Report...');
-        setLoading(true);
+    setLoading(true);
 
     try {
       const headerData = await PrintHeaderData();
@@ -1189,7 +1201,7 @@ function PurchaseReturn() {
       }
     } catch (error) {
       console.error("Error executing API calls:", error);
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -1200,7 +1212,7 @@ function PurchaseReturn() {
 
 
   const handleReload = () => {
-            setLoading(true);
+    setLoading(true);
 
     window.location.reload();
   };
@@ -1244,80 +1256,80 @@ function PurchaseReturn() {
         }
         return;
       }
-        setShowExcelButton(true);
-        setSaveButtonVisible(false);
-        setPrintButtonVisible(true)
-        setAuthButtonVisible(true)
-        setShowDropdown(true);
-        const searchData = await response.json();
-        if (searchData.table1 && searchData.table1.length > 0) {
-          const item = searchData.table1[0];
-          setEntryDate(formatDate(item.entry_date));
-          setPayType(item.pay_type);
-          setPurchaseType(item.purchase_type);
-          setTransactionDate(formatDate(item.transaction_date));
-          setReturnDate(formatDate(item.return_date));
-          setPurch_autono(item.transaction_no);
-          setvendor_code(item.vendor_code);
-          setReturNumber(item.return_no);
-          setReturReason(item.return_reason);
-          setReturPerson(item.return_person);
-          setVendorName(item.vendor_name);
-          setEntryDate(formatDate(item.entry_date));
-          setRoundDifference(item.rounded_off);
-          setTotalPurchaseAmount(item.purchase_amount_returne);
-          setTotalBillAmount(item.total_amount);
-          setTotalTaxAmount(item.tax_amount);
-        } else {
-          console.log("Table 1 is empty or not found");
-          clearFormFields();   
-        }
+      setShowExcelButton(true);
+      setSaveButtonVisible(false);
+      setPrintButtonVisible(true)
+      setAuthButtonVisible(true)
+      setShowDropdown(true);
+      const searchData = await response.json();
+      if (searchData.table1 && searchData.table1.length > 0) {
+        const item = searchData.table1[0];
+        setEntryDate(formatDate(item.entry_date));
+        setPayType(item.pay_type);
+        setPurchaseType(item.purchase_type);
+        setTransactionDate(formatDate(item.transaction_date));
+        setReturnDate(formatDate(item.return_date));
+        setPurch_autono(item.transaction_no);
+        setvendor_code(item.vendor_code);
+        setReturNumber(item.return_no);
+        setReturReason(item.return_reason);
+        setReturPerson(item.return_person);
+        setVendorName(item.vendor_name);
+        setEntryDate(formatDate(item.entry_date));
+        setRoundDifference(item.rounded_off);
+        setTotalPurchaseAmount(item.purchase_amount_returne);
+        setTotalBillAmount(item.total_amount);
+        setTotalTaxAmount(item.tax_amount);
+      } else {
+        console.log("Table 1 is empty or not found");
+        clearFormFields();
+      }
 
-        if (searchData.table2 && searchData.table2.length > 0) {
-          const updatedRowData = searchData.table2.map(item => {
+      if (searchData.table2 && searchData.table2.length > 0) {
+        const updatedRowData = searchData.table2.map(item => {
 
-            return {
-              serialNumber: item.ItemSNo,
-              itemCode: item.item_code,
-              itemName: item.item_name,
-              unitWeight: item.weight,
-              warehouse: item.warehouse_code,
-              purchaseQty: item.bill_qty,
-              returnQty: item.return_qty,
-              returnWeight: item.return_weight,
-              itemTotalWeight: parseFloat(item.total_weight).toFixed(2),
-              purchaseAmt: item.item_amt,
-              totalTaxAmount: item.tax_amount,
-              totalReturnAmount: item.bill_rate
-            };
-          });
+          return {
+            serialNumber: item.ItemSNo,
+            itemCode: item.item_code,
+            itemName: item.item_name,
+            unitWeight: item.weight,
+            warehouse: item.warehouse_code,
+            purchaseQty: item.bill_qty,
+            returnQty: item.return_qty,
+            returnWeight: item.return_weight,
+            itemTotalWeight: parseFloat(item.total_weight).toFixed(2),
+            purchaseAmt: item.item_amt,
+            totalTaxAmount: item.tax_amount,
+            totalReturnAmount: item.bill_rate
+          };
+        });
 
-          setRowData(updatedRowData);
-        } else {
-          console.log("Table 2 is empty or not found");
-          setRowData([]);
-        }
+        setRowData(updatedRowData);
+      } else {
+        console.log("Table 2 is empty or not found");
+        setRowData([]);
+      }
 
-        if (searchData.table3 && searchData.table3.length > 0) {
-          const updatedRowDataTax = searchData.table3.map(item => {
-            return {
-              ItemSNO: item.ItemSNo,
-              TaxSNO: item.TaxSNo,
-              Item_code: item.item_code,
-              TaxType: item.tax_type,
-              TaxPercentage: item.tax_per,
-              TaxAmount: item.tax_amt,
-              TaxName: item.tax_type
-            };
-          });
+      if (searchData.table3 && searchData.table3.length > 0) {
+        const updatedRowDataTax = searchData.table3.map(item => {
+          return {
+            ItemSNO: item.ItemSNo,
+            TaxSNO: item.TaxSNo,
+            Item_code: item.item_code,
+            TaxType: item.tax_type,
+            TaxPercentage: item.tax_per,
+            TaxAmount: item.tax_amt,
+            TaxName: item.tax_type
+          };
+        });
 
-          setRowDataTax(updatedRowDataTax);
-        } else {
-          console.log("Table 3 is empty or not found");
-          setRowDataTax([]);
-        }
+        setRowDataTax(updatedRowDataTax);
+      } else {
+        console.log("Table 3 is empty or not found");
+        setRowDataTax([]);
+      }
 
-        console.log("Data fetched successfully");
+      console.log("Data fetched successfully");
 
     } catch (error) {
       console.error("Error fetching search data:", error);
@@ -1472,11 +1484,11 @@ function PurchaseReturn() {
       } else {
         console.error('VendorName element not found');
       }
- setShowExcelButton(true);
-        setSaveButtonVisible(false);
-        setPrintButtonVisible(true)
-        setAuthButtonVisible(true)
-        setShowDropdown(true);
+      setShowExcelButton(true);
+      setSaveButtonVisible(false);
+      setPrintButtonVisible(true)
+      setAuthButtonVisible(true)
+      setShowDropdown(true);
       TransactionStatus(ReturnNo)
       await purchasereturntaxView(ReturnNo);
     } else {
@@ -1518,9 +1530,9 @@ function PurchaseReturn() {
         setRowDataTax([]);
       } else {
         const errorResponse = await response.json();
-          toast.warning(errorResponse.message || "Failed to insert sales data");
-          console.error(errorResponse.details || errorResponse.message);
-        }
+        toast.warning(errorResponse.message || "Failed to insert sales data");
+        console.error(errorResponse.details || errorResponse.message);
+      }
     } catch (error) {
       console.error("Error fetching search data:", error);
     }
@@ -1583,9 +1595,9 @@ function PurchaseReturn() {
         setRowData([]);
       } else {
         const errorResponse = await response.json();
-          toast.warning(errorResponse.message || "Failed to insert sales data");
-          console.error(errorResponse.details || errorResponse.message);
-        }
+        toast.warning(errorResponse.message || "Failed to insert sales data");
+        console.error(errorResponse.details || errorResponse.message);
+      }
     } catch (error) {
       console.error("Error fetching search data:", error);
     }
@@ -1649,96 +1661,96 @@ function PurchaseReturn() {
   // };
 
   const handleExcelDownload = () => {
-  const filteredRowData = rowData.filter(
-    row =>
-      row.returnQty > 0 &&
-      row.totalReturnAmount > 0 &&
-      row.purchaseAmt > 0
-  );
+    const filteredRowData = rowData.filter(
+      row =>
+        row.returnQty > 0 &&
+        row.totalReturnAmount > 0 &&
+        row.purchaseAmt > 0
+    );
 
-  const filteredRowDataTax = rowDataTax.filter(
-    taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0
-  );
+    const filteredRowDataTax = rowDataTax.filter(
+      taxRow => taxRow.TaxAmount > 0 && taxRow.TaxPercentage > 0
+    );
 
-  const headerData = [{
-    "Vendor Code": vendorcode,
-    "Vendor Name": vendor_name,
-    "Pay Type": payType,
-    "Purchase Type": purchaseType,
-    "Entry Date": entryDate,
-    "Transaction No": purch_autono.toString(),
-    "Transaction Date": transactionDate,
-    "Return Date": returnDate,
-    "Return Reason": returnreason,
-    "Return Person": returnperson,
-    "Purchase Return Amount": parseFloat(TotalBillAmount),
-    "Tax Amount": parseFloat(TotalTaxAmount),
-    "Total Amount": parseFloat(TotalPurchaseAmount),
-    "Rounded Off": parseFloat(round_difference),
-  }];
+    const headerData = [{
+      "Vendor Code": vendorcode,
+      "Vendor Name": vendor_name,
+      "Pay Type": payType,
+      "Purchase Type": purchaseType,
+      "Entry Date": entryDate,
+      "Transaction No": purch_autono.toString(),
+      "Transaction Date": transactionDate,
+      "Return Date": returnDate,
+      "Return Reason": returnreason,
+      "Return Person": returnperson,
+      "Purchase Return Amount": parseFloat(TotalBillAmount),
+      "Tax Amount": parseFloat(TotalTaxAmount),
+      "Total Amount": parseFloat(TotalPurchaseAmount),
+      "Rounded Off": parseFloat(round_difference),
+    }];
 
-  // Header Sheet
-  const headerSheet = XLSX.utils.aoa_to_sheet([
-    ["Purchase Return"],
-    [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
-    [],
-  ]);
+    // Header Sheet
+    const headerSheet = XLSX.utils.aoa_to_sheet([
+      ["Purchase Return"],
+      [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`],
+      [],
+    ]);
 
-  XLSX.utils.sheet_add_json(headerSheet, headerData, {origin: "A4",});
+    XLSX.utils.sheet_add_json(headerSheet, headerData, { origin: "A4", });
 
-  // Merge Heading
-  headerSheet["!merges"] = [
-    {
-      s: { r: 0, c: 0 },
-      e: { r: 0, c: 9 },
-    },
-    {
-      s: { r: 1, c: 0 },
-      e: { r: 1, c: 9 },
-    },
-  ];
+    // Merge Heading
+    headerSheet["!merges"] = [
+      {
+        s: { r: 0, c: 0 },
+        e: { r: 0, c: 9 },
+      },
+      {
+        s: { r: 1, c: 0 },
+        e: { r: 1, c: 9 },
+      },
+    ];
 
-  // Detail Sheets
-  const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
-  const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
+    // Detail Sheets
+    const rowDataSheet = XLSX.utils.json_to_sheet(filteredRowData);
+    const rowDataTaxSheet = XLSX.utils.json_to_sheet(filteredRowDataTax);
 
-  // Auto Fit Function
-  const autoFitColumns = (worksheet, data) => {
-    if (!data || data.length === 0) return;
+    // Auto Fit Function
+    const autoFitColumns = (worksheet, data) => {
+      if (!data || data.length === 0) return;
 
-    const cols = [];
+      const cols = [];
 
-    data.forEach((row) => {
-      Object.keys(row).forEach((key, i) => {
-        const value = row[key] == null ? "" : row[key].toString();
+      data.forEach((row) => {
+        Object.keys(row).forEach((key, i) => {
+          const value = row[key] == null ? "" : row[key].toString();
 
-        cols[i] = Math.max(
-          cols[i] || key.length,
-          key.length,
-          value.length
-        );
+          cols[i] = Math.max(
+            cols[i] || key.length,
+            key.length,
+            value.length
+          );
+        });
       });
-    });
 
-    worksheet["!cols"] = cols.map(width => ({
-      wch: width + 5,
-    }));
+      worksheet["!cols"] = cols.map(width => ({
+        wch: width + 5,
+      }));
+    };
+
+    // Apply Auto Width
+    autoFitColumns(headerSheet, headerData);
+    autoFitColumns(rowDataSheet, filteredRowData);
+    autoFitColumns(rowDataTaxSheet, filteredRowDataTax);
+
+    // Workbook
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
+    XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
+    XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Tax Details");
+
+    XLSX.writeFile(workbook, "Purchase_Return_Data.xlsx");
   };
 
-  // Apply Auto Width
-  autoFitColumns(headerSheet, headerData);
-  autoFitColumns(rowDataSheet, filteredRowData);
-  autoFitColumns(rowDataTaxSheet, filteredRowDataTax);
-
-  // Workbook
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, headerSheet, "Header Data");
-  XLSX.utils.book_append_sheet(workbook, rowDataSheet, "Details Data");
-  XLSX.utils.book_append_sheet(workbook, rowDataTaxSheet, "Tax Details");
-
-  XLSX.writeFile(workbook, "Purchase_Return_Data.xlsx");
-};
-  
   const handleChangeStatus = (selectedOption) => {
     setSelectedStatus(selectedOption);
     console.log("Selected option:", selectedOption);
@@ -1771,53 +1783,53 @@ function PurchaseReturn() {
   // };
 
   const handleAuthorizedButtonClick = async () => {
-  if (!returnnumber || !selectedStatus) {
-    setError(" ");
-    toast.warning("Error: Missing required fields");
-    return;
-  }
-
-  setLoading(true);
-
-  try {
-    // STEP 1: Header
-    const headerResponse = await AuthorizedHeader();
-
-    // If Header failed, execution will NOT reach here
-    if (!headerResponse) {
+    if (!returnnumber || !selectedStatus) {
+      setError(" ");
+      toast.warning("Error: Missing required fields");
       return;
     }
 
-    // STEP 2: Details
-    const detailsResponse = await AuthorizedDetails();
+    setLoading(true);
 
-    // If Details failed, execution will NOT reach here
-    if (!detailsResponse) {
-      return;
+    try {
+      // STEP 1: Header
+      const headerResponse = await AuthorizedHeader();
+
+      // If Header failed, execution will NOT reach here
+      if (!headerResponse) {
+        return;
+      }
+
+      // STEP 2: Details
+      const detailsResponse = await AuthorizedDetails();
+
+      // If Details failed, execution will NOT reach here
+      if (!detailsResponse) {
+        return;
+      }
+
+      // STEP 3: Tax Details
+      const taxDetailsResponse = await AuthorizedTaxDetails();
+
+      // If Tax Details failed, stop
+      if (!taxDetailsResponse) {
+        return;
+      }
+
+      // Only when all 3 are successful
+      setSaveButtonVisible(false);
+      setPrintButtonVisible(true);
+      setShowExcelButton(true);
+
+      // toast.success("All functions executed successfully.");
+
+    } catch (error) {
+      console.error("Authorization process failed:", error);
+      toast.error(error.message || "Authorization failed.");
+    } finally {
+      setLoading(false);
     }
-
-    // STEP 3: Tax Details
-    const taxDetailsResponse = await AuthorizedTaxDetails();
-
-    // If Tax Details failed, stop
-    if (!taxDetailsResponse) {
-      return;
-    }
-
-    // Only when all 3 are successful
-    setSaveButtonVisible(false);
-    setPrintButtonVisible(true);
-    setShowExcelButton(true);
-
-    // toast.success("All functions executed successfully.");
-
-  } catch (error) {
-    console.error("Authorization process failed:", error);
-    toast.error(error.message || "Authorization failed.");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   // const AuthorizedHeader = async () => {
   //   try {
@@ -1845,35 +1857,35 @@ function PurchaseReturn() {
   // };
 
   const AuthorizedHeader = async () => {
-  try {
-    const response = await fetch(`${config.apiBaseUrl}/PurchReturnAuthHdr`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        return_no: returnnumber,
-        company_code: sessionStorage.getItem("selectedCompanyCode"),
-        authroization_status: selectedStatus.value
-      })
-    });
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/PurchReturnAuthHdr`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          return_no: returnnumber,
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          authroization_status: selectedStatus.value
+        })
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (response.ok) {
-      toast.success(data.message || "Authorization updated successfully.");
-      return true;
+      if (response.ok) {
+        toast.success(data.message || "Authorization updated successfully.");
+        return true;
+      }
+
+      toast.error(data.message || "Failed to update data.");
+      return false;
+
+    } catch (error) {
+      console.error("Error executing API calls:", error);
+      toast.error("Error updating data: " + error.message);
+      return false;
     }
-
-    toast.error(data.message || "Failed to update data.");
-    return false;
-
-  } catch (error) {
-    console.error("Error executing API calls:", error);
-    toast.error("Error updating data: " + error.message);
-    return false;
-  }
-};
+  };
 
   const AuthorizedDetails = async () => {
     try {
@@ -1888,29 +1900,29 @@ function PurchaseReturn() {
           authroization_status: selectedStatus.value
         })
       });
-    //   if (response.ok) {
-    //     return true
-    //   } else {
-    //     toast.error("Failed to Update data");
-    //   }
-    // } catch (error) {
-    //   toast.error('Error inserting data: ' + error.message);
-    // }
-    const data = await response.json();
+      //   if (response.ok) {
+      //     return true
+      //   } else {
+      //     toast.error("Failed to Update data");
+      //   }
+      // } catch (error) {
+      //   toast.error('Error inserting data: ' + error.message);
+      // }
+      const data = await response.json();
 
-    if (response.ok) {
-      toast.success(data.message || "Authorization updated successfully.");
-      return true;
+      if (response.ok) {
+        toast.success(data.message || "Authorization updated successfully.");
+        return true;
+      }
+
+      toast.error(data.message || "Failed to update data.");
+      return false;
+
+    } catch (error) {
+      console.error("Error executing API calls:", error);
+      toast.error("Error updating data: " + error.message);
+      return false;
     }
-
-    toast.error(data.message || "Failed to update data.");
-    return false;
-
-  } catch (error) {
-    console.error("Error executing API calls:", error);
-    toast.error("Error updating data: " + error.message);
-    return false;
-  }
   };
 
   const AuthorizedTaxDetails = async () => {
@@ -1926,35 +1938,35 @@ function PurchaseReturn() {
           authroization_status: selectedStatus.value
         })
       });
-    //   if (response.ok) {
-    //     return true
-    //   } else {
-    //     toast.error("Failed to Update data");;
-    //   }
-    // } catch (error) {
-    //   console.error("Error executing API calls:", error);
-    //   toast.error('Error inserting data: ' + error.message);
-    // }
-    const data = await response.json();
+      //   if (response.ok) {
+      //     return true
+      //   } else {
+      //     toast.error("Failed to Update data");;
+      //   }
+      // } catch (error) {
+      //   console.error("Error executing API calls:", error);
+      //   toast.error('Error inserting data: ' + error.message);
+      // }
+      const data = await response.json();
 
-    if (response.ok) {
-      toast.success(data.message || "Authorization updated successfully.");
-      return true;
+      if (response.ok) {
+        toast.success(data.message || "Authorization updated successfully.");
+        return true;
+      }
+
+      toast.error(data.message || "Failed to update data.");
+      return false;
+
+    } catch (error) {
+      console.error("Error executing API calls:", error);
+      toast.error("Error updating data: " + error.message);
+      return false;
     }
-
-    toast.error(data.message || "Failed to update data.");
-    return false;
-
-  } catch (error) {
-    console.error("Error executing API calls:", error);
-    toast.error("Error updating data: " + error.message);
-    return false;
-  }
   };
 
   return (
     <div className="container-fluid Topnav-screen">
-              {loading && <LoadingScreen />}
+      {loading && <LoadingScreen />}
       <ToastContainer position="top-right" className="toast-design" theme="colored" />
       <div>
         <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
@@ -1963,17 +1975,17 @@ function PurchaseReturn() {
               <h1 align="left" className="purbut me-5">Purchase Return</h1>
             </div>
             <div className="d-flex justify-content-end purbut me-3">
-              { saveButtonVisible && ['add', 'all permission'].some(permission => purchaseReturnPermission.includes(permission)) && (
+              {saveButtonVisible && ['add', 'all permission'].some(permission => purchaseReturnPermission.includes(permission)) && (
                 <savebutton class="purbut" title="Save" onClick={handleSaveButtonClick} >
                   <i class="fa-regular fa-floppy-disk"></i>
                 </savebutton>
               )}
-              { authButtonVisible &&(
-                    <savebutton className="purbut"  onClick={handleAuthorizedButtonClick} title="Authorize">
-                <i class="fa-solid fa-check"></i>
-              </savebutton>
+              {authButtonVisible && (
+                <savebutton className="purbut" onClick={handleAuthorizedButtonClick} title="Authorize">
+                  <i class="fa-solid fa-check"></i>
+                </savebutton>
               )}
-              { printButtonVisible && ['all permission', 'view'].some(permission => purchaseReturnPermission.includes(permission)) && (
+              {printButtonVisible && ['all permission', 'view'].some(permission => purchaseReturnPermission.includes(permission)) && (
                 <printbutton className="purbut" title="Print" onClick={generateReport}>
                   <i class="fa-solid fa-file-pdf"></i>
                 </printbutton>
@@ -2038,21 +2050,21 @@ function PurchaseReturn() {
           <div className="row ms-3 me-3">
             {showDropdown && (
               <div className="col-md-3 form-group mb-2">
-                <label for=""className={`${error && !selectedStatus ? 'red' : ''}`}>Status</label><span className="text-danger">*</span>
+                <label for="" className={`${error && !selectedStatus ? 'red' : ''}`}>Status</label><span className="text-danger">*</span>
                 <div class="exp-form-floating">
                   <div title='Select the Status'>
-                  <Select
-                    id="returnType"
-                    className="exp-input-field"
-                    placeholder="Select an option"
-                    options={status}
-                    value={selectedStatus}
-                    onChange={handleChangeStatus}
-                    getOptionLabel={(option) => option.label || ""}
-                    getOptionValue={(option) => option.value || ""}
-                    styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
-                  />
-                </div>
+                    <Select
+                      id="returnType"
+                      className="exp-input-field"
+                      placeholder="Select an option"
+                      options={status}
+                      value={selectedStatus}
+                      onChange={handleChangeStatus}
+                      getOptionLabel={(option) => option.label || ""}
+                      getOptionValue={(option) => option.value || ""}
+                      styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                    />
+                  </div>
                 </div>
               </div>
             )}
@@ -2077,7 +2089,7 @@ function PurchaseReturn() {
                     autoComplete='off'
                   />
                   <div className='position-absolute mt-1 me-2'>
-                     <span className="icon searchIcon"
+                    <span className="icon searchIcon"
                       onClick={handleClickOpen}>
                       <i class="fa fa-search" title="Help"></i>
                     </span>
@@ -2125,7 +2137,7 @@ function PurchaseReturn() {
                     autoComplete="off"
                   />
                   <div className='position-absolute mt-1 me-2'>
-                     <span className="icon searchIcon"
+                    <span className="icon searchIcon"
                       onClick={handleClickReturn}>
                       <i class="fa fa-search" title="Help"></i>
                     </span>
@@ -2164,7 +2176,7 @@ function PurchaseReturn() {
                 <label for="Return reason" className={`${error && !returnreason ? 'red' : ''} `}>
                   Return Reason
                 </label>
-                  <span className="text-danger">*</span>
+                <span className="text-danger">*</span>
                 <input
                   name="returnreason"
                   id="returnreason"
@@ -2314,6 +2326,7 @@ function PurchaseReturn() {
                   onChange={(e) => setTotalPurchaseAmount(e.target.value)}
                   autoComplete="off"
                   readOnly
+                  style={{ textAlign: "right" }}
                 />
               </div>
             </div>
@@ -2334,6 +2347,7 @@ function PurchaseReturn() {
                   onChange={(e) => setTotalTaxAmount(e.target.value)}
                   autoComplete="off"
                   readOnly
+                  style={{ textAlign: "right" }}
                 />
               </div>
             </div>
@@ -2352,6 +2366,7 @@ function PurchaseReturn() {
                   onChange={(e) => setRoundDifference(e.target.value)}
                   autoComplete="off"
                   readOnly
+                  style={{ textAlign: "right" }}
                 />
               </div>
             </div>
@@ -2372,6 +2387,7 @@ function PurchaseReturn() {
                   onChange={(e) => setTotalBillAmount(e.target.value)}
                   autoComplete="off"
                   readOnly
+                  style={{ textAlign: "right" }}
                 />
               </div>
             </div>
@@ -2406,6 +2422,8 @@ function PurchaseReturn() {
                 }
                 onCellValueChanged(event);
               }}
+              headerHeight={28}
+              rowHeight={25}
             />
           </div>
         </div>

@@ -52,11 +52,13 @@ const columnDefs = [
     headerName: "Sales Amount",
     field: "sale_amt",
     editable: false,
+    cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "Bill Amount",
     field: "bill_amt",
     editable: false,
+    cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "Pay Type",
@@ -83,11 +85,13 @@ const columnDefs = [
     headerName: "Round Off",
     field: "roff_amt",
     editable: false,
+    cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "Tax Amount",
     field: "tax_amount",
     editable: false,
+    cellStyle: { textAlign: 'right' },
   },
 ];
 
@@ -339,7 +343,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                             <input
                               type="date"
                               id="billdate"
-                              className="form-control"
+                              className='exp-input-field form-control'
                               title="Enter the Bill Date"
                               placeholder="Bill Date"
                               value={bill_date}
@@ -352,7 +356,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                             <input
                               type="text"
                               id="billno"
-                              className="form-control"
+                              className='exp-input-field form-control'
                               maxLength={10}
                               title="Enter the Bill No"
                               placeholder="Bill No"
@@ -366,7 +370,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                             <input
                               type="text"
                               id="cuscode"
-                              className="form-control"
+                              className='exp-input-field form-control'
                               maxLength={18}
                               title="Enter the Customer Code"
                               placeholder="Customer Code"
@@ -380,7 +384,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                             <input
                               type="text"
                               id="cusname"
-                              className="form-control"
+                              className='exp-input-field form-control'
                               title="Enter the Customer Name"
                               placeholder="Customer Name"
                               maxLength={50}
@@ -400,6 +404,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                                 onChange={handleChangeSales}
                                 options={filteredOptionSales}
                                 className="exp-input-field"
+                                classNamePrefix="react-select"
                                 placeholder="Sales type"
                                 isClearable
                               />
@@ -413,6 +418,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                                 onChange={handleChangePay}
                                 options={filteredOptionPay}
                                 className="exp-input-field"
+                                classNamePrefix="react-select"
                                 placeholder="Pay type"
                                 isClearable
                               />
@@ -426,6 +432,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                                 onChange={handleChangeOrder}
                                 options={filteredOptionOrder}
                                 className="exp-input-field"
+                                classNamePrefix="react-select"
                                 placeholder="Order Type"
                                 isClearable
                               />
@@ -435,7 +442,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                             <input
                               type="text"
                               id="delychlno"
-                              className="form-control"
+                              className='exp-input-field form-control'
                               title="Enter the Delivery Challan No"
                               placeholder="Delivery Challan No"
                               maxLength={10}
@@ -466,6 +473,8 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                             pagination
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+                            rowHeight={25}
                           />
                         </div>
                       </div>
@@ -502,7 +511,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                             <input
                               type="date"
                               id="billdate"
-                              className="form-control"
+                              className='exp-input-field form-control'
                               title="Enter the Bill Date"
                               placeholder="Bill Date"
                               value={bill_date}
@@ -515,7 +524,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                             <input
                               type="text"
                               id="billno"
-                              className="form-control"
+                              className='exp-input-field form-control'
                               maxLength={10}
                               title="Enter the Bill No"
                               placeholder="Bill No"
@@ -529,7 +538,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                             <input
                               type="text"
                               id="cuscode"
-                              className="form-control"
+                              className='exp-input-field form-control'
                               maxLength={18}
                               title="Enter the Customer Code"
                               placeholder="Customer Code"
@@ -543,7 +552,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                             <input
                               type="text"
                               id="cusname"
-                              className="form-control"
+                              className='exp-input-field form-control'
                               title="Enter the Customer Name"
                               placeholder="Customer Name"
                               maxLength={50}
@@ -563,6 +572,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                                 onChange={handleChangeSales}
                                 options={filteredOptionSales}
                                 className="exp-input-field"
+                                classNamePrefix="react-select"
                                 placeholder="Sales type"
                                 isClearable
                               />
@@ -576,6 +586,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                                 onChange={handleChangePay}
                                 options={filteredOptionPay}
                                 className="exp-input-field"
+                                classNamePrefix="react-select"
                                 placeholder="Pay type"
                                 isClearable
                               />
@@ -589,6 +600,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                                 onChange={handleChangeOrder}
                                 options={filteredOptionOrder}
                                 className="exp-input-field"
+                                classNamePrefix="react-select"
                                 placeholder="Order Type"
                                 isClearable
                               />
@@ -598,7 +610,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                             <input
                               type="text"
                               id="delychlno"
-                              className="form-control"
+                              className='exp-input-field form-control'
                               title="Enter the Delivery Challan No"
                               placeholder="Delivery Challan No"
                               maxLength={10}
@@ -628,6 +640,8 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
                               pagination
                               onSelectionChanged={handleRowSelected}
                               onRowDoubleClicked={handleRowDoubleClick}
+                              headerHeight={28}
+                              rowHeight={25}
                             />
                           </div>
                         </div>
