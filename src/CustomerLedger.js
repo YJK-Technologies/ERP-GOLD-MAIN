@@ -711,7 +711,7 @@ const CustomerLedger = () => {
                             className="form-control exp-input-field"
                             value={gstin}
                             placeholder="GSTIN"
-                            readOnly
+                            // readOnly
                         />
                     </div>
                     <div className="col-md-2 form-group text-start">
@@ -893,7 +893,7 @@ const CustomerLedger = () => {
                 </div>
 
                 {/* ROW 6: Navigation Tabs */}
-                <div className="ms-2 me-2 mb-3">
+                {/* <div className="ms-2 me-2 mb-3">
                     <ul className="nav nav-tabs border-bottom">
                         <li className="nav-item">
                             <button
@@ -920,10 +920,10 @@ const CustomerLedger = () => {
                             </button>
                         </li>
                     </ul>
-                </div>
+                </div> */}
 
                 {/* ROW 7: AG Grid Container */}
-                {activeTab === 'ledger' ? (
+                {/* {activeTab === 'ledger' ? (
                     <div className="ag-theme-alpine mb-4 ms-2 me-2" style={{ height: 460, width: '100%' }}>
                         <AgGridReact
                             rowData={rowData}
@@ -944,7 +944,7 @@ const CustomerLedger = () => {
                         <i className="fa-solid fa-folder-open fs-1 mb-3"></i>
                         <p>Content for {activeTab === 'outstanding' ? 'Invoice Wise Outstanding' : 'Ageing Analysis'} is under development.</p>
                     </div>
-                )}
+                )} */}
 
                 {/* Customer Lookup Popup */}
                 <SalesVendorPopup
