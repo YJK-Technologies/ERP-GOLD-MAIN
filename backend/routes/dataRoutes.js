@@ -1096,6 +1096,9 @@ router.post("/addCustomerReceiptAccDet", dataController.addCustomerReceiptAccDet
 router.post("/updCustomerReceiptAccDet", dataController.updCustomerReceiptAccDet);
 router.post("/deleteCustomerReceiptAccDet", dataController.deleteCustomerReceiptAccDet);
 router.post("/searchCustomerReceiptAccDet", dataController.searchCustomerReceiptAccDet);
+router.post("/getInvoicedata",dataController.getInvoicedata)  
+router.post("/getCustomerReceiptSearchdata",dataController.getCustomerReceiptSearchdata)  
+router.post("/getCustomerReceiptByNo",dataController.getCustomerReceiptByNo)  
 router.post("/getCurrencyCodeDrop", dataController.getCurrencyCodeDrop);
 
 

@@ -1,9 +1,12 @@
+// CustomerReceipts.js
 import React, { useState, useEffect, useRef } from 'react';
 import Select from 'react-select';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import SalesVendorPopup from './SalesVendorPopup';
+import CustomerReceiptPopup from "./CustomerReceiptPopup";
+import CRInvoicePopup from './CRInvoicePopup'; // Import added
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { showConfirmationToast } from './ToastConfirmation';
@@ -29,7 +32,7 @@ function CustomerReceipts() {
   const [error, setError] = useState(false);
   const [showAsterisk, setShowAsterisk] = useState(false);
 
-  // 2. State Variables for Receipt Header Fields (Fixing the undefined errors)
+  // 2. State Variables for Receipt Header Fields
   const [receiptNo, setReceiptNo] = useState("");
   const [receiptDate, setReceiptDate] = useState("");
   const [financialYear, setFinancialYear] = useState(null);
@@ -54,13 +57,18 @@ function CustomerReceipts() {
   const [Screens, setScreens] = useState("");
   const [selectedscreens, setSelectedscreens] = useState(null);
 
-  // Options for Dropdowns (Mock data - Replace with actual API fetches if needed)
+  // State for Invoice Popup
+  const [openInvoicePopup, setOpenInvoicePopup] = useState(false);
+  const [currentRowNode, setCurrentRowNode] = useState(null);
+  // State for Receipt Popup
+  const [openReceiptPopup, setOpenReceiptPopup] = useState(false);
+
+  // Options for Dropdowns
   const financialYearOptions = [{ label: '2026-27', value: '2026-27' }, { label: '2025-26', value: '2025-26' }];
   const branchOptions = [{ label: 'Chennai', value: 'CHN' }, { label: 'Mumbai', value: 'MUM' }];
   const paymentModeOptions = [{ label: 'Bank Transfer', value: 'Bank Transfer' }, { label: 'Cheque', value: 'Cheque' }, { label: 'Cash', value: 'Cash' }];
   const bankAccOptions = [{ label: 'HDFC Bank - Current A/c (XXXX1234)', value: 'HDFC1234' }];
 
-  // Fetch Event Dropdown (Draft, Authorized, etc.)
   useEffect(() => {
     fetch(`${config.apiBaseUrl}/getEvent`, {
       method: "POST",
@@ -94,7 +102,6 @@ function CustomerReceipts() {
     label: option.attributedetails_name,
   }));
 
-  // Clear fields function
   const clearCustomerFields = () => {
     setCustomerCode('');
     setCustomerName('');
@@ -140,7 +147,6 @@ function CustomerReceipts() {
     }
   };
 
-  // API Call Function (Enter Key)
   const handleSearchCustomer = async (code) => {
     setLoading(true);
     try {
@@ -189,7 +195,119 @@ function CustomerReceipts() {
     }
   };
 
-  // Popup Callback Function
+const formatReceiptDate = (dateValue) => {
+  if (!dateValue || dateValue === "1900-01-01T00:00:00.000Z") {
+    return "";
+  }
+
+  // API date format: dd/MM/yyyy
+  if (dateValue.includes("/")) {
+    const [day, month, year] = dateValue.split("/");
+    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  }
+
+  // API date format: ISO
+  return dateValue.substring(0, 10);
+};
+
+const handleReceiptSelect = async (selectedReceiptNo) => {
+    try {
+        setLoading(true);
+
+        const response = await fetch(
+            `${config.apiBaseUrl}/getCustomerReceiptByNo`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    receipt_no: selectedReceiptNo,
+                    company_code: sessionStorage.getItem("selectedCompanyCode"),
+                    location_code: sessionStorage.getItem("selectedLocationCode")
+                })
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Receipt data not found");
+        }
+
+        const result = await response.json();
+
+        if (!result || result.length === 0) {
+            throw new Error("Receipt data not found");
+        }
+
+        const data = result[0];
+
+        // Header Details
+        setReceiptNo(data.receipt_no || "");
+        setReceiptDate(formatReceiptDate(data.receipt_date));
+        setFinancialYear({
+            label: data.financial_year,
+            value: data.financial_year
+        });
+
+        setCustomerCode(data.customer_code || "");
+        setReceiptType(data.receipt_type || "");
+
+        setPaymentMode({
+            label: data.payment_mode,
+            value: data.payment_mode
+        });
+
+        setBankAccCode(
+            bankAccOptions.find(
+                item => item.value === data.bank_acc_code
+            ) || {
+                label: data.bank_acc_code,
+                value: data.bank_acc_code
+            }
+        );
+
+        setValueDate(formatReceiptDate(data.value_date));
+        setTransactionRefNo(data.transaction_ref_no || "");
+        setInstrumentNo(data.instrument_no || "");
+        setInstrumentDate(formatReceiptDate(data.instrument_date));
+
+        setReceivedAmount(Number(data.received_amount || 0).toFixed(2));
+        setTdsDeducted(Number(data.tds_deducted || 0).toFixed(2));
+        setBankCharges(Number(data.bank_charges || 0).toFixed(2));
+        setNarration(data.narration || "");
+
+        // Invoice Details - Same JOIN Response
+        const invoiceRows = result
+            .filter(item => item.invoice_no)
+            .map(item => ({
+                invoiceNo: item.invoice_no || "",
+                invoiceDate: formatReceiptDate(item.invoice_date),
+                dueDate: formatReceiptDate(item.due_date),
+                invoiceAmount: Number(item.invoice_amount || 0).toFixed(2),
+                previousReceipts: Number(item.previous_receipts || 0).toFixed(2),
+                creditNotes: Number(item.credit_notes || 0).toFixed(2),
+                outstanding: Number(item.outstanding_amount || 0).toFixed(2),
+                allocateAmount: Number(item.allocate_amount || 0).toFixed(2),
+                balanceAfter: Number(item.balance_after || 0).toFixed(2)
+            }));
+
+        setRowData(invoiceRows);
+
+        // Customer Master Details
+        if (data.customer_code) {
+            await handleSearchCustomer(data.customer_code);
+        }
+
+        setOpenReceiptPopup(false);
+
+    } catch (error) {
+        console.error("Error fetching receipt:", error);
+        toast.error(error.message || "Failed to fetch receipt details");
+    } finally {
+        setLoading(false);
+    }
+};
+
   const handleVendor = async (data) => {
     if (data && data.length > 0) {
       const [{ 
@@ -213,33 +331,108 @@ function CustomerReceipts() {
     setOpen2(false);
   };
   
-  // Ag-Grid Column Definitions
+  // Custom Cell Renderer for Invoice No
+  const invoiceCellRenderer = (params) => {
+    return (
+      <div className="position-relative d-flex align-items-center" style={{ minHeight: "100%" }}>
+        <div className="flex-grow-1">
+          {params.editing ? (
+            <input 
+              type="text" 
+              className="form-control" 
+              value={params.value || ""}
+              onChange={(e) => params.setValue(e.target.value)}
+              style={{ width: "100%" }}
+            />
+          ) : (
+            params.value || ""
+          )}
+        </div>
+        <span
+          className="icon searchIcon"
+          style={{ position: "absolute", right: "5px", top: "50%", transform: "translateY(-50%)", cursor: "pointer" }}
+          onClick={() => {
+            setCurrentRowNode(params.node);
+            setOpenInvoicePopup(true);
+          }}
+        >
+          <i className="fa fa-search"></i>
+        </span>
+      </div>
+    );
+  };
+
+  // Popup confirmation handler mapping
+  // const handleInvoiceSelect = (selectedData) => {
+  //   if (currentRowNode && selectedData && selectedData.length > 0) {
+  //     const data = selectedData[0];
+      
+  //     const updatedRow = {
+  //       ...currentRowNode.data,
+  //       invoiceNo: data.billno,
+  //       invoiceDate: data.billdate,
+  //       invoiceAmount: data.Billamt,
+  //       outstanding: data.balAmount || data.Billamt, 
+  //       balanceAfter: data.balAmount || data.Billamt
+  //     };
+
+  //     currentRowNode.setData(updatedRow);
+  //   }
+  //   setOpenInvoicePopup(false);
+  // };
+
+  const handleInvoiceSelect = (selectedData) => {
+  if (selectedData && selectedData.length > 0) {
+
+    const updatedRows = selectedData.map((data) => ({
+      invoiceNo: data.billno || '',
+      invoiceDate: data.billdate
+        ? new Date(data.billdate).toISOString().split('T')[0]
+        : '',
+      dueDate: '',
+      invoiceAmount: Number(data.Billamt || 0).toFixed(2),
+      previousReceipts: '0.00',
+      creditNotes: '0.00',
+      outstanding: Number(
+        data.balAmount || data.Billamt || 0
+      ).toFixed(2),
+      allocateAmount: '0.00',
+      balanceAfter: Number(
+        data.balAmount || data.Billamt || 0
+      ).toFixed(2)
+    }));
+
+    setRowData(updatedRows);
+
+    // First selected invoice customer details
+    const firstInvoice = selectedData[0];
+
+    setCustomerCode(firstInvoice.billtocustomercode || '');
+    setCustomerName(firstInvoice.billtocustomername || '');
+
+    toast.success(`${selectedData.length} Invoices selected successfully`);
+  }
+
+  setOpenInvoicePopup(false);
+};
+
   const columnDefs = [
     { headerName: '', field: '', headerCheckboxSelection: true, checkboxSelection: true, maxWidth: 50, sortable: false, filter: false },
-    { headerName: 'Invoice No.', field: 'invoiceNo', minWidth: 130, editable:true },
+    { headerName: 'Invoice No.', field: 'invoiceNo', minWidth: 160, editable:true, cellRenderer: invoiceCellRenderer },
     { headerName: 'Invoice Date', field: 'invoiceDate', minWidth: 130, editable:true },
     { headerName: 'Due Date', field: 'dueDate', minWidth: 130, editable:true },
     { headerName: 'Invoice Amount (₹)', field: 'invoiceAmount', type: 'rightAligned', minWidth: 160, editable:true },
     { headerName: 'Previous Receipts (₹)', field: 'previousReceipts', type: 'rightAligned', minWidth: 170, editable:true },
     { headerName: 'Credit Notes (₹)', field: 'creditNotes', type: 'rightAligned', minWidth: 150, editable:true },
     { headerName: 'Outstanding (₹)', field: 'outstanding', type: 'rightAligned', minWidth: 150, editable:true },
-    { 
-      headerName: 'Allocate Amount (₹)', 
-      field: 'allocateAmount', 
-      editable: true, 
-      type: 'rightAligned', 
-      minWidth: 160,
-    },
-    { headerName: 'Balance After (₹)', field: 'balanceAfter', type: 'rightAligned', minWidth: 150, editable: true, }
+    { headerName: 'Allocate Amount (₹)', field: 'allocateAmount', editable: true, type: 'rightAligned', minWidth: 160 },
+    { headerName: 'Balance After (₹)', field: 'balanceAfter', type: 'rightAligned', minWidth: 150, editable: true }
   ];
 
-  // Ag-Grid Row Data
   const [rowData, setRowData] = useState([
-    { invoiceNo: 'INV-00125', invoiceDate: '2026-10-01', dueDate: '2026-10-31', invoiceAmount: '75000.00', previousReceipts: '0.00', creditNotes: '0.00', outstanding: '75000.00', allocateAmount: '75000.00', balanceAfter: '0.00' },
-    
+    { invoiceNo: '', invoiceDate: '', dueDate: '', invoiceAmount: '0.00', previousReceipts: '0.00', creditNotes: '0.00', outstanding: '0.00', allocateAmount: '0.00', balanceAfter: '0.00' },
   ]);
 
-  // Master Action Router
   const handleMasterAction = () => {
     if (Screens === "Draft") {
       handleSaveButtonClick();
@@ -250,9 +443,8 @@ function CustomerReceipts() {
     }
   };
 
-  // Save Header & Details
   const handleSaveButtonClick = async () => {
-    if (!receiptDate || !customerCode || !financialYear  || !receivedAmount || !paymentMode || !valueDate) {
+    if (!receiptDate || !customerCode  || !paymentMode ) {
       setError(true);
       toast.warning("Error: Missing required fields");
       return;
@@ -262,23 +454,22 @@ function CustomerReceipts() {
     try {
       const Header = {
         company_code: companyCode,
-        receipt_date: receiptDate,
+        receipt_date: receiptDate ? receiptDate:null,
         customer_code: customerCode,
         financial_year: financialYear.value,
         receipt_type: receiptType,
         payment_mode: paymentMode.value,
         bank_acc_code: bankAccCode ? bankAccCode.value : null,
-        value_date: valueDate,
+        value_date: valueDate ? valueDate:null,
         transaction_ref_no: transactionRefNo,
         instrument_no: instrumentNo,
-        instrument_date: instrumentDate || null,
+        instrument_date: instrumentDate ? instrumentDate:null,
         received_amount: parseFloat(receivedAmount.toString().replace(/,/g, '')),
         tds_deducted: parseFloat(tdsDeducted.toString().replace(/,/g, '')) || 0,
         bank_charges: parseFloat(bankCharges.toString().replace(/,/g, '')) || 0,
         narration: narration,
         status: "Draft",
         gl_status: "Unposted",
-        // location_code: branch.value,
         location_code: sessionStorage.getItem('selectedLocationCode'),
         created_by: createdBy
       };
@@ -307,7 +498,6 @@ function CustomerReceipts() {
     }
   };
 
-  // Update Header & Details
   const handleUpdateButtonClick = async () => {
     if (!receiptNo || !receiptDate) {
       toast.warning("Error: Missing receipt number or required fields");
@@ -325,23 +515,23 @@ function CustomerReceipts() {
           const Header = {
             company_code: companyCode,
             receipt_no: receiptNo,
-            receipt_date: receiptDate,
+            receipt_date: receiptDate ? receiptDate:null,
             customer_code: customerCode,
             financial_year: financialYear.value,
             receipt_type: receiptType,
             payment_mode: paymentMode.value,
             bank_acc_code: bankAccCode ? bankAccCode.value : null,
-            value_date: valueDate,
+            value_date: valueDate ? valueDate:null,
             transaction_ref_no: transactionRefNo,
             instrument_no: instrumentNo,
-            instrument_date: instrumentDate || null,
+            instrument_date: instrumentDate ? instrumentDate:null,
             received_amount: parseFloat(receivedAmount.toString().replace(/,/g, '')),
             tds_deducted: parseFloat(tdsDeducted.toString().replace(/,/g, '')) || 0,
             bank_charges: parseFloat(bankCharges.toString().replace(/,/g, '')) || 0,
             narration: narration,
             status: Screens === "Modified" ? "Draft" : Screens,
+            authroization_status: Screens === "Modified" ? "Draft" : Screens,
             gl_status: "Unposted",
-            // location_code: branch.value,
             location_code: sessionStorage.getItem('selectedLocationCode'),
             modified_by: createdBy
           };
@@ -369,7 +559,6 @@ function CustomerReceipts() {
     );
   };
 
-  // Save/Update Details function
   const saveReceiptDetails = async (transaction_no) => {
     if (receiptType === 'Invoice Based' && rowData.length > 0) {
       const validRows = rowData.filter(row => row.allocateAmount && parseFloat(row.allocateAmount) > 0);
@@ -379,7 +568,7 @@ function CustomerReceipts() {
           receipt_no: transaction_no,
           invoice_no: row.invoiceNo,
           invoice_date: row.invoiceDate,
-          due_date: row.dueDate,
+          due_date: row.dueDate || null,
           invoice_amount: parseFloat(row.invoiceAmount),
           previous_receipts: parseFloat(row.previousReceipts),
           credit_notes: parseFloat(row.creditNotes),
@@ -387,7 +576,7 @@ function CustomerReceipts() {
           allocate_amount: parseFloat(row.allocateAmount),
           balance_after: parseFloat(row.balanceAfter),
           company_code: companyCode,
-          location_code: branch ? branch.value : '',
+          location_code: sessionStorage.getItem('selectedLocationCode'),
           keyfield_header: `${transaction_no}-${customerCode}-${receiptDate}`,
           keyfield: `${transaction_no}-${row.invoiceNo}`,
           created_by: createdBy
@@ -408,10 +597,15 @@ function CustomerReceipts() {
     setLoading(false);
   };
 
+  const handleKeyPressReceiptNo = (e) => {
+    if (e.key === "Enter") {
+        handleReceiptSelect(receiptNo);
+    }
+};
+
   return (
     <div className="container-fluid Topnav-screen">
       <ToastContainer position="top-right" className="toast-design" theme="colored" />
-      {/* Top Action Bar */}
       <div className="shadow-lg p-1 bg-body-tertiary rounded mb-2 mt-2">
         <div className="d-flex justify-content-between">
           <div className="d-flex justify-content-start">
@@ -419,7 +613,6 @@ function CustomerReceipts() {
           </div>
           <div className="d-flex justify-content-end purbut me-3 align-items-center">
             
-            {/* Status Dropdown */}
             <div className="exp-form-floating mt-2">
               <Select
                 id="returnType"
@@ -434,7 +627,6 @@ function CustomerReceipts() {
               />
             </div>
             
-            {/* Save / Update Button */}
             <savebutton className="purbut" title='Save / Update' onClick={handleMasterAction} disabled={loading}>
               <i class="fa-regular fa-floppy-disk"></i>
             </savebutton>
@@ -447,13 +639,42 @@ function CustomerReceipts() {
         </div>
       </div>
 
-      {/* Basic Info Section */}
       <div className="shadow-lg p-1 bg-body-tertiary rounded pt-3 pb-4" align="left">
         <div className="row ms-3 me-3">
+          {/* <div className="col-md-2 form-group mb-2">
+            <div className="exp-form-floating">
+              <label>Receipt No <span className="text-danger">*</span></label>
+              <input type="text" className="exp-input-field form-control bg-light" value={receiptNo || "Auto Generated"} readOnly />
+            </div>
+          </div> */}
           <div className="col-md-2 form-group mb-2">
             <div className="exp-form-floating">
-              <label>Receipt No. <span className="text-danger">*</span></label>
-              <input type="text" className="exp-input-field form-control bg-light" value={receiptNo || "Auto Generated"} readOnly />
+              <label>
+                Receipt No. <span className="text-danger">*</span>
+              </label>
+
+              <div className="d-flex justify-content-end position-relative">
+                <input
+                    type="text"
+                    className="exp-input-field form-control bg-light"
+                    value={receiptNo}
+                    onChange={(e) => setReceiptNo(e.target.value)}
+                    onKeyPress={handleKeyPressReceiptNo}
+                    placeholder="Enter Receipt No"
+                    autoComplete="off"
+                />
+
+                <div className="position-absolute mt-1 me-2">
+                  <span
+                    className="icon searchIcon"
+                    style={{ cursor: "pointer" }}
+                    title="Search Receipt"
+                    onClick={() => setOpenReceiptPopup(true)}
+                  >
+                    <i className="fa fa-search"></i>
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
           <div className="col-md-2 form-group mb-2">
@@ -468,22 +689,15 @@ function CustomerReceipts() {
               <Select className="exp-input-field" classNamePrefix="react-select" value={financialYear} onChange={setFinancialYear} options={financialYearOptions} placeholder="Select..." />
             </div>
           </div>
-          {/* <div className="col-md-2 form-group mb-2">
-            <div className="exp-form-floating">
-              <label className={`${error && !branch ? 'text-danger' : ''}`}>Branch <span className="text-danger">*</span></label>
-              <Select className="exp-input-field" classNamePrefix="react-select" value={branch} onChange={setBranch} options={branchOptions} placeholder="Select..." />
-            </div>
-          </div> */}
         </div>
       </div>
 
-      {/* Customer Details Section */}
       <div className="shadow-lg p-1 bg-body-tertiary rounded mt-2 pt-2 pb-4" align="left">
         <button className="shadow-lg mb-2 addTab1 text-white border-0" > Customer Details</button>
         <div className="row ms-3 me-3">
           <div className="col-md-2 form-group mb-2">
             <label className={`${error && !customerCode ? 'text-danger' : ''}`}>
-              Customer Code{!showAsterisk && <span className="text-danger">*</span>}
+              Customer Code {!showAsterisk && <span className="text-danger">*</span>}
             </label>
             <div className="exp-form-floating">
               <div className="d-flex justify-content-end">
@@ -559,7 +773,6 @@ function CustomerReceipts() {
         </div>
       </div>
 
-      {/* Receipt Details Section */}
       <div className="shadow-lg p-1 bg-body-tertiary rounded mt-2 pt-2 pb-4" align="left">
         <button className="shadow-lg mb-2 addTab1 text-white border-0" > Receipt Details</button>
         <div className="row ms-3 me-3">
@@ -611,7 +824,7 @@ function CustomerReceipts() {
         <div className="row ms-3 me-3 mt-2">
           <div className="col-md-2 form-group mb-2">
             <div className="exp-form-floating">
-              <label className={`${error && !valueDate ? 'text-danger' : ''}`}>Value Date <span className="text-danger">*</span></label>
+              <label >Value Date</label>
               <input type="date" className="exp-input-field form-control" value={valueDate} onChange={(e) => setValueDate(e.target.value)} />
             </div>
           </div>
@@ -643,8 +856,20 @@ function CustomerReceipts() {
       </div>
 
       <SalesVendorPopup open={open2} handleClose={handleClose} handleVendor={handleVendor} />
+      <CustomerReceiptPopup
+        open={openReceiptPopup}
+        handleClose={() => setOpenReceiptPopup(false)}
+        handleReceiptSelect={handleReceiptSelect}
+      />
+      {/* Search Invoice Popup Rendering */}
+      <CRInvoicePopup 
+        open={openInvoicePopup} 
+        handleClose={() => setOpenInvoicePopup(false)} 
+        handletaxinvoice={handleInvoiceSelect} 
+        invoicetype="Tax Invoice" 
+        customerCode={customerCode}
+      />
 
-      {/* Invoice Allocation Ag-Grid Section */}
       {receiptType === 'Invoice Based' && (
         <div className="shadow-lg p-1 mt-2 bg-body-tertiary rounded pt-3 pb-4" align="left">
           <div className="ag-theme-alpine ms-3 me-3 mt-2" style={{ height: 250, width: "100%" }}>
