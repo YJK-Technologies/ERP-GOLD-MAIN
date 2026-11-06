@@ -128,10 +128,10 @@ const columnDefs = [
     headerName: "Mobile No",
     field: "customer_mobile_no",
     editable: false,
-    cellStyle: { textAlign: "left" },
     valueFormatter: (params) => {
       return params.value ? params.value.toUpperCase() : '';
     },
+    cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "Residential No",
@@ -146,7 +146,7 @@ const columnDefs = [
     headerName: "Office No",
     field: "customer_office_no",
     editable: false,
-    cellStyle: { textAlign: "left" },
+    // cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "Customer IMEX No",
@@ -173,7 +173,7 @@ const columnDefs = [
     headerName: "Credit Limit",
     field: "customer_credit_limit",
     editable: false,
-    cellStyle: { textAlign: "left" },
+    cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "Transport Code",

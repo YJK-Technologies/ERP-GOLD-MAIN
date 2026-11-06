@@ -74,11 +74,13 @@ const columnDefs = [
     headerName: "Sales Amount",
     field: "sale_amt",
     editable: false,
+    cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "Bill Amount",
     field: "bill_amt",
     editable: false,
+    cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "Pay Type",
@@ -95,11 +97,13 @@ const columnDefs = [
     headerName: "Round Off",
     field: "roff_amt",
     editable: false,
+    cellStyle: { textAlign: 'right' },
   },
   {
     headerName: "Tax Amount",
     field: "tax_amount",
     editable: false,
+    cellStyle: { textAlign: 'right' },
   },
 ];
 

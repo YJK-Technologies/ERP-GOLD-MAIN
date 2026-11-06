@@ -291,6 +291,7 @@ export default function SalesWarehousePopup({ open, handleClose, handleWarehouse
                                   onChange={handleChangeStatus}
                                   options={filteredOptionStatus}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Status"
                                   isClearable
                                 />
@@ -309,6 +310,7 @@ export default function SalesWarehousePopup({ open, handleClose, handleWarehouse
                                   onChange={handleChangeLocation}
                                   options={filteredOptionLocation}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Location No"
                                   isClearable
                                 />
@@ -337,6 +339,8 @@ export default function SalesWarehousePopup({ open, handleClose, handleWarehouse
                             pagination='true'
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+              rowHeight={25}
                           />
                         </div>
                       </div>
@@ -405,6 +409,7 @@ export default function SalesWarehousePopup({ open, handleClose, handleWarehouse
                                   onChange={handleChangeStatus}
                                   options={filteredOptionStatus}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Status"
                                   isClearable
                                 />
@@ -423,6 +428,7 @@ export default function SalesWarehousePopup({ open, handleClose, handleWarehouse
                                   onChange={handleChangeLocation}
                                   options={filteredOptionLocation}
                                   className="exp-input-field"
+                                  classNamePrefix="react-select"
                                   placeholder="Location No"
                                   isClearable
                                 />
@@ -450,6 +456,8 @@ export default function SalesWarehousePopup({ open, handleClose, handleWarehouse
                             pagination='true'
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+              rowHeight={25}
                           />
                         </div>
                       </div>

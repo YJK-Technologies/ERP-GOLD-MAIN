@@ -279,7 +279,7 @@ export default function StockTransferWarehousePopup({
                             <input
                               type="text"
                               id="WarehouseCode"
-                              className="form-control"
+                              className='exp-input-field form-control'
                               maxLength={18}
                               title="Enter the Warehouse Code"
                               placeholder=" Warehouse Code"
@@ -297,7 +297,7 @@ export default function StockTransferWarehousePopup({
                             <input
                               type="text"
                               id="WarehouseName"
-                              className="form-control"
+                              className='exp-input-field form-control'
                               maxLength={250}
                               title="Enter the Warehouse Name"
                               placeholder="Warehouse Name"
@@ -409,7 +409,7 @@ export default function StockTransferWarehousePopup({
                             <input
                               type="text"
                               id="WarehouseCode"
-                              className="form-control"
+                              className='exp-input-field form-control'
                               maxLength={18}
                               placeholder=" Warehouse Code"
                               value={warehouse_code}
@@ -426,7 +426,7 @@ export default function StockTransferWarehousePopup({
                             <input
                               type="text"
                               id="WarehouseName"
-                              className="form-control"
+                              className='exp-input-field form-control'
                               maxLength={250}
                               placeholder="Warehouse Name"
                               value={warehouse_name}
