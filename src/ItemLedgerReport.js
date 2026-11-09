@@ -220,6 +220,22 @@ const DEMO_ROW_DATA = [
         createdBy: "User3",
     },
 ];
+
+const getFirstDayOfMonth = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    return `${year}-${month}-01`;
+};
+
+const getLastDayOfMonth = () => {
+    const now = new Date();
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const year = lastDay.getFullYear();
+    const month = String(lastDay.getMonth() + 1).padStart(2, '0');
+    const day = String(lastDay.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
 // =============================================================================
 
 function ItemLedgerReport() {
@@ -231,8 +247,8 @@ function ItemLedgerReport() {
     const [warehouse, setWarehouse] = useState(DEMO_DROPDOWNS.warehouses[0]);
     const [category, setCategory] = useState(DEMO_DROPDOWNS.categories[0]);
     const [group, setGroup] = useState(DEMO_DROPDOWNS.groups[0]);
-    const [fromDate, setFromDate] = useState("2026-10-01");
-    const [toDate, setToDate] = useState("2026-10-31");
+    const [fromDate, setFromDate] = useState(getFirstDayOfMonth());
+    const [toDate, setToDate] = useState(getLastDayOfMonth());
     const [transactionType, setTransactionType] = useState(DEMO_DROPDOWNS.transactionTypes[0]);
     const [status, setStatus] = useState(DEMO_DROPDOWNS.statuses[0]);
     const [itemCode, setItemCode] = useState("");
@@ -360,76 +376,14 @@ function ItemLedgerReport() {
             );
     }, []);
 
-    const handleItemCode = async (params) => {
-        console.log("Item Code Help clicked");
-        setLoading(true);
-        const company_code = sessionStorage.getItem("selectedCompanyCode");
-        try {
-            const response = await fetch(`${config.apiBaseUrl}/getitemcodepurdata`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ company_code, Item_code: params.data.itemCode })
-            });
-
-
-            if (response.ok) {
-                const searchData = await response.json();
-                const updatedRow = rowData.map(row => {
-                    if (row.itemCode === params.data.itemCode) {
-                        const matchedItem = searchData.find(item => item.id === row.id);
-                        if (matchedItem) {
-                            return {
-                                ...row,
-                                itemCode: matchedItem.Item_code,
-                                itemName: matchedItem.Item_name,
-                                unitWeight: matchedItem.Item_wigh,
-                                purchaseAmt: matchedItem.Item_std_purch_price,
-                                taxType: matchedItem.Item_purch_tax_type,
-                                taxDetails: matchedItem.combined_tax_details,
-                                taxPer: matchedItem.combined_tax_percent,
-                                warehouse: selectedWarehouse ? selectedWarehouse.value : '',
-                            };
-                        }
-                    }
-                    return row;
-                });
-                setRowData(updatedRow);
-                console.log(updatedRow);
-            } else if (response.status === 404) {
-                toast.warning('Data not found!', {
-                    onClose: () => {
-                        const updatedRowData = rowData.map(row => {
-                            if (row.itemCode === params.data.itemCode) {
-                                return {
-                                    ...row,
-                                    itemCode: '',
-                                    itemName: '',
-                                    unitWeight: 0,
-                                    purchaseAmt: 0,
-                                    taxType: '',
-                                    taxDetails: '',
-                                    taxPer: '',
-                                    warehouse: ''
-                                };
-                            }
-                            return row;
-                        });
-                        setRowData(updatedRowData);
-                    }
-                });
-            } else {
-                console.log("Bad request");
-            }
-        } catch (error) {
-            console.error("Error fetching search data:", error);
-        } finally {
-            setLoading(false);
+const handleItemCode = (selectedData) => {
+        // The popup passes an array of selected items to handleItem
+        if (selectedData && selectedData.length > 0) {
+            const selected = selectedData[0];
+            setItemCode(selected.itemCode);
+            setItemName(selected.itemName); // Optional, since you have the itemName state declared
         }
     };
-
-
 
     // Navigate to document view
     const handleVoucherClick = (voucherNo) => {
