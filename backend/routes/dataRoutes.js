@@ -1101,6 +1101,7 @@ router.post("/getCustomerReceiptSearchdata",dataController.getCustomerReceiptSea
 router.post("/getCustomerReceiptByNo",dataController.getCustomerReceiptByNo)  
 router.post("/getCurrencyCodeDrop", dataController.getCurrencyCodeDrop)
 router.post("/getCustomerLedgerReport", dataController.getCustomerLedgerReport)
+router.post("/InvoiceFsPosting", dataController.InvoiceFsPosting);
 
 
 

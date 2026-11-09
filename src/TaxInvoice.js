@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle,} from "react";
+import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle, } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
@@ -68,7 +68,7 @@ function TaxInvoice() {
   const [Type, setType] = useState("");
   const [isChecked, setIsChecked] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [additionalData, setAdditionalData] = useState({ modified_by: "", created_by: "", modified_date: "", created_date: "",});
+  const [additionalData, setAdditionalData] = useState({ modified_by: "", created_by: "", modified_date: "", created_date: "", });
   const [screensDrop, setScreensDrop] = useState([]);
   const [Screens, setScreens] = useState("");
   const [selectedscreens, setSelectedscreens] = useState(null);
@@ -195,14 +195,14 @@ function TaxInvoice() {
       .catch((error) => console.error("Error fetching invoice types:", error));
   }, []);
 
-//   const handleChangeScreens = (selected) => {
-//     setSelectedscreens(selected);
-//     const screenValue = selected?.value === "Add" ? "Add" : "Delete";
-//     setScreens(screenValue);
-//     sessionStorage.setItem("TaxInvoiceScreenSelection", screenValue);
-//   };
+  //   const handleChangeScreens = (selected) => {
+  //     setSelectedscreens(selected);
+  //     const screenValue = selected?.value === "Add" ? "Add" : "Delete";
+  //     setScreens(screenValue);
+  //     sessionStorage.setItem("TaxInvoiceScreenSelection", screenValue);
+  //   };
 
-    const handleChangeScreens = (selected) => {
+  const handleChangeScreens = (selected) => {
     setSelectedscreens(selected);
     setScreens(selected.value);
   };
@@ -318,7 +318,7 @@ function TaxInvoice() {
             {showSearchIcon && (
               <span
                 className="icon searchIcon"
-                style={{ position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)",}}
+                style={{ position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)", }}
                 onClick={handleBillToCustomer}
               >
                 <i className="fa fa-search"></i>
@@ -504,7 +504,7 @@ function TaxInvoice() {
   const handleCustomerShipTo = async (data) => {
     if (data && data.length > 0) {
       const [
-        { CustomerCode, CustomerName, Address1, Address2, Address3, Address4, State, Country, MobileNo, ContactPerson, GSTNo,},
+        { CustomerCode, CustomerName, Address1, Address2, Address3, Address4, State, Country, MobileNo, ContactPerson, GSTNo, },
       ] = data;
 
       setHeaderRowData((prevRowData) =>
@@ -564,7 +564,7 @@ function TaxInvoice() {
           return;
         }
 
-    const [{ customer_code, customer_name, customer_addr_1, customer_addr_2, customer_addr_3, customer_addr_4, customer_state, customer_country, customer_mobile_no, contact_person, customer_gst_no,},] = searchData;
+        const [{ customer_code, customer_name, customer_addr_1, customer_addr_2, customer_addr_3, customer_addr_4, customer_state, customer_country, customer_mobile_no, contact_person, customer_gst_no, },] = searchData;
 
         setHeaderRowData((prevRowData) =>
           prevRowData.map((row) => {
@@ -638,7 +638,7 @@ function TaxInvoice() {
         const searchData = await response.json();
         console.log(searchData);
 
-    const [{ customer_code, customer_name, customer_addr_1, customer_addr_2, customer_addr_3, customer_addr_4, customer_state, customer_country, customer_mobile_no, contact_person, customer_gst_no,},] = searchData;
+        const [{ customer_code, customer_name, customer_addr_1, customer_addr_2, customer_addr_3, customer_addr_4, customer_state, customer_country, customer_mobile_no, contact_person, customer_gst_no, },] = searchData;
 
         setHeaderRowData((prevRowData) =>
           prevRowData.map((row) => {
@@ -1634,32 +1634,32 @@ function TaxInvoice() {
         pending: pendingStatus,
         ...(selectedInvoice?.label === "Proforma Invoice"
           ? {
-              delivery_note: PINotes["Delivery Note"]
-                ? PINotes["Delivery Note"]
-                : null,
-              dispatched_through: PINotes["Dispatched Through"]
-                ? PINotes["Dispatched Through"]
-                : null,
-              destination: PINotes["Destination"]
-                ? PINotes["Destination"]
-                : null,
-            }
+            delivery_note: PINotes["Delivery Note"]
+              ? PINotes["Delivery Note"]
+              : null,
+            dispatched_through: PINotes["Dispatched Through"]
+              ? PINotes["Dispatched Through"]
+              : null,
+            destination: PINotes["Destination"]
+              ? PINotes["Destination"]
+              : null,
+          }
           : {
-              po_no: Notes["PO No"] ? Notes["PO No"] : null,
-              Eway_bill_no: Notes["E-Way Bill No"]
-                ? Notes["E-Way Bill No"]
-                : null,
-              supplier_ref: Notes["Supplier Ref"]
-                ? Notes["Supplier Ref"]
-                : null,
-              po_date: Notes["PO Date"] ? Notes["PO Date"] : null,
-              document_type: Notes["Document Type"]
-                ? Notes["Document Type"]
-                : null,
-              delivered_through: Notes["Delivered Through"]
-                ? Notes["Delivered Through"]
-                : null,
-            }),
+            po_no: Notes["PO No"] ? Notes["PO No"] : null,
+            Eway_bill_no: Notes["E-Way Bill No"]
+              ? Notes["E-Way Bill No"]
+              : null,
+            supplier_ref: Notes["Supplier Ref"]
+              ? Notes["Supplier Ref"]
+              : null,
+            po_date: Notes["PO Date"] ? Notes["PO Date"] : null,
+            document_type: Notes["Document Type"]
+              ? Notes["Document Type"]
+              : null,
+            delivered_through: Notes["Delivered Through"]
+              ? Notes["Delivered Through"]
+              : null,
+          }),
       };
 
       const response = await fetch(`${config.apiBaseUrl}/addtaxInvoicehdr`, {
@@ -1854,6 +1854,40 @@ function TaxInvoice() {
     }
   };
 
+  const InvoiceFsPosting = async (bill_no) => {
+    try {
+      const Header = {
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
+        Tran_type: "IP",
+        Tran_no: bill_no,
+        Tran_date: bill_date,
+        created_by: sessionStorage.getItem("selectedUserCode"),
+        modified_by: sessionStorage.getItem("selectedUserCode"),
+      };
+
+      const response = await fetch(`${config.apiBaseUrl}/InvoiceFsPosting`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(Header),
+      });
+
+      if (response.ok) {
+        console.log("Invoice Posting Successfully");
+      } else {
+        const errorResponse = await response.json();
+        console.error(errorResponse.message);
+        toast.error("Error inserting data" + errorResponse.message);
+      }
+    } catch (error) {
+      console.error("Error inserting data:", error);
+      toast.error("Error inserting data: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleUpdateButtonClick = async () => {
     if (!new_running_no || !bill_date || !payType || !salesType) {
       setError(" ");
@@ -1921,32 +1955,32 @@ function TaxInvoice() {
         modified_by: sessionStorage.getItem("selectedUserCode"),
         ...(selectedInvoice?.label === "Proforma Invoice"
           ? {
-              delivery_note: PINotes["Delivery Note"]
-                ? PINotes["Delivery Note"]
-                : null,
-              dispatched_through: PINotes["Dispatched Through"]
-                ? PINotes["Dispatched Through"]
-                : null,
-              destination: PINotes["Destination"]
-                ? PINotes["Destination"]
-                : null,
-            }
+            delivery_note: PINotes["Delivery Note"]
+              ? PINotes["Delivery Note"]
+              : null,
+            dispatched_through: PINotes["Dispatched Through"]
+              ? PINotes["Dispatched Through"]
+              : null,
+            destination: PINotes["Destination"]
+              ? PINotes["Destination"]
+              : null,
+          }
           : {
-              po_no: Notes["PO No"] ? Notes["PO No"] : null,
-              Eway_bill_no: Notes["E-Way Bill No"]
-                ? Notes["E-Way Bill No"]
-                : null,
-              supplier_ref: Notes["Supplier Ref"]
-                ? Notes["Supplier Ref"]
-                : null,
-              po_date: Notes["PO Date"] ? Notes["PO Date"] : null,
-              document_type: Notes["Document Type"]
-                ? Notes["Document Type"]
-                : null,
-              delivered_through: Notes["Delivered Through"]
-                ? Notes["Delivered Through"]
-                : null,
-            }),
+            po_no: Notes["PO No"] ? Notes["PO No"] : null,
+            Eway_bill_no: Notes["E-Way Bill No"]
+              ? Notes["E-Way Bill No"]
+              : null,
+            supplier_ref: Notes["Supplier Ref"]
+              ? Notes["Supplier Ref"]
+              : null,
+            po_date: Notes["PO Date"] ? Notes["PO Date"] : null,
+            document_type: Notes["Document Type"]
+              ? Notes["Document Type"]
+              : null,
+            delivered_through: Notes["Delivered Through"]
+              ? Notes["Delivered Through"]
+              : null,
+          }),
       };
 
       const response = await fetch(`${config.apiBaseUrl}/TaxInvoiceUpdate`, {
@@ -1961,6 +1995,11 @@ function TaxInvoice() {
         await saveTaxInvoiceDetails(new_running_no);
         await SaveTaxDetails(new_running_no);
         await saveTIDetailsTerms(new_running_no);
+
+        if (Screens === "Authorized") {
+          await InvoiceFsPosting(new_running_no);
+        }
+        
         setShowExcelButton(true);
         setDelButtonVisible(true);
         setPrintButtonVisible(true);
@@ -2108,8 +2147,8 @@ function TaxInvoice() {
       }
       const copiesCount =
         defaultPrintCopies &&
-        !isNaN(defaultPrintCopies) &&
-        Number(defaultPrintCopies) > 0
+          !isNaN(defaultPrintCopies) &&
+          Number(defaultPrintCopies) > 0
           ? Number(defaultPrintCopies)
           : 1;
 
@@ -2147,19 +2186,19 @@ function TaxInvoice() {
           hsnKey = "TaxInvoiceHsnTaxData";
           url = "/TaxInvoicePrint";
 
-          sessionStorage.setItem( headerKey, LZString.compress(JSON.stringify(headerData)), );
-          sessionStorage.setItem( detailKey, LZString.compress(JSON.stringify(detailData)), );
-          sessionStorage.setItem( taxKey, LZString.compress(JSON.stringify(taxData)), );
-          sessionStorage.setItem( hsnKey, LZString.compress(JSON.stringify(hsnTaxData)), );
+          sessionStorage.setItem(headerKey, LZString.compress(JSON.stringify(headerData)),);
+          sessionStorage.setItem(detailKey, LZString.compress(JSON.stringify(detailData)),);
+          sessionStorage.setItem(taxKey, LZString.compress(JSON.stringify(taxData)),);
+          sessionStorage.setItem(hsnKey, LZString.compress(JSON.stringify(hsnTaxData)),);
         } else if (invoicetype === "Proforma Invoice") {
           headerKey = "PerformaInvoiceheaderData";
           detailKey = "PerformaInvoicedetailData";
           taxKey = "PerformaInvoicetaxData";
           url = "/PerformaInvoicePrint";
 
-          sessionStorage.setItem( headerKey, LZString.compress(JSON.stringify(headerData)), );
-          sessionStorage.setItem( detailKey, LZString.compress(JSON.stringify(detailData)), );
-          sessionStorage.setItem( taxKey, LZString.compress(JSON.stringify(taxData)), );
+          sessionStorage.setItem(headerKey, LZString.compress(JSON.stringify(headerData)),);
+          sessionStorage.setItem(detailKey, LZString.compress(JSON.stringify(detailData)),);
+          sessionStorage.setItem(taxKey, LZString.compress(JSON.stringify(taxData)),);
         } else {
           toast.error("Transaction Number Does Not Exist");
           return;
@@ -2514,7 +2553,7 @@ function TaxInvoice() {
           Paytype, Saleamt, Taxamt, RoffAmt, Billamt, BillTo_customer_addr_1, BillTo_customer_addr_2, BillTo_customer_addr_3, BillTo_customer_addr_4, ShipTo_customer_addr_1,
           ShipTo_customer_addr_2, ShipTo_customer_addr_3, billdate, ShipTo_customer_addr_4, BillTo_customer_state, ShipTo_customer_state, BillTo_customer_country, ShipTo_customer_country, BillTo_customer_mobile_no,
           ShipTo_customer_mobile_no, BillTo_contact_person, ShipTo_contact_person, po_no, po_date, document_type, delivery_note,
-          dispatched_through, Destination, supplier_ref, Eway_bill_no, delivered_through, }, ] = data;
+          dispatched_through, Destination, supplier_ref, Eway_bill_no, delivered_through, },] = data;
 
       const AdAmount = document.getElementById("adAmount");
       if (AdAmount) {
@@ -2772,7 +2811,7 @@ function TaxInvoice() {
 
         const newRowData = [];
         searchData.forEach((item) => {
-          const { SNo, code, Description, bill_qty, bill_rate, unit_price, tax_amt, type, hsn_code, Discount_Type, Discount_Value, name,} = item;
+          const { SNo, code, Description, bill_qty, bill_rate, unit_price, tax_amt, type, hsn_code, Discount_Type, Discount_Value, name, } = item;
 
           const taxInfo = taxDataMap[SNo] || {
             tax_type: "",
@@ -3146,9 +3185,9 @@ function TaxInvoice() {
     });
 
     // Header Sheet
-    const headerWorksheet = XLSX.utils.aoa_to_sheet([ ["Invoice"], [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`], [],]);
+    const headerWorksheet = XLSX.utils.aoa_to_sheet([["Invoice"], [`Company Name : ${sessionStorage.getItem("selectedCompanyName")}`], [],]);
 
-    XLSX.utils.sheet_add_json(headerWorksheet, headerData, {origin: "A4",});
+    XLSX.utils.sheet_add_json(headerWorksheet, headerData, { origin: "A4", });
 
     // Merge Heading
     headerWorksheet["!merges"] = [
@@ -3469,20 +3508,20 @@ function TaxInvoice() {
                         {["add", "all permission"].some((permission) =>
                           purchasePermission.includes(permission),
                         ) && (
-                          <icon class="icon" onClick={handleMasterAction}>
-                            <i class="fa-regular fa-floppy-disk"></i>
-                          </icon>
-                        )}
+                            <icon class="icon" onClick={handleMasterAction}>
+                              <i class="fa-regular fa-floppy-disk"></i>
+                            </icon>
+                          )}
                       </li>
                     )}
                     <li class="iconbutton  d-flex justify-content-center text-warning">
                       {["all permission", "view"].some((permission) =>
                         purchasePermission.includes(permission),
                       ) && (
-                        <icon class="icon" onClick={generateReport}>
-                          <i class="fa-solid fa-file-pdf"></i>
-                        </icon>
-                      )}
+                          <icon class="icon" onClick={generateReport}>
+                            <i class="fa-solid fa-file-pdf"></i>
+                          </icon>
+                        )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center text-success">
                       <icon class="icon" onClick={handleExcelDownload}>
@@ -3813,7 +3852,7 @@ function TaxInvoice() {
                   <purButton type="button" className={`"toggle-btn"  ${activeTable === "myTable" ? "active" : ""}`} onClick={() => handleToggleTable("myTable")} >
                     Product / Item Details
                   </purButton>
-                  <purButton type="button" className={`"toggle-btn" ${activeTable === "tax" ? "active" : ""}`} onClick={() => handleToggleTable("tax")} > 
+                  <purButton type="button" className={`"toggle-btn" ${activeTable === "tax" ? "active" : ""}`} onClick={() => handleToggleTable("tax")} >
                     Tax Details
                   </purButton>
                 </div>
@@ -3836,10 +3875,10 @@ function TaxInvoice() {
               style={{ height: 280, width: "102%" }}
             >
               <AgGridReact
-                columnDefs={ activeTable === "myTable" ? columnDefs : columnDefsTax }
+                columnDefs={activeTable === "myTable" ? columnDefs : columnDefsTax}
                 rowData={activeTable === "myTable" ? rowData : rowDataTax}
                 defaultColDef={{ editable: true, resizable: true }}
-                getRowId={(params) => params.data.keyField || params.data.keyfield }
+                getRowId={(params) => params.data.keyField || params.data.keyfield}
                 onCellValueChanged={async (event) => {
                   if (
                     event.colDef.field === "qty" ||
