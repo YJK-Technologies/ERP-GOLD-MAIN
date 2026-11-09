@@ -213,6 +213,7 @@ import BankReconciliation from './BankReconciliation.js'
 import ItemLedgerRep from './ItemLedgerReport.js'
 import CustomerReceipts from './CustomerReceipts.js'
 import CustomerLedger from './CustomerLedger.js'
+import CusLedRepPrint from './PrintScreens/VRETemplate/CustomerLedgerPrint.js'
 
 function Main() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
@@ -466,6 +467,7 @@ function Main() {
      { path: "/ItemLedgerRep", component: <ItemLedgerRep /> },
      { path: "/CustomerReceipts", component: <CustomerReceipts /> },
      { path: "/CustomerLedger", component: <CustomerLedger /> },
+     { path: "/CusLedRepPrint", component: <CusLedRepPrint /> },
   ];
  
   return (
