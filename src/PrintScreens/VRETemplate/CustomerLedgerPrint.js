@@ -32,7 +32,7 @@ const CustomerLedgerPrint = () => {
     useEffect(() => {
         try {
             const getStoredData = (key) => {
-    const raw = sessionStorage.getItem(key);
+    const raw = localStorage.getItem(key);
     if (!raw) return null;
 
     try {
@@ -84,17 +84,14 @@ const CustomerLedgerPrint = () => {
                 const sanitizedRows = rows.filter((r) => !r.isTotalRow);
                 setLedgerRows(sanitizedRows);
             } else {
-                // Default fallback transactions for preview
-                setLedgerRows([
-                    { s_no: 1, date: "01-04-2026", voucher_no: "OPEN-001", type: "Opening", reference_no: "B/F", description: "Opening Balance", debit: 50000.0, credit: 0.0, balance: "50,000.00 Dr" },
-                    { s_no: 2, date: "05-04-2026", voucher_no: "SI-001", type: "Sales Invoice", reference_no: "INV-001", description: "Sales Invoice - INV-001", debit: 100000.0, credit: 0.0, balance: "1,50,000.00 Dr" },
-                    { s_no: 3, date: "10-04-2026", voucher_no: "RC-001", type: "Receipt", reference_no: "BANK-001", description: "Receipt via Bank", debit: 0.0, credit: 60000.0, balance: "90,000.00 Dr" },
-                    { s_no: 4, date: "15-04-2026", voucher_no: "SI-002", type: "Sales Invoice", reference_no: "INV-002", description: "Sales Invoice - INV-002", debit: 100000.0, credit: 0.0, balance: "1,90,000.00 Dr" },
-                    { s_no: 5, date: "20-04-2026", voucher_no: "CN-001", type: "Credit Note", reference_no: "CN-001", description: "Sales Credit Note", debit: 0.0, credit: 5000.0, balance: "1,85,000.00 Dr" },
-                    { s_no: 6, date: "25-04-2026", voucher_no: "DN-001", type: "Debit Note", reference_no: "DN-001", description: "Debit Note for Additional Charges", debit: 10000.0, credit: 0.0, balance: "1,95,000.00 Dr" },
-                    { s_no: 7, date: "30-04-2026", voucher_no: "RC-002", type: "Receipt", reference_no: "BANK-002", description: "Receipt via Bank", debit: 0.0, credit: 60000.0, balance: "1,35,000.00 Dr" }
-                ]);
+                // Keep empty if no data is found, so it doesn't fake the data
+                setLedgerRows([]);
             }
+            
+            // Optional: Clean up localStorage so data doesn't sit in the browser forever
+            // localStorage.removeItem("CustomerLedgerFilters");
+            // localStorage.removeItem("CustomerLedgerRows");
+            // localStorage.removeItem("CustomerLedgerMetrics");
 
             if (metrics) {
                 setSummaryMetrics(metrics);
@@ -132,73 +129,70 @@ const CustomerLedgerPrint = () => {
             <div className="text-center fw-bold fs-6 py-1 border border-bottom-0 border-dark text-uppercase bg-light">
                 Customer Ledger Statement
             </div>
-            <table className="invoice-header-table border border-dark w-100">
+            <table className="invoice-header-table border border-dark w-100" style={{ tableLayout: 'fixed' }}>
                 <tbody>
+                    {/* ROW 1: Company & Customer Details Side-by-Side */}
                     <tr>
-                        {/* Company & Customer Details (Left Box) */}
-                        <td style={{ width: "55%", borderRight: "1px solid black", verticalAlign: "top" }}>
-                            <div className="px-2 py-1 border-bottom border-dark">
-                                <div className="fw-bold text-uppercase mb-1" style={{ fontSize: "14px" }}>
-                                    {filterData.companyName}
-                                </div>
-                                <div style={{ fontSize: "11px", lineHeight: "1.2" }}>
-                                    {[filterData.companyAddress, filterData.companyCity].filter(Boolean).join(", ")}
-                                    {filterData.companyPincode ? ` - ${filterData.companyPincode}` : ""}<br />
-                                    <strong>GSTIN/UIN:</strong> {filterData.companyGst || "N/A"}<br />
-                                    <strong>Contact:</strong> {filterData.companyContact || "-"}
-                                </div>
+                        {/* Company Details (Left) */}
+                        <td style={{ width: "50%", borderRight: "1px solid black", verticalAlign: "top" }} className="px-2 py-1">
+                            <div className="fw-bold text-uppercase mb-1" style={{ fontSize: "14px" }}>
+                                {filterData.companyName}
                             </div>
-                            <div className="px-2 py-1">
-                                <span style={{ fontSize: "9px", textTransform: "uppercase", color: "#555", fontWeight: "bold" }}>
-                                    Customer Details
-                                </span>
-                                <div className="fw-bold" style={{ fontSize: "13px", margin: "2px 0" }}>
-                                    {filterData.customerName || "All Customers"}
-                                </div>
-                                <div style={{ fontSize: "11px", lineHeight: "1.2" }}>
-                                    <strong>Code:</strong> {filterData.customerCode || "N/A"} &nbsp;|&nbsp; <strong>Branch:</strong> {filterData.branch || "All Branches"}
-                                </div>
+                            <div style={{ fontSize: "11px", lineHeight: "1.2" }}>
+                                {[filterData.companyAddress, filterData.companyCity].filter(Boolean).join(", ")}
+                                {filterData.companyPincode ? ` - ${filterData.companyPincode}` : ""}<br />
+                                <strong>GSTIN/UIN:</strong> {filterData.companyGst || "N/A"}<br />
+                                <strong>Contact:</strong> {filterData.companyContact || "-"}
                             </div>
                         </td>
 
-                        {/* Filter Input Details (Right Box) */}
-                        <td style={{ width: "45%", padding: 0, verticalAlign: "top" }}>
-                            <div className="row m-0 border-bottom border-dark">
-                                <div className="col-6 px-2 py-1 border-end border-dark">
-                                    <div className="fw-bold" style={{ fontSize: "10px", color: "#555" }}>Financial Year:</div>
-                                    <div style={{ fontSize: "11px", fontWeight: "500" }}>{filterData.financialYear || "-"}</div>
-                                </div>
-                                <div className="col-6 px-2 py-1">
-                                    <div className="fw-bold" style={{ fontSize: "10px", color: "#555" }}>Currency:</div>
-                                    <div style={{ fontSize: "11px", fontWeight: "500" }}>{filterData.currency || "INR"}</div>
-                                </div>
+                        {/* Customer Details (Right) */}
+                        <td style={{ width: "50%", verticalAlign: "top" }} className="px-2 py-1">
+                            <span style={{ fontSize: "9px", textTransform: "uppercase", color: "#555", fontWeight: "bold" }}>
+                                Customer Details
+                            </span>
+                            <div className="fw-bold" style={{ fontSize: "13px", margin: "2px 0" }}>
+                                {filterData.customerName || "All Customers"}
                             </div>
-
-                            <div className="row m-0 border-bottom border-dark">
-                                <div className="col-6 px-2 py-1 border-end border-dark">
-                                    <div className="fw-bold" style={{ fontSize: "10px", color: "#555" }}>From Date:</div>
-                                    <div style={{ fontSize: "11px", fontWeight: "500" }}>{formatDate(filterData.fromDate)}</div>
-                                </div>
-                                <div className="col-6 px-2 py-1">
-                                    <div className="fw-bold" style={{ fontSize: "10px", color: "#555" }}>To Date:</div>
-                                    <div style={{ fontSize: "11px", fontWeight: "500" }}>{formatDate(filterData.toDate)}</div>
-                                </div>
+                            <div style={{ fontSize: "11px", lineHeight: "1.2" }}>
+                                <strong>Code:</strong> {filterData.customerCode || "N/A"}<br />
+                                <strong>Branch:</strong> {filterData.branch || "All Branches"}
                             </div>
+                        </td>
+                    </tr>
 
-                            <div className="row m-0 border-bottom border-dark">
-                                <div className="col-6 px-2 py-1 border-end border-dark">
-                                    <div className="fw-bold" style={{ fontSize: "10px", color: "#555" }}>Voucher Type:</div>
-                                    <div style={{ fontSize: "11px", fontWeight: "500" }}>{filterData.voucherType || "All"}</div>
+                    {/* ROW 2: Filter Input Details horizontally aligned */}
+                    <tr className="border-top border-dark">
+                        <td colSpan="2" className="p-0">
+                            <div className="d-flex w-100 text-center" style={{ fontSize: "11px" }}>
+                                <div className="flex-fill border-end border-dark px-2 py-1">
+                                    <div style={{ fontSize: "9px", color: "#555", fontWeight: "bold", textTransform: "uppercase" }}>Fin. Year</div>
+                                    <div className="fw-bold">{filterData.financialYear || "-"}</div>
                                 </div>
-                                <div className="col-6 px-2 py-1">
-                                    <div className="fw-bold" style={{ fontSize: "10px", color: "#555" }}>Status:</div>
-                                    <div style={{ fontSize: "11px", fontWeight: "500" }}>{filterData.status || "Posted"}</div>
+                                <div className="flex-fill border-end border-dark px-2 py-1">
+                                    <div style={{ fontSize: "9px", color: "#555", fontWeight: "bold", textTransform: "uppercase" }}>Currency</div>
+                                    <div className="fw-bold">{filterData.currency || "INR"}</div>
                                 </div>
-                            </div>
-
-                            <div className="px-2 py-1">
-                                <div className="fw-bold" style={{ fontSize: "10px", color: "#555" }}>Statement Print Date:</div>
-                                <div style={{ fontSize: "11px", fontWeight: "500" }}>{formatDate(new Date())}</div>
+                                <div className="flex-fill border-end border-dark px-2 py-1">
+                                    <div style={{ fontSize: "9px", color: "#555", fontWeight: "bold", textTransform: "uppercase" }}>From Date</div>
+                                    <div className="fw-bold">{formatDate(filterData.fromDate)}</div>
+                                </div>
+                                <div className="flex-fill border-end border-dark px-2 py-1">
+                                    <div style={{ fontSize: "9px", color: "#555", fontWeight: "bold", textTransform: "uppercase" }}>To Date</div>
+                                    <div className="fw-bold">{formatDate(filterData.toDate)}</div>
+                                </div>
+                                <div className="flex-fill border-end border-dark px-2 py-1">
+                                    <div style={{ fontSize: "9px", color: "#555", fontWeight: "bold", textTransform: "uppercase" }}>Type</div>
+                                    <div className="fw-bold">{filterData.voucherType || "All"}</div>
+                                </div>
+                                <div className="flex-fill border-end border-dark px-2 py-1">
+                                    <div style={{ fontSize: "9px", color: "#555", fontWeight: "bold", textTransform: "uppercase" }}>Status</div>
+                                    <div className="fw-bold">{filterData.status || "Posted"}</div>
+                                </div>
+                                <div className="flex-fill px-2 py-1">
+                                    <div style={{ fontSize: "9px", color: "#555", fontWeight: "bold", textTransform: "uppercase" }}>Print Date</div>
+                                    <div className="fw-bold">{formatDate(new Date())}</div>
+                                </div>
                             </div>
                         </td>
                     </tr>
