@@ -32,25 +32,25 @@ const CustomerLedgerPrint = () => {
     useEffect(() => {
         try {
             const getStoredData = (key) => {
-                const raw = sessionStorage.getItem(key);
-                if (!raw) return null;
+    const raw = sessionStorage.getItem(key);
+    if (!raw) return null;
 
-                // Try LZString decompress first; fallback to raw JSON
-                try {
-                    const decompressed = LZString.decompress(raw);
-                    if (decompressed) {
-                        return JSON.parse(decompressed);
-                    }
-                } catch {
-                    // ignore and try raw
-                }
+    try {
+        // Must match the UTF16 compression format used during save
+        const decompressed = LZString.decompressFromUTF16(raw);
+        if (decompressed) {
+            return JSON.parse(decompressed);
+        }
+    } catch (err) {
+        console.warn(`Decompression failed for ${key}, trying raw JSON parse.`);
+    }
 
-                try {
-                    return JSON.parse(raw);
-                } catch {
-                    return null;
-                }
-            };
+    try {
+        return JSON.parse(raw);
+    } catch (err) {
+        return null; // Triggers safe fallback data instead of crashing
+    }
+};
 
             const filters = getStoredData("CustomerLedgerFilters");
             const rows = getStoredData("CustomerLedgerRows");
@@ -136,64 +136,69 @@ const CustomerLedgerPrint = () => {
                 <tbody>
                     <tr>
                         {/* Company & Customer Details (Left Box) */}
-                        <td style={{ width: "52%", borderRight: "1px solid black", verticalAlign: "top" }}>
-                            <div className="p-2 border-bottom border-dark">
-                                <div className="fw-bold fs-6 text-uppercase">{filterData.companyName}</div>
-                                <div style={{ fontSize: "11px", lineHeight: "1.4" }}>
+                        <td style={{ width: "55%", borderRight: "1px solid black", verticalAlign: "top" }}>
+                            <div className="px-2 py-1 border-bottom border-dark">
+                                <div className="fw-bold text-uppercase mb-1" style={{ fontSize: "14px" }}>
+                                    {filterData.companyName}
+                                </div>
+                                <div style={{ fontSize: "11px", lineHeight: "1.2" }}>
                                     {[filterData.companyAddress, filterData.companyCity].filter(Boolean).join(", ")}
                                     {filterData.companyPincode ? ` - ${filterData.companyPincode}` : ""}<br />
                                     <strong>GSTIN/UIN:</strong> {filterData.companyGst || "N/A"}<br />
                                     <strong>Contact:</strong> {filterData.companyContact || "-"}
                                 </div>
                             </div>
-                            <div className="p-2">
-                                <span style={{ fontSize: "9.5px", textTransform: "uppercase", color: "#555" }}>Customer Details</span>
-                                <div className="fw-bold fs-6">{filterData.customerName || "All Customers"}</div>
-                                <div style={{ fontSize: "11px", lineHeight: "1.4" }}>
-                                    <strong>Customer Code:</strong> {filterData.customerCode || "N/A"}<br />
-                                    <strong>Branch:</strong> {filterData.branch || "All Branches"}
+                            <div className="px-2 py-1">
+                                <span style={{ fontSize: "9px", textTransform: "uppercase", color: "#555", fontWeight: "bold" }}>
+                                    Customer Details
+                                </span>
+                                <div className="fw-bold" style={{ fontSize: "13px", margin: "2px 0" }}>
+                                    {filterData.customerName || "All Customers"}
+                                </div>
+                                <div style={{ fontSize: "11px", lineHeight: "1.2" }}>
+                                    <strong>Code:</strong> {filterData.customerCode || "N/A"} &nbsp;|&nbsp; <strong>Branch:</strong> {filterData.branch || "All Branches"}
                                 </div>
                             </div>
                         </td>
 
                         {/* Filter Input Details (Right Box) */}
-                        <td style={{ width: "48%", padding: 0, verticalAlign: "top" }}>
-                            <div className="row m-0 border-bottom border-dark" style={{ minHeight: "44px" }}>
-                                <div className="col-6 p-2 border-end border-dark">
-                                    <div className="fw-bold" style={{ fontSize: "10.5px" }}>Financial Year:</div>
-                                    <div style={{ fontSize: "11px" }}>{filterData.financialYear || "-"}</div>
+                        <td style={{ width: "45%", padding: 0, verticalAlign: "top" }}>
+                            <div className="row m-0 border-bottom border-dark">
+                                <div className="col-6 px-2 py-1 border-end border-dark">
+                                    <div className="fw-bold" style={{ fontSize: "10px", color: "#555" }}>Financial Year:</div>
+                                    <div style={{ fontSize: "11px", fontWeight: "500" }}>{filterData.financialYear || "-"}</div>
                                 </div>
-                                <div className="col-6 p-2">
-                                    <div className="fw-bold" style={{ fontSize: "10.5px" }}>Currency:</div>
-                                    <div style={{ fontSize: "11px" }}>{filterData.currency || "INR"}</div>
-                                </div>
-                            </div>
-
-                            <div className="row m-0 border-bottom border-dark" style={{ minHeight: "44px" }}>
-                                <div className="col-6 p-2 border-end border-dark">
-                                    <div className="fw-bold" style={{ fontSize: "10.5px" }}>From Date:</div>
-                                    <div style={{ fontSize: "11px" }}>{formatDate(filterData.fromDate)}</div>
-                                </div>
-                                <div className="col-6 p-2">
-                                    <div className="fw-bold" style={{ fontSize: "10.5px" }}>To Date:</div>
-                                    <div style={{ fontSize: "11px" }}>{formatDate(filterData.toDate)}</div>
+                                <div className="col-6 px-2 py-1">
+                                    <div className="fw-bold" style={{ fontSize: "10px", color: "#555" }}>Currency:</div>
+                                    <div style={{ fontSize: "11px", fontWeight: "500" }}>{filterData.currency || "INR"}</div>
                                 </div>
                             </div>
 
-                            <div className="row m-0 border-bottom border-dark" style={{ minHeight: "44px" }}>
-                                <div className="col-6 p-2 border-end border-dark">
-                                    <div className="fw-bold" style={{ fontSize: "10.5px" }}>Voucher Type:</div>
-                                    <div style={{ fontSize: "11px" }}>{filterData.voucherType || "All"}</div>
+                            <div className="row m-0 border-bottom border-dark">
+                                <div className="col-6 px-2 py-1 border-end border-dark">
+                                    <div className="fw-bold" style={{ fontSize: "10px", color: "#555" }}>From Date:</div>
+                                    <div style={{ fontSize: "11px", fontWeight: "500" }}>{formatDate(filterData.fromDate)}</div>
                                 </div>
-                                <div className="col-6 p-2">
-                                    <div className="fw-bold" style={{ fontSize: "10.5px" }}>Status:</div>
-                                    <div style={{ fontSize: "11px" }}>{filterData.status || "Posted"}</div>
+                                <div className="col-6 px-2 py-1">
+                                    <div className="fw-bold" style={{ fontSize: "10px", color: "#555" }}>To Date:</div>
+                                    <div style={{ fontSize: "11px", fontWeight: "500" }}>{formatDate(filterData.toDate)}</div>
                                 </div>
                             </div>
 
-                            <div className="p-2" style={{ minHeight: "36px" }}>
-                                <div className="fw-bold" style={{ fontSize: "10.5px" }}>Statement Print Date:</div>
-                                <div style={{ fontSize: "11px" }}>{formatDate(new Date())}</div>
+                            <div className="row m-0 border-bottom border-dark">
+                                <div className="col-6 px-2 py-1 border-end border-dark">
+                                    <div className="fw-bold" style={{ fontSize: "10px", color: "#555" }}>Voucher Type:</div>
+                                    <div style={{ fontSize: "11px", fontWeight: "500" }}>{filterData.voucherType || "All"}</div>
+                                </div>
+                                <div className="col-6 px-2 py-1">
+                                    <div className="fw-bold" style={{ fontSize: "10px", color: "#555" }}>Status:</div>
+                                    <div style={{ fontSize: "11px", fontWeight: "500" }}>{filterData.status || "Posted"}</div>
+                                </div>
+                            </div>
+
+                            <div className="px-2 py-1">
+                                <div className="fw-bold" style={{ fontSize: "10px", color: "#555" }}>Statement Print Date:</div>
+                                <div style={{ fontSize: "11px", fontWeight: "500" }}>{formatDate(new Date())}</div>
                             </div>
                         </td>
                     </tr>
@@ -205,7 +210,7 @@ const CustomerLedgerPrint = () => {
     return (
         <div className="template3-container">
             {/* Top Toolbar (Hidden automatically when printing) */}
-            <div className="d-flex justify-content-between align-items-center mb-3 p-2 bg-light border rounded d-print-none">
+            {/* <div className="d-flex justify-content-between align-items-center mb-3 p-2 bg-light border rounded d-print-none">
                 <div>
                     <h5 className="mb-0 fw-bold">Customer Ledger Print Preview</h5>
                     <small className="text-muted">Review statement pages before printing or exporting to PDF</small>
@@ -224,7 +229,7 @@ const CustomerLedgerPrint = () => {
                         Close
                     </button>
                 </div>
-            </div>
+            </div> */}
 
             {/* Printable Document Pages */}
             {itemPages.map((pageRows, pageIndex) => {
@@ -246,19 +251,19 @@ const CustomerLedgerPrint = () => {
                                         <th style={{ width: "13%" }}>Type</th>
                                         <th style={{ width: "13%" }}>Ref No.</th>
                                         <th style={{ width: "21%" }}>Description</th>
-                                        <th style={{ width: "11%", textAlign: "right" }}>Debit (₹)</th>
-                                        <th style={{ width: "11%", textAlign: "right" }}>Credit (₹)</th>
+                                        <th style={{ width: "11%", textAlign: "center" }}>Debit (₹)</th>
+                                        <th style={{ width: "11%", textAlign: "center" }}>Credit (₹)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {pageRows.length > 0 ? (
                                         pageRows.map((row, idx) => (
                                             <tr key={idx}>
-                                                <td style={{ textAlign: "center" }}>
+                                                <td style={{ textAlign: "right" }}>
                                                     {row.s_no || pageIndex * ITEMS_PER_PAGE + idx + 1}
                                                 </td>
                                                 <td style={{ textAlign: "center" }}>{formatDate(row.date)}</td>
-                                                <td style={{ textAlign: "center", fontWeight: "600" }}>{row.voucher_no || "-"}</td>
+                                                <td style={{ textAlign: "left", fontWeight: "600" }}>{row.voucher_no || "-"}</td>
                                                 <td>{row.type || "-"}</td>
                                                 <td>{row.reference_no || "-"}</td>
                                                 <td style={{ wordBreak: "break-word" }}>{row.description || "-"}</td>
@@ -304,7 +309,7 @@ const CustomerLedgerPrint = () => {
                                     </div>
 
                                     {/* Metrics / KPI Bar if available */}
-                                    {summaryMetrics && (
+                                    {/* {summaryMetrics && (
                                         <div className="row m-0 border border-top-0 border-dark p-2" style={{ fontSize: "10.5px" }}>
                                             <div className="col-4 border-end border-dark">
                                                 <strong>Opening Balance:</strong> ₹ {summaryMetrics.openingBalance || "0.00"}
@@ -316,7 +321,7 @@ const CustomerLedgerPrint = () => {
                                                 <strong>Total Receipts:</strong> ₹ {summaryMetrics.totalReceipts || formatCurrency(totalCredit)}
                                             </div>
                                         </div>
-                                    )}
+                                    )} */}
 
                                     {/* Sign-off and Verification Footer */}
                                     <div className="row m-0 border border-top-0 border-dark">
