@@ -282,20 +282,6 @@ const CustomerLedger = () => {
     };
 
     // Dropdown list options
-    const [companyOptions, setCompanyOptions] = useState([
-        { value: "YJK Technologies", label: "YJK Technologies" }
-    ]);
-    const [fyOptions, setFyOptions] = useState([
-        { value: "2026-2027", label: "2026 - 2027" },
-        { value: "2025-2026", label: "2025 - 2026" }
-    ]);
-    const [customerOptions, setCustomerOptions] = useState([
-        { value: "CUST-0001", label: "CUST-0001 - ABC Industries", name: "ABC Industries", gstin: "33ABCDE1234F1Z5" }
-    ]);
-    const [currencyOptions, setCurrencyOptions] = useState([
-        { value: "INR", label: "INR - Indian Rupee" },
-        { value: "USD", label: "USD - US Dollar" }
-    ]);
     const [branchOptions, setBranchOptions] = useState([
         { value: "All Branches", label: "All Branches" },
         { value: "Head Office", label: "Head Office" }
@@ -307,11 +293,6 @@ const CustomerLedger = () => {
         { value: "Receipt", label: "Receipt" },
         { value: "Credit Note", label: "Credit Note" },
         { value: "Debit Note", label: "Debit Note" }
-    ]);
-    const [statusOptions, setStatusOptions] = useState([
-        { value: "Posted", label: "Posted" },
-        { value: "Draft", label: "Draft" },
-        { value: "All", label: "All" }
     ]);
 
     // Row Data State with Demo Data + Computed Total Row
@@ -540,14 +521,33 @@ const CustomerLedger = () => {
         setGridColumnApi(params.columnApi);
     };
 
-    // Print Logic matching TaxInvoiceanalysis.js
-    const handlePrint = () => {
-        if (rowData.length === 0) {
-            toast.warning("No data available to print.");
-            return;
-        }
-        window.print();
+const handlePrint = () => {
+    if (rowData.length === 0) {
+        toast.warning("No data available to print.");
+        return;
+    }
+
+    const filtersPayload = {
+        companyName: companyName,
+        customerCode: customerCode,
+        customerName: customerName,
+        financialYear: selectedFinancialYearId?.label || selectedFY?.label || "2026 - 2027",
+        currency: selectedCurrency?.value || "INR",
+        fromDate: fromDate,
+        toDate: toDate,
+        branch: selectedBranch?.label || "All Branches",
+        voucherType: selectedVoucherType?.label || "All Types",
+        status: selectedscreens?.label || "Posted",
     };
+
+    // Store filters, rows, and summary metrics compressed
+    sessionStorage.setItem("CustomerLedgerFilters", LZString.compress(JSON.stringify(filtersPayload)));
+    sessionStorage.setItem("CustomerLedgerRows", LZString.compress(JSON.stringify(rowData)));
+    sessionStorage.setItem("CustomerLedgerMetrics", LZString.compress(JSON.stringify(summaryCards)));
+
+    // Open print view in a new tab or navigate directly
+    window.open("/CustomerLedgerPrint", "_blank");
+};
 
     // Export to Excel
     const handleExportToExcel = () => {
@@ -594,7 +594,8 @@ const CustomerLedger = () => {
                 <div className="d-flex justify-content-between align-items-center">
                     <div>
                         <h1 className="purbut mt-3">
-                            <i className="fa-solid fa-book-open me-2 text-primary"></i> Customer Ledger Analysis
+                            {/* <i className="fa-solid fa-book-open me-2 text-primary"></i>  */}
+                            Customer Ledger Analysis
                         </h1>
                     </div>
                     <div className="mobileview">
@@ -640,7 +641,7 @@ const CustomerLedger = () => {
             <div className="shadow-lg p-3 bg-body-tertiary rounded mb-2 mt-2">
                 {/* ROW 1: Company, Financial Year, Customer */}
                 <div className="row ms-2 me-2 mb-3">
-                    <div className="col-md-2 form-group text-start">
+                    {/* <div className="col-md-2 form-group text-start">
                         <label className="form-label">Company <span className="text-danger">*</span></label>
                         <Select
                             options={filteredOptionCompany}
@@ -650,7 +651,7 @@ const CustomerLedger = () => {
                             classNamePrefix="react-select"
                             styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                         />
-                    </div>
+                    </div> */}
                     <div className="col-md-2 form-group text-start">
                         <label className="form-label">Financial Year <span className="text-danger">*</span></label>
                         <Select
@@ -705,7 +706,7 @@ const CustomerLedger = () => {
                             />
                         </div>
                     </div>
-                    <div className="col-md-2 form-group text-start">
+                    {/* <div className="col-md-2 form-group text-start">
                         <label className="form-label">GSTIN</label>
                         <input
                             className="form-control exp-input-field"
@@ -713,7 +714,7 @@ const CustomerLedger = () => {
                             placeholder="GSTIN"
                             // readOnly
                         />
-                    </div>
+                    </div> */}
                     <div className="col-md-2 form-group text-start">
                         <label className="form-label">Currency</label>
                         <Select
@@ -727,10 +728,6 @@ const CustomerLedger = () => {
                             styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                         />
                     </div>
-                </div>
-
-                {/* ROW 3: From Date, To Date, Branch, Voucher Type, Status, Reference No */}
-                <div className="row ms-2 me-2 mb-3">
                     <div className="col-12 col-md-2">
                         <label className="form-label">From Date <span className="text-danger">*</span></label>
                         <input
@@ -782,7 +779,7 @@ const CustomerLedger = () => {
                             styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                         />
                     </div>
-                    <div className="col-12 col-md-2">
+                    {/* <div className="col-12 col-md-2">
                         <label className="form-label">Reference No.</label>
                         <input
                             className="form-control exp-input-field"
@@ -791,7 +788,7 @@ const CustomerLedger = () => {
                             onKeyDown={(e) => e.key === "Enter" && fetchLedgerData()}
                             onChange={(e) => setReferenceNo(e.target.value)}
                         />
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* ROW 4: Action Buttons Bar */}
@@ -817,8 +814,8 @@ const CustomerLedger = () => {
                 </div> */}
 
                 {/* ROW 5: 6 KPI / Summary Metric Cards */}
-                <div className="row g-3 ms-2 me-2 mb-4">
-                    {/* Opening Balance */}
+                {/* <div className="row g-3 ms-2 me-2 mb-4">
+
                     <div className="col-12 col-sm-6 col-lg-2">
                         <div className="p-3 bg-light border rounded d-flex align-items-center">
                             <div className="p-2 bg-primary bg-opacity-10 text-primary rounded me-3 fs-3">
@@ -830,7 +827,7 @@ const CustomerLedger = () => {
                             </div>
                         </div>
                     </div>
-                    {/* Total Invoiced */}
+
                     <div className="col-12 col-sm-6 col-lg-2">
                         <div className="p-3 bg-light border rounded d-flex align-items-center">
                             <div className="p-2 bg-success bg-opacity-10 text-success rounded me-3 fs-3">
@@ -842,7 +839,7 @@ const CustomerLedger = () => {
                             </div>
                         </div>
                     </div>
-                    {/* Total Receipts */}
+
                     <div className="col-12 col-sm-6 col-lg-2">
                         <div className="p-3 bg-light border rounded d-flex align-items-center">
                             <div className="p-2 bg-info bg-opacity-10 text-info rounded me-3 fs-3">
@@ -854,7 +851,7 @@ const CustomerLedger = () => {
                             </div>
                         </div>
                     </div>
-                    {/* Debit Notes */}
+
                     <div className="col-12 col-sm-6 col-lg-2">
                         <div className="p-3 bg-light border rounded d-flex align-items-center">
                             <div className="p-2 bg-danger bg-opacity-10 text-danger rounded me-3 fs-3">
@@ -866,7 +863,7 @@ const CustomerLedger = () => {
                             </div>
                         </div>
                     </div>
-                    {/* Credit Notes */}
+
                     <div className="col-12 col-sm-6 col-lg-2">
                         <div className="p-3 bg-light border rounded d-flex align-items-center">
                             <div className="p-2 bg-warning bg-opacity-10 text-warning rounded me-3 fs-3">
@@ -878,7 +875,7 @@ const CustomerLedger = () => {
                             </div>
                         </div>
                     </div>
-                    {/* Closing Balance */}
+
                     <div className="col-12 col-sm-6 col-lg-2">
                         <div className="p-3 bg-light border rounded d-flex align-items-center">
                             <div className="p-2 bg-purple bg-opacity-10 text-dark rounded me-3 fs-3" style={{ background: '#f3e8ff', color: '#7e22ce' }}>
@@ -890,7 +887,7 @@ const CustomerLedger = () => {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> */}
 
                 {/* ROW 6: Navigation Tabs */}
                 {/* <div className="ms-2 me-2 mb-3">
@@ -923,7 +920,7 @@ const CustomerLedger = () => {
                 </div> */}
 
                 {/* ROW 7: AG Grid Container */}
-                {/* {activeTab === 'ledger' ? (
+                {activeTab === 'ledger' ? (
                     <div className="ag-theme-alpine mb-4 ms-2 me-2" style={{ height: 460, width: '100%' }}>
                         <AgGridReact
                             rowData={rowData}
@@ -944,7 +941,7 @@ const CustomerLedger = () => {
                         <i className="fa-solid fa-folder-open fs-1 mb-3"></i>
                         <p>Content for {activeTab === 'outstanding' ? 'Invoice Wise Outstanding' : 'Ageing Analysis'} is under development.</p>
                     </div>
-                )} */}
+                )}
 
                 {/* Customer Lookup Popup */}
                 <SalesVendorPopup
