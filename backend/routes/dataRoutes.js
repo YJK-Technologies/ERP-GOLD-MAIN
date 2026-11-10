@@ -1112,6 +1112,7 @@ router.post("/getCurrencyCodeDrop", dataController.getCurrencyCodeDrop)
 router.post("/getCustomerLedgerReport", dataController.getCustomerLedgerReport)
 router.post("/InvoiceFsPosting", dataController.InvoiceFsPosting);
 router.post("/getAllCustomerCode", dataController.getAllCustomerCode);
+router.post("/getVoucherType", dataController.getVoucherType);
 
 
 
