@@ -61,21 +61,21 @@ const CustomerLedgerPrint = () => {
             } else {
                 // Fallback default values if opened directly
                 setFilterData({
-                    companyName: sessionStorage.getItem("selectedCompanyName") || "YJK Technologies",
-                    companyAddress: sessionStorage.getItem("selectedCompanyAddress") || "Thadaperumbakkam, Ponneri High Road",
-                    companyCity: sessionStorage.getItem("selectedCompanyCity") || "Tiruvallur",
-                    companyPincode: sessionStorage.getItem("selectedCompanyPincode") || "601204",
-                    companyGst: sessionStorage.getItem("selectedCompanyGst") || "33AAAAA0000A1Z5",
-                    companyContact: sessionStorage.getItem("selectedCompanyContact") || "+91-99445 31549",
-                    financialYear: "2026 - 2027",
-                    customerCode: "CUST-0001",
-                    customerName: "ABC Industries",
-                    currency: "INR",
-                    fromDate: "2026-04-01",
-                    toDate: "2027-03-31",
-                    branch: "All Branches",
-                    voucherType: "All Types",
-                    status: "Posted",
+                    companyName: sessionStorage.getItem("selectedCompanyName"),
+                    companyAddress: sessionStorage.getItem("selectedCompanyAddress"),
+                    companyCity: sessionStorage.getItem("selectedCompanyCity"),
+                    companyPincode: sessionStorage.getItem("selectedCompanyPincode"),
+                    companyGst: sessionStorage.getItem("selectedCompanyGst"),
+                    companyContact: sessionStorage.getItem("selectedCompanyContact"),
+                    financialYear: "",
+                    customerCode: "",
+                    customerName: "",
+                    currency: "",
+                    fromDate: "",
+                    toDate: "",
+                    branch: "",
+                    voucherType: "",
+                    status: "",
                 });
             }
 
@@ -139,10 +139,10 @@ const CustomerLedgerPrint = () => {
                                 {filterData.companyName}
                             </div>
                             <div style={{ fontSize: "11px", lineHeight: "1.2" }}>
-                                {[filterData.companyAddress, filterData.companyCity].filter(Boolean).join(", ")}
-                                {filterData.companyPincode ? ` - ${filterData.companyPincode}` : ""}<br />
-                                <strong>GSTIN/UIN:</strong> {filterData.companyGst || "N/A"}<br />
-                                <strong>Contact:</strong> {filterData.companyContact || "-"}
+                                {/* {[filterData.companyAddress, filterData.companyCity].filter(Boolean).join(", ")}
+                                {filterData.companyPincode ? ` - ${filterData.companyPincode}` : ""}<br /> */}
+                                {/* <strong>GSTIN/UIN:</strong> {filterData.companyGst || "N/A"}<br />
+                                <strong>Contact:</strong> {filterData.companyContact || "-"} */}
                             </div>
                         </td>
 
@@ -245,8 +245,8 @@ const CustomerLedgerPrint = () => {
                                         <th style={{ width: "13%" }}>Type</th>
                                         <th style={{ width: "13%" }}>Ref No.</th>
                                         <th style={{ width: "21%" }}>Description</th>
-                                        <th style={{ width: "11%", textAlign: "center" }}>Debit (₹)</th>
-                                        <th style={{ width: "11%", textAlign: "center" }}>Credit (₹)</th>
+                                        <th style={{ width: "11%", textAlign: "center" }}>Debit Amount</th>
+                                        <th style={{ width: "11%", textAlign: "center" }}>Credit Amount</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -309,7 +309,7 @@ const CustomerLedgerPrint = () => {
                                 <>
                                     <div className="d-flex justify-content-between border border-top-0 border-dark px-3 py-2 fw-bold bg-light">
                                         <span>Closing Balance</span>
-                                        <span className="fs-6">₹ {closingBalance}</span>
+                                        <span className="fs-6">{closingBalance}</span>
                                     </div>
 
                                     {/* Metrics / KPI Bar if available */}

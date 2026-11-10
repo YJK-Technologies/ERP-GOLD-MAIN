@@ -48,7 +48,7 @@
         const [fromDate, setFromDate] = useState("2026-04-01");
         const [toDate, setToDate] = useState("2027-03-31");
         const [selectedBranch, setSelectedBranch] = useState({ value: "All Branches", label: "All Branches" });
-        const [selectedVoucherType, setSelectedVoucherType] = useState({ value: "All", label: "All Types" });
+        const [selectedVoucherType, setSelectedVoucherType] = useState(null);
         const [selectedStatus, setSelectedStatus] = useState({ value: "Posted", label: "Posted" });
         const [referenceNo, setReferenceNo] = useState("");
 
@@ -71,6 +71,9 @@
         const [selectedscreens, setSelectedscreens] = useState(null);
         const [Screens, setScreens] = useState('');
         const [screensDrop, setScreensDrop] = useState([]);
+
+        const [voucherTypeDrop, setVoucherTypeDrop] = useState([]);
+        const [voucherType, setVoucherType] = useState([]);
 
         const handleChangeCompany = (selectedCompany) => {
             setSelectedCompany(selectedCompany);
@@ -185,20 +188,45 @@
             setScreensDrop(data);
     
             // Automatically set a default option (e.g., "Draft" or the first record)
-            const defaultScreen =
-                data.find((item) => item.descriptions === "Draft") || data[0];
+            // const defaultScreen =
+            //     data.find((item) => item.descriptions === "Draft") || data[0];
     
-            if (defaultScreen && !selectedscreens) {
-                setSelectedscreens({
-                value: defaultScreen.descriptions,
-                label: defaultScreen.descriptions,
-                });
-                setScreens(defaultScreen.descriptions);
-            }
+            // if (defaultScreen && !selectedscreens) {
+            //     setSelectedscreens({
+            //     value: defaultScreen.descriptions,
+            //     label: defaultScreen.descriptions,
+            //     });
+            //     setScreens(defaultScreen.descriptions);
+            // }
             })
             .catch((error) => console.error("Error fetching purchase types:", error));
         }, []);
 
+        const filteredOptionVoucherType = voucherTypeDrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  const handleChangeVoucherType = (selected) => {
+    setSelectedVoucherType(selected);
+    setVoucherType(selected ? selected.value : '');
+  };
+
+  useEffect(() => {
+    const companyCode = sessionStorage.getItem('selectedCompanyCode');
+    fetch(`${config.apiBaseUrl}/getVoucherType`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        company_code: companyCode,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setVoucherTypeDrop(data))
+      .catch((error) => console.error("Error fetching Voucher types:", error));
+  }, []);
 
         // Triggered on Enter key press in the Customer Code input
         const handleCustomerKeyPress = (e) => {
@@ -257,21 +285,6 @@
             }
             setOpenCustomerModal(false);
         };
-
-        // Dropdown list options
-        const [branchOptions, setBranchOptions] = useState([
-            { value: "All Branches", label: "All Branches" },
-            { value: "Head Office", label: "Head Office" }
-        ]);
-        const [voucherTypeOptions, setVoucherTypeOptions] = useState([
-            { value: "All", label: "All Types" },
-            { value: "Opening", label: "Opening" },
-            { value: "Sales Invoice", label: "Sales Invoice" },
-            { value: "Receipt", label: "Receipt" },
-            { value: "Credit Note", label: "Credit Note" },
-            { value: "Debit Note", label: "Debit Note" }
-        ]);
-
         // Row Data State with Demo Data + Computed Total Row
         const [rowData, setRowData] = useState([]);
 
@@ -300,17 +313,6 @@
         useEffect(() => {
             setRowData([]);
         }, []);
-
-        const handleCustomerChange = (selected) => {
-            setSelectedCustomer(selected);
-            if (selected) {
-                setCustomerName(selected.name || selected.label.split(" - ")[1] || "");
-                setGstin(selected.gstin || "");
-            } else {
-                setCustomerName("");
-                setGstin("");
-            }
-        };
 
         const handleVoucherClick = (voucherNo, type) => {
             console.log("Navigating for voucher:", voucherNo, type);
@@ -742,9 +744,9 @@
                         <div className="col-12 col-md-2">
                             <label className="form-label">Voucher Type</label>
                             <Select
-                                options={voucherTypeOptions}
+                                options={filteredOptionVoucherType}
                                 value={selectedVoucherType}
-                                onChange={setSelectedVoucherType}
+                                onChange={handleChangeVoucherType}
                                 className="border-secondary"
                                 classNamePrefix="react-select"
                                 styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
