@@ -1114,6 +1114,8 @@ router.post("/InvoiceFsPosting", dataController.InvoiceFsPosting);
 router.post("/CustomerGroupCode", dataController.getCustomerGroupCode);
 router.post("/ItemGroupCode", dataController.getItemGroupCode);
 router.post("/VendorGroupCode", dataController.getVendorGroupCode);
+router.post("/getJVData", dataController.getJVData);
+router.post("/getAllCustomerCode", dataController.getAllCustomerCode);
 
 
 
