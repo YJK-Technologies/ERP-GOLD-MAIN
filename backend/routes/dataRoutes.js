@@ -1100,6 +1100,14 @@ router.post("/getInvoicedata",dataController.getInvoicedata)
 router.post("/getCustomerReceiptSearchdata",dataController.getCustomerReceiptSearchdata)  
 router.post("/getCustomerReceiptByNo",dataController.getCustomerReceiptByNo)  
 router.post("/getCurrencyCodeDrop", dataController.getCurrencyCodeDrop);
+router.post("/addJournalVoucherHeader", dataController.addJournalVoucherHeader);
+router.post("/updJournalVoucherHeader", dataController.updJournalVoucherHeader);
+router.post("/deleteJournalVoucherHeader", dataController.deleteJournalVoucherHeader);
+router.post("/getAllJournalVoucherHeaderData", dataController.getAllJournalVoucherHeaderData);
+router.post("/addJournalVoucherDetail", dataController.addJournalVoucherDetail);
+router.post("/deleteJournalVoucherDetailByJvNo", dataController.deleteJournalVoucherDetailByJvNo);
+router.post("/getJournalVoucherDetailData", dataController.getJournalVoucherDetailData);
+router.post("/getCOAData", dataController.getCOAData);
 
 
 
