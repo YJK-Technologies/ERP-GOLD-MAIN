@@ -1108,6 +1108,9 @@ router.post("/addJournalVoucherDetail", dataController.addJournalVoucherDetail);
 router.post("/deleteJournalVoucherDetailByJvNo", dataController.deleteJournalVoucherDetailByJvNo);
 router.post("/getJournalVoucherDetailData", dataController.getJournalVoucherDetailData);
 router.post("/getCOAData", dataController.getCOAData);
+router.post("/getCurrencyCodeDrop", dataController.getCurrencyCodeDrop)
+router.post("/getCustomerLedgerReport", dataController.getCustomerLedgerReport)
+router.post("/InvoiceFsPosting", dataController.InvoiceFsPosting);
 
 
 

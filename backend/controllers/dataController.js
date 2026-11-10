@@ -33903,6 +33903,75 @@ const getCOAData = async (req, res) => {
 };
 //Code ended by SakthiGanesh J on 09-11-2026 
 
+//Code Added By Pavun on 07-11-2026
+const InvoiceFsPosting = async (req, res) => {
+  const { Tran_type, Tran_no, Tran_date, modified_by, company_code, created_by } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "I")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("Tran_type", sql.NVarChar, Tran_type)
+      .input("Tran_no", sql.NVarChar, Tran_no)
+      .input("Tran_date", sql.Date, Tran_date)
+      .input("created_by", sql.NVarChar, created_by)
+      .input("modified_by", sql.NVarChar, modified_by)
+      .query(`EXEC sp_fs_postings @mode,@company_code,'','','',@Tran_type,@Tran_no,@Tran_date,'Posted','','','','INR',0,0,'',NULL,@created_by,NULL,@modified_by,NULL`);
+    
+    res.status(200).json("Invoice Posting Successfully");
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+//Code Ended By Pavun on 07-11-2026
+
+
+//Code added by Dinesh Gokul on 09-11-2026 
+const getCustomerLedgerReport = async (req, res) => {
+  const { company_code, location_code, Fin_year, Tran_type, customer_code, 
+    from_date, to_date, currency_code, branch, status, } = req.body;
+
+  try {
+    // Connect to the database
+    const pool = await connection.connectToDatabase();
+
+    // Execute the stored procedure
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "CLR")
+      .input("company_code", sql.NVarChar, company_code || "")
+      .input("location_code", sql.NVarChar, location_code || "")
+      .input("Fin_year", sql.NVarChar, Fin_year || "")
+      .input("Tran_type", sql.NVarChar, Tran_type || "")
+      .input("customer_code", sql.NVarChar, customer_code || "")
+      .input("from_date", sql.NVarChar, from_date || "")
+      .input("to_date", sql.NVarChar, to_date || "")
+      .input("currency_code", sql.NVarChar, currency_code || "")
+      .input("branch", sql.NVarChar, branch || "")
+      .input("status", sql.NVarChar, status || "")
+      .query(`EXEC dbo.sp_customer_ledger_report @mode, @company_code, @location_code, @Fin_year, @Tran_type, @customer_code, 
+        @from_date, @to_date, @currency_code, @branch, @status, '', '', '', ''`);
+
+    // Send response
+    if (result.recordset && result.recordset.length > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json("Data not found");
+    }
+
+  } catch (err) {
+    console.error("Customer Ledger Report Error:", err);
+
+    res.status(500).json({
+      message: err.message || "Internal Server Error"
+    });
+  }
+};
+//Code ended by Dinesh Gokul on 09-11-2026 
+
 module.exports = {
   login,
   forgetPassword,
@@ -34979,6 +35048,8 @@ module.exports = {
   getCustomerReceiptSearchdata,
   getCustomerReceiptByNo,
   getCurrencyCodeDrop,
+  InvoiceFsPosting,
+  getCustomerLedgerReport,
   addJournalVoucherHeader,
   updJournalVoucherHeader,
   deleteJournalVoucherHeader,
