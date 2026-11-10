@@ -91,6 +91,7 @@ function ItemInput({ }) {
   const shortname = useRef(null);
   const MrpPrice = useRef(null);
   const discount = useRef(null);
+  const ItemGroupCode = useRef(null);
   const [hasValueChanged, setHasValueChanged] = useState(false);
   const [barcodeValue, setBarcodeValue] = useState("");
   const [barcode, setBarcode] = useState("");
@@ -100,6 +101,10 @@ function ItemInput({ }) {
   const created_by = sessionStorage.getItem("selectedUserCode");
   const modified_by = sessionStorage.getItem("selectedUserCode");
   const [isUpdated, setIsUpdated] = useState(false);
+
+  const [itemGroupCode, setItemGroupCode] = useState("");
+  const [selectedItemGroupCode, setSelectedItemGroupCode] = useState("");
+  const [itemGroupCodeDrop, setItemGroupCodeDrop] = useState([]);
 
   const location = useLocation();
   const { mode, selectedRow } = location.state || {};
@@ -140,6 +145,8 @@ function ItemInput({ }) {
     setItem_purch_tax_type("");
     setItem_purch_othertax_type("");
     setItem_variant("");
+    setItemGroupCode('');
+    setSelectedItemGroupCode('');
   };
 
   const arrayBufferToBase64 = (buffer) => {
@@ -179,6 +186,7 @@ function ItemInput({ }) {
       setItem_purch_tax_type(selectedRow.Item_purch_tax_type || "");
       setItem_purch_othertax_type(selectedRow.Item_other_purch_taxtype || "");
       setItem_variant(selectedRow.Item_variant || "");
+      setItemGroupCode(selectedRow.item_group_code || "");
       setSelectedUom({
         label: selectedRow.Item_BaseUOM,
         value: selectedRow.Item_BaseUOM,
@@ -211,7 +219,6 @@ function ItemInput({ }) {
         label: selectedRow.Item_purch_tax_type,
         value: selectedRow.Item_purch_tax_type,
       });
-
       setselectedOtherpurtax({
         label: selectedRow.Item_other_purch_taxtype,
         value: selectedRow.Item_other_purch_taxtype,
@@ -219,6 +226,10 @@ function ItemInput({ }) {
       setselectedvarient({
         label: selectedRow.Item_variant,
         value: selectedRow.Item_variant,
+      });
+      setSelectedItemGroupCode({
+        label: selectedRow.item_group_code,
+        value: selectedRow.item_group_code,
       });
 
       if (selectedRow.item_images && selectedRow.item_images.data) {
@@ -369,6 +380,21 @@ function ItemInput({ }) {
       .then((data) => data.json())
       .then((val) => setvariantdrop(val))
       .catch((error) => console.error("Error fetching data:", error));
+  }, []);
+
+  useEffect(() => {
+    const company_code = sessionStorage.getItem('selectedCompanyCode');
+
+    fetch(`${config.apiBaseUrl}/ItemGroupCode`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ company_code })
+    })
+      .then((data) => data.json())
+      .then((val) => setItemGroupCodeDrop(val))
+      .catch((error) => console.error('Error fetching data:', error));
   }, []);
 
   useEffect(() => {
@@ -534,6 +560,11 @@ function ItemInput({ }) {
     label: option.Other_purch_tax_type,
   }));
 
+  const filteredOptionItemGroupCode = itemGroupCodeDrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
   const handleChangeRegister = (selectedRegister) => {
     setSelectedRegister(selectedRegister);
     setItem_Register_Brand(selectedRegister ? selectedRegister.value : "");
@@ -583,6 +614,11 @@ function ItemInput({ }) {
     setItem_purch_othertax_type(selectedpurtax ? selectedpurtax.value : "");
   };
 
+  const handleChangeItemGroupCode = (selectedItemGroupCode) => {
+    setSelectedItemGroupCode(selectedItemGroupCode);
+    setItemGroupCode(selectedItemGroupCode ? selectedItemGroupCode.value : '');
+  };
+
   const handleInsert = async () => {
     if (
       !Item_code ||
@@ -600,7 +636,8 @@ function ItemInput({ }) {
       !Item_Register_Brand ||
       !Item_Our_Brand ||
       !MRPprice ||
-      !status
+      !status ||
+      !itemGroupCode
     ) {
       toast.warning("Error: Missing required fields.");
       setError("true");
@@ -641,6 +678,7 @@ function ItemInput({ }) {
       formData.append("barcodeimg", barcode);
       formData.append("MRP_price", MRPprice);
       formData.append("discount_Percentage", Discount);
+      formData.append("item_group_code", itemGroupCode);
       formData.append("created_by", sessionStorage.getItem("selectedUserCode"));
 
       if (item_images) {
@@ -732,7 +770,8 @@ function ItemInput({ }) {
       !selectedRegister ||
       !selectedBrand ||
       !MRPprice ||
-      !selectedStatus
+      !selectedStatus ||
+      !itemGroupCode
     ) {
       toast.warning("Error: Missing required fields.");
       setError("true");
@@ -772,6 +811,7 @@ function ItemInput({ }) {
       formData.append("Item_Register_Brand", selectedRegister.value);
       formData.append("Item_Our_Brand", selectedBrand.value);
       formData.append("status", selectedStatus.value);
+      formData.append("item_group_code", itemGroupCode);
       formData.append("created_by", sessionStorage.getItem("selectedUserCode"));
 
       if (item_images) {
@@ -1459,7 +1499,30 @@ function ItemInput({ }) {
                         placeholder=""
                         maxLength={250}
                         ref={Status}
-                        onKeyDown={(e) => handleKeyDown(e, img, Status)}
+                        onKeyDown={(e) => handleKeyDown(e, ItemGroupCode, Status)}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-3 form-group mb-2">
+                  <div class="exp-form-floating">
+                    <div>
+                      <label for="state" className={`${error && !itemGroupCode ? 'text-danger' : ''}`}>
+                        Item Group Code<span className="text-danger">*</span>
+                      </label>
+                    </div>
+                    <div title="Select the Status ">
+                      <Select
+                        id="ahsts"
+                        value={selectedItemGroupCode}
+                        onChange={handleChangeItemGroupCode}
+                        options={filteredOptionItemGroupCode}
+                        className="exp-input-field"
+                        classNamePrefix="react-select"
+                        placeholder=""
+                        maxLength={250}
+                        ref={ItemGroupCode}
+                        onKeyDown={(e) => handleKeyDown(e, img, ItemGroupCode)}
                       />
                     </div>
                   </div>
@@ -1540,50 +1603,6 @@ function ItemInput({ }) {
                     </div>
                   </div>
                 </div>
-
-                {/* <div className="col-md-3 form-group  mb-2">
-            {mode === "create" ? (
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
-                    <div>
-                      <label for="state" class="exp-form-labels">
-                        Created By
-                      </label>
-                    </div>
-                  </div>
-                  <input
-                    id="emailid"
-                    class="exp-input-field form-control"
-                    type="text"
-                    placeholder=""
-                    required
-                    title="Please enter the email ID"
-                    value={created_by}
-                  />
-                </div>
-                ) : (
-            <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
-                    <div>
-                      <label for="state" class="exp-form-labels">
-                        Modified By
-                      </label>
-                    </div>
-                  </div>
-                  <input
-                    id="emailid"
-                    class="exp-input-field form-control"
-                    type="text"
-                    placeholder=""
-                    required
-                    title="Please enter the email ID"
-                    value={modified_by}
-                  />
-                </div>
-                )}
-
-          </div> */}
-
                 <div class="col-md-3 form-group">
                   <div class="d-flex justify-content-start ">
                     {mode === "create" ? (

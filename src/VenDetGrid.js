@@ -50,6 +50,8 @@ function VenDetGrid() {
   const [createdDate, setCreatedDate] = useState("");
   const [modifiedDate, setModifiedDate] = useState("");
 
+  const [vendorGroupCodeDrop, setVendorGroupCodeDrop] = useState([]);
+
   const location = useLocation();
 
   //code added by Pavun purpose of set user permisssion
@@ -226,6 +228,24 @@ function VenDetGrid() {
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
+  useEffect(() => {
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+
+    fetch(`${config.apiBaseUrl}/VendorGroupCode`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ company_code }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const groupCodeOption = data.map((option) => option.attributedetails_name);
+        setVendorGroupCodeDrop(groupCodeOption);
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
+
   const filteredOptionStatus = [
     { value: "All", label: "All" },
     ...statusdrop.map((option) => ({
@@ -357,7 +377,7 @@ function VenDetGrid() {
       },
     },
     {
-      headerName: "Address1",
+      headerName: "Address 1",
       field: "vendor_addr_1",
       editable: true,
       cellStyle: { textAlign: "left" },
@@ -368,7 +388,7 @@ function VenDetGrid() {
       },
     },
     {
-      headerName: "Address2",
+      headerName: "Address 2",
       field: "vendor_addr_2",
       editable: true,
       cellStyle: { textAlign: "left" },
@@ -379,7 +399,7 @@ function VenDetGrid() {
       },
     },
     {
-      headerName: "Address3",
+      headerName: "Address 3",
       field: "vendor_addr_3",
       editable: true,
       cellStyle: { textAlign: "left" },
@@ -390,7 +410,7 @@ function VenDetGrid() {
       },
     },
     {
-      headerName: "Address4",
+      headerName: "Address 4",
       field: "vendor_addr_4",
       editable: true,
       cellStyle: { textAlign: "left" },
@@ -443,6 +463,18 @@ function VenDetGrid() {
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
         values: statusgriddrop,
+      },
+    },
+    {
+      headerName: "Vendor Group Code",
+      field: "vendor_group_code",
+      editable: true,
+      cellStyle: { textAlign: "left" },
+      // minWidth: 250,
+      // maxWidth: 250,
+      cellEditor: "agSelectCellEditor",
+      cellEditorParams: {
+        values: vendorGroupCodeDrop,
       },
     },
     {
@@ -621,136 +653,169 @@ function VenDetGrid() {
       gridApi.setQuickFilter(e.target.value);
     }
   };
+
   const generateReport = () => {
     const selectedRows = gridApi.getSelectedRows();
+
     if (selectedRows.length === 0) {
       toast.warning("Please select at least one row to generate a report");
       return;
     }
 
     const reportData = selectedRows.map((row) => {
+      const formatValue = (val) =>
+        val !== undefined && val !== null ? val : "";
+
+      // Vendor Address Formatting
+      const addressParts = [
+        row.vendor_addr_1,
+        row.vendor_addr_2,
+        row.vendor_addr_3,
+        row.vendor_addr_4,
+        row.vendor_area_code,
+        row.vendor_state_code,
+        row.vendor_country_code,
+      ].map(formatValue);
+
+      const formattedAddress = `
+      ${addressParts[0]},
+      ${addressParts[1]},
+      ${addressParts[2]}<br>
+      ${addressParts[3]}<br>
+      ${addressParts[4]}<br>
+      ${addressParts[5]}<br>
+      ${addressParts[6]}
+    `;
+
       return {
-        "Vendor Code": row.vendor_code,
-        "Vendor Name": row.vendor_name,
-        "Company Code": row.company_code,
-        "Vendor Address1": row.vendor_addr_1,
-        "Vendor Address2": row.vendor_addr_2,
-        "Vendor Address3": row.vendor_addr_3,
-        "Vendor Address4": row.vendor_addr_4,
-        City: row.vendor_area_code,
-        State: row.vendor_state_code,
-        Country: row.vendor_country_code,
-        Status: row.status,
-        "Pan No": row.panno,
-        "Gst No": row.vendor_gst_no,
-        "Vendor IMEX No": row.vendor_imex_no,
-        "Vendor Office No": row.vendor_office_no,
-        "Vendor Residential No": row.vendor_resi_no,
-        "Mobile No": row.vendor_mobile_no,
-        "Fax No": row.vendor_fax_no,
-        "Email ID": row.vendor_email_id,
-        "Credit Limit": row.vendor_credit_limit,
-        "Transport Code": row.vendor_transport_code,
-        "Salesman Code": row.vendor_salesman_code,
-        "Break Code": row.vendor_broker_code,
-        "Weekday Code": row.vendor_weekday_code,
+        "Vendor Code": formatValue(row.vendor_code),
+        "Vendor Name": formatValue(row.vendor_name),
+        "Company Code": formatValue(row.company_code),
+        Address: formattedAddress,
+        Status: formatValue(row.status),
+        "Vendor Group Code": formatValue(row.vendor_group_code),
+        "PAN No": formatValue(row.panno),
+        "GST No": formatValue(row.vendor_gst_no),
+        "Vendor IMEX No": formatValue(row.vendor_imex_no),
+        "Vendor Office No": formatValue(row.vendor_office_no),
+        "Vendor Residential No": formatValue(row.vendor_resi_no),
+        "Mobile No": formatValue(row.vendor_mobile_no),
+        "Fax No": formatValue(row.vendor_fax_no),
+        "Email ID": formatValue(row.vendor_email_id),
+        "Credit Limit": formatValue(row.vendor_credit_limit),
+        "Transport Code": formatValue(row.vendor_transport_code),
+        "Salesman Code": formatValue(row.vendor_salesman_code),
+        "Break Code": formatValue(row.vendor_broker_code),
+        "Weekday Code": formatValue(row.vendor_weekday_code),
       };
     });
 
     const reportWindow = window.open("", "_blank");
+
+    if (!reportWindow) {
+      toast.warning("Please allow pop-ups to generate the report");
+      return;
+    }
+
     reportWindow.document.write("<html><head><title>Vendor</title>");
     reportWindow.document.write("<style>");
+
     reportWindow.document.write(`
-      body {
-          font-family: Arial, sans-serif;
-          margin: 20px;
-      }
-      h1 {
-          color: maroon;
-          text-align: center;
-          font-size: 24px;
-          margin-bottom: 30px;
-          text-decoration: underline;
-      }
-      table {
-          width: 100%;
-          border-collapse: collapse;
-          margin-bottom: 20px;
-      }
-      th, td {
-          padding: 10px;
-          text-align: left;
-          border: 1px solid #ddd;
-          vertical-align: top;
-      }
-      th {
-          background-color: maroon;
-          color: white;
-          font-weight: bold;
-      }
-      td {
-          background-color: #fdd9b5;
-      }
-      tr:nth-child(even) td {
-          background-color: #fff0e1;
-      }
-      .report-button {
-          display: block;
-          width: 150px;
-          margin: 20px auto;
-          padding: 10px;
-          background-color: maroon;
-          color: white;
-          border: none;
-          cursor: pointer;
-          font-size: 16px;
-          text-align: center;
-          border-radius: 5px;
-      }
-      .report-button:hover {
-          background-color: darkred;
-      }
-      @media print {
-          .report-button {
-              display: none;
-          }
-          body {
-              margin: 0;
-              padding: 0;
-          }
-      }
-    `);
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+    }
+    h1 {
+        color: maroon;
+        text-align: center;
+        font-size: 24px;
+        margin-bottom: 30px;
+        text-decoration: underline;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    th, td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+        vertical-align: top;
+    }
+    th {
+        background-color: maroon;
+        color: white;
+        font-weight: bold;
+    }
+    td {
+        background-color: #fdd9b5;
+    }
+    tr:nth-child(even) td {
+        background-color: #fff0e1;
+    }
+    .report-button {
+        display: block;
+        width: 150px;
+        margin: 20px auto;
+        padding: 10px;
+        background-color: maroon;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        text-align: center;
+        border-radius: 5px;
+    }
+    .report-button:hover {
+        background-color: darkred;
+    }
+    @media print {
+        .report-button {
+            display: none;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+        }
+    }
+  `);
+
     reportWindow.document.write("</style></head><body>");
-    reportWindow.document.write("<h1><u>Vendor Information</u></h1>");
+
+    reportWindow.document.write(
+      "<h1><u>Vendor Information</u></h1>"
+    );
 
     // Create table with headers
     reportWindow.document.write("<table><thead><tr>");
+
     Object.keys(reportData[0]).forEach((key) => {
       reportWindow.document.write(`<th>${key}</th>`);
     });
+
     reportWindow.document.write("</tr></thead><tbody>");
 
     // Populate the rows
     reportData.forEach((row) => {
       reportWindow.document.write("<tr>");
+
       Object.values(row).forEach((value) => {
         reportWindow.document.write(`<td>${value}</td>`);
       });
+
       reportWindow.document.write("</tr>");
     });
 
     reportWindow.document.write("</tbody></table>");
 
     reportWindow.document.write(
-      '<button class="report-button" onclick="window.print()">Print</button>',
+      '<button class="report-button" onclick="window.print()">Print</button>'
     );
+
     reportWindow.document.write("</body></html>");
     reportWindow.document.close();
   };
-
-  /*const handleNavigateToForm = () => {
-    navigate("/form");
-  };*/
 
   const handleNavigatesToForm = () => {
     navigate("/AddVendorDetails", { state: { mode: "create" } }); // Pass selectedRows as props to the Input component
@@ -990,40 +1055,40 @@ function VenDetGrid() {
               {["add", "all permission"].some((permission) =>
                 vendorDetPermission.includes(permission),
               ) && (
-                <addbutton
-                  className=""
-                  onClick={handleNavigatesToForm}
-                  required
-                  title="Add Vendor"
-                >
-                  {" "}
-                  <i class="fa-solid fa-user-plus"></i>{" "}
-                </addbutton>
-              )}
+                  <addbutton
+                    className=""
+                    onClick={handleNavigatesToForm}
+                    required
+                    title="Add Vendor"
+                  >
+                    {" "}
+                    <i class="fa-solid fa-user-plus"></i>{" "}
+                  </addbutton>
+                )}
               {["delete", "all permission"].some((permission) =>
                 vendorDetPermission.includes(permission),
               ) && (
-                <delbutton
-                  className="purbut"
-                  onClick={deleteSelectedRows}
-                  required
-                  title="Delete"
-                >
-                  <i class="fa-solid fa-user-minus"></i>
-                </delbutton>
-              )}
+                  <delbutton
+                    className="purbut"
+                    onClick={deleteSelectedRows}
+                    required
+                    title="Delete"
+                  >
+                    <i class="fa-solid fa-user-minus"></i>
+                  </delbutton>
+                )}
               {["update", "all permission"].some((permission) =>
                 vendorDetPermission.includes(permission),
               ) && (
-                <savebutton
-                  className="purbut"
-                  onClick={saveEditedData}
-                  required
-                  title="Update"
-                >
-                  <i class="fa-solid fa-floppy-disk"></i>
-                </savebutton>
-              )}
+                  <savebutton
+                    className="purbut"
+                    onClick={saveEditedData}
+                    required
+                    title="Update"
+                  >
+                    <i class="fa-solid fa-floppy-disk"></i>
+                  </savebutton>
+                )}
 
               {/* <div class="d-flex flex-row my-2 mt-3 ">
           <button  onClick={} title="print"><i class="fa fa-print" aria-hidden="true"></i></button>
@@ -1033,15 +1098,15 @@ function VenDetGrid() {
               {["all permission", "view"].some((permission) =>
                 vendorDetPermission.includes(permission),
               ) && (
-                <printbutton
-                  class="purbut"
-                  onClick={generateReport}
-                  required
-                  title="Generate Report"
-                >
-                  <i class="fa-solid fa-print"></i>
-                </printbutton>
-              )}
+                  <printbutton
+                    class="purbut"
+                    onClick={generateReport}
+                    required
+                    title="Generate Report"
+                  >
+                    <i class="fa-solid fa-print"></i>
+                  </printbutton>
+                )}
             </div>
 
             <div class="mobileview">
@@ -1066,37 +1131,37 @@ function VenDetGrid() {
                       {["add", "all permission"].some((permission) =>
                         vendorDetPermission.includes(permission),
                       ) && (
-                        <icon class="icon" onClick={handleNavigatesToForm}>
-                          <i class="fa-solid fa-user-plus"></i>{" "}
-                        </icon>
-                      )}
+                          <icon class="icon" onClick={handleNavigatesToForm}>
+                            <i class="fa-solid fa-user-plus"></i>{" "}
+                          </icon>
+                        )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center text-danger">
                       {["delete", "all permission"].some((permission) =>
                         vendorDetPermission.includes(permission),
                       ) && (
-                        <icon class="icon" onClick={deleteSelectedRows}>
-                          <i class="fa-solid fa-user-minus"></i>
-                        </icon>
-                      )}
+                          <icon class="icon" onClick={deleteSelectedRows}>
+                            <i class="fa-solid fa-user-minus"></i>
+                          </icon>
+                        )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center text-primary ">
                       {["update", "all permission"].some((permission) =>
                         vendorDetPermission.includes(permission),
                       ) && (
-                        <icon class="icon" onClick={saveEditedData}>
-                          <i class="fa-solid fa-floppy-disk"></i>
-                        </icon>
-                      )}
+                          <icon class="icon" onClick={saveEditedData}>
+                            <i class="fa-solid fa-floppy-disk"></i>
+                          </icon>
+                        )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center ">
                       {["all permission", "view"].some((permission) =>
                         vendorDetPermission.includes(permission),
                       ) && (
-                        <icon class="icon" onClick={generateReport}>
-                          <i class="fa-solid fa-print"></i>
-                        </icon>
-                      )}
+                          <icon class="icon" onClick={generateReport}>
+                            <i class="fa-solid fa-print"></i>
+                          </icon>
+                        )}
                     </li>
                   </ul>
                 </div>
@@ -1291,7 +1356,7 @@ function VenDetGrid() {
                     className="exp-input-field"
                     placeholder=""
                     classNamePrefix="react-select"
-                    styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
+                    styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                   />
                 </div>
               </div>
