@@ -33971,6 +33971,43 @@ const getCustomerLedgerReport = async (req, res) => {
   }
 };
 //Code ended by Dinesh Gokul on 09-11-2026 
+//Code added by SakthiGanesh J on 11-10-2026
+const getJVData = async (req, res) => {
+  const { company_code, jv_no, jv_date, status } = req.body;
+  
+  try {
+    const pool = await sql.connect(dbConfig); // Adjust DB connection as per your project
+    const result = await pool.request()
+      .input("mode", sql.NVarChar, "SC")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, '')
+      .input("jv_no", sql.NVarChar, jv_no || '')
+      .input("jv_date", sql.NVarChar, jv_date || '')
+      .input("fin_year", sql.NVarChar, '')
+      .input("fin_period", sql.NVarChar, '')
+      .input("voucher_type", sql.NVarChar, '')
+      .input("currency", sql.NVarChar, '')
+      .input("exch_rate", sql.Decimal(10, 4), 0)
+      .input("reference_no", sql.NVarChar, '')
+      .input("narration", sql.NVarChar, '')
+      .input("total_dr_amount", sql.Decimal(18, 2), 0)
+      .input("total_cr_amount", sql.Decimal(18, 2), 0)
+      .input("status", sql.NVarChar, status || '')
+      .input("created_by", sql.NVarChar, '')
+      .input("modified_by", sql.NVarChar, '')
+      .query(`EXEC sp_journal_voucher_hdr @mode, @company_code, @location_code, @jv_no, @jv_date, @fin_year, @fin_period, @voucher_type, @currency, @exch_rate, @reference_no, @narration, @total_dr_amount, @total_cr_amount, @status, @created_by, @modified_by`);
+
+    if (result.recordset && result.recordset.length > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json("Data not found");
+    }
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+//Code ended by SakthiGanesh J on 11-10-2026 
 
 module.exports = {
   login,
@@ -35057,6 +35094,7 @@ module.exports = {
   addJournalVoucherDetail,
   deleteJournalVoucherDetailByJvNo,
   getJournalVoucherDetailData,
-  getCOAData
+  getCOAData,
+  getJVData
 
 };

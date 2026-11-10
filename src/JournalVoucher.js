@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 // IMPORT YOUR POPUP HERE
 import COAPopup from './COAPopup';
-
+import JVPopup from './JVPopup';
 const config = require('./Apiconfig'); 
 
 function JournalVoucher() {
@@ -31,6 +31,8 @@ function JournalVoucher() {
   // Popup State Variables
   const [openCOAPopup, setOpenCOAPopup] = useState(false);
   const [currentRowIndex, setCurrentRowIndex] = useState(null);
+
+  const [openJVPopup, setOpenJVPopup] = useState(false);
 
   // Live Totals State
   const [totals, setTotals] = useState({ debit: 0, credit: 0 });
@@ -384,6 +386,40 @@ function JournalVoucher() {
     setLoading(false);
   };
 
+  const handleJVSelect = (data) => {
+    if (data && data.length > 0) {
+      const header = data[0]; // Header details are repeated in every row, so index 0 is fine
+      
+      setVoucherNo(header.jv_no || "");
+      setVoucherDate(header.jv_date ? new Date(header.jv_date).toISOString().split('T')[0] : "");
+      setVoucherType({ label: header.voucher_type, value: header.voucher_type });
+      setCurrency({ label: header.currency, value: header.currency });
+      setExchangeRate(header.exch_rate || 1);
+      setRefNo(header.reference_no || "");
+      setNarration(header.hdr_narration || "");
+      
+      // Update screens/status dropdown based on the fetched status
+      const matchedScreen = filteredOptionScreens.find(opt => opt.value === header.status);
+      if(matchedScreen) setSelectedscreens(matchedScreen);
+
+      // Map the entire array to extract detail lines for the AG Grid
+      const detailsGridRows = data.map((item) => ({
+        accountCode: item.account_no || '',
+        accountName: item.account_name || '', 
+        description: item.dtl_remarks || '',
+        drCrFlag: item.drcr_flag || 'Dr',
+        amount: item.tran_amount || 0,
+        costCenter: item.cost_center || 'Select'
+      }));
+
+      setRowData(detailsGridRows);
+      
+      // Ensure totals update with the newly mapped details
+      setTimeout(calculateTotals, 100);
+      toast.success("Journal Voucher Fetched Successfully");
+    }
+  };
+
   return (
     <div className="container-fluid Topnav-screen">
       <ToastContainer position="top-right" className="toast-design" theme="colored" />
@@ -432,7 +468,7 @@ function JournalVoucher() {
               <div className="d-flex justify-content-end position-relative">
                 <input type="text" className="exp-input-field form-control bg-light" value={voucherNo} readOnly placeholder="Auto Generated" />
                 <div className="position-absolute mt-1 me-2">
-                  <span className="icon searchIcon" style={{ cursor: "pointer" }}>
+                  <span className="icon searchIcon" style={{ cursor: "pointer" }} onClick={() => setOpenJVPopup(true)}>
                     <i className="fa fa-search"></i>
                   </span>
                 </div>
@@ -572,7 +608,13 @@ function JournalVoucher() {
         open={openCOAPopup} 
         handleClose={() => setOpenCOAPopup(false)} 
         handleCOASelect={handleCOASelect} 
-        />
+      />
+
+      <JVPopup 
+        open={openJVPopup} 
+        handleClose={() => setOpenJVPopup(false)} 
+        handleJVSelect={handleJVSelect} 
+      />
 
     </div>
   );

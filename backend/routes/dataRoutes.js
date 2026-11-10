@@ -1111,6 +1111,7 @@ router.post("/getCOAData", dataController.getCOAData);
 router.post("/getCurrencyCodeDrop", dataController.getCurrencyCodeDrop)
 router.post("/getCustomerLedgerReport", dataController.getCustomerLedgerReport)
 router.post("/InvoiceFsPosting", dataController.InvoiceFsPosting);
+router.post("/getJVData", dataController.getJVData);
 
 
 
