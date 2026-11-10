@@ -46,6 +46,8 @@ function ItemBrandGrid() {
   const [createdDate, setCreatedDate] = useState("");
   const [modifiedDate, setModifiedDate] = useState("");
 
+  const [itemGroupCodeDrop, setItemGroupCodeDrop] = useState([]);
+
   const [open, setOpen] = React.useState(false);
 
   const location = useLocation();
@@ -162,6 +164,24 @@ function ItemBrandGrid() {
     })
       .then((data) => data.json())
       .then((val) => setStatusdrop(val))
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
+
+  useEffect(() => {
+    const company_code = sessionStorage.getItem("selectedCompanyCode");
+
+    fetch(`${config.apiBaseUrl}/ItemGroupCode`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ company_code }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const groupCodeOption = data.map((option) => option.attributedetails_name);
+        setItemGroupCodeDrop(groupCodeOption);
+      })
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
@@ -583,6 +603,17 @@ function ItemBrandGrid() {
         values: statusgriddrop,
       },
     },
+    {
+      headerName: "Item Group Code",
+      field: "item_group_code",
+      editable: true,
+      cellStyle: { textAlign: "center" },
+      // minWidth: 150,
+      cellEditor: "agSelectCellEditor",
+      cellEditorParams: {
+        values: itemGroupCodeDrop,
+      },
+    },
   ];
 
   const defaultColDef = {
@@ -625,17 +656,11 @@ function ItemBrandGrid() {
         "Sales Price": row.Item_std_sales_price,
         "Stock Code": row.Item_stock_code,
         "Stock TYPE": row.Item_stock_type,
-        // "Tax Type": row.Item_tax_type,
-        // "Cash Or Credit": row.Item_Costing_Method,
         "HSN Code": row.hsn,
         "Register Brand": row.Item_Register_Brand,
         "Our Brand": row.Item_Our_Brand,
         Status: row.status,
-        // "Annual Report URL": row.AnnualReportURL,
-        // "created by": row.created_by,
-        // "created date": row.created_date,
-        // "modfied by": row.modfied_by,
-        // "modfied date": row.modfied_date,
+        "Item Group Code": row.item_group_code,
       };
     });
 
@@ -936,53 +961,53 @@ function ItemBrandGrid() {
               {["add", "all permission"].some((permission) =>
                 itemBrandPermission.includes(permission),
               ) && (
-                <addbutton
-                  className="purbut"
-                  onClick={handleNavigateToForm}
-                  required
-                  title="Add Item"
-                >
-                  {" "}
-                  <i class="fa-solid fa-user-plus"></i>{" "}
-                </addbutton>
-              )}
+                  <addbutton
+                    className="purbut"
+                    onClick={handleNavigateToForm}
+                    required
+                    title="Add Item"
+                  >
+                    {" "}
+                    <i class="fa-solid fa-user-plus"></i>{" "}
+                  </addbutton>
+                )}
               {["delete", "all permission"].some((permission) =>
                 itemBrandPermission.includes(permission),
               ) && (
-                <delbutton
-                  className="purbut"
-                  onClick={deleteSelectedRows}
-                  required
-                  title="Delete"
-                >
-                  <i class="fa-solid fa-user-minus"></i>
-                </delbutton>
-              )}
+                  <delbutton
+                    className="purbut"
+                    onClick={deleteSelectedRows}
+                    required
+                    title="Delete"
+                  >
+                    <i class="fa-solid fa-user-minus"></i>
+                  </delbutton>
+                )}
               {["update", "all permission"].some((permission) =>
                 itemBrandPermission.includes(permission),
               ) && (
-                <savebutton
-                  class="purbut"
-                  onClick={saveEditedData}
-                  required
-                  title="Update"
-                >
-                  <i class="fa-solid fa-floppy-disk"></i>
-                </savebutton>
-              )}
+                  <savebutton
+                    class="purbut"
+                    onClick={saveEditedData}
+                    required
+                    title="Update"
+                  >
+                    <i class="fa-solid fa-floppy-disk"></i>
+                  </savebutton>
+                )}
 
               {["all permission", "view"].some((permission) =>
                 itemBrandPermission.includes(permission),
               ) && (
-                <printbutton
-                  class="purbut"
-                  onClick={generateReport}
-                  required
-                  title="Generate Report"
-                >
-                  <i class="fa-solid fa-print"></i>
-                </printbutton>
-              )}
+                  <printbutton
+                    class="purbut"
+                    onClick={generateReport}
+                    required
+                    title="Generate Report"
+                  >
+                    <i class="fa-solid fa-print"></i>
+                  </printbutton>
+                )}
             </div>
 
             <div class="mobileview">
@@ -1006,37 +1031,37 @@ function ItemBrandGrid() {
                       {["add", "all permission"].some((permission) =>
                         itemBrandPermission.includes(permission),
                       ) && (
-                        <icon class="icon" onClick={handleNavigateToForm}>
-                          <i class="fa-solid fa-user-plus"></i>{" "}
-                        </icon>
-                      )}
+                          <icon class="icon" onClick={handleNavigateToForm}>
+                            <i class="fa-solid fa-user-plus"></i>{" "}
+                          </icon>
+                        )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center text-danger">
                       {["delete", "all permission"].some((permission) =>
                         itemBrandPermission.includes(permission),
                       ) && (
-                        <icon class="icon" onClick={deleteSelectedRows}>
-                          <i class="fa-solid fa-user-minus"></i>
-                        </icon>
-                      )}
+                          <icon class="icon" onClick={deleteSelectedRows}>
+                            <i class="fa-solid fa-user-minus"></i>
+                          </icon>
+                        )}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center text-primary ">
                       {["update", "all permission"].some((permission) =>
                         itemBrandPermission.includes(permission),
                       ) && (
-                        <icon class="icon" onClick={saveEditedData}>
-                          <i class="fa-solid fa-floppy-disk"></i>
-                        </icon>
-                      )}{" "}
+                          <icon class="icon" onClick={saveEditedData}>
+                            <i class="fa-solid fa-floppy-disk"></i>
+                          </icon>
+                        )}{" "}
                     </li>
                     <li class="iconbutton  d-flex justify-content-center ">
                       {["all permission", "view"].some((permission) =>
                         itemBrandPermission.includes(permission),
                       ) && (
-                        <icon class="icon" onClick={generateReport}>
-                          <i class="fa-solid fa-print"></i>
-                        </icon>
-                      )}
+                          <icon class="icon" onClick={generateReport}>
+                            <i class="fa-solid fa-print"></i>
+                          </icon>
+                        )}
                     </li>
                   </ul>
                 </div>

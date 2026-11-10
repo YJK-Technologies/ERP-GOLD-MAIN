@@ -35,7 +35,6 @@ function CustomerDetInput({ }) {
   const [customer_salesman_code, setcustomer_salesman_code] = useState("");
   const [customer_broker_code, setcustomer_broker_code] = useState("");
   const [customer_weekday_code, setcustomer_weekday_code] = useState("");
-  const [selectedRows, setSelectedRows] = useState([]);
   const [customercodedrop, setcustomercodedrop] = useState([]);
   const [SMcodedrop, setsmcodedrop] = useState([]);
   const [TRcodedrop, settrcodedrop] = useState([]);
@@ -80,10 +79,15 @@ function CustomerDetInput({ }) {
   const Address1 = useRef(null);
   const code = useRef(null);
   const Contact = useRef(null);
+  const CustomerGroupCode = useRef(null);
   const [hasValueChanged, setHasValueChanged] = useState(false);
   const [status, setStatus] = useState('');
   const [panno, setPanno] = useState('')
   const [isUpdated, setIsUpdated] = useState(false);
+
+  const [customerGroupCode, setCustomerGroupCode] = useState("");
+  const [selectedCustomerGroupCode, setSelectedCustomerGroupCode] = useState("");
+  const [customerGroupCodeDrop, setCustomerGroupCodeDrop] = useState([]);
 
   const location = useLocation();
   const { mode, selectedRow } = location.state || {};
@@ -123,6 +127,8 @@ function CustomerDetInput({ }) {
     setselectedCust('');
     setStatus('');
     setPanno('');
+    setCustomerGroupCode('');
+    setSelectedCustomerGroupCode('');
   };
 
   useEffect(() => {
@@ -152,23 +158,6 @@ function CustomerDetInput({ }) {
       fetchCustomer();
     }
   }, []);
-
-
-  // useEffect(() => {
-  //   const company_code = sessionStorage.getItem('selectedCompanyCode');
-
-  //   fetch(`${config.apiBaseUrl}/customercode`, {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify({ company_code })
-  //   })
-  //     .then((data) => data.json())
-  //     .then((val) => setcustomercodedrop(val))
-  //     .catch((error) => console.error('Error fetching data:', error));
-  // }, []);
-
 
   useEffect(() => {
     fetch(`${config.apiBaseUrl}/trcode`)
@@ -217,7 +206,6 @@ function CustomerDetInput({ }) {
       .catch((error) => console.error('Error fetching data:', error));
   }, []);
 
-
   useEffect(() => {
     const company_code = sessionStorage.getItem('selectedCompanyCode');
 
@@ -232,8 +220,6 @@ function CustomerDetInput({ }) {
       .then((val) => setStatedrop(val))
       .catch((error) => console.error('Error fetching data:', error));
   }, []);
-
-
 
   useEffect(() => {
     const company_code = sessionStorage.getItem('selectedCompanyCode');
@@ -250,7 +236,6 @@ function CustomerDetInput({ }) {
       .catch((error) => console.error('Error fetching data:', error));
   }, []);
 
-
   useEffect(() => {
     const company_code = sessionStorage.getItem('selectedCompanyCode');
 
@@ -266,6 +251,20 @@ function CustomerDetInput({ }) {
       .catch((error) => console.error('Error fetching data:', error));
   }, []);
 
+  useEffect(() => {
+    const company_code = sessionStorage.getItem('selectedCompanyCode');
+
+    fetch(`${config.apiBaseUrl}/CustomerGroupCode`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ company_code })
+    })
+      .then((data) => data.json())
+      .then((val) => setCustomerGroupCodeDrop(val))
+      .catch((error) => console.error('Error fetching data:', error));
+  }, []);
 
   useEffect(() => {
     if (mode === "update" && selectedRow && !isUpdated) {
@@ -294,6 +293,7 @@ function CustomerDetInput({ }) {
       setkeyfield(selectedRow.keyfield || "");
       setStatus(selectedRow.status || "");
       setPanno(selectedRow.panno || "");
+      setCustomerGroupCode(selectedRow.customer_group_code || "");
       setSelectedCode({
         label: selectedRow.customer_code,
         value: selectedRow.customer_code,
@@ -329,6 +329,10 @@ function CustomerDetInput({ }) {
       setselectedCust({
         label: selectedRow.default_customer,
         value: selectedRow.default_customer,
+      });
+      setSelectedCustomerGroupCode({
+        label: selectedRow.customer_group_code,
+        value: selectedRow.customer_group_code,
       });
     } else if (mode === "create") {
       clearInputFields();
@@ -380,6 +384,11 @@ function CustomerDetInput({ }) {
     label: option.attributedetails_name,
   }));
 
+  const filteredOptionCustomerGroupCode = customerGroupCodeDrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
   const handleChangeCode = (selectedOption) => {
     setSelectedCode(selectedOption);
     setcustomer_code(selectedOption ? selectedOption.value : '');
@@ -426,14 +435,19 @@ function CustomerDetInput({ }) {
     setdefaultCust(selectedCustomer ? selectedCustomer.value : '');
   };
 
+  const handleChangeCustomerGroupCode = (selectedCustomerGroupCode) => {
+    setSelectedCustomerGroupCode(selectedCustomerGroupCode);
+    setCustomerGroupCode(selectedCustomerGroupCode ? selectedCustomerGroupCode.value : '');
+  };
+
   const handleNavigate = () => {
-  navigate("/Customer", {
-    state: {
-      preservedRowData: location.state?.preservedRowData,
-      preservedInputs: location.state?.preservedInputs
-    }
-  });
-};
+    navigate("/Customer", {
+      state: {
+        preservedRowData: location.state?.preservedRowData,
+        preservedInputs: location.state?.preservedInputs
+      }
+    });
+  };
 
   const handleInsert = async () => {
     if (
@@ -444,7 +458,8 @@ function CustomerDetInput({ }) {
       !customer_email_id ||
       !customer_credit_limit ||
       !customer_country ||
-      !customer_state
+      !customer_state ||
+      !customerGroupCode
     ) {
       setError(" ");
       toast.warning("Error: Missing required fields");
@@ -488,6 +503,7 @@ function CustomerDetInput({ }) {
           contact_person,
           office_type,
           default_customer,
+          customer_group_code: customerGroupCode,
           created_by: sessionStorage.getItem('selectedUserCode')
         }),
       });
@@ -519,7 +535,8 @@ function CustomerDetInput({ }) {
       !customer_email_id ||
       !customer_credit_limit ||
       !customer_country ||
-      !customer_state
+      !customer_state ||
+      !customerGroupCode
     ) {
       setError(" ");
       toast.warning("Error: Missing required fields");
@@ -567,6 +584,7 @@ function CustomerDetInput({ }) {
           keyfield,
           status,
           panno,
+          customer_group_code: customerGroupCode,
           modified_by: sessionStorage.getItem('selectedUserCode')
         }),
       });
@@ -665,7 +683,7 @@ function CustomerDetInput({ }) {
                         maxLength={18}
                         ref={code}
                         onKeyDown={(e) => handleKeyDown(e, Address1, code)}
-                      /><button onClick={handleClickOpen} class="cushdrcode position-absolute me-5 pb-2" required title="Add Header"><i class="fa-solid fa-plus"></i></button>
+                      /><button onClick={handleClickOpen} class="cushdrcode position-absolute me-5" required title="Add Header"><i class="fa-solid fa-plus"></i></button>
                       {/* {error && !customer_code && <div className="text-danger">Code  should not be blank</div>} */}
                     </div>
                   </div>
@@ -915,7 +933,7 @@ function CustomerDetInput({ }) {
                       <div><label for="rid" class="exp-form-labels">
                         Fax No
                       </label></div>
-                    </div> 
+                    </div>
                     <input
                       id="cusfax"
                       className="exp-input-field form-control"
@@ -1117,60 +1135,39 @@ function CustomerDetInput({ }) {
                       className="exp-input-field form-control"
                       placeholder=""
                       ref={Contact}
-                      // onKeyDown={(e) => handleKeyDown}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          if (mode === "create") {
-                            handleInsert();
-                          } else {
-                            handleUpdate();
-                          }
-                        }
-                      }}
+                      onKeyDown={(e) => handleKeyDown(e, CustomerGroupCode, Contact)}
+                    // onKeyDown={(e) => handleKeyDown}
                     />
                   </div>
                 </div>
-                {/* <div className="col-md-3 form-group  mb-2">
-              {mode === "create" ? (
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
-                    <div>
-                      <label for="state" class="exp-form-labels">
-                        Created By
-                      </label>
+                <div className="col-md-3 form-group mb-2 ">
+                  <div class="exp-form-floating">
+                    <label for="cusweek" className={`${error && !customerGroupCode ? 'text-danger' : ''}`}>
+                      Customer Group Code<span className="text-danger">*</span>
+                    </label>
+                    <div title="Select the  Default Customer">
+                      <Select
+                        id="officeType"
+                        value={selectedCustomerGroupCode}
+                        onChange={handleChangeCustomerGroupCode}
+                        options={filteredOptionCustomerGroupCode}
+                        className="exp-input-field"
+                        classNamePrefix="react-select"
+                        placeholder=""
+                        ref={CustomerGroupCode}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            if (mode === "create") {
+                              handleInsert();
+                            } else {
+                              handleUpdate();
+                            }
+                          }
+                        }}
+                      />
                     </div>
                   </div>
-                  <input
-                    id="emailid"
-                    class="exp-input-field form-control"
-                    type="text"
-                    placeholder=""
-                    required
-                    title="Please enter the email ID"
-                    value={created_by}
-                  />
                 </div>
-                ) : (
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
-                    <div>
-                      <label for="state" class="exp-form-labels">
-                        Modified By
-                      </label>
-                    </div>
-                  </div>
-                  <input
-                    id="emailid"
-                    class="exp-input-field form-control"
-                    type="text"
-                    placeholder=""
-                    required
-                    title="Please enter the email ID"
-                    value={modified_by}
-                  />
-                </div>
-                )}
-              </div> */}
                 <div class="col-md-3 form-group d-flex justify-content-start p-2">
                   {mode === "create" ? (
                     <button onClick={handleInsert} className="mt-3" title="Save">

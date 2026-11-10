@@ -37,10 +37,7 @@ function VenDetInput({ }) {
   const [vendor_broker_code, setvendor_broker_code] = useState("");
   const [vendor_weekday_code, setvendor_weekday_code] = useState("");
   const [loading, setLoading] = useState(false);
-  /*const [created_by, setCreated_by] = useState("");
-  const [created_date, setCreated_date] = useState("");
-  const [modfied_by, setModified_by] = useState("");
-  const [modfied_date, setModified_date] = useState("");*/
+
   const [selectedRows, setSelectedRows] = useState([]);
   const [vendorcodedrop, setvendorcodedrop] = useState([]);
   const [SMcodedrop, setsmcodedrop] = useState([]);
@@ -87,6 +84,7 @@ function VenDetInput({ }) {
   const OfficeT = useRef(null);
   const Email = useRef(null);
   const Contact = useRef(null);
+  const VendorGroupCode = useRef(null);
   const [hasValueChanged, setHasValueChanged] = useState(false);
   const modified_by = sessionStorage.getItem("selectedUserCode");
   const [isUpdated, setIsUpdated] = useState(false);
@@ -96,7 +94,9 @@ function VenDetInput({ }) {
   const location = useLocation();
   const { mode, selectedRow } = location.state || {};
 
-  console.log(selectedRow);
+  const [vendorGroupCode, setVendorGroupCode] = useState("");
+  const [selectedVendorGroupCode, setSelectedVendorGroupCode] = useState("");
+  const [vendorGroupCodeDrop, setVendorGroupCodeDrop] = useState([]);
 
   const clearInputFields = () => {
     setvendor_code("");
@@ -130,6 +130,8 @@ function VenDetInput({ }) {
     setselectedOffice('');
     setStatus('');
     setPanno('');
+    setVendorGroupCode('');
+    setSelectedVendorGroupCode('');
   };
 
   useEffect(() => {
@@ -158,6 +160,7 @@ function VenDetInput({ }) {
       setkeyfield(selectedRow.keyfield || "");
       setStatus(selectedRow.status || "");
       setPanno(selectedRow.panno || "");
+      setVendorGroupCode(selectedRow.vendor_group_code || "");
       setSelectedCity({
         label: selectedRow.vendor_area_code,
         value: selectedRow.vendor_area_code,
@@ -189,6 +192,10 @@ function VenDetInput({ }) {
       setselectedOffice({
         label: selectedRow.office_type,
         value: selectedRow.office_type,
+      });
+      setSelectedVendorGroupCode({
+        label: selectedRow.vendor_group_code,
+        value: selectedRow.vendor_group_code,
       });
 
     } else if (mode === "create") {
@@ -239,8 +246,6 @@ function VenDetInput({ }) {
       .then((data) => data.json())
       .then((val) => setbrcodedrop(val));
   }, []);
-
-
 
   useEffect(() => {
     const company_code = sessionStorage.getItem('selectedCompanyCode');
@@ -303,6 +308,21 @@ function VenDetInput({ }) {
       .catch((error) => console.error('Error fetching data:', error));
   }, []);
 
+  useEffect(() => {
+    const company_code = sessionStorage.getItem('selectedCompanyCode');
+
+    fetch(`${config.apiBaseUrl}/VendorGroupCode`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ company_code })
+    })
+      .then((data) => data.json())
+      .then((val) => setVendorGroupCodeDrop(val))
+      .catch((error) => console.error('Error fetching data:', error));
+  }, []);
+
   const filteredOptionCode = vendorcodedrop.map((option) => ({
     value: option.vendor_code,
     label: `${option.vendor_code} - ${option.vendor_name}`,
@@ -339,6 +359,11 @@ function VenDetInput({ }) {
   }));
 
   const filteredOptionOffice = officedrop.map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
+  const filteredOptionVendorGroupCode = vendorGroupCodeDrop.map((option) => ({
     value: option.attributedetails_name,
     label: option.attributedetails_name,
   }));
@@ -383,8 +408,9 @@ function VenDetInput({ }) {
     setOfficeType(selectedOffice ? selectedOffice.value : '');
   };
 
-  const handleNavigateToForm = () => {
-    navigate("/AddVendorHeader", { selectedRows }); // Pass selectedRows as props to the Input component
+  const handleChangeVendorGroupCode = (selectedVendorGroupCode) => {
+    setSelectedVendorGroupCode(selectedVendorGroupCode);
+    setVendorGroupCode(selectedVendorGroupCode ? selectedVendorGroupCode.value : '');
   };
 
   const handleNavigate = () => {
@@ -405,7 +431,8 @@ function VenDetInput({ }) {
       !vendor_email_id ||
       !vendor_credit_limit ||
       !vendor_country_code ||
-      !vendor_state_code
+      !vendor_state_code ||
+      !vendorGroupCode
     ) {
       setError(" ");
       return;
@@ -446,6 +473,7 @@ function VenDetInput({ }) {
           vendor_weekday_code,
           contact_person,
           office_type,
+          vendor_group_code: vendorGroupCode,
           created_by: sessionStorage.getItem('selectedUserCode')
         }),
       });
@@ -518,6 +546,7 @@ function VenDetInput({ }) {
           keyfield,
           status,
           panno,
+          vendor_group_code: vendorGroupCode,
           modified_by: sessionStorage.getItem('selectedUserCode')
         }),
       });
@@ -1071,60 +1100,39 @@ function VenDetInput({ }) {
                       className="exp-input-field form-control"
                       placeholder=""
                       ref={Contact}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          if (mode === "create") {
-                            handleInsert();
-                          } else {
-                            handleUpdate();
-                          }
-                        }
-                      }}
+                      onKeyDown={(e) => handleKeyDown(e, VendorGroupCode, Contact)}
                     />
 
                   </div>
                 </div>
-                {/* <div className="col-md-3 form-group  mb-2">
-        {mode === "create" ? (
-                <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
-                    <div>
-                      <label for="state" class="exp-form-labels">
-                        Created By
-                      </label>
+                <div className="col-md-3 form-group mb-2">
+                  <div class="exp-form-floating">
+                    <label for="ventrans" className={`${error && !vendorGroupCode ? 'text-danger' : ''}`}>
+                      Customer Group Code<span className="text-danger">*</span>
+                    </label>
+                    <div title="Select the Office Type ">
+                      <Select
+                        id="officeType"
+                        value={selectedVendorGroupCode}
+                        onChange={handleChangeVendorGroupCode}
+                        options={filteredOptionVendorGroupCode}
+                        className="exp-input-field"
+                        classNamePrefix="react-select"
+                        placeholder=""
+                        ref={VendorGroupCode}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            if (mode === "create") {
+                              handleInsert();
+                            } else {
+                              handleUpdate();
+                            }
+                          }
+                        }}
+                      />
                     </div>
                   </div>
-                  <input
-                    id="emailid"
-                    class="exp-input-field form-control"
-                    type="text"
-                    placeholder=""
-                    required
-                    title="Please enter the email ID"
-                    value={created_by}
-                  />
                 </div>
-                ) : (
-            <div class="exp-form-floating">
-                  <div class="d-flex justify-content-start">
-                    <div>
-                      <label for="state" class="exp-form-labels">
-                        Modified By
-                      </label>
-                    </div>
-                  </div>
-                  <input
-                    id="emailid"
-                    class="exp-input-field form-control"
-                    type="text"
-                    placeholder=""
-                    required
-                    title="Please enter the email ID"
-                    value={modified_by}
-                  />
-                </div>
-                )}
-          </div> */}
                 <div class="col-md-3 form-group ">
                   {mode === "create" ? (
                     <button onClick={handleInsert} className="mt-4" title="Save">
@@ -1139,13 +1147,10 @@ function VenDetInput({ }) {
                 </div>
               </div>
 
-
-
             </div>
           </div>
         </div>
       </div>
-
     </div>
   );
 }
