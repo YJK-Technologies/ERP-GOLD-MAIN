@@ -33660,6 +33660,248 @@ const getCurrencyCodeDrop = async (req, res) => {
   }
 };
 //Code ended by Dinesh Gokul on 04-11-2026 
+//Code added by SakthiGanesh J on 09-11-2026 
+const addJournalVoucherHeader = async (req, res) => {
+  const { 
+    company_code, location_code, jv_date, fin_year, fin_period, 
+    voucher_type, currency, exch_rate, reference_no, narration, 
+    total_dr_amount, total_cr_amount, status, created_by } = req.body;
+  
+  let pool;
+  try {
+    pool = await sql.connect(dbConfig);
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "I")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("jv_no", sql.NVarChar, '') // Empty for Insert, SP will generate it
+      .input("jv_date", sql.Date, jv_date)
+      .input("fin_year", sql.NVarChar, fin_year)
+      .input("fin_period", sql.NVarChar, fin_period)
+      .input("voucher_type", sql.NVarChar, voucher_type)
+      .input("currency", sql.NVarChar, currency)
+      .input("exch_rate", sql.Decimal(10, 4), exch_rate)
+      .input("reference_no", sql.NVarChar, reference_no)
+      .input("narration", sql.NVarChar, narration)
+      .input("total_dr_amount", sql.Decimal(18, 2), total_dr_amount)
+      .input("total_cr_amount", sql.Decimal(18, 2), total_cr_amount)
+      .input("status", sql.NVarChar, status)
+      .input("created_by", sql.NVarChar, created_by)
+      .input("modified_by", sql.NVarChar, '')
+      .query(`EXEC sp_journal_voucher_hdr @mode, @company_code, @location_code, @jv_no, @jv_date, @fin_year, @fin_period, @voucher_type, @currency, @exch_rate, @reference_no, @narration, @total_dr_amount, @total_cr_amount, @status, @created_by, @modified_by`);
+    
+    if (result.recordset && result.recordset.length > 0) {
+      res.status(200).json(result.recordset); // Returns generated transaction_no
+    } else {
+      res.status(404).json("Data not found");
+    }
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const updJournalVoucherHeader = async (req, res) => {
+  const { 
+    company_code, location_code, jv_no, jv_date, fin_year, fin_period, 
+    voucher_type, currency, exch_rate, reference_no, narration, 
+    total_dr_amount, total_cr_amount, status, modified_by } = req.body;
+  
+  let pool;
+  try {
+    pool = await sql.connect(dbConfig);
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "U")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("jv_no", sql.NVarChar, jv_no)
+      .input("jv_date", sql.Date, jv_date)
+      .input("fin_year", sql.NVarChar, fin_year)
+      .input("fin_period", sql.NVarChar, fin_period)
+      .input("voucher_type", sql.NVarChar, voucher_type)
+      .input("currency", sql.NVarChar, currency)
+      .input("exch_rate", sql.Decimal(10, 4), exch_rate)
+      .input("reference_no", sql.NVarChar, reference_no)
+      .input("narration", sql.NVarChar, narration)
+      .input("total_dr_amount", sql.Decimal(18, 2), total_dr_amount)
+      .input("total_cr_amount", sql.Decimal(18, 2), total_cr_amount)
+      .input("status", sql.NVarChar, status)
+      .input("created_by", sql.NVarChar, '')
+      .input("modified_by", sql.NVarChar, modified_by)
+      .query(`EXEC sp_journal_voucher_hdr @mode, @company_code, @location_code, @jv_no, @jv_date, @fin_year, @fin_period, @voucher_type, @currency, @exch_rate, @reference_no, @narration, @total_dr_amount, @total_cr_amount, @status, @created_by, @modified_by`);
+    
+    res.json({ success: true, message: "Data Updated successfully" });
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const deleteJournalVoucherHeader = async (req, res) => {
+  const { company_code, jv_no } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    try {
+      await pool
+        .request()
+        .input("mode", sql.NVarChar, "D")
+        .input("company_code", sql.NVarChar, company_code)
+        .input("jv_no", sql.NVarChar, jv_no)
+        .query(`EXEC sp_journal_voucher_hdr @mode, @company_code, '', @jv_no, '', '', '', '', '', 0, '', '', 0, 0, '', '', ''`);
+    } catch (error) {
+      if (error.number === 547) {
+        res.status(400).json("First delete the Journal Voucher details");
+        return;
+      } else {
+        throw error;
+      }
+    }
+    res.status(200).json("Journal Voucher deleted successfully");
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const getAllJournalVoucherHeaderData = async (req, res) => {
+  const { company_code } = req.body;
+  let pool;
+  try {
+    pool = await sql.connect(dbConfig);
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "A")
+      .input("company_code", sql.NVarChar, company_code)
+      .query(`EXEC sp_journal_voucher_hdr @mode, @company_code, '', '', '', '', '', '', '', 0, '', '', 0, 0, '', '', ''`);
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const addJournalVoucherDetail = async (req, res) => {
+  const { 
+    company_code, location_code, jv_no, line_no, account_no, drcr_flag, 
+    tran_amount, base_amount, cost_center, remarks, created_by } = req.body;
+  
+  let pool;
+  try {
+    pool = await sql.connect(dbConfig);
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "I")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("jv_no", sql.NVarChar, jv_no)
+      .input("line_no", sql.Int, line_no)
+      .input("account_no", sql.NVarChar, account_no)
+      .input("drcr_flag", sql.NVarChar, drcr_flag)
+      .input("tran_amount", sql.Decimal(18, 2), tran_amount)
+      .input("base_amount", sql.Decimal(18, 2), base_amount)
+      .input("cost_center", sql.NVarChar, cost_center)
+      .input("remarks", sql.NVarChar, remarks)
+      .input("created_by", sql.NVarChar, created_by)
+      .input("modified_by", sql.NVarChar, '')
+      .query(`EXEC sp_journal_voucher_dtl @mode, @company_code, @location_code, @jv_no, @line_no, @account_no, @drcr_flag, @tran_amount, @base_amount, @cost_center, @remarks, @created_by, @modified_by`);
+    
+    res.status(200).json("Data inserted successfully");
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const deleteJournalVoucherDetailByJvNo = async (req, res) => {
+  // This uses 'UD' mode in SP to delete all rows for a given JV No before re-inserting during an update
+  const { company_code, jv_no } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    try {
+      await pool
+        .request()
+        .input("mode", sql.NVarChar, "UD")
+        .input("company_code", sql.NVarChar, company_code)
+        .input("jv_no", sql.NVarChar, jv_no)
+        .query(`EXEC sp_journal_voucher_dtl @mode, @company_code, '', @jv_no, 0, '', '', 0, 0, '', '', '', ''`);
+    } catch (err) {
+      throw err; 
+    }
+    res.status(200).json("Journal Voucher details deleted successfully");
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const getJournalVoucherDetailData = async (req, res) => {
+  const { company_code, jv_no } = req.body;
+  let pool;
+  try {
+    pool = await sql.connect(dbConfig);
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "S")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("jv_no", sql.NVarChar, jv_no)
+      .query(`EXEC sp_journal_voucher_dtl @mode, @company_code, '', @jv_no, 0, '', '', 0, 0, '', '', '', ''`);
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+  
+// Node.js API Controller
+const getCOAData = async (req, res) => {
+  const { 
+    company_code, location_code, account_code, account_name, 
+    account_group, account_class 
+  } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase(); // Adjust based on your db config
+    const result = await pool.request()
+      .input("mode", sql.NVarChar, "SC")
+      .input("account_code", sql.NVarChar, account_code || '')
+      .input("account_name", sql.NVarChar, account_name || '')
+      .input("account_group", sql.NVarChar, account_group || '')
+      .input("account_class", sql.NVarChar, account_class || '')
+      .input("report_section", sql.NVarChar, '')
+      .input("report_line", sql.NVarChar, '')
+      .input("report_type", sql.NVarChar, '')
+      .input("currency_code", sql.NVarChar, '')
+      .input("iscontrolaccount", sql.Bit, null)
+      .input("isbankaccount", sql.Bit, null)
+      .input("allowmanualposting", sql.Bit, null)
+      .input("effectivefrom", sql.Date, null)
+      .input("effectiveto", sql.Date, null)
+      .input("status", sql.NVarChar, '')
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("created_by", sql.NVarChar, '')
+      .input("created_date", sql.Date, null)
+      .input("modified_by", sql.NVarChar, '')
+      .input("modified_date", sql.Date, null)
+      .query(`EXEC sp_chart_of_accounts_hdr 'SC',@account_code,@account_name,@account_group,@account_class,@report_section,@report_line,@report_type,@currency_code,@iscontrolaccount,@isbankaccount,@allowmanualposting,@effectivefrom,@effectiveto,@status,@company_code,@location_code,@created_by,@created_date,@modified_by,@modified_date`);
+
+    if (result.recordset && result.recordset.length > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json("Data not found");
+    }
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+//Code ended by SakthiGanesh J on 09-11-2026 
 
 //Code Added By Pavun on 07-11-2026
 const InvoiceFsPosting = async (req, res) => {
@@ -34807,6 +35049,14 @@ module.exports = {
   getCustomerReceiptByNo,
   getCurrencyCodeDrop,
   InvoiceFsPosting,
-  getCustomerLedgerReport
+  getCustomerLedgerReport,
+  addJournalVoucherHeader,
+  updJournalVoucherHeader,
+  deleteJournalVoucherHeader,
+  getAllJournalVoucherHeaderData,
+  addJournalVoucherDetail,
+  deleteJournalVoucherDetailByJvNo,
+  getJournalVoucherDetailData,
+  getCOAData
 
 };
