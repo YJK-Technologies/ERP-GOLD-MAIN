@@ -33972,6 +33972,36 @@ const getCustomerLedgerReport = async (req, res) => {
 };
 //Code ended by Dinesh Gokul on 09-11-2026 
 
+//Code added by Dinesh Gokul on 10-11-2026 
+const getAllCustomerCode = async (req, res) => {
+  const { company_code, customer_code } = req.body;
+
+  try {
+    // Connect to the database
+    const pool = await connection.connectToDatabase();
+
+    // Execute the query
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "ACC")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("customer_code", sql.NVarChar, customer_code)
+      .query(`EXEC sp_customer_details_info @mode,@customer_code,@company_code,'','','','','','','','','','','','','','','','','',0,
+          '','','','','','','','','','',NULL,NULL,NULL,null,null,null,null,null`);
+
+    // Send response
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset);// 200 OK if data is found
+    } else {
+      res.status(404).json("Data not found");// 404 Not Found if no data is found
+    }
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+//Code ended by Dinesh Gokul on 10-11-2026 
+
 module.exports = {
   login,
   forgetPassword,
@@ -35057,6 +35087,7 @@ module.exports = {
   addJournalVoucherDetail,
   deleteJournalVoucherDetailByJvNo,
   getJournalVoucherDetailData,
-  getCOAData
+  getCOAData,
+  getAllCustomerCode
 
 };
