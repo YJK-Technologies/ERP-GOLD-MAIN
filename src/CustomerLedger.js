@@ -615,13 +615,13 @@
                         <div>
                             <h1 className="purbut mt-3">
                                 {/* <i className="fa-solid fa-book-open me-2 text-primary"></i>  */}
-                                Customer Ledger Analysis
+                                Customer Ledger
                             </h1>
                         </div>
                         <div className="mobileview">
                             <div className="d-flex justify-content-between">
                                 <div className="d-flex justify-content-start">
-                                    <h1 className="h1">Customer Ledger Analysis</h1>
+                                    <h1 className="h1">Customer Ledger</h1>
                                 </div>
                                 <div className="d-flex justify-content-end mt-3 me-4">
                                     <div className="dropdown1">
@@ -728,25 +728,7 @@
                                 styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                             />
                         </div>
-                        <div className="col-12 col-md-2">
-                            <label className="form-label">From Date <span className="text-danger">*</span></label>
-                            <input
-                                type="date"
-                                className="exp-input-field form-control"
-                                value={fromDate}
-                                onChange={(e) => setFromDate(e.target.value)}
-                            />
-                        </div>
-                        <div className="col-12 col-md-2">
-                            <label className="form-label">To Date <span className="text-danger">*</span></label>
-                            <input
-                                type="date"
-                                className="exp-input-field form-control"
-                                value={toDate}
-                                onChange={(e) => setToDate(e.target.value)}
-                            />
-                        </div>
-                        <div className="col-12 col-md-2">
+                        {/* <div className="col-12 col-md-2">
                             <label className="form-label">Branch</label>
                             <Select
                                 options={branchOptions}
@@ -756,7 +738,7 @@
                                 classNamePrefix="react-select"
                                 styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                             />
-                        </div>
+                        </div> */}
                         <div className="col-12 col-md-2">
                             <label className="form-label">Voucher Type</label>
                             <Select
@@ -777,6 +759,24 @@
                                 className="border-secondary"
                                 classNamePrefix="react-select"
                                 styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                            />
+                        </div>
+                        <div className="col-12 col-md-2">
+                            <label className="form-label">From Date <span className="text-danger">*</span></label>
+                            <input
+                                type="date"
+                                className="exp-input-field form-control"
+                                value={fromDate}
+                                onChange={(e) => setFromDate(e.target.value)}
+                            />
+                        </div>
+                        <div className="col-12 col-md-2">
+                            <label className="form-label">To Date <span className="text-danger">*</span></label>
+                            <input
+                                type="date"
+                                className="exp-input-field form-control"
+                                value={toDate}
+                                onChange={(e) => setToDate(e.target.value)}
                             />
                         </div>
                     </div>

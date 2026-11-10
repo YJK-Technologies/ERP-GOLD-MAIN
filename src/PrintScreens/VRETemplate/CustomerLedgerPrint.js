@@ -239,9 +239,9 @@ const CustomerLedgerPrint = () => {
                             <table className="invoiceTable w-100 border-top-0" style={{ tableLayout: "fixed" }}>
                                 <thead>
                                     <tr>
-                                        <th style={{ width: "6%", textAlign: "center" }}>S.No</th>
+                                        <th style={{ width: "5%", textAlign: "center" }}>S.No</th>
                                         <th style={{ width: "11%", textAlign: "center" }}>Date</th>
-                                        <th style={{ width: "14%", textAlign: "center" }}>Voucher No.</th>
+                                        <th style={{ width: "15%", textAlign: "center" }}>Voucher No.</th>
                                         <th style={{ width: "13%" }}>Type</th>
                                         <th style={{ width: "13%" }}>Ref No.</th>
                                         <th style={{ width: "21%" }}>Description</th>
@@ -253,18 +253,28 @@ const CustomerLedgerPrint = () => {
                                     {pageRows.length > 0 ? (
                                         pageRows.map((row, idx) => (
                                             <tr key={idx}>
-                                                <td style={{ textAlign: "right" }}>
+                                                <td style={{ textAlign: "right", borderBottom: "none", borderTop: "none", paddingTop: "2px", paddingBottom: "2px" }}>
                                                     {row.s_no || pageIndex * ITEMS_PER_PAGE + idx + 1}
                                                 </td>
-                                                <td style={{ textAlign: "center" }}>{formatDate(row.date)}</td>
-                                                <td style={{ textAlign: "left", fontWeight: "600" }}>{row.voucher_no || "-"}</td>
-                                                <td>{row.type || "-"}</td>
-                                                <td>{row.reference_no || "-"}</td>
-                                                <td style={{ wordBreak: "break-word" }}>{row.description || "-"}</td>
-                                                <td style={{ textAlign: "right" }}>
+                                                <td style={{ textAlign: "center", borderBottom: "none", borderTop: "none", paddingTop: "2px", paddingBottom: "2px" }}>
+                                                    {formatDate(row.date)}
+                                                </td>
+                                                <td style={{ textAlign: "left", fontWeight: "600", borderBottom: "none", borderTop: "none", paddingTop: "2px", paddingBottom: "2px" }}>
+                                                    {row.voucher_no || "-"}
+                                                </td>
+                                                <td style={{ borderBottom: "none", borderTop: "none", paddingTop: "2px", paddingBottom: "2px" }}>
+                                                    {row.type || "-"}
+                                                </td>
+                                                <td style={{ borderBottom: "none", borderTop: "none", paddingTop: "2px", paddingBottom: "2px" }}>
+                                                    {row.reference_no || "-"}
+                                                </td>
+                                                <td style={{ wordBreak: "break-word", borderBottom: "none", borderTop: "none", paddingTop: "2px", paddingBottom: "2px" }}>
+                                                    {row.description || "-"}
+                                                </td>
+                                                <td style={{ textAlign: "right", borderBottom: "none", borderTop: "none", paddingTop: "2px", paddingBottom: "2px" }}>
                                                     {row.debit > 0 ? formatCurrency(row.debit) : "-"}
                                                 </td>
-                                                <td style={{ textAlign: "right" }}>
+                                                <td style={{ textAlign: "right", borderBottom: "none", borderTop: "none", paddingTop: "2px", paddingBottom: "2px" }}>
                                                     {row.credit > 0 ? formatCurrency(row.credit) : "-"}
                                                 </td>
                                             </tr>
@@ -318,7 +328,7 @@ const CustomerLedgerPrint = () => {
                                     )} */}
 
                                     {/* Sign-off and Verification Footer */}
-                                    <div className="row m-0 border border-top-0 border-dark">
+                                    {/* <div className="row m-0 border border-top-0 border-dark">
                                         <div className="col-7 border-end border-dark p-2" style={{ fontSize: "10px" }}>
                                             <strong>Note:</strong><br />
                                             1. Please examine this ledger statement immediately upon receipt.<br />
@@ -328,7 +338,7 @@ const CustomerLedgerPrint = () => {
                                             <div>for <strong>{filterData.companyName}</strong></div>
                                             <div className="mt-4">Authorised Signatory</div>
                                         </div>
-                                    </div>
+                                    </div> */}
                                 </>
                             ) : (
                                 <div className="invoice-continued-area border border-top-0 border-dark p-1 text-center text-muted fst-italic" style={{ fontSize: "10px" }}>
