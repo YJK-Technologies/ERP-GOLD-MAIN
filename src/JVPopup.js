@@ -88,11 +88,15 @@ export default function JVPopup({ open, handleClose, handleJVSelect }) {
 
   const handleRowSelected = (event) => setSelectedRows(event.api.getSelectedRows());
 
+//   const processSelection = (selectedHeader) => {
+//     // Filter the full joined array to return the header + all its detail lines
+//     const allLinesForJV = fullJoinedData.filter(x => x.jv_no === selectedHeader.jv_no);
+//     handleJVSelect(allLinesForJV);
+//     closePopup();
+//   };
   const processSelection = (selectedHeader) => {
-    // Filter the full joined array to return the header + all its detail lines
-    const allLinesForJV = fullJoinedData.filter(x => x.jv_no === selectedHeader.jv_no);
-    handleJVSelect(allLinesForJV);
-    closePopup();
+    // Only pass the JV Number string to parent
+    handleJVSelect(selectedHeader.jv_no); 
   };
 
   const handleConfirm = () => {
