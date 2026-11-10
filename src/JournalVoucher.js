@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 // IMPORT YOUR POPUP HERE
 import COAPopup from './COAPopup';
-
+import JVPopup from './JVPopup';
 const config = require('./Apiconfig'); 
 
 function JournalVoucher() {
@@ -31,6 +31,8 @@ function JournalVoucher() {
   // Popup State Variables
   const [openCOAPopup, setOpenCOAPopup] = useState(false);
   const [currentRowIndex, setCurrentRowIndex] = useState(null);
+
+  const [openJVPopup, setOpenJVPopup] = useState(false);
 
   // Live Totals State
   const [totals, setTotals] = useState({ debit: 0, credit: 0 });
@@ -384,6 +386,78 @@ function JournalVoucher() {
     setLoading(false);
   };
 
+  // Centralized Fetch Function
+  const handleJVSelect = async (selectedVoucherNo) => {
+    if (!selectedVoucherNo) return;
+    
+    setLoading(true);
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/getJVData`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jv_no: selectedVoucherNo,
+          jv_date: "",
+          status: "",
+          company_code: companyCode
+        })
+      });
+
+      if (response.ok) {
+        const searchData = await response.json();
+        // Exact match filter to avoid partial SQL matches
+        const data = searchData.filter(item => item.jv_no === selectedVoucherNo);
+        
+        if (data && data.length > 0) {
+          const header = data[0]; 
+          
+          setVoucherNo(header.jv_no || "");
+          setVoucherDate(header.jv_date ? new Date(header.jv_date).toISOString().split('T')[0] : "");
+          setVoucherType({ label: header.voucher_type, value: header.voucher_type });
+          setCurrency({ label: header.currency, value: header.currency });
+          setExchangeRate(header.exch_rate || 1);
+          setRefNo(header.reference_no || "");
+          setNarration(header.hdr_narration || "");
+          
+          const matchedScreen = filteredOptionScreens.find(opt => opt.value === header.status);
+          if (matchedScreen) setSelectedscreens(matchedScreen);
+
+          const detailsGridRows = data.map((item) => ({
+            accountCode: item.account_no || '',
+            accountName: item.account_name || '', 
+            description: item.dtl_remarks || '',
+            drCrFlag: item.drcr_flag || 'Dr',
+            amount: item.tran_amount || 0,
+            costCenter: item.cost_center || 'Select'
+          }));
+
+          setRowData(detailsGridRows);
+          setTimeout(calculateTotals, 100);
+          setOpenJVPopup(false); // Close popup if it was open
+          toast.success("Journal Voucher Fetched Successfully");
+        } else {
+          toast.warning("Voucher Number not found");
+          handleReload();
+        }
+      } else {
+        toast.warning("Data Not Found");
+        handleReload();
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Error fetching data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Trigger for Enter Key
+  const handleKeyPressVoucherNo = (e) => {
+    if (e.key === "Enter") {
+      handleJVSelect(voucherNo);
+    }
+  };
+
   return (
     <div className="container-fluid Topnav-screen">
       <ToastContainer position="top-right" className="toast-design" theme="colored" />
@@ -428,11 +502,26 @@ function JournalVoucher() {
           
           <div className="col-md-2 mb-2">
             <div className="exp-form-floating">
-              <label>Voucher No</label>
+              <label>
+                Voucher No <span className="text-danger">*</span>
+              </label>
               <div className="d-flex justify-content-end position-relative">
-                <input type="text" className="exp-input-field form-control bg-light" value={voucherNo} readOnly placeholder="Auto Generated" />
+                <input 
+                  type="text" 
+                  className="exp-input-field form-control bg-light" 
+                  value={voucherNo} 
+                  onChange={(e) => setVoucherNo(e.target.value)}
+                  onKeyPress={handleKeyPressVoucherNo}
+                  placeholder="" 
+                  autoComplete="off"
+                />
                 <div className="position-absolute mt-1 me-2">
-                  <span className="icon searchIcon" style={{ cursor: "pointer" }}>
+                  <span 
+                    className="icon searchIcon" 
+                    style={{ cursor: "pointer" }} 
+                    title="Search Voucher"
+                    onClick={() => setOpenJVPopup(true)}
+                  >
                     <i className="fa fa-search"></i>
                   </span>
                 </div>
@@ -456,6 +545,7 @@ function JournalVoucher() {
                 value={voucherType} 
                 onChange={setVoucherType} 
                 options={voucherTypeOptions} 
+                isClearable
               />
             </div>
           </div>
@@ -476,6 +566,7 @@ function JournalVoucher() {
                 value={currency} 
                 onChange={setCurrency} 
                 options={currencyOptions} 
+                isClearable
               />
             </div>
           </div>
@@ -572,7 +663,13 @@ function JournalVoucher() {
         open={openCOAPopup} 
         handleClose={() => setOpenCOAPopup(false)} 
         handleCOASelect={handleCOASelect} 
-        />
+      />
+
+      <JVPopup 
+        open={openJVPopup} 
+        handleClose={() => setOpenJVPopup(false)} 
+        handleJVSelect={handleJVSelect} 
+      />
 
     </div>
   );
