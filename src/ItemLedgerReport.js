@@ -350,8 +350,8 @@ function ItemLedgerReport() {
     }, []);
 
     const filteredOptionStatus = statusDrop.map((opt) => ({
-        value: opt.attributedetails_name,
-        label: opt.attributedetails_name
+        value: opt.descriptions,
+        label: opt.descriptions,
     }));
 
     const handleChangeStatus = (selectedStatus) => {
@@ -651,14 +651,14 @@ const handleItemCode = (selectedData) => {
 
             <div>
                 <div className="shadow-lg p-1 bg-body-tertiary rounded mb-2">
-                    <div className="d-flex justify-content-between">
+                    <div className="d-flex justify-content-between align-items-center">
                         <h1 className='purbut mt-3'> Item Ledger Analysis</h1>
                         <div className="mobileview">
                             <div className="d-flex justify-content-between">
                                 <div className="d-flex justify-content-start">
                                     <h1 className='h1'>Item Ledger Analysis</h1>
                                 </div>
-                                <div className="d-flex justify-content-end mt-1 ms-5">
+                                <div className="d-flex justify-content-end mt-3 me-4">
                                     <div className="dropdown">
                                         <button className="btn btn-primary dropdown-toggle p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                             <i className="fa-solid fa-list"></i>
@@ -694,7 +694,7 @@ const handleItemCode = (selectedData) => {
             </div>
 
             {/* Search Criteria Card */}
-            <div className="card shadow-sm border-0 mb-3 rounded-2">
+            <div className="shadow-lg p-3 bg-body-tertiary rounded mb-2 mt-2">
                 {/* <div className="card-header bg-white py-2 border-bottom-0">
           <span className="fw-semibold text-secondary" style={{ fontSize: "14px" }}>
             Search Criteria
@@ -703,7 +703,7 @@ const handleItemCode = (selectedData) => {
                 <div className="card-body pt-0 pb-3">
                     {/* Row 1 */}
                     <div className="row ms-4 mb-2 me-4 mt-2">
-                        <div className="col-md-2 form-group text-start">
+                        {/* <div className="col-md-2 form-group text-start">
                             <label className="form-label">Company *</label>
                             <div title="Select Company">
                                 <Select
@@ -717,9 +717,9 @@ const handleItemCode = (selectedData) => {
                                     styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                                 />
                             </div>
-                        </div>
+                        </div> */}
 
-                        <div className="col-md-2 form-group text-start">
+                        {/* <div className="col-md-2 form-group text-start">
                             <label className="form-label">Branch</label>
                             <div title="Select Branch">
                                 <Select
@@ -733,7 +733,7 @@ const handleItemCode = (selectedData) => {
                                     styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                                 />
                             </div>
-                        </div>
+                        </div> */}
 
                         <div className="col-md-2 form-group text-start">
                             <label className="form-label">Warehouse</label>
@@ -939,7 +939,7 @@ const handleItemCode = (selectedData) => {
                             </div>
                         </div>
 
-                        <div className="col-md-3 d-flex align-items-center pt-3">
+                        <div className="col-md-2 d-flex align-items-center pt-3">
                             <div className="form-check">
                                 <input
                                     className="form-check-input"
@@ -956,7 +956,7 @@ const handleItemCode = (selectedData) => {
                     </div>
 
                     {/* Search / Reset Action Buttons */}
-                    <div className="row ms-4 me-4 mt-2">
+                    {/* <div className="row ms-4 me-4 mt-2">
                         <div className="col-12 d-flex justify-content-end gap-2">
                             <button className="btn btn-primary btn-sm px-4 shadow-sm" onClick={handleSearch} title="Search">
                                 <i className="fa-solid fa-magnifying-glass me-1"></i> Search
@@ -965,13 +965,13 @@ const handleItemCode = (selectedData) => {
                                 <i className="fa-solid fa-rotate-right me-1"></i> Reset
                             </button>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
 
             {/* KPI Summary Cards */}
-            <div className="row g-2 mb-3">
-                {/* Opening Qty */}
+            {/* <div className="row g-2 mb-3">
+                
                 <div className="col">
                     <div className="card border-0 p-2 rounded-2 h-100" style={{ backgroundColor: "#eef6ff" }}>
                         <span className="text-secondary small fw-medium" style={{ fontSize: "11px" }}>
@@ -987,7 +987,7 @@ const handleItemCode = (selectedData) => {
                     </div>
                 </div>
 
-                {/* Inward Qty */}
+                
                 <div className="col">
                     <div className="card border-0 p-2 rounded-2 h-100" style={{ backgroundColor: "#eef9f2" }}>
                         <span className="text-secondary small fw-medium" style={{ fontSize: "11px" }}>
@@ -1003,7 +1003,7 @@ const handleItemCode = (selectedData) => {
                     </div>
                 </div>
 
-                {/* Outward Qty */}
+                
                 <div className="col">
                     <div className="card border-0 p-2 rounded-2 h-100" style={{ backgroundColor: "#fff1f0" }}>
                         <span className="text-secondary small fw-medium" style={{ fontSize: "11px" }}>
@@ -1019,7 +1019,7 @@ const handleItemCode = (selectedData) => {
                     </div>
                 </div>
 
-                {/* Closing Qty */}
+                
                 <div className="col">
                     <div className="card border-0 p-2 rounded-2 h-100" style={{ backgroundColor: "#f3e8ff" }}>
                         <span className="text-secondary small fw-medium" style={{ fontSize: "11px" }}>
@@ -1035,7 +1035,7 @@ const handleItemCode = (selectedData) => {
                     </div>
                 </div>
 
-                {/* Opening Value */}
+                
                 <div className="col">
                     <div className="card border-0 p-2 rounded-2 h-100" style={{ backgroundColor: "#eef6ff" }}>
                         <span className="text-secondary small fw-medium" style={{ fontSize: "11px" }}>
@@ -1050,7 +1050,7 @@ const handleItemCode = (selectedData) => {
                     </div>
                 </div>
 
-                {/* Inward Value */}
+                
                 <div className="col">
                     <div className="card border-0 p-2 rounded-2 h-100" style={{ backgroundColor: "#eef9f2" }}>
                         <span className="text-secondary small fw-medium" style={{ fontSize: "11px" }}>
@@ -1065,7 +1065,7 @@ const handleItemCode = (selectedData) => {
                     </div>
                 </div>
 
-                {/* Outward Value */}
+                
                 <div className="col">
                     <div className="card border-0 p-2 rounded-2 h-100" style={{ backgroundColor: "#fff1f0" }}>
                         <span className="text-secondary small fw-medium" style={{ fontSize: "11px" }}>
@@ -1080,7 +1080,7 @@ const handleItemCode = (selectedData) => {
                     </div>
                 </div>
 
-                {/* Closing Stock Value */}
+                
                 <div className="col">
                     <div className="card border-0 p-2 rounded-2 h-100" style={{ backgroundColor: "#f3e8ff" }}>
                         <span className="text-secondary small fw-medium" style={{ fontSize: "11px" }}>
@@ -1094,10 +1094,10 @@ const handleItemCode = (selectedData) => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
 
             {/* Item Ledger Table Header Bar & Grid */}
-            <div className="card shadow-sm border-0 rounded-2 overflow-hidden">
+            {/* <div className="card shadow-sm border-0 rounded-2 overflow-hidden"> */}
                 {/* <div
           className="d-flex justify-content-between align-items-center px-3 py-2 text-white"
           style={{ backgroundColor: "#0266b3" }}
@@ -1122,7 +1122,7 @@ const handleItemCode = (selectedData) => {
           </div>
         </div> */}
 
-                <div className="ag-theme-quartz" style={{ height: 455, width: "100%" }}>
+                {/* <div className="ag-theme-quartz" style={{ height: 455, width: "100%" }}>
                     <AgGridReact
                         rowData={rowData}
                         columnDefs={columnDefs}
@@ -1133,12 +1133,12 @@ const handleItemCode = (selectedData) => {
                         rowSelection="multiple"
                         suppressRowClickSelection={true}
                     />
-                </div>
+                </div> */}
                 <div>
                         <InventoryReturnItemPopup open={open1} handleClose={handleClose} handleItem={handleItemCode} />
                         
                       </div>
-            </div>
+            {/* </div> */}
         </div>
     );
 }

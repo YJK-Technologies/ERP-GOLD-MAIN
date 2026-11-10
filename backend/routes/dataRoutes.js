@@ -1116,6 +1116,7 @@ router.post("/ItemGroupCode", dataController.getItemGroupCode);
 router.post("/VendorGroupCode", dataController.getVendorGroupCode);
 router.post("/getJVData", dataController.getJVData);
 router.post("/getAllCustomerCode", dataController.getAllCustomerCode);
+router.post("/getVoucherType", dataController.getVoucherType);
 
 
 
