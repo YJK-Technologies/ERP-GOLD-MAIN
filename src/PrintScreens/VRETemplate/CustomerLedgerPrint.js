@@ -111,7 +111,7 @@ const CustomerLedgerPrint = () => {
     const closingBalance = ledgerRows.length > 0 ? ledgerRows[ledgerRows.length - 1].balance : "0.00";
 
     // Multi-page pagination calculation (ledger rows per page)
-    const ITEMS_PER_PAGE = 18;
+    const ITEMS_PER_PAGE = 20;
     const itemPages = [];
     if (ledgerRows.length === 0) {
         itemPages.push([]);

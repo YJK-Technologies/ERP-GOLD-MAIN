@@ -212,7 +212,7 @@
             if (!code) return;
             setLoading(true);
             try {
-                const response = await fetch(`${config.apiBaseUrl}/getCustomerCode`, {
+                const response = await fetch(`${config.apiBaseUrl}/getAllCustomerCode`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
