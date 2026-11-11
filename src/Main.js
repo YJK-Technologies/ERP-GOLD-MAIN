@@ -216,13 +216,10 @@ import CustomerLedger from './CustomerLedger.js'
 import JournalVoucher from './JournalVoucher.js'
 import CusLedRepPrint from './PrintScreens/VRETemplate/CustomerLedgerPrint.js'
 import JVPopup from './JVPopup.js'
-<<<<<<< HEAD
 import GroupMasterGrid from './GroupMasterGrid.js'
 import GroupMasterInput from './GroupMasterInput.js'
-=======
 import TrialBalanceReport from './TrialBalanceReport.js'
 import TrialBalancePrint from './PrintScreens/VRETemplate/TrialBalancePrint.js'
->>>>>>> 9ab321c24fdacbe3c7ccb4b74dadc8778838b79d
 
 function Main() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
@@ -479,13 +476,10 @@ function Main() {
      { path: "/JournalVoucher", component: <JournalVoucher /> },
      { path: "/CusLedRepPrint", component: <CusLedRepPrint /> },
      { path: "/JVPopup", component: <JVPopup /> },
-<<<<<<< HEAD
      { path: "/GroupMasterGrid", component: <GroupMasterGrid /> },
      { path: "/GroupMasterInput", component: <GroupMasterInput /> },
-=======
      { path: "/TriBalRep", component: <TrialBalanceReport /> },
      { path: "/TriBalPrint", component: <TrialBalancePrint /> },
->>>>>>> 9ab321c24fdacbe3c7ccb4b74dadc8778838b79d
   ];
  
   return (
