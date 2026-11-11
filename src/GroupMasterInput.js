@@ -242,11 +242,27 @@ function GroupMasterInput({}) {
   };
 
   const handleUpdate = async () => {
+    // Required fields check
     if (!group_type || !group_name || !status) {
       setError(" ");
       toast.warning("Error: Missing required fields");
       return;
     }
+
+    // No changes check
+    const isUnchanged = (
+      (selectedRow.group_type || "") === group_type &&
+      (selectedRow.group_name || "") === group_name &&
+      (selectedRow.account_code || "") === account_code &&
+      (selectedRow.location_code || "") === location_code &&
+      (selectedRow.status || "") === status
+    );
+
+    if (isUnchanged) {
+      toast.warning("No changes detected to update.");
+      return; // Stop the update process
+    }
+
     setLoading(true);
 
     const editedRow = {
@@ -257,6 +273,7 @@ function GroupMasterInput({}) {
       location_code,
       status, 
       keyfield,
+      created_by: selectedRow.created_by,
       modified_by,
     };
 
@@ -271,7 +288,9 @@ function GroupMasterInput({}) {
       });
       
       if (response.ok) {
-        toast.success("Data Updated Successfully");
+        toast.success("Data Updated Successfully", {
+           onClose: () => handleNavigate(), // Optional: Navigate back to grid after successful update
+        });
       } else {
         const errorResponse = await response.json();
         console.error(errorResponse.message);
@@ -284,6 +303,50 @@ function GroupMasterInput({}) {
       setLoading(false);
     }
   };
+
+  // const handleUpdate = async () => {
+  //   if (!group_type || !group_name || !status) {
+  //     setError(" ");
+  //     toast.warning("Error: Missing required fields");
+  //     return;
+  //   }
+  //   setLoading(true);
+
+  //   const editedRow = {
+  //     company_code,
+  //     group_type,
+  //     group_name,
+  //     account_code,
+  //     location_code,
+  //     status, 
+  //     keyfield,
+  //     modified_by,
+  //   };
+
+  //   try {
+  //     const response = await fetch(`${config.apiBaseUrl}/saveEditedGroupMaster`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         "modified-by": modified_by
+  //       },
+  //       body: JSON.stringify({ editedData: [editedRow] }), 
+  //     });
+      
+  //     if (response.ok) {
+  //       toast.success("Data Updated Successfully");
+  //     } else {
+  //       const errorResponse = await response.json();
+  //       console.error(errorResponse.message);
+  //       toast.warning(errorResponse.message);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error Update data:", error);
+  //     toast.error("Error Update data: " + error.message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const handleNavigate = () => {
     navigate("/GroupMasterGrid", {
