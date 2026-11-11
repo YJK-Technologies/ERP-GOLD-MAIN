@@ -216,6 +216,8 @@ import CustomerLedger from './CustomerLedger.js'
 import JournalVoucher from './JournalVoucher.js'
 import CusLedRepPrint from './PrintScreens/VRETemplate/CustomerLedgerPrint.js'
 import JVPopup from './JVPopup.js'
+import GroupMasterGrid from './GroupMasterGrid.js'
+import GroupMasterInput from './GroupMasterInput.js'
 
 function Main() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
@@ -472,6 +474,8 @@ function Main() {
      { path: "/JournalVoucher", component: <JournalVoucher /> },
      { path: "/CusLedRepPrint", component: <CusLedRepPrint /> },
      { path: "/JVPopup", component: <JVPopup /> },
+     { path: "/GroupMasterGrid", component: <GroupMasterGrid /> },
+     { path: "/GroupMasterInput", component: <GroupMasterInput /> },
   ];
  
   return (

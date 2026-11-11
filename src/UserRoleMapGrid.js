@@ -601,7 +601,6 @@ function UserRoleGrid() {
                           class="icon"
                           onClick={generateReport}
                         >
-
                           <i class="fa-solid fa-print"></i>
                         </icon>
                       )}

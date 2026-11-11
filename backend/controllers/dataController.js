@@ -5815,25 +5815,9 @@ const getAlluserscreenmap = async (req, res) => {
   }
 };
 
-
-
 const adduserscreenmap = async (req, res) => {
-  const {
-    company_code,
-    role_id,
-    screen_type,
-    permission_type,
-    created_by,
-    modified_by,
-    tempstr1,
-    tempstr2,
-    tempstr3,
-    tempstr4,
-    datetime1,
-    datetime2,
-    datetime3,
-    datetime4,
-  } = req.body;
+  const { company_code, role_id, screen_type, permission_type, created_by, modified_by, tempstr1, tempstr2, tempstr3, tempstr4,
+    datetime1, datetime2, datetime3, datetime4, } = req.body;
   let pool;
   try {
     pool = await sql.connect(dbConfig);
@@ -33849,6 +33833,165 @@ const getVendorGroupCode = async (req, res) => {
   }
 };
 //Code Ended By Pavun on 10-11-2026
+//Code Added By SakthiGanesh J on 10-11-2026
+const getAllGroupMaster = async (req, res) => {
+  try {
+    await connection.connectToDatabase();
+    const result = await sql.query(`EXEC sp_group_master 'A','','','','','','','','','',null,null,null,null,
+      null,null,null,null`);
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const addGroupMaster = async (req, res) => {
+  const { company_code, group_type, group_name, account_code, location_code, status, created_by, modified_by, tempstr1, tempstr2, tempstr3, tempstr4, datetime1, datetime2, datetime3, datetime4 } = req.body;
+  let pool;
+  try {
+    pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("mode", sql.NVarChar, "I") 
+      .input("company_code", sql.NVarChar, company_code)
+      .input("group_type", sql.NVarChar, group_type)
+      .input("group_name", sql.NVarChar, group_name)
+      .input("account_code", sql.NVarChar, account_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("status", sql.NVarChar, status)
+      .input("created_by", sql.NVarChar, created_by)
+      .input("modified_by", sql.NVarChar, modified_by)
+      .input("tempstr1", sql.NVarChar, tempstr1)
+      .input("tempstr2", sql.NVarChar, tempstr2)
+      .input("tempstr3", sql.NVarChar, tempstr3)
+      .input("tempstr4", sql.NVarChar, tempstr4)
+      .input("datetime1", sql.NVarChar, datetime1)
+      .input("datetime2", sql.NVarChar, datetime2)
+      .input("datetime3", sql.NVarChar, datetime3)
+      .input("datetime4", sql.NVarChar, datetime4)
+      .query(`EXEC sp_group_master @mode, @company_code, @group_type, @group_name, @account_code, @location_code, 
+        @status, '', @created_by, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
+      
+    res.json({ success: true, message: "Data inserted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const saveEditedGroupMaster = async (req, res) => {
+  const editedData = req.body.editedData;
+
+  if (!editedData || !editedData.length) {
+    res.status(400).json("Invalid or empty editedData array.");
+    return;
+  }
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    for (const updatedRow of editedData) {
+      await pool.request()
+        .input("mode", sql.NVarChar, "U")
+        .input("company_code", updatedRow.company_code)
+        .input("group_type", updatedRow.group_type)
+        .input("group_name", updatedRow.group_name)
+        .input("account_code", updatedRow.account_code)
+        .input("location_code", updatedRow.location_code)
+        .input("status", updatedRow.status)
+        .input("keyfield", updatedRow.keyfield)
+        .input("created_by", updatedRow.created_by)
+        .input("modified_by", sql.NVarChar, req.headers['modified-by'])
+        .input("tempstr1", updatedRow.tempstr1)
+        .input("tempstr2", updatedRow.tempstr2)
+        .input("tempstr3", updatedRow.tempstr3)
+        .input("tempstr4", updatedRow.tempstr4)
+        .input("datetime1", updatedRow.datetime1)
+        .input("datetime2", updatedRow.datetime2)
+        .input("datetime3", updatedRow.datetime3)
+        .input("datetime4", updatedRow.datetime4)
+        .query(`EXEC sp_group_master @mode, @company_code, @group_type, @group_name, @account_code, @location_code, 
+          @status, @keyfield, @created_by, @modified_by, @tempstr1, @tempstr2, @tempstr3, @tempstr4, @datetime1, 
+          @datetime2, @datetime3, @datetime4`);
+    }
+    res.status(200).json("Edited data saved successfully");
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const deleteGroupMaster = async (req, res) => {
+  const keyfieldsToDelete = req.body.keyfield;
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    for (const keyfield of keyfieldsToDelete) {
+      try {
+        await pool.request()
+          .input("keyfield", keyfield)
+          .input("modified_by", sql.NVarChar, req.headers['modified-by'])
+          .query(`EXEC sp_group_master 'D', '', '', '', '', '', '', @keyfield, '', @modified_by, null, null, null,
+             null, null, null, null, null`);
+      } catch (error) {
+        if (error.number === 50000) {
+          res.status(400).json("The group cannot be deleted due to a link with another record");
+          return;
+        } else {
+          throw error; 
+        }
+      }
+    }
+    res.status(200).json("Group master deleted successfully");
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const searchGroupMaster = async (req, res) => {
+  const { company_code, group_type, group_name } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    const result = await pool.request()
+      .input("mode", sql.NVarChar, "SC")
+      .input("company_code", sql.VarChar, company_code)
+      .input("group_type", sql.NVarChar, group_type)
+      .input("group_name", sql.NVarChar, group_name)
+      .query(`EXEC sp_group_master @mode, @company_code, @group_type, @group_name, '', '', '', '', '', '', 
+        null, null, null, null, null, null, null, null`);
+
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset); 
+    } else {
+      res.status(404).json("Data not found"); 
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
+const getGroupTypeCode = async (req, res) => {
+  const { company_code } = req.body;
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("company_code", sql.NVarChar, company_code)
+      .query(
+        "EXEC sp_attribute_Info 'F',@company_code,'Group Type','','','', '',0,'','', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL"
+      );
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error during update:", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+//Code Ended By SakthiGanesh J on 10-11-2026
 
 module.exports = {
   login,
@@ -34940,6 +35083,12 @@ module.exports = {
   getAllCustomerCode,
   getCustomerGroupCode,
   getItemGroupCode,
-  getVendorGroupCode
+  getVendorGroupCode,
+  getAllGroupMaster,
+  saveEditedGroupMaster,
+  deleteGroupMaster,
+  searchGroupMaster,
+  addGroupMaster,
+  getGroupTypeCode
 
 };

@@ -498,6 +498,40 @@ const handleReceiptSelect = async (selectedReceiptNo) => {
     }
   };
 
+  const InvoiceFsPosting = async (receiptNo) => {
+      try {
+        const Header = {
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          Tran_type: "CR",
+          Tran_no: receiptNo,
+          Tran_date: receiptDate,
+          created_by: sessionStorage.getItem("selectedUserCode"),
+          modified_by: sessionStorage.getItem("selectedUserCode"),
+        };
+  
+        const response = await fetch(`${config.apiBaseUrl}/InvoiceFsPosting`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(Header),
+        });
+  
+        if (response.ok) {
+          console.log("Invoice Posting Successfully");
+        } else {
+          const errorResponse = await response.json();
+          console.error(errorResponse.message);
+          toast.error("Error inserting data" + errorResponse.message);
+        }
+      } catch (error) {
+        console.error("Error inserting data:", error);
+        toast.error("Error inserting data: " + error.message);
+      } finally {
+        setLoading(false);
+      }
+  };
+
   const handleUpdateButtonClick = async () => {
     if (!receiptNo || !receiptDate) {
       toast.warning("Error: Missing receipt number or required fields");
@@ -545,6 +579,11 @@ const handleReceiptSelect = async (selectedReceiptNo) => {
           if (response.ok) {
             await saveReceiptDetails(receiptNo);
             toast.success(`Customer Receipt Data ${actionValue} Successfully`);
+
+            if (Screens === "Authorized") {
+              await InvoiceFsPosting(receiptNo);
+            }
+
           } else {
             const errorResponse = await response.json();
             toast.error("Error updating data: " + errorResponse.message);
@@ -683,12 +722,12 @@ const handleReceiptSelect = async (selectedReceiptNo) => {
               <input type="date" className="exp-input-field form-control" value={receiptDate} onChange={(e) => setReceiptDate(e.target.value)} />
             </div>
           </div>
-          <div className="col-md-2 form-group mb-2">
+          {/* <div className="col-md-2 form-group mb-2">
             <div className="exp-form-floating">
               <label className={`${error && !financialYear ? 'text-danger' : ''}`}>Financial Year <span className="text-danger">*</span></label>
               <Select className="exp-input-field" classNamePrefix="react-select" value={financialYear} onChange={setFinancialYear} options={financialYearOptions} placeholder="Select..." />
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 
