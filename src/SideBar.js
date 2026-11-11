@@ -2147,7 +2147,7 @@ const Sidebar = () => {
                   <Link
                     to="/ItemLedgerRep"
                     className="nav-link"
-                    title="Data Wise Item Stock"
+                    title="Item Ledger Analysis"
                   >
                     <div class="menu-item">
                       <svg
@@ -2173,7 +2173,7 @@ const Sidebar = () => {
                   <Link
                     to="/CustomerLedger"
                     className="nav-link"
-                    title="Data Wise Item Stock"
+                    title="Customer Ledger"
                   >
                     <div class="menu-item">
                       <svg
@@ -2188,7 +2188,33 @@ const Sidebar = () => {
                       </svg>
                       <span className={collapsed ? "hidden" : ""}>
                         {" "}
-                        Customer Ledger Analysis
+                        Customer Ledger
+                      </span>
+                    </div>
+                  </Link>
+                )}
+              </div>
+              <div className=" ms-3">
+                {screenType.includes("TriBalRep") && (
+                  <Link
+                    to="/TriBalRep"
+                    className="nav-link"
+                    title="Trial Balance Report"
+                  >
+                    <div class="menu-item">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        fill="currentColor"
+                        className="me-4"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M4 3h16a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm1 2v3h14V5H5zm0 5v3h6v-3H5zm8 0v3h6v-3h-6zm-8 5v3h6v-3H5zm8 0v3h6v-3h-6z" />
+                      </svg>
+                      <span className={collapsed ? "hidden" : ""}>
+                        {" "}
+                        Trial Balance Report
                       </span>
                     </div>
                   </Link>

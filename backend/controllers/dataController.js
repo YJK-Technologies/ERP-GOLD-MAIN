@@ -33779,6 +33779,24 @@ const getAllCustomerCode = async (req, res) => {
     res.status(500).json({ message: err.message || 'Internal Server Error' });
   }
 };
+
+const getVoucherType = async (req, res) => {
+  const { company_code } = req.body;
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("company_code", sql.NVarChar, company_code)
+      .query(
+        "EXEC sp_attribute_Info 'F',@company_code,'Voucher Type','','','', '',0,'','', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL"
+      );
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
 //Code ended by Dinesh Gokul on 10-11-2026 
 
 //Code Added By Pavun on 10-11-2026
@@ -35084,6 +35102,7 @@ module.exports = {
   getCustomerGroupCode,
   getItemGroupCode,
   getVendorGroupCode,
+  getVoucherType,
   getAllGroupMaster,
   saveEditedGroupMaster,
   deleteGroupMaster,

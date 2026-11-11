@@ -1122,6 +1122,7 @@ router.post("/deleteGroupMaster", dataController.deleteGroupMaster);
 router.post("/searchGroupMaster", dataController.searchGroupMaster);
 router.post("/addGroupMaster", dataController.addGroupMaster);
 router.post("/getGroupTypeCode", dataController.getGroupTypeCode);
+router.post("/getVoucherType", dataController.getVoucherType);
 
 
 
