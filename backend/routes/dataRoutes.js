@@ -1116,6 +1116,12 @@ router.post("/ItemGroupCode", dataController.getItemGroupCode);
 router.post("/VendorGroupCode", dataController.getVendorGroupCode);
 router.post("/getJVData", dataController.getJVData);
 router.post("/getAllCustomerCode", dataController.getAllCustomerCode);
+router.post("/getAllGroupMaster", dataController.getAllGroupMaster);
+router.post("/saveEditedGroupMaster", dataController.saveEditedGroupMaster);
+router.post("/deleteGroupMaster", dataController.deleteGroupMaster);
+router.post("/searchGroupMaster", dataController.searchGroupMaster);
+router.post("/addGroupMaster", dataController.addGroupMaster);
+router.post("/getGroupTypeCode", dataController.getGroupTypeCode);
 router.post("/getVoucherType", dataController.getVoucherType);
 
 
