@@ -216,6 +216,8 @@ import CustomerLedger from './CustomerLedger.js'
 import JournalVoucher from './JournalVoucher.js'
 import CusLedRepPrint from './PrintScreens/VRETemplate/CustomerLedgerPrint.js'
 import JVPopup from './JVPopup.js'
+import GroupMasterGrid from './GroupMasterGrid.js'
+import GroupMasterInput from './GroupMasterInput.js'
 import TrialBalanceReport from './TrialBalanceReport.js'
 import TrialBalancePrint from './PrintScreens/VRETemplate/TrialBalancePrint.js'
 import ItemLedgerPrint from './PrintScreens/VRETemplate/ItemLedgerPrint.js'
@@ -477,6 +479,8 @@ function Main() {
      { path: "/JournalVoucher", component: <JournalVoucher /> },
      { path: "/CusLedRepPrint", component: <CusLedRepPrint /> },
      { path: "/JVPopup", component: <JVPopup /> },
+     { path: "/GroupMasterGrid", component: <GroupMasterGrid /> },
+     { path: "/GroupMasterInput", component: <GroupMasterInput /> },
      { path: "/TriBalRep", component: <TrialBalanceReport /> },
      { path: "/TriBalPrint", component: <TrialBalancePrint /> },
      { path: "/ItemLedPrint", component: <ItemLedgerPrint /> },
