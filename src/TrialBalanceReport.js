@@ -49,11 +49,23 @@ const TrialBalance = () => {
     const groupOptions = [{ value: "All Groups", label: "All Groups" }];
     const costCentreOptions = [{ value: "All Cost Centres", label: "All Cost Centres" }];
 
+    const companyName = sessionStorage.getItem('selectedCompanyName');
+
     // For Dropdown 
     const [selectedFinancialYearId, setSelectedFinancialYearId] = useState("");
     const [financialYearIdDrop, setFinancialYearIdDrop] = useState([]);
     const [financialYearId, setFinancialYearId] = useState("");
     const [hasValueChanged, setHasValueChanged] = useState(false);
+
+    const formatDate = (isoDateString) => {
+        if (!isoDateString) return "";
+        const date = new Date(isoDateString);
+        if (isNaN(date.getTime())) return isoDateString;
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${day}-${month}-${year}`;
+    };
 
     const filteredOptionFinancialYear = Array.isArray(financialYearIdDrop)
             ? financialYearIdDrop.map((option) => ({
@@ -129,63 +141,140 @@ const TrialBalance = () => {
     };
 
     // --- Actions ---
-    const handleGenerateReport = () => {
-        setLoading(true);
-        // Simulating data load matching the reference image[cite: 1]
-        setTimeout(() => {
-            const dummyData = [
-                { s_no: 1, account_code: "1001", account_name: "Cash Account", account_group: "Current Assets", op_debit: 50000, op_credit: 0, per_debit: 200000, per_credit: 150000, cl_debit: 100000, cl_credit: 0 },
-                { s_no: 2, account_code: "1002", account_name: "Bank Account", account_group: "Current Assets", op_debit: 300000, op_credit: 0, per_debit: 500000, per_credit: 400000, cl_debit: 400000, cl_credit: 0 },
-                { s_no: 3, account_code: "1101", account_name: "Accounts Receivable", account_group: "Current Assets", op_debit: 200000, op_credit: 0, per_debit: 600000, per_credit: 550000, cl_debit: 250000, cl_credit: 0 },
-                { s_no: 4, account_code: "1102", account_name: "Inventory", account_group: "Current Assets", op_debit: 500000, op_credit: 0, per_debit: 300000, per_credit: 250000, cl_debit: 550000, cl_credit: 0 },
-                { s_no: 5, account_code: "2001", account_name: "Accounts Payable", account_group: "Current Liabilities", op_debit: 0, op_credit: 400000, per_debit: 300000, per_credit: 450000, cl_debit: 0, cl_credit: 550000 },
-                { s_no: 6, account_code: "2101", account_name: "Statutory Liabilities", account_group: "Current Liabilities", op_debit: 0, op_credit: 100000, per_debit: 120000, per_credit: 140000, cl_debit: 0, cl_credit: 120000 },
-                { s_no: 7, account_code: "3001", account_name: "Capital Account", account_group: "Equity", op_debit: 0, op_credit: 1000000, per_debit: 0, per_credit: 0, cl_debit: 0, cl_credit: 1000000 },
-                { s_no: 8, account_code: "4001", account_name: "Sales Account", account_group: "Income", op_debit: 0, op_credit: 0, per_debit: 0, per_credit: 800000, cl_debit: 0, cl_credit: 800000 },
-                { s_no: 9, account_code: "5001", account_name: "Purchase Account", account_group: "Expense", op_debit: 0, op_credit: 0, per_debit: 400000, per_credit: 0, cl_debit: 400000, cl_credit: 0 },
-                { s_no: 10, account_code: "5101", account_name: "Rent Expense", account_group: "Expense", op_debit: 0, op_credit: 0, per_debit: 100000, per_credit: 0, cl_debit: 100000, cl_credit: 0 },
-                { s_no: 11, account_code: "5102", account_name: "Salary Expense", account_group: "Expense", op_debit: 0, op_credit: 0, per_debit: 200000, per_credit: 0, cl_debit: 200000, cl_credit: 0 },
-                { s_no: 12, account_code: "5103", account_name: "Other Expenses", account_group: "Expense", op_debit: 0, op_credit: 0, per_debit: 50000, per_credit: 0, cl_debit: 50000, cl_credit: 0 }
-            ];
+    
+const handleGenerateReport = () => {
+    setLoading(true);
 
-            const totalsCalc = dummyData.reduce((acc, row) => {
-                acc.op_debit += row.op_debit;
-                acc.op_credit += row.op_credit;
-                acc.per_debit += row.per_debit;
-                acc.per_credit += row.per_credit;
-                acc.cl_debit += row.cl_debit;
-                acc.cl_credit += row.cl_credit;
-                return acc;
-            }, { op_debit: 0, op_credit: 0, per_debit: 0, per_credit: 0, cl_debit: 0, cl_credit: 0 });
+    return new Promise((resolve) => {
+        const dummyData = [
+            { s_no: 1, account_code: "1001", account_name: "Cash Account", account_group: "Current Assets", op_debit: 50000, op_credit: 0, per_debit: 200000, per_credit: 150000, cl_debit: 100000, cl_credit: 0 },
+            { s_no: 2, account_code: "1002", account_name: "Bank Account", account_group: "Current Assets", op_debit: 300000, op_credit: 0, per_debit: 500000, per_credit: 400000, cl_debit: 400000, cl_credit: 0 },
+            { s_no: 3, account_code: "1101", account_name: "Accounts Receivable", account_group: "Current Assets", op_debit: 200000, op_credit: 0, per_debit: 600000, per_credit: 550000, cl_debit: 250000, cl_credit: 0 },
+            { s_no: 4, account_code: "1102", account_name: "Inventory", account_group: "Current Assets", op_debit: 500000, op_credit: 0, per_debit: 300000, per_credit: 250000, cl_debit: 550000, cl_credit: 0 },
+            { s_no: 5, account_code: "2001", account_name: "Accounts Payable", account_group: "Current Liabilities", op_debit: 0, op_credit: 400000, per_debit: 300000, per_credit: 450000, cl_debit: 0, cl_credit: 550000 },
+            { s_no: 6, account_code: "2101", account_name: "Statutory Liabilities", op_debit: 0, op_credit: 100000, per_debit: 120000, per_credit: 140000, cl_debit: 0, cl_credit: 120000 },
+            { s_no: 7, account_code: "3001", account_name: "Capital Account", account_group: "Equity", op_debit: 0, op_credit: 1000000, per_debit: 0, per_credit: 0, cl_debit: 0, cl_credit: 1000000 },
+            { s_no: 8, account_code: "4001", account_name: "Sales Account", account_group: "Income", op_debit: 0, op_credit: 0, per_debit: 0, per_credit: 800000, cl_debit: 0, cl_credit: 800000 },
+            { s_no: 9, account_code: "5001", account_name: "Purchase Account", account_group: "Expense", op_debit: 0, op_credit: 0, per_debit: 400000, per_credit: 0, cl_debit: 400000, cl_credit: 0 },
+            { s_no: 10, account_code: "5101", account_name: "Rent Expense", account_group: "Expense", op_debit: 0, op_credit: 0, per_debit: 100000, per_credit: 0, cl_debit: 100000, cl_credit: 0 },
+            { s_no: 11, account_code: "5102", account_name: "Salary Expense", account_group: "Expense", op_debit: 0, op_credit: 0, per_debit: 200000, per_credit: 0, cl_debit: 200000, cl_credit: 0 },
+            { s_no: 12, account_code: "5103", account_name: "Other Expenses", account_group: "Expense", op_debit: 0, op_credit: 0, per_debit: 50000, per_credit: 0, cl_debit: 50000, cl_credit: 0 }
+        ];
 
-            setTotals({ debit: totalsCalc.cl_debit, credit: totalsCalc.cl_credit, diff: totalsCalc.cl_debit - totalsCalc.cl_credit });
+        const totalsCalc = dummyData.reduce((acc, row) => {
+            acc.op_debit += row.op_debit;
+            acc.op_credit += row.op_credit;
+            acc.per_debit += row.per_debit;
+            acc.per_credit += row.per_credit;
+            acc.cl_debit += row.cl_debit;
+            acc.cl_credit += row.cl_credit;
+            return acc;
+        }, {
+            op_debit: 0,
+            op_credit: 0,
+            per_debit: 0,
+            per_credit: 0,
+            cl_debit: 0,
+            cl_credit: 0
+        });
 
-            const totalRow = {
-                s_no: "", account_code: "", account_name: "TOTAL", account_group: "",
-                op_debit: totalsCalc.op_debit, op_credit: totalsCalc.op_credit,
-                per_debit: totalsCalc.per_debit, per_credit: totalsCalc.per_credit,
-                cl_debit: totalsCalc.cl_debit, cl_credit: totalsCalc.cl_credit,
-                isTotalRow: true
-            };
+        const totalRow = {
+            s_no: "",
+            account_code: "",
+            account_name: "TOTAL",
+            account_group: "",
+            op_debit: totalsCalc.op_debit,
+            op_credit: totalsCalc.op_credit,
+            per_debit: totalsCalc.per_debit,
+            per_credit: totalsCalc.per_credit,
+            cl_debit: totalsCalc.cl_debit,
+            cl_credit: totalsCalc.cl_credit,
+            isTotalRow: true
+        };
 
-            setRowData([...dummyData, totalRow]);
-            setLoading(false);
-            toast.success("Report generated successfully!");
-        }, 800);
-    };
+        const finalRows = [...dummyData, totalRow];
+
+        setTotals({
+            debit: totalsCalc.cl_debit,
+            credit: totalsCalc.cl_credit,
+            diff: totalsCalc.cl_debit - totalsCalc.cl_credit
+        });
+
+        setRowData(finalRows);
+        setLoading(false);
+
+        // toast.success("Report generated successfully!");
+
+        // Return the data directly instead of waiting for React state
+        resolve(finalRows);
+    });
+};
+
 
     const handleClear = () => {
         setRowData([]);
         setTotals({ debit: 0, credit: 0, diff: 0 });
     };
 
-    const handleExportExcel = () => {
-        if (rowData.length === 0) return toast.warning("No data to export.");
-        const worksheet = XLSX.utils.json_to_sheet(rowData);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Trial_Balance');
-        XLSX.writeFile(workbook, `Trial_Balance.xlsx`);
-    };
+    
+
+const handleExportExcel = async () => {
+
+    // 1. Generate report data
+    const generatedRows = await handleGenerateReport();
+
+    if (!generatedRows || generatedRows.length === 0) {
+        toast.warning("No data to export.");
+        return;
+    }
+
+    // 2. Excel Header Information
+    const headerData = [
+        ['Trial Balance Report'],
+        [`Company Name: ${selectedCompany?.label || companyName}`],
+        [`Financial Year: ${selectedFinancialYearId?.label || ''}`],
+        [`Date Range: ${formatDate(fromDate)} to ${formatDate(toDate)}`],
+        []
+    ];
+
+    // 3. Prepare Export Data
+    const exportRows = generatedRows.map((row) => ({
+        "S.No.": row.s_no,
+        "Account Code": row.account_code,
+        "Account Name": row.account_name,
+        "Account Group": row.account_group,
+        "Opening Debit (₹)": row.op_debit,
+        "Opening Credit (₹)": row.op_credit,
+        "Period Debit (₹)": row.per_debit,
+        "Period Credit (₹)": row.per_credit,
+        "Closing Debit (₹)": row.cl_debit,
+        "Closing Credit (₹)": row.cl_credit
+    }));
+
+    // 4. Create Worksheet with Header
+    const worksheet = XLSX.utils.aoa_to_sheet(headerData);
+
+    // 5. Add Report Data Starting from Row 6
+    XLSX.utils.sheet_add_json(worksheet, exportRows, {
+        origin: 'A6'
+    });
+
+    // 6. Create Workbook
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        'Trial_Balance'
+    );
+
+    // 7. Download Excel File
+    XLSX.writeFile(workbook, 'Trial_Balance.xlsx');
+
+    // toast.success("Trial Balance exported successfully!");
+};
+
+
 
     // const handlePrint = () => {
     //     if (rowData.length === 0) {
@@ -382,63 +471,63 @@ const handlePrint = () => {
                 </div>
 
             {/* Filter Section[cite: 1, 2] */}
-            <div className="shadow-lg p-3 bg-white rounded mb-2">
+            <div className="shadow-lg p-3 bg-body-tertiary rounded mb-2 mt-2">
                 {/* Row 1 */}
-                <div className="row mb-3">
+                <div className="row ms-2 me-2 mb-3">
                     {/* <div className="col-md-3 form-group">
-                        <label className="form-label" style={{ fontSize: '13px' }}>Company <span className="text-danger">*</span></label>
+                        <label className="form-label"  >Company <span className="text-danger">*</span></label>
                         <Select options={companyOptions} value={selectedCompany} onChange={setSelectedCompany} classNamePrefix="react-select" />
                     </div> */}
                     <div className="col-md-3 form-group">
-                        <label className="form-label" style={{ fontSize: '13px' }}>Financial Year <span className="text-danger">*</span></label>
+                        <label className="form-label" >Financial Year <span className="text-danger">*</span></label>
                         <Select options={filteredOptionFinancialYear} value={selectedFinancialYearId} onChange={handleChangeFinancialYear} classNamePrefix="react-select" />
                     </div>
                     {/* <div className="col-md-3 form-group">
-                        <label className="form-label" style={{ fontSize: '13px' }}>Branch</label>
+                        <label className="form-label"  >Branch</label>
                         <Select options={branchOptions} value={selectedBranch} onChange={setSelectedBranch} classNamePrefix="react-select" />
                     </div> */}
                     <div className="col-md-3 form-group">
-                        <label className="form-label" style={{ fontSize: '13px' }}>Ledger Type</label>
+                        <label className="form-label" >Ledger Type</label>
                         <Select options={ledgerTypeOptions} value={selectedLedgerType} onChange={setSelectedLedgerType} classNamePrefix="react-select" />
                     </div>
                     <div className="col-md-3 form-group">
-                        <label className="form-label" style={{ fontSize: '13px' }}>From Date <span className="text-danger">*</span></label>
+                        <label className="form-label" >From Date <span className="text-danger">*</span></label>
                         <input type="date" className="exp-input-field form-control" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
                     </div>
                     <div className="col-md-3 form-group">
-                        <label className="form-label" style={{ fontSize: '13px' }}>To Date <span className="text-danger">*</span></label>
+                        <label className="form-label" >To Date <span className="text-danger">*</span></label>
                         <input type="date" className="exp-input-field form-control" value={toDate} onChange={(e) => setToDate(e.target.value)} />
                     </div>
                     <div className="col-md-3 form-group">
-                        <label className="form-label" style={{ fontSize: '13px' }}>Account From</label>
+                        <label className="form-label"  >Account From</label>
                         <div className="position-relative">
                             <input type="text" className="exp-input-field form-control" placeholder="Select Account" value={accountFrom} onChange={(e) => setAccountFrom(e.target.value)} />
                             <i className="fa fa-search position-absolute text-muted" style={{ right: '10px', top: '10px', cursor: 'pointer' }}></i>
                         </div>
                     </div>
                     <div className="col-md-3 form-group">
-                        <label className="form-label" style={{ fontSize: '13px' }}>Account To</label>
+                        <label className="form-label"  >Account To</label>
                         <div className="position-relative">
                             <input type="text" className="exp-input-field form-control" placeholder="Select Account" value={accountTo} onChange={(e) => setAccountTo(e.target.value)} />
                             <i className="fa fa-search position-absolute text-muted" style={{ right: '10px', top: '10px', cursor: 'pointer' }}></i>
                         </div>
                     </div>
                     <div className="col-md-3 form-group">
-                        <label className="form-label" style={{ fontSize: '13px' }}>Account Group</label>
+                        <label className="form-label"  >Account Group</label>
                         <Select options={groupOptions} value={selectedGroup} onChange={setSelectedGroup} classNamePrefix="react-select" />
                     </div>
                     <div className="col-md-3 form-group">
-                        <label className="form-label" style={{ fontSize: '13px' }}>Cost Centre</label>
+                        <label className="form-label"  >Cost Centre</label>
                         <Select options={costCentreOptions} value={selectedCostCentre} onChange={setSelectedCostCentre} classNamePrefix="react-select" />
                     </div>
                     <div className="col-md-6 form-group d-flex gap-4 pt-2">
-                        <label className="d-flex align-items-center" style={{ fontSize: '13px' }}>
+                        <label className="d-flex align-items-center"  >
                             <input type="checkbox" className="me-2" checked={includeZeroBalance} onChange={(e) => setIncludeZeroBalance(e.target.checked)} /> Include Zero Balance Accounts
                         </label>
-                        <label className="d-flex align-items-center" style={{ fontSize: '13px' }}>
+                        <label className="d-flex align-items-center"  >
                             <input type="checkbox" className="me-2" checked={showOpeningBalance} onChange={(e) => setShowOpeningBalance(e.target.checked)} /> Show Opening Balance
                         </label>
-                        <label className="d-flex align-items-center" style={{ fontSize: '13px' }}>
+                        <label className="d-flex align-items-center"  >
                             <input type="checkbox" className="me-2" checked={showTransactions} onChange={(e) => setShowTransactions(e.target.checked)} /> Show Transactions
                         </label>
                     </div>
