@@ -444,6 +444,7 @@ function GroupMasterInput({}) {
                         className="exp-input-field form-control"
                         type="text"
                         placeholder=""
+                        title="Please fill the Account Code here"
                         value={account_code}
                         onChange={(e) => setaccount_code(e.target.value)}
                         onKeyDown={(e) => handleKeyDown(e, locationCodeRef)}
@@ -458,7 +459,8 @@ function GroupMasterInput({}) {
                     <div class="exp-form-floating">
                       <div class="d-flex justify-content-start">
                         <div>
-                          <label for="status" class="exp-form-labels">
+                          <label for="status" class="exp-form-labels"
+                            className={`${error && !status ? "text-danger" : ""}`}>
                             Status<span className="text-danger">*</span>
                           </label>
                         </div>
