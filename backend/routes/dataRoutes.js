@@ -1083,7 +1083,7 @@ router.post("/BankReconciliationTransactionUpdate", dataController.BankReconcili
 router.post("/BankReconciliationTransactionDelete", dataController.BankReconciliationTransactionDelete);
 router.post("/get_StatementFormat", dataController.get_StatementFormat);
 router.post("/get_ImportMethod", dataController.get_ImportMethod);
-router.get("/getWarehouseCodeDrop", dataController.getWarehouseCodeDrop);
+router.post("/getWarehouseCodeDrop", dataController.getWarehouseCodeDrop);
 router.post("/addCustomerReceiptHdr", dataController.addCustomerReceiptHdr);
 router.post("/updCustomerReceiptHdr", dataController.updCustomerReceiptHdr);
 router.post("/deleteCustomerReceiptHdr", dataController.deleteCustomerReceiptHdr);
@@ -1117,6 +1117,7 @@ router.post("/VendorGroupCode", dataController.getVendorGroupCode);
 router.post("/getJVData", dataController.getJVData);
 router.post("/getAllCustomerCode", dataController.getAllCustomerCode);
 router.post("/getVoucherType", dataController.getVoucherType);
+router.post("/getAllVendorCode", dataController.getAllVendorCode);
 
 
 

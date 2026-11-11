@@ -32901,22 +32901,43 @@ const get_StatementFormat = async (req, res) => {
 //Code ended by SakthiGanesh J on 30-10-2026 
 
 //Code added by Dinesh Gokul on 02-11-2026 
-const getWarehouseCodeDrop = async (req, res) => {
-  try {
-    await connection.connectToDatabase();
-    const company_code = req.query.company_code; // Get company code from request
-    const request = new sql.Request();
-    request.input("company_code", sql.NVarChar, company_code);
-    const result = await request.query(`
-      EXEC sp_warehouse_info  'F', @company_code, '', '', '', '', '', '', '', '', '', '', '', '', '', ''
-    `);
+// const getWarehouseCodeDrop = async (req, res) => {
+//   try {
+//     await connection.connectToDatabase();
+//     const company_code = req.query.company_code; // Get company code from request
+//     const request = new sql.Request();
+//     request.input("company_code", sql.NVarChar, company_code);
+//     const result = await request.query(`
+//       EXEC sp_warehouse_info  'F', @company_code, '', '', '', '', '', '', '', '', '', '', '', '', '', ''
+//     `);
 
-    res.json(result.recordset);
+//     res.json(result.recordset);
+//   } catch (err) {
+//     console.error("Error", err);
+//     res.status(500).json({
+//       message: err.message || "Internal Server Error"
+//     });
+//   }
+// };
+const getWarehouseCodeDrop = async (req, res) => {
+  const { company_code, location_code } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "F")
+      .input("company_code", sql.NVarChar, company_code)
+      // .input("location_code", sql.NVarChar, location_code)
+      .query(`EXEC sp_warehouse_info  @mode, @company_code, '', '', '', '', '', '', '', '', '', '', '', '', '', ''`);
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json("Data not found");
+    }
   } catch (err) {
-    console.error("Error", err);
-    res.status(500).json({
-      message: err.message || "Internal Server Error"
-    });
+    console.error("Error", err.message);
+    return res.status(500).json({ message: err.message || "Internal Server Error" });
   }
 };
 //Code ended by Dinesh Gokul on 02-11-2026 
@@ -33867,6 +33888,36 @@ const getVendorGroupCode = async (req, res) => {
   }
 };
 //Code Ended By Pavun on 10-11-2026
+
+//Code added by Dinesh Gokul on 11-11-2026 
+const getAllVendorCode = async (req, res) => {
+  const { company_code, vendor_code } = req.body;
+
+  try {
+    // Connect to the database
+    const pool = await connection.connectToDatabase();
+
+    // Execute the query
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "AVC")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("vendor_code", sql.NVarChar, vendor_code)
+      .query(`EXEC sp_vendor_details_info_hdr_test @mode,@vendor_code,@company_code,'','','','','','','','','','' ,'','','','','','','',0,'','','','','','','',
+        '','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+
+    // Send response
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset); // 200 OK if data is found
+    } else {
+      res.status(404).json("Data not found"); // 404 Not Found if no data is found
+    }
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+//Code ended by Dinesh Gokul on 11-11-2026 
 
 module.exports = {
   login,
@@ -34959,6 +35010,7 @@ module.exports = {
   getCustomerGroupCode,
   getItemGroupCode,
   getVendorGroupCode,
-  getVoucherType
+  getVoucherType,
+  getAllVendorCode
 
 };

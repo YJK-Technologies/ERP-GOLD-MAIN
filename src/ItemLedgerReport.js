@@ -12,6 +12,7 @@ import "./test.css";
 import LoadingScreen from "./Loading";
 import { useNavigate } from "react-router-dom";
 import InventoryReturnItemPopup from './InvReturnItemPopup';
+import LZString from "lz-string";
 
 const config = require("./Apiconfig");
 
@@ -221,6 +222,16 @@ const DEMO_ROW_DATA = [
     },
 ];
 
+const formatDate = (isoDateString) => {
+        if (!isoDateString) return "";
+        const date = new Date(isoDateString);
+        if (isNaN(date.getTime())) return isoDateString;
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${day}-${month}-${year}`;
+    };
+
 const getFirstDayOfMonth = () => {
     const now = new Date();
     const year = now.getFullYear();
@@ -257,6 +268,9 @@ function ItemLedgerReport() {
     const [serialNo, setSerialNo] = useState("");
     const [documentNo, setDocumentNo] = useState("");
     const [showZeroQty, setShowZeroQty] = useState(false);
+
+    const companyName = sessionStorage.getItem('selectedCompanyName');
+    const [selectedItemCode, setSelectedItemCode] = useState(null);
 
     // Data & AG Grid States
     const [rowData, setRowData] = useState(DEMO_ROW_DATA);
@@ -319,11 +333,28 @@ function ItemLedgerReport() {
         setWarehouse(selectedWarehouse ? selectedWarehouse.value : "");
     };
 
+    // useEffect(() => {
+    //     fetch(`${config.apiBaseUrl}/getWarehouseCodeDrop`)
+    //         .then((data) => data.json())
+    //         .then((val) => setWarehousedrop(val));
+    // }, []);
+
     useEffect(() => {
-        fetch(`${config.apiBaseUrl}/getWarehouseCodeDrop`)
-            .then((data) => data.json())
-            .then((val) => setWarehousedrop(val));
-    }, []);
+            const company_code = sessionStorage.getItem("selectedCompanyCode");
+            const location_code = sessionStorage.getItem("selectedLocationCode");
+    
+            fetch(`${config.apiBaseUrl}/getWarehouseCodeDrop`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ company_code, location_code }),
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    setWarehousedrop(data);
+                })
+                .catch((err) => console.error("Error fetching status dropdown:", err));
+        }, []);
+
     const filteredOptionTransaction = Transactiondrop.map((option) => ({
         value: option.attributedetails_name,
         label: option.attributedetails_name,
@@ -579,19 +610,82 @@ const handleItemCode = (selectedData) => {
     };
 
     // Export handlers
-    const handleExportToExcel = () => {
-        if (!rowData || rowData.length === 0) {
-            toast.warning("No data available to export");
-            return;
-        }
-        const ws = XLSX.utils.json_to_sheet(rowData);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "ItemLedger");
-        XLSX.writeFile(wb, `ItemLedger_${fromDate}_to_${toDate}.xlsx`);
-    };
+    
+const handleExportToExcel = () => {
+    if (!rowData || rowData.length === 0) {
+        toast.warning("No data available to export");
+        return;
+    }
+
+    // 1. Excel Header Information
+    const headerData = [
+        ['Item Ledger Report'],
+        [`Company Name: ${selectedCompany?.label || companyName}`],
+        [`Item Code: ${itemCode?.label || ''}`],
+        [`Date Range: ${formatDate(fromDate)} to ${formatDate(toDate)}`],
+        []
+    ];
+
+    // 2. Prepare Export Data
+    const exportRows = rowData.map((row) => ({
+        ...row
+    }));
+
+    // 3. Create Worksheet with Header
+    const worksheet = XLSX.utils.aoa_to_sheet(headerData);
+
+    // 4. Add Table Data Starting from Row 6
+    XLSX.utils.sheet_add_json(worksheet, exportRows, {
+        origin: 'A6'
+    });
+
+    // 5. Create Workbook
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        'ItemLedger'
+    );
+
+    // 6. Export Excel File
+    XLSX.writeFile(
+        workbook,
+        `ItemLedger_${fromDate}_to_${toDate}.xlsx`
+    );
+};
+
 
     const handlePrint = () => {
-        window.print();
+        if (!rowData || rowData.length === 0) {
+            toast.warning("No records available to print.");
+            return;
+        }
+
+        // Capture ALL current input field values from the state
+        const filtersPayload = {
+            companyName: sessionStorage.getItem("selectedCompanyName") || selectedCompany?.label || "Company Name",
+            warehouse: selectedWarehouse?.label || "All",
+            itemCode: itemCode || "All",
+            category: category?.label || "All",
+            group: group?.label || "All",
+            fromDate: fromDate,
+            toDate: toDate,
+            transactionType: selectedTransaction?.label || "All",
+            batchNo: batchNo || "All",
+            serialNo: serialNo || "All",
+            documentNo: documentNo || "All",
+            status: selectedStatus?.label || "Posted",
+            showZeroQty: showZeroQty ? "Yes" : "No"
+        };
+
+        // Compress and store the filters and grid data in localStorage
+        localStorage.setItem("ItemLedgerFilters", LZString.compressToUTF16(JSON.stringify(filtersPayload)));
+        localStorage.setItem("ItemLedgerRows", LZString.compressToUTF16(JSON.stringify(rowData)));
+        localStorage.setItem("ItemLedgerMetrics", LZString.compressToUTF16(JSON.stringify(summaryData)));
+
+        // Open the new print screen in a new tab
+        window.open("/ItemLedPrint", "_blank"); // Ensure this matches your App.js route!
     };
 
     // Reusable custom select styles to match existing app look
@@ -1122,7 +1216,7 @@ const handleItemCode = (selectedData) => {
           </div>
         </div> */}
 
-                {/* <div className="ag-theme-quartz" style={{ height: 455, width: "100%" }}>
+                <div className="ag-theme-quartz" style={{ height: 455, width: "100%" }}>
                     <AgGridReact
                         rowData={rowData}
                         columnDefs={columnDefs}
@@ -1133,7 +1227,7 @@ const handleItemCode = (selectedData) => {
                         rowSelection="multiple"
                         suppressRowClickSelection={true}
                     />
-                </div> */}
+                </div>
                 <div>
                         <InventoryReturnItemPopup open={open1} handleClose={handleClose} handleItem={handleItemCode} />
                         

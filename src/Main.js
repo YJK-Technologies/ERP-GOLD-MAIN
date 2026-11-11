@@ -218,6 +218,9 @@ import CusLedRepPrint from './PrintScreens/VRETemplate/CustomerLedgerPrint.js'
 import JVPopup from './JVPopup.js'
 import TrialBalanceReport from './TrialBalanceReport.js'
 import TrialBalancePrint from './PrintScreens/VRETemplate/TrialBalancePrint.js'
+import ItemLedgerPrint from './PrintScreens/VRETemplate/ItemLedgerPrint.js'
+import VendorLedger from './VendorLedger.js'
+import VendorLedgerPrint from './PrintScreens/VRETemplate/VendorLedgerPrint.js'
 
 function Main() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
@@ -476,6 +479,9 @@ function Main() {
      { path: "/JVPopup", component: <JVPopup /> },
      { path: "/TriBalRep", component: <TrialBalanceReport /> },
      { path: "/TriBalPrint", component: <TrialBalancePrint /> },
+     { path: "/ItemLedPrint", component: <ItemLedgerPrint /> },
+     { path: "/VenLedRep", component: <VendorLedger /> },
+     { path: "/VenLedPrint", component: <VendorLedgerPrint /> },
   ];
  
   return (
