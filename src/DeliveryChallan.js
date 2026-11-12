@@ -228,10 +228,27 @@ function DeliveryChallan() {
         label: option.attributedetails_name,
     }));
 
-    const filteredOptionScreens = screensDrop.map((option) => ({
-        value: option.attributedetails_name,
-        label: option.attributedetails_name,
-    }));
+    // const filteredOptionScreens = screensDrop.map((option) => ({
+    //     value: option.attributedetails_name,
+    //     label: option.attributedetails_name,
+    // }));
+
+    // For permission-based filtering of screens, we can filter the screensDrop array based on the user's permissions. If the user has 'all permission', they can see all options. Otherwise, we check if the specific option is included in their permissions.
+  const filteredOptionScreens = screensDrop
+  .filter((option) => {
+    // Convert the backend option to lowercase to match the DcPermission array
+    const optionName = option.attributedetails_name.toLowerCase();
+    
+    // Check if the user has 'all permission' or the specific right (e.g., 'add', 'delete')
+    return (
+      DcPermission.includes('all permission') || 
+      DcPermission.includes(optionName)
+    );
+  })
+  .map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
 
     const onCellValueChangedBillTo = (params) => {
         if (params.data.fieldName === "Customer Code") {
