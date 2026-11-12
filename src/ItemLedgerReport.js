@@ -1216,7 +1216,7 @@ const handleExportToExcel = () => {
           </div>
         </div> */}
 
-                <div className="ag-theme-quartz" style={{ height: 455, width: "100%" }}>
+                {/* <div className="ag-theme-quartz" style={{ height: 455, width: "100%" }}>
                     <AgGridReact
                         rowData={rowData}
                         columnDefs={columnDefs}
@@ -1227,7 +1227,7 @@ const handleExportToExcel = () => {
                         rowSelection="multiple"
                         suppressRowClickSelection={true}
                     />
-                </div>
+                </div> */}
                 <div>
                         <InventoryReturnItemPopup open={open1} handleClose={handleClose} handleItem={handleItemCode} />
                         
