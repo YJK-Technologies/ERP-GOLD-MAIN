@@ -1833,7 +1833,8 @@ function Payment() {
                   />
                 </div>
 
-                {saveButtonVisible &&
+                {/* Commented for removing permission check for save button, as per the requirement. */}
+                {/* {saveButtonVisible &&
                   ["add", "all permission"].some((permission) =>
                     PaymentPermission.includes(permission),
                   ) && (
@@ -1845,7 +1846,17 @@ function Payment() {
                     >
                       <i className="fa-regular fa-floppy-disk"></i>
                     </savebutton>
-                  )}
+                  )} */}
+
+                {/* Added for removing permission check for save button, as per the requirement. */}
+                    <savebutton
+                      type="button"
+                      className="purbut"
+                      title="Save Note"
+                      onClick={handleSaveButtonClick}
+                    >
+                      <i className="fa-regular fa-floppy-disk"></i>
+                    </savebutton>
 
                 {updateButtonVisible &&
                   ["update", "all permission"].some((permission) =>

@@ -3599,7 +3599,9 @@ function PurchaseOrder() {
                     styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }), }}
                   />
                 </div>
-                {["add", "all permission"].some((permission) =>
+
+                {/* Commented for removing permission check for save button, as per the requirement. */}
+                {/* {["add", "all permission"].some((permission) =>
                   purchaseOrderPermission.includes(permission),
                 ) && (
                     <savebutton
@@ -3609,7 +3611,17 @@ function PurchaseOrder() {
                     >
                       <i class="fa-regular fa-floppy-disk"></i>
                     </savebutton>
-                  )}
+                  )} */}
+
+                  {/* Added for removing permission check for save button, as per the requirement. */}
+                  <savebutton
+                      className="purbut"
+                      onClick={handleMasterAction}
+                      title="Save / Update"
+                    >
+                      <i class="fa-regular fa-floppy-disk"></i>
+                  </savebutton>
+                  
                 {/* {["update", "all permission"].some((permission) => purchaseOrderPermission.includes(permission)) && (
                     <savebutton
                       className="purbut"
@@ -3707,7 +3719,8 @@ function PurchaseOrder() {
                     <i class="fa-solid fa-list"></i>
                   </button>
                   <ul class="dropdown-menu menu">
-                    <li class="iconbutton d-flex justify-content-center text-success">
+                    {/* Commented for removing permission check for save button, as per the requirement. */}
+                    {/* <li class="iconbutton d-flex justify-content-center text-success">
                       {["add", "all permission"].some((permission) =>
                         purchaseOrderPermission.includes(permission),
                       ) && (
@@ -3715,7 +3728,15 @@ function PurchaseOrder() {
                             <i class="fa-regular fa-floppy-disk"></i>
                           </icon>
                         )}
+                    </li> */}
+
+                    {/* Added for removing permission check for save button, as per the requirement. */}
+                    <li class="iconbutton d-flex justify-content-center text-success">
+                      <icon class="icon" onClick={handleMasterAction}>
+                            <i class="fa-regular fa-floppy-disk"></i>
+                      </icon>
                     </li>
+                    
                     {/* <li class="iconbutton  d-flex justify-content-center text-danger">
                       {["delete", "all permission"].some((permission) => purchaseOrderPermission.includes(permission)) && (
                         <icon class="icon" onClick={handleDeleteButtonClick}>
