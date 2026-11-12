@@ -69,11 +69,6 @@ function AssetsReturn({ }) {
     setScreens(selected?.value || "");
   };
 
-  const filteredOptionScreens = (Array.isArray(screensDrop) ? screensDrop : []).map((option) => ({
-    value: option.descriptions,
-    label: option.attributedetails_name,
-  }));
-
   const fetchAmendmentNumbers = async (billNo) => {
     if (!billNo || !String(billNo).trim()) {
       setAmendmentNoDrop([]);
@@ -221,6 +216,28 @@ function AssetsReturn({ }) {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
+
+  // const filteredOptionScreens = (Array.isArray(screensDrop) ? screensDrop : []).map((option) => ({
+  //   value: option.descriptions,
+  //   label: option.attributedetails_name,
+  // }));
+
+  // For permission-based filtering of screens, we can filter the screensDrop array based on the user's permissions. If the user has 'all permission', they can see all options. Otherwise, we check if the specific option is included in their permissions.
+  const filteredOptionScreens = screensDrop
+  .filter((option) => {
+    // Convert the backend option to lowercase to match the purchasePermission array
+    const optionName = option.attributedetails_name.toLowerCase();
+    
+    // Check if the user has 'all permission' or the specific right (e.g., 'add', 'delete')
+    return (
+      purchasePermission.includes('all permission') || 
+      purchasePermission.includes(optionName)
+    );
+  })
+  .map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
 
   const columnDefs = [
     {

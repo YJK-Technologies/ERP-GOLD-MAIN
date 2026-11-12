@@ -518,7 +518,25 @@ function DebitCreditNote() {
                     label: `${opt.customer_code} - ${opt.customer_name}`
                 }))
                 : [];
-    const filteredOptionScreens = screensDrop.map((opt) => ({ value: opt.attributedetails_name, label: opt.attributedetails_name }));
+    // const filteredOptionScreens = screensDrop.map((opt) => ({ value: opt.attributedetails_name, label: opt.attributedetails_name }));
+
+    // For permission-based filtering of screens, we can filter the screensDrop array based on the user's permissions. If the user has 'all permission', they can see all options. Otherwise, we check if the specific option is included in their permissions.
+  const filteredOptionScreens = screensDrop
+  .filter((option) => {
+    // Convert the backend option to lowercase to match the purchasePermission array
+    const optionName = option.attributedetails_name.toLowerCase();
+    
+    // Check if the user has 'all permission' or the specific right (e.g., 'add', 'delete')
+    return (
+      DebitCreditNotePermission.includes('all permission') || 
+      DebitCreditNotePermission.includes(optionName)
+    );
+  })
+  .map((option) => ({
+    value: option.attributedetails_name,
+    label: option.attributedetails_name,
+  }));
+
     const filteredOptionauthorization = authorizationDrop.map((opt) => ({ value: opt.attributedetails_name, label: opt.attributedetails_name }));
     const filteredOptionPartyType = partyTypeDrop.map((opt) => ({ value: opt.attributedetails_name, label: opt.attributedetails_name }));
     const filteredOptionRefType = refTypeDrop.map((opt) => ({ value: opt.attributedetails_name, label: opt.attributedetails_name }));
