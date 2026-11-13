@@ -27,6 +27,8 @@ function JournalVoucher() {
   const [refNo, setRefNo] = useState("");
   const [narration, setNarration] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [showAsterisk, setShowAsterisk] = useState(false);
 
   // Popup State Variables
   const [openCOAPopup, setOpenCOAPopup] = useState(false);
@@ -215,6 +217,7 @@ function JournalVoucher() {
 
   const validatePayload = () => {
     if (!voucherDate) {
+      setError(" ");
       toast.warning("Error: Missing required fields (Voucher Date)");
       return null;
     }
@@ -502,9 +505,16 @@ function JournalVoucher() {
           
           <div className="col-md-2 mb-2">
             <div className="exp-form-floating">
-              <label>
+              {/* <label>
                 Voucher No <span className="text-danger">*</span>
-              </label>
+              </label> */}
+              <label
+                          for="cno"
+                          class="exp-form-labels"
+                          className={`${error && !voucherNo ? "text-danger" : ""}`}
+                        >
+                          Voucher No<span className="text-danger">*</span>
+                        </label>
               <div className="d-flex justify-content-end position-relative">
                 <input 
                   type="text" 
@@ -531,7 +541,8 @@ function JournalVoucher() {
           
           <div className="col-md-2 mb-2">
             <div className="exp-form-floating">
-              <label>Voucher Date <span className="text-danger">*</span></label>
+              {/* <label>Voucher Date <span className="text-danger">*</span></label> */}
+              <label htmlFor="" className={`${error && !voucherDate ? 'red' : ''}`}>Voucher Date{!showAsterisk && <span className="text-danger">*</span>}</label>
               <input type="date" className="exp-input-field form-control" value={voucherDate} onChange={(e) => setVoucherDate(e.target.value)} />
             </div>
           </div>
