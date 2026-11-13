@@ -3476,14 +3476,22 @@ function TaxInvoice() {
                     styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }), }}
                   />
                 </div>
-                {
+
+                {/* Commented for removing permission check for save button, as per the requirement. */}
+                {/* {
                   ["add", "all permission"].some((permission) =>
                     purchasePermission.includes(permission),
                   ) && (
                     <savebutton className="purbut" onClick={handleMasterAction} title="save" >
                       <i class="fa-regular fa-floppy-disk"></i>
                     </savebutton>
-                  )}
+                  )} */}
+
+                {/* Added for removing permission check for save button, as per the requirement. */}
+                    <savebutton className="purbut" onClick={handleMasterAction} title="save" >
+                      <i class="fa-regular fa-floppy-disk"></i>
+                    </savebutton>
+
                 {
                   ["all permission", "view"].some((permission) =>
                     purchasePermission.includes(permission),
@@ -3520,7 +3528,9 @@ function TaxInvoice() {
                     <i class="fa-solid fa-list"></i>
                   </button>
                   <ul class="dropdown-menu menu">
-                    {(
+
+                    {/* Commented for removing permission check for save button, as per the requirement. */}
+                    {/* {(
                       <li class="iconbutton d-flex justify-content-center text-success">
                         {["add", "all permission"].some((permission) =>
                           purchasePermission.includes(permission),
@@ -3530,7 +3540,15 @@ function TaxInvoice() {
                             </icon>
                           )}
                       </li>
-                    )}
+                    )} */}
+
+                    {/* Added for removing permission check for save button, as per the requirement. */}
+                      <li class="iconbutton d-flex justify-content-center text-success">
+                            <icon class="icon" onClick={handleMasterAction}>
+                              <i class="fa-regular fa-floppy-disk"></i>
+                            </icon>
+                      </li>
+
                     <li class="iconbutton  d-flex justify-content-center text-warning">
                       {["all permission", "view"].some((permission) =>
                         purchasePermission.includes(permission),
