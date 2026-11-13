@@ -1273,7 +1273,9 @@ function JournalGrid() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ journal_no: JournalNo }),
+        body: JSON.stringify({ journal_no: JournalNo,  
+          // company_code: sessionStorage.getItem('selectedCompanyCode')
+        }),
       });
 
       if (response.ok) {
@@ -1306,6 +1308,7 @@ function JournalGrid() {
         setRowData(newRowData);
       } else if (response.status === 404) {
         console.log("Data not found");
+        toast.warning("Data not found")
       } else {
         console.log("Bad request");
       }
@@ -1432,7 +1435,7 @@ function JournalGrid() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ journal_no: code }),
+        body: JSON.stringify({ journal_no: code, company_code: sessionStorage.getItem('selectedCompanyCode') }),
       });
       if (response.ok) {
         setSaveButtonVisible(false);
@@ -1473,11 +1476,7 @@ function JournalGrid() {
 
         console.log("data fetched successfully");
       } else if (response.status === 404) {
-        Swal.fire({
-          icon: "error",
-          title: "Data not found",
-          text: "The requested data could not be found.",
-        });
+        toast.warning("Data not found")
 
         settransaction_date("");
         setjournal_no("");
