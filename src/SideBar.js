@@ -2246,6 +2246,32 @@ const Sidebar = () => {
                   </Link>
                 )}
               </div>
+              <div className=" ms-3">
+                {screenType.includes("BalSheRep") && (
+                  <Link
+                    to="/BalSheRep"
+                    className="nav-link"
+                    title="Balance Sheet"
+                  >
+                    <div class="menu-item">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        fill="currentColor"
+                        className="me-4"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M4 3h16a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm1 2v3h14V5H5zm0 5v3h6v-3H5zm8 0v3h6v-3h-6zm-8 5v3h6v-3H5zm8 0v3h6v-3h-6z" />
+                      </svg>
+                      <span className={collapsed ? "hidden" : ""}>
+                        {" "}
+                        Balance Sheet
+                      </span>
+                    </div>
+                  </Link>
+                )}
+              </div>
             </div>
           </>
         )}
