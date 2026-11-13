@@ -223,14 +223,14 @@ const DEMO_ROW_DATA = [
 ];
 
 const formatDate = (isoDateString) => {
-        if (!isoDateString) return "";
-        const date = new Date(isoDateString);
-        if (isNaN(date.getTime())) return isoDateString;
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${day}-${month}-${year}`;
-    };
+    if (!isoDateString) return "";
+    const date = new Date(isoDateString);
+    if (isNaN(date.getTime())) return isoDateString;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${day}-${month}-${year}`;
+};
 
 const getFirstDayOfMonth = () => {
     const now = new Date();
@@ -294,13 +294,13 @@ function ItemLedgerReport() {
 
     const handleItemCodePopUp = () => {
         console.log("Item Code Help clicked");
-    setOpen1(true);
-  };
+        setOpen1(true);
+    };
 
     const handleClose = () => {
-    setOpen1(false);
-    setOpen2(false);
-  };
+        setOpen1(false);
+        setOpen2(false);
+    };
 
     //   Dropdown
     const filteredOptionCompany = Array.isArray(companynodrop)
@@ -340,20 +340,20 @@ function ItemLedgerReport() {
     // }, []);
 
     useEffect(() => {
-            const company_code = sessionStorage.getItem("selectedCompanyCode");
-            const location_code = sessionStorage.getItem("selectedLocationCode");
-    
-            fetch(`${config.apiBaseUrl}/getWarehouseCodeDrop`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ company_code, location_code }),
+        const company_code = sessionStorage.getItem("selectedCompanyCode");
+        const location_code = sessionStorage.getItem("selectedLocationCode");
+
+        fetch(`${config.apiBaseUrl}/getWarehouseCodeDrop`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ company_code, location_code }),
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                setWarehousedrop(data);
             })
-                .then((res) => res.json())
-                .then((data) => {
-                    setWarehousedrop(data);
-                })
-                .catch((err) => console.error("Error fetching status dropdown:", err));
-        }, []);
+            .catch((err) => console.error("Error fetching status dropdown:", err));
+    }, []);
 
     const filteredOptionTransaction = Transactiondrop.map((option) => ({
         value: option.attributedetails_name,
@@ -407,7 +407,7 @@ function ItemLedgerReport() {
             );
     }, []);
 
-const handleItemCode = (selectedData) => {
+    const handleItemCode = (selectedData) => {
         // The popup passes an array of selected items to handleItem
         if (selectedData && selectedData.length > 0) {
             const selected = selectedData[0];
@@ -610,55 +610,68 @@ const handleItemCode = (selectedData) => {
     };
 
     // Export handlers
-    
-const handleExportToExcel = () => {
-    if (!rowData || rowData.length === 0) {
-        toast.warning("No data available to export");
-        return;
-    }
 
-    // 1. Excel Header Information
-    const headerData = [
-        ['Item Ledger Report'],
-        [`Company Name: ${selectedCompany?.label || companyName}`],
-        [`Item Code: ${itemCode?.label || ''}`],
-        [`Date Range: ${formatDate(fromDate)} to ${formatDate(toDate)}`],
-        []
-    ];
+    const handleExportToExcel = () => {
+        if (!rowData || rowData.length === 0) {
+            toast.warning("No data available to export");
+            return;
+        }
 
-    // 2. Prepare Export Data
-    const exportRows = rowData.map((row) => ({
-        ...row
-    }));
+        // 1. Excel Header Information
+        const headerData = [
+            ['Item Ledger Report'],
+            [`Company Name: ${selectedCompany?.label || companyName}`],
+            [`Item Code: ${itemCode || ''}`],
+            [`Date Range: ${formatDate(fromDate)} to ${formatDate(toDate)}`],
+            []
+        ];
 
-    // 3. Create Worksheet with Header
-    const worksheet = XLSX.utils.aoa_to_sheet(headerData);
+        // 2. Prepare Export Data
+        const exportRows = rowData.map((row) => ({
+            ...row
+        }));
 
-    // 4. Add Table Data Starting from Row 6
-    XLSX.utils.sheet_add_json(worksheet, exportRows, {
-        origin: 'A6'
-    });
+        // 3. Create Worksheet with Header
+        const worksheet = XLSX.utils.aoa_to_sheet(headerData);
 
-    // 5. Create Workbook
-    const workbook = XLSX.utils.book_new();
+        // 4. Add Table Data Starting from Row 6
+        XLSX.utils.sheet_add_json(worksheet, exportRows, {
+            origin: 'A6'
+        });
 
-    XLSX.utils.book_append_sheet(
-        workbook,
-        worksheet,
-        'ItemLedger'
-    );
+        // 5. Create Workbook
+        const workbook = XLSX.utils.book_new();
 
-    // 6. Export Excel File
-    XLSX.writeFile(
-        workbook,
-        `ItemLedger_${fromDate}_to_${toDate}.xlsx`
-    );
-};
+        XLSX.utils.book_append_sheet(
+            workbook,
+            worksheet,
+            'ItemLedger'
+        );
+
+        // 6. Export Excel File
+        XLSX.writeFile(
+            workbook,
+            `ItemLedger_${fromDate}_to_${toDate}.xlsx`
+        );
+    };
 
 
     const handlePrint = () => {
         if (!rowData || rowData.length === 0) {
             toast.warning("No records available to print.");
+            return;
+        }
+
+        if (!fromDate) {
+            toast.warning("Please select a From Date before printing.");
+            return;
+        }
+        if (!toDate) {
+            toast.warning("Please select a To Date before printing.");
+            return;
+        }
+        if (new Date(fromDate) > new Date(toDate)) {
+            toast.warning("From Date cannot be greater than To Date.");
             return;
         }
 
@@ -871,17 +884,17 @@ const handleExportToExcel = () => {
     title="Item Code Help"
     onClick={ handleItemCodePopUp}
 ></i> */}
-<div className='position-absolute md-2' style={{ right: "8px", top: "50%", transform: "translateY(-50%)", cursor: "pointer", pointerEvents: "auto", zIndex: 10 }}>
-                    <span className="icon searchIcon"
-                      title='Inventory Return Help'
-                      onClick={handleItemCodePopUp}>
-                      <i class="fa fa-search"></i>
-                    </span>
-                  </div>
+                                <div className='position-absolute md-2' style={{ right: "8px", top: "50%", transform: "translateY(-50%)", cursor: "pointer", pointerEvents: "auto", zIndex: 10 }}>
+                                    <span className="icon searchIcon"
+                                        title='Open the Item Help'
+                                        onClick={handleItemCodePopUp}>
+                                        <i class="fa fa-search"></i>
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
-                        
+
 
                         <div className="col-md-2 form-group text-start">
                             <label className="form-label">Item Category</label>
@@ -899,7 +912,7 @@ const handleExportToExcel = () => {
                             </div>
                         </div>
 
-                    {/* Row 2 */}
+                        {/* Row 2 */}
                         <div className="col-md-2 form-group text-start">
                             <label className="form-label">Item Group</label>
                             <div title="Select Item Group">
@@ -917,7 +930,7 @@ const handleExportToExcel = () => {
                         </div>
 
                         <div className="col-md-2 form-group text-start">
-                            <label className="form-label">From Date *</label>
+                            <label className="form-label">From Date <span className="text-danger">*</span></label>
                             <input
                                 id="fromDate"
                                 className="exp-input-field form-control"
@@ -931,7 +944,7 @@ const handleExportToExcel = () => {
                         </div>
 
                         <div className="col-md-2 form-group text-start">
-                            <label className="form-label">To Date *</label>
+                            <label className="form-label">To Date <span className="text-danger">*</span></label>
                             <input
                                 id="toDate"
                                 className="exp-input-field form-control"
@@ -997,7 +1010,7 @@ const handleExportToExcel = () => {
                                 ></i>
                             </div>
                         </div>
-                    
+
                         <div className="col-md-2 form-group text-start">
                             <label className="form-label">Document No.</label>
                             <div className="position-relative" title="Search Document No">
@@ -1192,7 +1205,7 @@ const handleExportToExcel = () => {
 
             {/* Item Ledger Table Header Bar & Grid */}
             {/* <div className="card shadow-sm border-0 rounded-2 overflow-hidden"> */}
-                {/* <div
+            {/* <div
           className="d-flex justify-content-between align-items-center px-3 py-2 text-white"
           style={{ backgroundColor: "#0266b3" }}
         >
@@ -1216,7 +1229,7 @@ const handleExportToExcel = () => {
           </div>
         </div> */}
 
-                {/* <div className="ag-theme-quartz" style={{ height: 455, width: "100%" }}>
+            {/* <div className="ag-theme-quartz" style={{ height: 455, width: "100%" }}>
                     <AgGridReact
                         rowData={rowData}
                         columnDefs={columnDefs}
@@ -1228,10 +1241,10 @@ const handleExportToExcel = () => {
                         suppressRowClickSelection={true}
                     />
                 </div> */}
-                <div>
-                        <InventoryReturnItemPopup open={open1} handleClose={handleClose} handleItem={handleItemCode} />
-                        
-                      </div>
+            <div>
+                <InventoryReturnItemPopup open={open1} handleClose={handleClose} handleItem={handleItemCode} />
+
+            </div>
             {/* </div> */}
         </div>
     );

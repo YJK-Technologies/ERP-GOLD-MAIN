@@ -27,6 +27,19 @@ const CustomerLedger = () => {
         return `${day}-${month}-${year}`;
     };
 
+    const getCurrentFinancialYearDates = () => {
+        const today = new Date();
+        const currentYear = today.getFullYear();
+
+        const financialYearStart =
+            today.getMonth() >= 3 ? currentYear : currentYear - 1;
+
+        return {
+            fromDate: `${financialYearStart}-04-01`,
+            toDate: `${financialYearStart + 1}-03-31`
+        };
+    };
+
     const [loading, setLoading] = useState(false);
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
@@ -45,8 +58,10 @@ const CustomerLedger = () => {
     //   const [customerName, setCustomerName] = useState("ABC Industries");
     const [gstin, setGstin] = useState("");
     //   const [selectedCurrency, setSelectedCurrency] = useState({ value: "INR", label: "INR - Indian Rupee" });
-    const [fromDate, setFromDate] = useState("2026-04-01");
-    const [toDate, setToDate] = useState("2027-03-31");
+    const currentFinancialYearDates = getCurrentFinancialYearDates();
+
+    const [fromDate, setFromDate] = useState(currentFinancialYearDates.fromDate);
+    const [toDate, setToDate] = useState(currentFinancialYearDates.toDate);
     const [selectedBranch, setSelectedBranch] = useState({ value: "All Branches", label: "All Branches" });
     const [selectedVoucherType, setSelectedVoucherType] = useState(null);
     const [selectedStatus, setSelectedStatus] = useState({ value: "Posted", label: "Posted" });
@@ -597,96 +612,96 @@ const CustomerLedger = () => {
     };
 
     // Export to Excel
-    
-const handleExportToExcel = async () => {
 
-    // 1. Validate Customer Code
-    if (!customerCode) {
-        toast.warning("Please select a Customer Code before exporting.");
-        return;
-    }
+    const handleExportToExcel = async () => {
 
-    // 2. Validate Financial Year
-    if (!selectedFinancialYearId || !selectedFinancialYearId.value) {
-        toast.warning("Please select a Financial Year before exporting.");
-        return;
-    }
+        // 1. Validate Customer Code
+        if (!customerCode) {
+            toast.warning("Please select a Customer Code before exporting.");
+            return;
+        }
 
-    // 3. Validate From Date
-    if (!fromDate) {
-        toast.warning("Please select a From Date before exporting.");
-        return;
-    }
+        // 2. Validate Financial Year
+        if (!selectedFinancialYearId || !selectedFinancialYearId.value) {
+            toast.warning("Please select a Financial Year before exporting.");
+            return;
+        }
 
-    // 4. Validate To Date
-    if (!toDate) {
-        toast.warning("Please select a To Date before exporting.");
-        return;
-    }
+        // 3. Validate From Date
+        if (!fromDate) {
+            toast.warning("Please select a From Date before exporting.");
+            return;
+        }
 
-    // 5. Validate Date Range
-    if (fromDate > toDate) {
-        toast.warning("From Date cannot be greater than To Date.");
-        return;
-    }
+        // 4. Validate To Date
+        if (!toDate) {
+            toast.warning("Please select a To Date before exporting.");
+            return;
+        }
 
-    // 6. Fetch ledger data directly from backend
-    const data = await fetchLedgerData();
+        // 5. Validate Date Range
+        if (fromDate > toDate) {
+            toast.warning("From Date cannot be greater than To Date.");
+            return;
+        }
 
-    // Stop if no data is returned
-    if (!data || !data.rows || data.rows.length === 0) {
-        return;
-    }
+        // 6. Fetch ledger data directly from backend
+        const data = await fetchLedgerData();
 
-    // 7. Prepare Excel Header
-    const headerData = [
-        ['Customer Ledger Report'],
-        [`Company Name: ${companyName}`],
-        [`Customer: ${customerCode} - ${customerName}`],
-        [`Financial Year: ${selectedFinancialYearId?.label || ''}`],
-        [`Date Range: ${formatDate(fromDate)} to ${formatDate(toDate)}`],
-        []
-    ];
+        // Stop if no data is returned
+        if (!data || !data.rows || data.rows.length === 0) {
+            return;
+        }
 
-    // 8. Prepare Export Rows using freshly fetched data
-    const exportRows = data.rows
-        .filter((row) => !row.isTotalRow)
-        .map((row) => ({
-            "S.No": row.s_no || "",
-            "Date": row.date,
-            "Voucher No": row.voucher_no,
-            "Type": row.type,
-            "Reference No": row.reference_no,
-            "Description": row.description,
-            "Debit (₹)": row.debit,
-            "Credit (₹)": row.credit,
-            "Balance (₹)": row.balance,
-        }));
+        // 7. Prepare Excel Header
+        const headerData = [
+            ['Customer Ledger Report'],
+            [`Company Name: ${companyName}`],
+            [`Customer: ${customerCode} - ${customerName}`],
+            [`Financial Year: ${selectedFinancialYearId?.label || ''}`],
+            [`Date Range: ${formatDate(fromDate)} to ${formatDate(toDate)}`],
+            []
+        ];
 
-    // 9. Create Worksheet
-    const worksheet = XLSX.utils.aoa_to_sheet(headerData);
+        // 8. Prepare Export Rows using freshly fetched data
+        const exportRows = data.rows
+            .filter((row) => !row.isTotalRow)
+            .map((row) => ({
+                "S.No": row.s_no || "",
+                "Date": row.date,
+                "Voucher No": row.voucher_no,
+                "Type": row.type,
+                "Reference No": row.reference_no,
+                "Description": row.description,
+                "Debit (₹)": row.debit,
+                "Credit (₹)": row.credit,
+                "Balance (₹)": row.balance,
+            }));
 
-    XLSX.utils.sheet_add_json(worksheet, exportRows, {
-        origin: 'A7'
-    });
+        // 9. Create Worksheet
+        const worksheet = XLSX.utils.aoa_to_sheet(headerData);
 
-    // 10. Create Workbook
-    const workbook = XLSX.utils.book_new();
+        XLSX.utils.sheet_add_json(worksheet, exportRows, {
+            origin: 'A7'
+        });
 
-    XLSX.utils.book_append_sheet(
-        workbook,
-        worksheet,
-        'Customer_Ledger'
-    );
+        // 10. Create Workbook
+        const workbook = XLSX.utils.book_new();
 
-    // 11. Download Excel File
-    XLSX.writeFile(
-        workbook,
-        `Customer_Ledger_${customerCode || 'Report'}.xlsx`
-    );
+        XLSX.utils.book_append_sheet(
+            workbook,
+            worksheet,
+            'Customer_Ledger'
+        );
 
-    // toast.success("Customer Ledger exported successfully.");
-};
+        // 11. Download Excel File
+        XLSX.writeFile(
+            workbook,
+            `Customer_Ledger_${customerCode || 'Report'}.xlsx`
+        );
+
+        // toast.success("Customer Ledger exported successfully.");
+    };
 
 
     return (
@@ -746,7 +761,7 @@ const handleExportToExcel = async () => {
             <div className="shadow-lg p-3 bg-body-tertiary rounded mb-2 mt-2">
                 {/* ROW 1: Company, Financial Year, Customer */}
                 <div className="row ms-2 me-2 mb-3">
-                    <div className="col-md-2 form-group text-start">
+                    <div className="col-md-2 form-group text-start" title="Select the Financial Year">
                         <label className="form-label">Financial Year <span className="text-danger">*</span></label>
                         <Select
                             options={filteredOptionFinancialYear}
@@ -769,11 +784,12 @@ const handleExportToExcel = async () => {
                                     value={customerCode}
                                     maxLength={18}
                                     placeholder="Enter Customer Code"
+                                    title="Enter the Customer Code"
                                     onChange={(e) => setCustomerCode(e.target.value)}
                                     onKeyPress={handleCustomerKeyPress}
                                     autoComplete="off"
                                 />
-                                <div className="position-absolute mt-1 me-2" style={{ right: "5px", top: "50%", transform: "translateY(-50%)" }}>
+                                <div className="position-absolute mt-1 me-2" title="Open the Customer Help" style={{ right: "5px", top: "50%", transform: "translateY(-50%)" }}>
                                     <span
                                         className="icon searchIcon"
                                         style={{ cursor: "pointer" }}
@@ -793,14 +809,14 @@ const handleExportToExcel = async () => {
                             <input
                                 className="exp-input-field form-control"
                                 id="customername"
-                                required
+                                title="Customer Name Automatically Populated"
                                 value={customerName}
                                 placeholder="Customer Name"
                                 readOnly
                             />
                         </div>
                     </div>
-                    <div className="col-md-2 form-group text-start">
+                    <div className="col-md-2 form-group text-start" title="Select the Currency">
                         <label className="form-label">Currency</label>
                         <Select
                             id="currency"
@@ -824,7 +840,7 @@ const handleExportToExcel = async () => {
                                 styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                             />
                         </div> */}
-                    <div className="col-12 col-md-2">
+                    <div className="col-12 col-md-2" title="Select the Voucher Type">
                         <label className="form-label">Voucher Type</label>
                         <Select
                             options={filteredOptionVoucherType}
@@ -835,7 +851,7 @@ const handleExportToExcel = async () => {
                             styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                         />
                     </div>
-                    <div className="col-12 col-md-2">
+                    <div className="col-12 col-md-2" title="Select the Status">
                         <label className="form-label">Status</label>
                         <Select
                             options={filteredOptionScreens}
@@ -846,7 +862,7 @@ const handleExportToExcel = async () => {
                             styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                         />
                     </div>
-                    <div className="col-12 col-md-2">
+                    <div className="col-12 col-md-2" title="Select the From Date">
                         <label className="form-label">From Date <span className="text-danger">*</span></label>
                         <input
                             type="date"
@@ -855,7 +871,7 @@ const handleExportToExcel = async () => {
                             onChange={(e) => setFromDate(e.target.value)}
                         />
                     </div>
-                    <div className="col-12 col-md-2">
+                    <div className="col-12 col-md-2" title="Select the To Date">
                         <label className="form-label">To Date <span className="text-danger">*</span></label>
                         <input
                             type="date"

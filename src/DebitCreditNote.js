@@ -3147,11 +3147,17 @@ const AuthorizedHeader = async () => {
                                     />
                                 </div>
 
-                                {saveButtonVisible && ['add', 'all permission'].some(permission => DebitCreditNotePermission.includes(permission)) && (
+                                {/* Commented for removing permission check for save button, as per the requirement. */}
+                                {/* {saveButtonVisible && ['add', 'all permission'].some(permission => DebitCreditNotePermission.includes(permission)) && (
                                     <savebutton type="button" className="purbut" title="Save Note" onClick={handleSaveButtonClick}>
                                         <i className="fa-regular fa-floppy-disk"></i>
                                     </savebutton>
-                                )}
+                                )} */}
+
+                                {/* Added for removing permission check for save button, as per the requirement. */}
+                                    <savebutton type="button" className="purbut" title="Save Note" onClick={handleSaveButtonClick}>
+                                        <i className="fa-regular fa-floppy-disk"></i>
+                                    </savebutton>
 
                                 {/* {authButtonVisible && (
                                     <div className="exp-form-floating" style={{ minWidth: '160px' }} title="Select Screen Action">

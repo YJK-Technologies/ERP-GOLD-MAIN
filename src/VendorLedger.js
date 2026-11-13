@@ -26,6 +26,19 @@ const VendorLedger = () => {
         return `${day}-${month}-${year}`;
     };
 
+    const getCurrentFinancialYearDates = () => {
+        const today = new Date();
+        const currentYear = today.getFullYear();
+
+        const financialYearStart =
+            today.getMonth() >= 3 ? currentYear : currentYear - 1;
+
+        return {
+            fromDate: `${financialYearStart}-04-01`,
+            toDate: `${financialYearStart + 1}-03-31`
+        };
+    };
+
     const [loading, setLoading] = useState(false);
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
@@ -37,8 +50,10 @@ const VendorLedger = () => {
     const [selectedFY, setSelectedFY] = useState(null);
     const [selectedVendor, setSelectedVendor] = useState(null);
     const [gstin, setGstin] = useState("");
-    const [fromDate, setFromDate] = useState("2026-04-01");
-    const [toDate, setToDate] = useState("2027-03-31");
+    const currentFinancialYearDates = getCurrentFinancialYearDates();
+    
+        const [fromDate, setFromDate] = useState(currentFinancialYearDates.fromDate);
+        const [toDate, setToDate] = useState(currentFinancialYearDates.toDate);
     const [selectedBranch, setSelectedBranch] = useState({ value: "All Branches", label: "All Branches" });
     const [selectedVoucherType, setSelectedVoucherType] = useState(null);
     const [selectedStatus, setSelectedStatus] = useState({ value: "Posted", label: "Posted" });
@@ -660,7 +675,7 @@ const VendorLedger = () => {
 
             <div className="shadow-lg p-3 bg-body-tertiary rounded mb-2 mt-2">
                 <div className="row ms-2 me-2 mb-3">
-                    <div className="col-md-2 form-group text-start">
+                    <div className="col-md-2 form-group text-start" title="Select the Financial Year">
                         <label className="form-label">Financial Year <span className="text-danger">*</span></label>
                         <Select
                             options={filteredOptionFinancialYear}
@@ -679,7 +694,7 @@ const VendorLedger = () => {
                                 <input
                                     className="exp-input-field form-control justify-content-start"
                                     id="vendorcode"
-                                    required
+                                    title="Enter the Vendor Code"
                                     value={vendorCode}
                                     maxLength={18}
                                     placeholder="Enter Vendor Code"
@@ -706,14 +721,14 @@ const VendorLedger = () => {
                             <input
                                 className="exp-input-field form-control"
                                 id="vendorname"
-                                required
+                                title="Vendor Name Auto-Populated"
                                 value={vendorName}
                                 placeholder="Vendor Name"
                                 readOnly
                             />
                         </div>
                     </div>
-                    <div className="col-md-2 form-group text-start">
+                    <div className="col-md-2 form-group text-start" title="Select the Currency">
                         <label className="form-label">Currency</label>
                         <Select
                             id="currency"
@@ -726,7 +741,7 @@ const VendorLedger = () => {
                             styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                         />
                     </div>
-                    <div className="col-12 col-md-2">
+                    <div className="col-12 col-md-2" title="Select the Voucher Type">
                         <label className="form-label">Voucher Type</label>
                         <Select
                             options={filteredOptionVoucherType}
@@ -737,7 +752,7 @@ const VendorLedger = () => {
                             styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                         />
                     </div>
-                    <div className="col-12 col-md-2">
+                    <div className="col-12 col-md-2" title="Select the Status">
                         <label className="form-label">Status</label>
                         <Select
                             options={filteredOptionScreens}
@@ -753,6 +768,7 @@ const VendorLedger = () => {
                         <input
                             type="date"
                             className="exp-input-field form-control"
+                            title="Select the From Date"
                             value={fromDate}
                             onChange={(e) => setFromDate(e.target.value)}
                         />
@@ -762,6 +778,7 @@ const VendorLedger = () => {
                         <input
                             type="date"
                             className="exp-input-field form-control"
+                            title="Select the To Date"
                             value={toDate}
                             onChange={(e) => setToDate(e.target.value)}
                         />
