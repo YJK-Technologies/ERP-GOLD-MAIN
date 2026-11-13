@@ -1028,7 +1028,9 @@ function AssetsReturn({ }) {
               />
               </div>
             </div>
-            {["add", "all permission"].some((permission) =>
+
+            {/* Commented for removing permission check for save button, as per the requirement. */}
+            {/* {["add", "all permission"].some((permission) =>
               purchasePermission.includes(permission),
             ) && (
                 <savebutton
@@ -1051,7 +1053,30 @@ function AssetsReturn({ }) {
                 >
                   <i class="fa-regular fa-floppy-disk"></i>
                 </savebutton>
-              )}
+              )} */}
+
+            {/* Added for removing permission check for save button, as per the requirement. */}
+            <savebutton
+                  className="purbut"
+                  title="save"
+                  onClick={() => {
+                    const selectedMode = Screens?.trim().toLowerCase();
+
+                    if (selectedMode === "draft") {
+                      insertSelectedRows();
+                    } else if (
+                      selectedMode === "authorized" ||
+                      selectedMode === "deleted" ||
+                      selectedMode === "short closed" ||
+                      selectedMode === "reversed"
+                    ) {
+                      authorizeSelectedRows();
+                    }
+                  }}
+                >
+                  <i class="fa-regular fa-floppy-disk"></i>
+                </savebutton>
+
             <printbutton
               className="purbut"
               title="excel"
@@ -1084,7 +1109,9 @@ function AssetsReturn({ }) {
                   </button>
 
                   <ul class="dropdown-menu menu">
-                    <li class="iconbutton  d-flex justify-content-center text-success ">
+                    
+                    {/* Commented for removing permission check for save button, as per the requirement. */}
+                    {/* <li class="iconbutton  d-flex justify-content-center text-success ">
                       {["update", "all permission"].some((permission) =>
                         purchasePermission.includes(permission),
                       ) && (
@@ -1107,7 +1134,31 @@ function AssetsReturn({ }) {
                             <i class="fa-regular fa-floppy-disk"></i>
                           </icon>
                         )}
+                    </li> */}
+
+                    {/* Added for removing permission check for save button, as per the requirement. */}
+                    <li class="iconbutton  d-flex justify-content-center text-success ">
+                          <icon class="icon"
+                            onClick={() => {
+                              const selectedMode = Screens?.trim().toLowerCase();
+
+                              if (selectedMode === "draft") {
+                                insertSelectedRows();
+                              } else if (
+                                selectedMode === "authorized" ||
+                                selectedMode === "deleted" ||
+                                selectedMode === "short closed" ||
+                                selectedMode === "reversed"
+                              ) {
+                                authorizeSelectedRows();
+                              }
+                            }}
+                          >
+                            <i class="fa-regular fa-floppy-disk"></i>
+                          </icon>
                     </li>
+
+
                     <li class="iconbutton  d-flex justify-content-center text-info">
                       <icon class="icon" onClick={handleExcelDownload}>
                         <i class="fa-solid fa-file-excel"></i>

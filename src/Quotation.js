@@ -212,20 +212,20 @@ function Quotation() {
 
   // For permission-based filtering of screens, we can filter the screensDrop array based on the user's permissions. If the user has 'all permission', they can see all options. Otherwise, we check if the specific option is included in their permissions.
   const filteredOptionScreens = screensDrop
-  .filter((option) => {
-    // Convert the backend option to lowercase to match the quotationPermission array
-    const optionName = option.attributedetails_name.toLowerCase();
-    
-    // Check if the user has 'all permission' or the specific right (e.g., 'add', 'delete')
-    return (
-      quotationPermission.includes('all permission') || 
-      quotationPermission.includes(optionName)
-    );
-  })
-  .map((option) => ({
-    value: option.attributedetails_name,
-    label: option.attributedetails_name,
-  }));
+    .filter((option) => {
+      // Convert the backend option to lowercase to match the quotationPermission array
+      const optionName = option.attributedetails_name.toLowerCase();
+
+      // Check if the user has 'all permission' or the specific right (e.g., 'add', 'delete')
+      return (
+        quotationPermission.includes('all permission') ||
+        quotationPermission.includes(optionName)
+      );
+    })
+    .map((option) => ({
+      value: option.attributedetails_name,
+      label: option.attributedetails_name,
+    }));
 
   const [headerRowData, setHeaderRowData] = useState([
     { fieldName: "Customer Code", billTo: "" },
@@ -2911,14 +2911,22 @@ function Quotation() {
                     styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                   />
                 </div>
-                {
+
+                {/* Commented for removing permission check for save button, as per the requirement. */}
+                {/* {
                   ["add", "all permission"].some((permission) =>
                     quotationPermission.includes(permission),
                   ) && (
                     <savebutton className="purbut" onClick={handleMasterAction} title="Save" >
                       <i class="fa-regular fa-floppy-disk"></i>
                     </savebutton>
-                  )}
+                  )} */}
+
+                {/* Added for removing permission check for save button, as per the requirement. */}
+                <savebutton className="purbut" onClick={handleMasterAction} title="Save" >
+                  <i class="fa-regular fa-floppy-disk"></i>
+                </savebutton>
+
                 {["all permission", "view"].some((permission) =>
                   quotationPermission.includes(permission),
                 ) && (
@@ -2949,7 +2957,9 @@ function Quotation() {
                     <i class="fa-solid fa-list"></i>
                   </button>
                   <ul class="dropdown-menu menu">
-                    {buttonsVisible && (
+
+                    {/* Commented for removing permission check for save button, as per the requirement. */}
+                    {/* {buttonsVisible && (
                       <li class="iconbutton d-flex justify-content-center text-success">
                         {["add", "all permission"].some((permission) =>
                           quotationPermission.includes(permission),
@@ -2959,7 +2969,15 @@ function Quotation() {
                             </icon>
                           )}
                       </li>
-                    )}
+                    )} */}
+
+                    {/* Added for removing permission check for save button, as per the requirement. */}
+                    <li class="iconbutton d-flex justify-content-center text-success">
+                      <icon class="icon" onClick={handleMasterAction}>
+                        <i class="fa-regular fa-floppy-disk"></i>
+                      </icon>
+                    </li>
+
                     <li class="iconbutton  d-flex justify-content-center text-warning">
                       {["all permission", "view"].some((permission) =>
                         quotationPermission.includes(permission),

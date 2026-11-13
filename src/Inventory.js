@@ -3813,11 +3813,19 @@ function Sales() {
                       />
                     </div>
                   </div>
-                  {buttonsVisible && ['add', 'all permission'].some(permission => sales.includes(permission)) && (
+
+                  {/* Commented for removing permission check for save button, as per the requirement. */}
+                  {/* {buttonsVisible && ['add', 'all permission'].some(permission => sales.includes(permission)) && (
                     <savebutton className="purbut" onClick={handleSaveButtonClick} title='Save'>
                       <i class="fa-regular fa-floppy-disk"></i>
                     </savebutton>
-                  )}
+                  )} */}
+
+                  {/* Added for removing permission check for save button, as per the requirement. */}
+                    <savebutton className="purbut" onClick={handleSaveButtonClick} title='Save'>
+                      <i class="fa-regular fa-floppy-disk"></i>
+                    </savebutton>
+
                   {authorizeButton && (
                     <savebutton className="purbut" onClick={handleAuthorizedButtonClick} title="Authorization">
                       <i class="fa-solid fa-check"></i>
@@ -3879,7 +3887,9 @@ function Sales() {
                       <i class="fa-solid fa-list"></i>
                     </button>
                     <ul class="dropdown-menu menu">
-                      {buttonsVisible && (
+
+                      {/* Commented for removing permission check for save button, as per the requirement. */}
+                      {/* {buttonsVisible && (
                         <li class="iconbutton d-flex justify-content-center text-success">
                           {['add', 'all permission'].some(permission => sales.includes(permission)) && (
                             <icon class="icon" onClick={handleSaveButtonClick}>
@@ -3887,7 +3897,15 @@ function Sales() {
                             </icon>
                           )}
                         </li>
-                      )}
+                      )} */}
+
+                      {/* Added for removing permission check for save button, as per the requirement. */}
+                        <li class="iconbutton d-flex justify-content-center text-success">
+                            <icon class="icon" onClick={handleSaveButtonClick}>
+                              <i class="fa-regular fa-floppy-disk"></i>
+                            </icon>
+                        </li>
+
                       {authorizeButton && (
                         <li class="iconbutton d-flex justify-content-center text-success">
                           <icon class="icon" onClick={handleAuthorizedButtonClick}>

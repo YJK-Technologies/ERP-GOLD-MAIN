@@ -2928,11 +2928,18 @@ function DeliveryChallan() {
                                             styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                                         />
                                     </div>
-                                    {buttonsVisible && ['add', 'all permission'].some(permission => DcPermission.includes(permission)) && (
+
+                                    {/* Commented for removing permission check for save button, as per the requirement. */}
+                                    {/* {buttonsVisible && ['add', 'all permission'].some(permission => DcPermission.includes(permission)) && (
                                         <savebutton className="purbut" onClick={handleSaveButtonClick} title='Save' >
                                             <i class="fa-regular fa-floppy-disk"></i>
                                         </savebutton>
-                                    )}
+                                    )} */}
+
+                                    {/* Added for removing permission check for save button, as per the requirement. */}
+                                        <savebutton className="purbut" onClick={handleSaveButtonClick} title='Save' >
+                                            <i class="fa-regular fa-floppy-disk"></i>
+                                        </savebutton>
 
                                     {showUpdateButton && ['update', 'all permission'].some(permission => DcPermission.includes(permission)) && (
                                         <savebutton className="purbut" onClick={handleUpdateButtonClick} title='Update' >
@@ -2969,7 +2976,9 @@ function DeliveryChallan() {
                                             <i class="fa-solid fa-list"></i>
                                         </button>
                                         <ul class="dropdown-menu menu">
-                                            {buttonsVisible && (
+
+                                            {/* Commented for removing permission check for save button, as per the requirement. */}
+                                            {/* {buttonsVisible && (
                                                 <li class="iconbutton d-flex justify-content-center text-success">
                                                     {['add', 'all permission'].some(permission => DcPermission.includes(permission)) && (
                                                         <icon class="icon" onClick={handleSaveButtonClick}>
@@ -2977,7 +2986,15 @@ function DeliveryChallan() {
                                                         </icon>
                                                     )}
                                                 </li>
-                                            )}
+                                            )} */}
+
+                                            {/* Added for removing permission check for save button, as per the requirement. */}
+                                                <li class="iconbutton d-flex justify-content-center text-success">
+                                                        <icon class="icon" onClick={handleSaveButtonClick}>
+                                                            <i class="fa-regular fa-floppy-disk"></i>
+                                                        </icon>
+                                                </li>
+
                                             <li class="iconbutton  d-flex justify-content-center text-danger">
                                                 {['delete', 'all permission'].some(permission => DcPermission.includes(permission)) && (
                                                     <icon class="icon" onClick={handleDeleteButtonClick}>

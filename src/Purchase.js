@@ -3236,11 +3236,19 @@ function Purchase() {
                       styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
                     />
                   </div>
-                  {saveButtonVisible && ['add', 'all permission'].some(permission => purchasePermission.includes(permission)) && (
+
+                  {/* Commented for removing permission check for save button, as per the requirement. */}
+                  {/* {saveButtonVisible && ['add', 'all permission'].some(permission => purchasePermission.includes(permission)) && (
                     <savebutton className="purbut" title='Save' onClick={handleSaveButtonClick}>
                       <i class="fa-regular fa-floppy-disk"></i>
                     </savebutton>
-                  )}
+                  )} */}
+
+                  {/* Added for removing permission check for save button, as per the requirement. */}
+                  <savebutton className="purbut" title='Save / Update' onClick={handleSaveButtonClick}>
+                      <i class="fa-regular fa-floppy-disk"></i>
+                  </savebutton>
+
 
                   {authButtonVisible && (
                     <savebutton className="purbut" onClick={handleAuthorizedButtonClick} >
@@ -3306,6 +3314,8 @@ function Purchase() {
                       <i class="fa-solid fa-list"></i>
                     </button>
                     <ul class="dropdown-menu menu">
+
+                      {/* Commented for removing permission check for save button, as per the requirement. */}
                       {saveButtonVisible && (
                         <li class="iconbutton d-flex justify-content-center text-success">
                           {['add', 'all permission'].some(permission => purchasePermission.includes(permission)) && (
@@ -3315,6 +3325,16 @@ function Purchase() {
                           )}
                         </li>
                       )}
+
+                      {/* Added for removing permission check for save button, as per the requirement. */}
+                      <li class="iconbutton d-flex justify-content-center text-success">
+                          {/* {['add', 'all permission'].some(permission => purchasePermission.includes(permission)) && ( */}
+                            <icon class="icon" onClick={handleSaveButtonClick}>
+                              <i class="fa-regular fa-floppy-disk"></i>
+                            </icon>
+                          {/* )} */}
+                        </li>
+                        
                       <li class="iconbutton d-flex justify-content-center text-success">
                         <icon class="icon" onClick={handleAuthorizedButtonClick}>
                           <i class="fa-solid fa-check"></i>
