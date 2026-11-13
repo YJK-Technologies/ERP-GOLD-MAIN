@@ -456,7 +456,7 @@ const handleReceiptSelect = async (selectedReceiptNo) => {
         company_code: companyCode,
         receipt_date: receiptDate ? receiptDate:null,
         customer_code: customerCode,
-        financial_year: financialYear.value,
+        financial_year: financialYear,
         receipt_type: receiptType,
         payment_mode: paymentMode.value,
         bank_acc_code: bankAccCode ? bankAccCode.value : null,
