@@ -27,6 +27,8 @@ function JournalVoucher() {
   const [refNo, setRefNo] = useState("");
   const [narration, setNarration] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [showAsterisk, setShowAsterisk] = useState(false);
 
   // Popup State Variables
   const [openCOAPopup, setOpenCOAPopup] = useState(false);
@@ -215,6 +217,7 @@ function JournalVoucher() {
 
   const validatePayload = () => {
     if (!voucherDate) {
+      setError(" ");
       toast.warning("Error: Missing required fields (Voucher Date)");
       return null;
     }
@@ -276,7 +279,40 @@ function JournalVoucher() {
       setLoading(false);
     }
   };
+  const InvoiceFsPosting = async (voucherNo) => {
+    try {
+      const Header = {
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
+        Tran_type: "JV",
+        Tran_no: voucherNo,
+        Tran_date: voucherDate,
+        location_code: sessionStorage.getItem("selectedLocationCode"),
+        created_by: sessionStorage.getItem("selectedUserCode"),
+        modified_by: sessionStorage.getItem("selectedUserCode"),
+      };
 
+      const response = await fetch(`${config.apiBaseUrl}/InvoiceFsPosting`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(Header),
+      });
+
+      if (response.ok) {
+        console.log("Invoice Posting Successfully");
+      } else {
+        const errorResponse = await response.json();
+        console.error(errorResponse.message);
+        toast.error("Error inserting data" + errorResponse.message);
+      }
+    } catch (error) {
+      console.error("Error inserting data:", error);
+      toast.error("Error inserting data: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
   const handleUpdateButtonClick = async () => {
     if (!voucherNo) {
       toast.warning("Error: Missing JV number for Update");
@@ -324,7 +360,12 @@ function JournalVoucher() {
             });
 
             await saveJournalVoucherDetails(voucherNo, validRows);
-            toast.success(`Journal Voucher Data ${selectedscreens?.value || "Updated"} Successfully`);
+            
+
+                    if (Screens === "Authorized") {
+          await InvoiceFsPosting(voucherNo);
+        }
+         toast.success(`Journal Voucher Data ${selectedscreens?.value || "Updated"} Successfully`);
           } else {
             const errorResponse = await response.json();
             toast.error("Error updating data: " + errorResponse.message);
@@ -502,9 +543,16 @@ function JournalVoucher() {
           
           <div className="col-md-2 mb-2">
             <div className="exp-form-floating">
-              <label>
+              {/* <label>
                 Voucher No <span className="text-danger">*</span>
-              </label>
+              </label> */}
+              <label
+                          for="cno"
+                          class="exp-form-labels"
+                          className={`${error && !voucherNo ? "text-danger" : ""}`}
+                        >
+                          Voucher No<span className="text-danger">*</span>
+                        </label>
               <div className="d-flex justify-content-end position-relative">
                 <input 
                   type="text" 
@@ -531,7 +579,8 @@ function JournalVoucher() {
           
           <div className="col-md-2 mb-2">
             <div className="exp-form-floating">
-              <label>Voucher Date <span className="text-danger">*</span></label>
+              {/* <label>Voucher Date <span className="text-danger">*</span></label> */}
+              <label htmlFor="" className={`${error && !voucherDate ? 'red' : ''}`}>Voucher Date{!showAsterisk && <span className="text-danger">*</span>}</label>
               <input type="date" className="exp-input-field form-control" value={voucherDate} onChange={(e) => setVoucherDate(e.target.value)} />
             </div>
           </div>

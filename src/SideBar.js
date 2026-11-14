@@ -2236,11 +2236,37 @@ const Sidebar = () => {
                         className="me-4"
                         viewBox="0 0 24 24"
                       >
-                        <path d="M4 3h16a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm1 2v3h14V5H5zm0 5v3h6v-3H5zm8 0v3h6v-3h-6zm-8 5v3h6v-3H5zm8 0v3h6v-3h-6z" />
+                        <path d="M12 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM4 21v-2a8 8 0 0 1 16 0v2H4zm14-16h4v2h-4zm0 4h4v2h-4z" />
                       </svg>
                       <span className={collapsed ? "hidden" : ""}>
                         {" "}
                         Vendor Ledger
+                      </span>
+                    </div>
+                  </Link>
+                )}
+              </div>
+              <div className=" ms-3">
+                {screenType.includes("BalSheRep") && (
+                  <Link
+                    to="/BalSheRep"
+                    className="nav-link"
+                    title="Balance Sheet"
+                  >
+                    <div class="menu-item">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        fill="currentColor"
+                        className="me-4"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M3 3h18v18H3V3zm2 2v14h14V5H5zm2 2h4v4H7V7zm6 0h4v2h-4V7zm0 4h4v2h-4v-2zm-6 2h4v4H7v-4zm6 2h4v2h-4v-2z" />
+                      </svg>
+                      <span className={collapsed ? "hidden" : ""}>
+                        {" "}
+                        Balance Sheet
                       </span>
                     </div>
                   </Link>

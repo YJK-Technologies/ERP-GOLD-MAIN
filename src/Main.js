@@ -223,6 +223,8 @@ import TrialBalancePrint from './PrintScreens/VRETemplate/TrialBalancePrint.js'
 import ItemLedgerPrint from './PrintScreens/VRETemplate/ItemLedgerPrint.js'
 import VendorLedger from './VendorLedger.js'
 import VendorLedgerPrint from './PrintScreens/VRETemplate/VendorLedgerPrint.js'
+import BalanceSheet from './BalanceSheet.js'
+import BalanceSheetPrint from './PrintScreens/VRETemplate/BalanceSheetPrint.js'
 
 function Main() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
@@ -486,6 +488,8 @@ function Main() {
      { path: "/ItemLedPrint", component: <ItemLedgerPrint /> },
      { path: "/VenLedRep", component: <VendorLedger /> },
      { path: "/VenLedPrint", component: <VendorLedgerPrint /> },
+     { path: "/BalSheRep", component: <BalanceSheet /> },
+     { path: "/BalShePrint", component: <BalanceSheetPrint /> },
   ];
  
   return (

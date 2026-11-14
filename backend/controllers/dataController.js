@@ -10645,8 +10645,11 @@ const addQuotationheader = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(`EXEC sp_quotation_hdr_test @mode ,@company_code, @customer_name,@customer_addr_1,@customer_addr_2,@customer_addr_3,@customer_addr_4, @customer_state,@customer_country,@customer_mobile_no,@contact_person, @Entry_date, @transaction_no,
-        @customer_code, @purchase_amount,@tax_amount, @add_fright, @less_fright, @rounded_off, @loading_charges, @cartage_paid, @other_charges, @total_amount, @customer_gst_no,@kind_attention,@quotation_validity, '', @created_by, @modified_by, NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_quotation_hdr_test @mode ,@company_code, @customer_name,@customer_addr_1,@customer_addr_2,
+        @customer_addr_3,@customer_addr_4, @customer_state,@customer_country,@customer_mobile_no,@contact_person, 
+        @Entry_date, @transaction_no, @customer_code, @purchase_amount,@tax_amount, @add_fright, @less_fright, 
+        @rounded_off, @loading_charges, @cartage_paid, @other_charges, @total_amount, @customer_gst_no,
+        @kind_attention,@quotation_validity, @created_by, @modified_by, NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -10695,7 +10698,7 @@ const updQuotationheader = async (req, res) => {
       .input("authroization_status", sql.NVarChar, authroization_status)
       .input("modified_by", sql.NVarChar, modified_by)
       .query(`EXEC sp_quotation_hdr_test @mode ,@company_code, @customer_name,@customer_addr_1,@customer_addr_2,@customer_addr_3,@customer_addr_4, @customer_state,@customer_country,@customer_mobile_no,@contact_person, @Entry_date, @transaction_no,
-        @customer_code, @purchase_amount,@tax_amount, @add_fright, @less_fright, @rounded_off, @loading_charges, @cartage_paid, @other_charges, @total_amount, @customer_gst_no,@kind_attention,@quotation_validity, @authroization_status, '', @modified_by, NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
+        @customer_code, @purchase_amount,@tax_amount, @add_fright, @less_fright, @rounded_off, @loading_charges, @cartage_paid, @other_charges, @total_amount, @customer_gst_no,@kind_attention,@quotation_validity, '', @modified_by, NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
     res.json(result.recordset);
 
   } catch (err) {
@@ -10713,7 +10716,7 @@ const getAllquotehdrData = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "A") // Insert mode
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_quotation_hdr_test 'A',@company_code,'','','','','','','','','','','','',0,0,0,0,0,0,0,0,0,'','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_quotation_hdr_test 'A',@company_code,'','','','','','','','','','','','',0,0,0,0,0,0,0,0,0,'','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     res.json(result.recordset);
   } catch (err) {
     console.error("Error", err);
@@ -10733,7 +10736,7 @@ const quotedeletehdrData = async (req, res) => {
         .input("company_code", sql.NVarChar, company_code)
         .input("transaction_no", sql.NVarChar, transaction_no)
         .input("modified_by", sql.NVarChar, modified_by)
-        .query(`EXEC sp_quotation_hdr_test @mode,@company_code,'','','','','','','','','','',@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','','',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+        .query(`EXEC sp_quotation_hdr_test @mode,@company_code,'','','','','','','','','','',@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     } catch (err) {
       if (err.number === 547) {
         // Foreign key constraint violation
@@ -11845,7 +11848,7 @@ const getQuotationSearchData = async (req, res) => {
       .input("Entry_date", sql.NVarChar, Entry_date)
       .input("customer_name", sql.NVarChar, customer_name)
       .input("contact_person", sql.NVarChar, contact_person)
-      .query(`EXEC sp_quotation_hdr_test @mode,@company_code,@customer_name,'','','','','','','',@contact_person,@Entry_date,@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','','','', NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_quotation_hdr_test @mode,@company_code,@customer_name,'','','','','','','',@contact_person,@Entry_date,@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','','', NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
     // Send response
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset); // 200 OK if data is found
@@ -17029,7 +17032,7 @@ const getJournaldata = async (req, res) => {
 };
 
 const getJournalDetails = async (req, res) => {
-  const { journal_no } = req.body;
+  const { journal_no, company_code } = req.body;
 
   try {
     // Connect to the database
@@ -17040,7 +17043,8 @@ const getJournalDetails = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "Jdd")
       .input("journal_no", sql.NVarChar, journal_no)
-      .query(`EXEC sp_getdata @mode,@journal_no,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
+      .input("company_code", sql.NVarChar, company_code)
+      .query(`EXEC sp_getdata @mode,@journal_no,@company_code,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
 
     // Check if data is found
     if (result.recordset.length > 0) {
@@ -23020,7 +23024,7 @@ const getDeletedQuotationSearchData = async (req, res) => {
       .input("Entry_date", sql.NVarChar, Entry_date)
       .input("customer_name", sql.NVarChar, customer_name)
       .input("contact_person", sql.NVarChar, contact_person)
-      .query(`EXEC sp_quotation_hdr_test @mode,@company_code,@customer_name,'','','','','','','',@contact_person,@Entry_date,@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','','','', NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_quotation_hdr_test @mode,@company_code,@customer_name,'','','','','','','',@contact_person,@Entry_date,@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','','', NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -33669,7 +33673,7 @@ const getCOAData = async (req, res) => {
 
 //Code Added By Pavun on 07-11-2026
 const InvoiceFsPosting = async (req, res) => {
-  const { Tran_type, Tran_no, Tran_date, modified_by, company_code, created_by } = req.body;
+  const { Tran_type, Tran_no, Tran_date, modified_by, company_code, location_code,created_by } = req.body;
 
   try {
     const pool = await sql.connect(dbConfig);
@@ -33677,12 +33681,13 @@ const InvoiceFsPosting = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "I")
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("Tran_type", sql.NVarChar, Tran_type)
       .input("Tran_no", sql.NVarChar, Tran_no)
       .input("Tran_date", sql.Date, Tran_date)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
-      .query(`EXEC sp_fs_postings @mode,@company_code,'','','',@Tran_type,@Tran_no,@Tran_date,'Posted','','','','INR',0,0,'',NULL,@created_by,NULL,@modified_by,NULL`);
+      .query(`EXEC sp_fs_postings @mode,@company_code,@location_code,'','',@Tran_type,@Tran_no,@Tran_date,'Posted','','','','INR',0,0,'',NULL,@created_by,NULL,@modified_by,NULL`);
 
     res.status(200).json("Invoice Posting Successfully");
   } catch (err) {
