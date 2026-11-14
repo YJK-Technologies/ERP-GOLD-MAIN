@@ -246,7 +246,7 @@ function DeliveryChallan() {
     );
   })
   .map((option) => ({
-    value: option.attributedetails_name,
+    value: option.descriptions,
     label: option.attributedetails_name,
   }));
 
