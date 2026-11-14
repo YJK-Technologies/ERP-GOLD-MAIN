@@ -279,7 +279,40 @@ function JournalVoucher() {
       setLoading(false);
     }
   };
+  const InvoiceFsPosting = async (voucherNo) => {
+    try {
+      const Header = {
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
+        Tran_type: "JV",
+        Tran_no: voucherNo,
+        Tran_date: voucherDate,
+        location_code: sessionStorage.getItem("selectedLocationCode"),
+        created_by: sessionStorage.getItem("selectedUserCode"),
+        modified_by: sessionStorage.getItem("selectedUserCode"),
+      };
 
+      const response = await fetch(`${config.apiBaseUrl}/InvoiceFsPosting`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(Header),
+      });
+
+      if (response.ok) {
+        console.log("Invoice Posting Successfully");
+      } else {
+        const errorResponse = await response.json();
+        console.error(errorResponse.message);
+        toast.error("Error inserting data" + errorResponse.message);
+      }
+    } catch (error) {
+      console.error("Error inserting data:", error);
+      toast.error("Error inserting data: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
   const handleUpdateButtonClick = async () => {
     if (!voucherNo) {
       toast.warning("Error: Missing JV number for Update");
@@ -327,7 +360,12 @@ function JournalVoucher() {
             });
 
             await saveJournalVoucherDetails(voucherNo, validRows);
-            toast.success(`Journal Voucher Data ${selectedscreens?.value || "Updated"} Successfully`);
+            
+
+                    if (Screens === "Authorized") {
+          await InvoiceFsPosting(voucherNo);
+        }
+         toast.success(`Journal Voucher Data ${selectedscreens?.value || "Updated"} Successfully`);
           } else {
             const errorResponse = await response.json();
             toast.error("Error updating data: " + errorResponse.message);

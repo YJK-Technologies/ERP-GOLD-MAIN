@@ -33672,7 +33672,7 @@ const getCOAData = async (req, res) => {
 
 //Code Added By Pavun on 07-11-2026
 const InvoiceFsPosting = async (req, res) => {
-  const { Tran_type, Tran_no, Tran_date, modified_by, company_code, created_by } = req.body;
+  const { Tran_type, Tran_no, Tran_date, modified_by, company_code, location_code,created_by } = req.body;
 
   try {
     const pool = await sql.connect(dbConfig);
@@ -33680,12 +33680,13 @@ const InvoiceFsPosting = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "I")
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("Tran_type", sql.NVarChar, Tran_type)
       .input("Tran_no", sql.NVarChar, Tran_no)
       .input("Tran_date", sql.Date, Tran_date)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
-      .query(`EXEC sp_fs_postings @mode,@company_code,'','','',@Tran_type,@Tran_no,@Tran_date,'Posted','','','','INR',0,0,'',NULL,@created_by,NULL,@modified_by,NULL`);
+      .query(`EXEC sp_fs_postings @mode,@company_code,@location_code,'','',@Tran_type,@Tran_no,@Tran_date,'Posted','','','','INR',0,0,'',NULL,@created_by,NULL,@modified_by,NULL`);
 
     res.status(200).json("Invoice Posting Successfully");
   } catch (err) {
