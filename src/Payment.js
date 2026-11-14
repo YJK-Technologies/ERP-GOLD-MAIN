@@ -1,3 +1,4 @@
+//payment.js
 import React, { useState, useEffect } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
@@ -73,7 +74,7 @@ function Payment() {
   const [financialYearEnd, setFinancialYearEnd] = useState("");
   const [screensDrop, setScreensDrop] = useState([]);
   const [selectedscreens, setSelectedscreens] = useState(null);
-  const [Screens, setScreens] = useState("Add");
+  const [Screens, setScreens] = useState("");
 
   const [vendorCodeDrop, setVendorCodeDrop] = useState([]);
   const [customerCodeDrop, setCustomerCodeDrop] = useState([]);
@@ -372,22 +373,22 @@ function Payment() {
       }),
     })
       .then((response) => response.json())
-      .then((data) => setScreensDrop(data))
-      .catch((error) => console.error("Error fetching events:", error));
-  }, []);
+      .then((data) => {
+        setScreensDrop(data);
 
-  useEffect(() => {
-    const savedScreen = sessionStorage.getItem("DebitCreditScreenSelection");
-    if (savedScreen) {
-      setSelectedscreens({
-        value: savedScreen,
-        label: savedScreen === "Add" ? "Add" : "Delete",
-      });
-      setScreens(savedScreen);
-    } else {
-      setSelectedscreens({ value: "Add", label: "Add" });
-      setScreens("Add");
-    }
+        // Automatically set a default option (e.g., "Draft" or the first record)
+        const defaultScreen =
+          data.find((item) => item.descriptions === "Draft") || data[0];
+
+        if (defaultScreen && !selectedscreens) {
+          setSelectedscreens({
+            value: defaultScreen.descriptions,
+            label: defaultScreen.attributedetails_name,
+          });
+          setScreens(defaultScreen.descriptions);
+        }
+      })
+      .catch((error) => console.error("Error fetching purchase types:", error));
   }, []);
 
   useEffect(() => {
@@ -511,12 +512,17 @@ function Payment() {
     setBankCashAccount(selectedOption ? selectedOption.value : "");
   };
 
-  const handleChangeScreens = (selected) => {
+    const handleChangeScreens = (selected) => {
     setSelectedscreens(selected);
-    const screenValue = selected?.value === "Add" ? "Add" : "Delete";
-    setScreens(screenValue);
-    sessionStorage.setItem("DebitCreditScreenSelection", screenValue);
+    setScreens(selected.value);
   };
+
+  // const handleChangeScreens = (selected) => {
+  //   setSelectedscreens(selected);
+  //   const screenValue = selected?.value === "Add" ? "Add" : "Delete";
+  //   setScreens(screenValue);
+  //   sessionStorage.setItem("DebitCreditScreenSelection", screenValue);
+  // };
 
   const handleVendor = (selectedData) => {
     if (!selectedData || selectedData.length === 0) return;
@@ -848,18 +854,45 @@ function Payment() {
       params.newValue.toString().trim() === "" ||
       params.newValue.toString().match(/[^0-9.]/)
     ) {
-      toast.warning("Please enter a valid numeric quantity.");
+      toast.warning("Please enter a valid numeric amount.");
       return false;
     }
 
     if (newValue < 0) {
-      toast.warning("Quantity cannot be negative.");
+      toast.warning("Amount cannot be negative.");
       return false;
+    }
+
+    // NEW STRICT CHECK: Block over-payment instantly in the UI
+    if (newValue > params.data.Outstanding_Amount) {
+      toast.warning(`Adjustment amount cannot exceed the outstanding balance (₹${params.data.Outstanding_Amount})!`);
+      return false; 
     }
 
     params.data.Adjust_Amount = newValue;
     return true;
   }
+
+  // function Adjust_AmountValueSetter(params) {
+  //   const newValue = parseFloat(params.newValue);
+
+  //   if (
+  //     isNaN(newValue) ||
+  //     params.newValue.toString().trim() === "" ||
+  //     params.newValue.toString().match(/[^0-9.]/)
+  //   ) {
+  //     toast.warning("Please enter a valid numeric quantity.");
+  //     return false;
+  //   }
+
+  //   if (newValue < 0) {
+  //     toast.warning("Quantity cannot be negative.");
+  //     return false;
+  //   }
+
+  //   params.data.Adjust_Amount = newValue;
+  //   return true;
+  // }
 
   const columnDefs = [
     {
@@ -1021,6 +1054,20 @@ function Payment() {
       hide: true,
     },
   ];
+
+    const handleMasterAction = () => {
+      // screens variable-il current selected value irukum
+      if (Screens === "Draft") {
+        handleSaveButtonClick();
+      } else if (Screens && Screens.trim() !== "") {
+        // Draft illama vera entha status irunthalum update function call aagum
+        handleUpdateButtonClick();
+      } else {
+        toast.warning(
+          "Please select a valid transaction event from the dropdown.",
+        );
+      }
+    };
 
   // 1. Header Field Validation
   const handleSaveButtonClick = async () => {
@@ -1397,6 +1444,41 @@ function Payment() {
     XLSX.writeFile(workbook, fileName);
   };
 
+    const InvoiceFsPosting = async (transactionNumber) => {
+      try {
+        const Header = {
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem('selectedLocationCode'),
+          Tran_type: "PY",
+          Tran_no: transactionNumber,
+          Tran_date: transactionDate,
+          created_by: sessionStorage.getItem("selectedUserCode"),
+          modified_by: sessionStorage.getItem("selectedUserCode"),
+        };
+  
+        const response = await fetch(`${config.apiBaseUrl}/InvoiceFsPosting`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(Header),
+        });
+  
+        if (response.ok) {
+          console.log("Invoice Posting Successfully");
+        } else {
+          const errorResponse = await response.json();
+          console.error(errorResponse.message);
+          toast.error("Error inserting data" + errorResponse.message);
+        }
+      } catch (error) {
+        console.error("Error inserting data:", error);
+        toast.error("Error inserting data: " + error.message);
+      } finally {
+        setLoading(false);
+      }
+  };
+
   const handleUpdateButtonClick = async () => {
     if (
       !transactionNumber ||
@@ -1428,6 +1510,8 @@ function Payment() {
       // 1. Prepare Payment Header Update Payload
       const headerPayload = {
         Payment_ID: transactionNumber,
+        authroization_status: Screens === "Modified" ? "Draft" : Screens,
+        Status: Screens === "Modified" ? "Draft" : Screens,
         Payment_Date: transactionDate,
         Payment_Type: paymentType,
         Party_Type: partyType,
@@ -1462,6 +1546,10 @@ function Payment() {
         const paymentId = transactionNumber;
 
         await savePaymentDetails(paymentId, keyfieldHeader);
+
+        if (Screens === "Authorized") {
+          await InvoiceFsPosting(transactionNumber);
+        }
 
         // 4. Show success message after both operations succeed
         toast.success(result.message || "Payment updated successfully!");
@@ -1586,240 +1674,18 @@ function Payment() {
     );
   };
 
-  // Deleted Screen States
-  const [deletedNoteType, setDeletedNoteType] = useState("");
-  const [deletedTransactionDate, setDeletedTransactionDate] = useState("");
-  const [deletedTransactionNumber, setDeletedTransactionNumber] = useState("");
-  const [deletedPartyType, setDeletedPartyType] = useState("");
-  const [deletedPartyName, setDeletedPartyName] = useState("");
-  const [deletedRefType, setDeletedRefType] = useState("");
-  const [deletedReason, setDeletedReason] = useState("");
-  const [deletedRefTransactionNumber, setDeletedRefTransactionNumber] =
-    useState("");
-  const [deletedRefTransactionDate, setDeletedRefTransactionDate] =
-    useState("");
-  const [deletedRefNo, setDeletedRefNo] = useState("");
-  const [deletedNarration, setDeletedNarration] = useState("");
-
-  const [openDelDebitCreditNoteHelp, setOpenDelDebitCreditNoteHelp] =
-    useState(false);
-  const [deletedRowData, setDeletedRowData] = useState([]);
-  const [deletedRowDataTax, setDeletedRowDataTax] = useState([]);
-
-  // Deleted Screen Form States
-  const [delPaymentType, setDelPaymentType] = useState("");
-  const [delPartyType, setDelPartyType] = useState("");
-  const [delPartyCode, setDelPartyCode] = useState("");
-  const [delPartyName, setDelPartyName] = useState("");
-  const [delPaymentMode, setDelPaymentMode] = useState("");
-  const [delBankCashAccount, setDelBankCashAccount] = useState("");
-  const [delRefTransactionNumber, setDelRefTransactionNumber] = useState("");
-  const [delRefTransactionDate, setDelRefTransactionDate] = useState("");
-  const [delAmount, setDelAmount] = useState("");
-  const [delNarration, setDelNarration] = useState("");
-
-  const handleDelDebitCreditNoteHelp = () =>
-    setOpenDelDebitCreditNoteHelp(true);
-
-  const deletedColumnDefs = [
-    {
-      headerName: "S.No",
-      field: "serialNumber",
-      maxWidth: 80,
-      sortable: false,
-      editable: false,
-    },
-    {
-      headerName: "Invoice No",
-      field: "Invoice_ID",
-      editable: false,
-      filter: true,
-      sortable: false,
-    },
-    {
-      headerName: "Invoice Date",
-      field: "Invoice_Date",
-      editable: false,
-      filter: true,
-      sortable: false,
-    },
-    {
-      headerName: "Invoice Amount",
-      field: "Invoice_Amount",
-      editable: false,
-      filter: true,
-    },
-    {
-      headerName: "Paid",
-      field: "Previous_Paid_Amount",
-      editable: false,
-      filter: true,
-      sortable: false,
-    },
-    {
-      headerName: "Outstanding",
-      field: "Outstanding_Amount",
-      editable: false,
-      filter: true,
-      sortable: false,
-    },
-    {
-      headerName: "Adjustment Amount",
-      field: "Adjust_Amount",
-      editable: false,
-      filter: true,
-      sortable: false,
-    },
-  ];
-
-  const handleDeleteNoteNoKeyDown = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      if (!deletedTransactionNumber || deletedTransactionNumber.trim() === "") {
-        toast.warning("Please enter a Transaction Number");
-        return;
-      }
-      fetchDeletedPaymentData(deletedTransactionNumber.trim());
-    }
-  };
-
-  const handleDeleteDebitCreditData = (selectedData) => {
-    if (selectedData && selectedData.length > 0) {
-      const item = selectedData[0];
-      const paymentId = item.PaymentID || item.TransactionNo;
-
-      if (!paymentId) {
-        toast.warning("Please select a valid Payment ID");
-        return;
-      }
-
-      setDeletedTransactionNumber(paymentId);
-      fetchDeletedPaymentData(paymentId);
-    }
-  };
-
-  const fetchDeletedPaymentData = async (code) => {
-    if (!code) return;
-    setLoading(true);
-
-    try {
-      const response = await fetch(
-        `${config.apiBaseUrl}/getDeletedPaymentData`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            transaction_no: code,
-            Payment_ID: code, // Sending both ensures compatibility with whichever parameter name the backend controller expects
-            company_code: sessionStorage.getItem("selectedCompanyCode"),
-          }),
-        },
-      );
-
-      if (!response.ok) {
-        if (response.status === 404) {
-          toast.warning("Transaction Data not found");
-          setDeletedRowData([]);
-          setDeletedRowDataTax([]);
-        } else {
-          const errorResponse = await response.json();
-          toast.error(
-            errorResponse.message || "An error occurred while fetching data",
-          );
-        }
-        return;
-      }
-
-      const searchData = await response.json();
-      console.log("Deleted Payment Data Response:", searchData);
-
-      // Flexible header extraction supporting different backend response schemas
-      const headerItem =
-        searchData.header?.[0] ||
-        (Array.isArray(searchData) ? searchData[0] : searchData.header) ||
-        searchData;
-
-      if (
-        headerItem &&
-        (headerItem.Payment_ID ||
-          headerItem.transaction_no ||
-          headerItem.Note_No)
-      ) {
-        setDeletedTransactionNumber(
-          headerItem.Payment_ID || headerItem.transaction_no || code,
-        );
-        setDeletedTransactionDate(
-          headerItem.Payment_Date ? formatDate(headerItem.Payment_Date) : "",
-        );
-        setDelPaymentType(headerItem.Payment_Type || "");
-        setDelPartyType(headerItem.Party_Type || "");
-        setDelPartyCode(headerItem.Party_ID || "");
-        setDelPartyName(headerItem.Party_Name || headerItem.Party_ID || "");
-        setDelPaymentMode(headerItem.Payment_Mode || "");
-        setDelBankCashAccount(headerItem.Account_ID || "");
-        setDelRefTransactionNumber(headerItem.Reference_No || "");
-        setDelRefTransactionDate(
-          headerItem.Reference_Date
-            ? formatDate(headerItem.Reference_Date)
-            : "",
-        );
-        setDelAmount(headerItem.Amount || "");
-        setDelNarration(headerItem.Narration || "");
-      } else {
-        toast.warning("Header details not found");
-      }
-
-      // Flexible detail rows extraction
-      const detailsArray =
-        searchData.detail ||
-        searchData.details ||
-        (Array.isArray(searchData) ? searchData : []) ||
-        [];
-      const detailRows = detailsArray.map((item, index) => ({
-        serialNumber: index + 1,
-        Invoice_ID: item.Invoice_ID ?? item.invoice_id ?? "",
-        Invoice_Date: item.Invoice_Date ? formatDate(item.Invoice_Date) : "",
-        Invoice_Amount: Number(item.Invoice_Amount ?? item.invoice_amount ?? 0),
-        Previous_Paid_Amount: Number(
-          item.Previous_Paid_Amount ?? item.previous_paid_amount ?? 0,
-        ),
-        Outstanding_Amount: Number(
-          item.Outstanding_Amount ?? item.outstanding_amount ?? 0,
-        ),
-        Adjust_Amount: Number(item.Adjust_Amount ?? item.adjust_amount ?? 0),
-      }));
-      setDeletedRowData(detailRows);
-    } catch (error) {
-      console.error("Error fetching Deleted Payment data:", error);
-      toast.error(error.message || "Failed to fetch data");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div>
-      {Screens === "Add" ? (
         <div className="container-fluid Topnav-screen">
           {loading && <LoadingScreen />}
-          <ToastContainer
-            position="top-right"
-            className="toast-design"
-            theme="colored"
-          />
-
+          <ToastContainer position="top-right" className="toast-design" theme="colored" />
           <div className="shadow-lg p-2 bg-body-tertiary rounded mb-2 mt-2">
             <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
               <div className="d-flex align-items-center">
                 <h1 className="purbut">Payment</h1>
               </div>
-
               <div className="d-flex align-items-center gap-2 purbut">
-                <div
-                  className="exp-form-floating"
-                  style={{ minWidth: "160px" }}
-                  title="Select Screen Action"
-                >
+                <div className="exp-form-floating" style={{ minWidth: "160px" }} title="Select Screen Action" >
                   <Select
                     id="returnType"
                     className="exp-input-field"
@@ -1827,9 +1693,7 @@ function Payment() {
                     value={selectedscreens}
                     onChange={handleChangeScreens}
                     options={filteredOptionScreens}
-                    styles={{
-                      menu: (provided) => ({ ...provided, zIndex: 9999 }),
-                    }}
+                    styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }), }}
                   />
                 </div>
 
@@ -1849,7 +1713,11 @@ function Payment() {
                   )} */}
 
                 {/* Added for removing permission check for save button, as per the requirement. */}
-                    <savebutton
+                <savebutton className="purbut" onClick={handleMasterAction} title="Save / Update">
+                  <i class="fa-regular fa-floppy-disk"></i>
+                </savebutton>
+
+                    {/* <savebutton
                       type="button"
                       className="purbut"
                       title="Save Note"
@@ -1858,8 +1726,7 @@ function Payment() {
                       <i className="fa-regular fa-floppy-disk"></i>
                     </savebutton>
 
-                {updateButtonVisible &&
-                  ["update", "all permission"].some((permission) =>
+                {["update", "all permission"].some((permission) =>
                     PaymentPermission.includes(permission),
                   ) && (
                     <addbutton
@@ -1872,8 +1739,7 @@ function Payment() {
                     </addbutton>
                   )}
 
-                {delButtonVisible &&
-                  ["delete", "all permission"].some((permission) =>
+                {["delete", "all permission"].some((permission) =>
                     PaymentPermission.includes(permission),
                   ) && (
                     <delbutton
@@ -1884,10 +1750,9 @@ function Payment() {
                     >
                       <i className="fa-solid fa-trash"></i>
                     </delbutton>
-                  )}
+                  )} */}
 
-                {printButtonVisible &&
-                  ["all permission", "view"].some((permission) =>
+                {["all permission", "view"].some((permission) =>
                     PaymentPermission.includes(permission),
                   ) && (
                     <printbutton
@@ -1899,7 +1764,6 @@ function Payment() {
                     </printbutton>
                   )}
 
-                {showExcelButton && (
                   <printbutton
                     type="button"
                     className="purbut"
@@ -1908,7 +1772,6 @@ function Payment() {
                   >
                     <i className="fa-solid fa-file-excel"></i>
                   </printbutton>
-                )}
 
                 <printbutton
                   type="button"
@@ -1955,10 +1818,7 @@ function Payment() {
 
                 <div className="col-md-6 form-group mb-2">
                   <div className="exp-form-floating">
-                    <label
-                      htmlFor="transactionDate"
-                      className={`${error && !transactionDate ? "red" : ""}`}
-                    >
+                    <label htmlFor="transactionDate" className={`${error && !transactionDate ? "red" : ""}`} >
                       Date<span className="text-danger">*</span>
                     </label>
                     <input
@@ -1999,9 +1859,7 @@ function Payment() {
                     options={filteredOptionPaymentType}
                     className="exp-input-field"
                     classNamePrefix="react-select"
-                    styles={{
-                      menu: (provided) => ({ ...provided, zIndex: 9999 }),
-                    }}
+                    styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }), }}
                   />
                 </div>
               </div>
@@ -2228,11 +2086,11 @@ function Payment() {
                   Invoice Details
                 </purButton>
                 {/* <purButton
-                                    type="button"
-                                    className={`"toggle-btn"  ${activeTable === 'myTable' ? 'active' : ''}`}
-                                    onClick={() => handleToggleTable('tax')}>
-                                    Tax Details
-                                </purButton> */}
+                    type="button"
+                    className={`"toggle-btn"  ${activeTable === 'myTable' ? 'active' : ''}`}
+                    onClick={() => handleToggleTable('tax')}>
+                    Tax Details
+                </purButton> */}
               </div>
               <div className="d-flex me-4 gap-2">
                 <icon
@@ -2393,265 +2251,6 @@ function Payment() {
             </div>
           </div>
         </div>
-      ) : (
-        <div className="container-fluid Topnav-screen">
-          {loading && <LoadingScreen />}
-          <ToastContainer
-            position="top-right"
-            className="toast-design"
-            theme="colored"
-          />
-
-          <div className="shadow-lg p-2 bg-body-tertiary rounded mb-2 mt-2">
-            <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
-              <div className="d-flex align-items-center">
-                <h1 className="purbut">Deleted Payment</h1>
-              </div>
-
-              <div className="d-flex align-items-center gap-2 purbut">
-                <div
-                  className="exp-form-floating"
-                  style={{ minWidth: "160px" }}
-                  title="Select Screen Action"
-                >
-                  <Select
-                    id="returnType"
-                    className="exp-input-field"
-                    classNamePrefix="react-select"
-                    value={selectedscreens}
-                    onChange={handleChangeScreens}
-                    options={filteredOptionScreens}
-                    styles={{
-                      menu: (provided) => ({ ...provided, zIndex: 9999 }),
-                    }}
-                  />
-                </div>
-
-                <printbutton
-                  type="button"
-                  className="purbut btn"
-                  title="Reload Page"
-                  onClick={handleReload}
-                >
-                  <i className="fa-solid fa-arrow-rotate-right"></i>
-                </printbutton>
-              </div>
-            </div>
-          </div>
-
-          <div className="shadow-lg p-2 bg-body-tertiary rounded mb-2 mt-2">
-            <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
-              <div className="row ms-3 me-3">
-                <div className="col-md-6 form-group mb-2">
-                  <label htmlFor="deletedTransactionNumber">
-                    Transaction No
-                  </label>
-                  <div className="exp-form-floating">
-                    <div className="d-flex justify-content-end">
-                      <input
-                        id="deletedTransactionNumber"
-                        className="exp-input-field form-control"
-                        type="text"
-                        value={deletedTransactionNumber}
-                        onChange={(e) =>
-                          setDeletedTransactionNumber(e.target.value)
-                        }
-                        onKeyDown={handleDeleteNoteNoKeyDown}
-                        maxLength={50}
-                        autoComplete="off"
-                      />
-                      <div className="position-absolute mt-1 me-2">
-                        <span
-                          className="icon searchIcon"
-                          title="Search Deleted Transaction"
-                          onClick={handleDelDebitCreditNoteHelp}
-                        >
-                          <i className="fa fa-search"></i>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="col-md-6 form-group mb-2">
-                  <div className="exp-form-floating">
-                    <label htmlFor="deletedTransactionDate">Date</label>
-                    <input
-                      id="deletedTransactionDate"
-                      className="exp-input-field form-control bg-light"
-                      type="date"
-                      value={deletedTransactionDate}
-                      readOnly
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div
-            className="shadow-lg p-1 bg-body-tertiary rounded pt-3 pb-4"
-            align="left"
-          >
-            <div className="row ms-3 me-3">
-              <div className="col-md-3 form-group mb-2">
-                <label className="exp-form-labels">Payment Type</label>
-                <input
-                  type="text"
-                  className="exp-input-field form-control bg-light"
-                  value={delPaymentType}
-                  readOnly
-                />
-              </div>
-
-              <div className="col-md-3 form-group mb-2">
-                <label className="exp-form-labels">
-                  Vendor / Customer Type
-                </label>
-                <input
-                  type="text"
-                  className="exp-input-field form-control bg-light"
-                  value={delPartyType}
-                  readOnly
-                />
-              </div>
-
-              <div className="col-md-3 form-group mb-2">
-                <label>Vendor / Customer Code</label>
-                <input
-                  type="text"
-                  className="exp-input-field form-control bg-light"
-                  value={delPartyCode}
-                  readOnly
-                />
-              </div>
-
-              <div className="col-md-3 form-group mb-2">
-                <label>Vendor / Customer Name</label>
-                <input
-                  type="text"
-                  className="exp-input-field form-control bg-light"
-                  value={delPartyName}
-                  readOnly
-                />
-              </div>
-
-              <div className="col-md-3 form-group mb-2">
-                <label>Payment Mode</label>
-                <input
-                  type="text"
-                  className="exp-input-field form-control bg-light"
-                  value={delPaymentMode}
-                  readOnly
-                />
-              </div>
-
-              <div className="col-md-3 form-group mb-2">
-                <label>Bank / Cash Account</label>
-                <input
-                  type="text"
-                  className="exp-input-field form-control bg-light"
-                  value={delBankCashAccount}
-                  readOnly
-                />
-              </div>
-
-              <div className="col-md-3 form-group mb-2">
-                <label>Reference No</label>
-                <input
-                  type="text"
-                  className="exp-input-field form-control bg-light"
-                  value={delRefTransactionNumber}
-                  readOnly
-                />
-              </div>
-
-              <div className="col-md-3 form-group mb-2">
-                <label>Reference Date</label>
-                <input
-                  type="date"
-                  className="exp-input-field form-control bg-light"
-                  value={delRefTransactionDate}
-                  readOnly
-                />
-              </div>
-
-              <div className="col-md-3 form-group mb-2">
-                <label>Amount</label>
-                <input
-                  type="text"
-                  className="exp-input-field form-control bg-light"
-                  value={delAmount}
-                  readOnly
-                />
-              </div>
-
-              <div className="col-md-6 form-group mb-2">
-                <label>Remarks</label>
-                <textarea
-                  className="exp-input-field form-control bg-light"
-                  value={delNarration}
-                  rows="2"
-                  readOnly
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="shadow-lg p-1 bg-body-tertiary rounded mt-2 pt-3 pb-4">
-            <div className="d-flex justify-content-between">
-              <div align="left" className="d-flex justify-content-start ms-5">
-                <purButton
-                  type="button"
-                  className={`"toggle-btn" ${activeTable === "myTable" ? "active" : ""}`}
-                  onClick={() => handleToggleTable("myTable")}
-                >
-                  Invoice Details
-                </purButton>
-              </div>
-            </div>
-
-            <div
-              className="ag-theme-alpine"
-              style={{ height: 437, width: "100%" }}
-            >
-              <AgGridReact
-                columnDefs={deletedColumnDefs}
-                rowData={deletedRowData}
-                defaultColDef={{ editable: false, resizable: true }}
-                headerHeight={28}
-                rowHeight={25}
-              />
-            </div>
-          </div>
-
-          <DeletedPaymentHelp
-            open={openDelDebitCreditNoteHelp}
-            handleClose={() => setOpenDelDebitCreditNoteHelp(false)}
-            handleDeletePaymentData={handleDeleteDebitCreditData}
-          />
-          <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
-            <div className="row ms-2">
-              <div className="d-flex justify-content-start">
-                <p className="col-md-6">
-                  {labels.createdBy}: {additionalData.created_by}
-                </p>
-                <p className="col-md-6">
-                  {labels.createdDate}: {additionalData.created_date}
-                </p>
-              </div>
-              <div className="d-flex justify-content-start">
-                <p className="col-md-6">
-                  {labels.modifiedBy}: {additionalData.modified_by}
-                </p>
-                <p className="col-md-6">
-                  {labels.modifiedDate}: {additionalData.modified_date}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

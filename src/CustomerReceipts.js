@@ -244,10 +244,6 @@ const handleReceiptSelect = async (selectedReceiptNo) => {
         // Header Details
         setReceiptNo(data.receipt_no || "");
         setReceiptDate(formatReceiptDate(data.receipt_date));
-        setFinancialYear({
-            label: data.financial_year,
-            value: data.financial_year
-        });
 
         setCustomerCode(data.customer_code || "");
         setReceiptType(data.receipt_type || "");
@@ -456,7 +452,7 @@ const handleReceiptSelect = async (selectedReceiptNo) => {
         company_code: companyCode,
         receipt_date: receiptDate ? receiptDate:null,
         customer_code: customerCode,
-        financial_year: financialYear.value,
+        financial_year: financialYear,
         receipt_type: receiptType,
         payment_mode: paymentMode.value,
         bank_acc_code: bankAccCode ? bankAccCode.value : null,
@@ -502,6 +498,7 @@ const handleReceiptSelect = async (selectedReceiptNo) => {
       try {
         const Header = {
           company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           Tran_type: "CR",
           Tran_no: receiptNo,
           Tran_date: receiptDate,
@@ -551,7 +548,7 @@ const handleReceiptSelect = async (selectedReceiptNo) => {
             receipt_no: receiptNo,
             receipt_date: receiptDate ? receiptDate:null,
             customer_code: customerCode,
-            financial_year: financialYear.value,
+            financial_year: financialYear,
             receipt_type: receiptType,
             payment_mode: paymentMode.value,
             bank_acc_code: bankAccCode ? bankAccCode.value : null,
