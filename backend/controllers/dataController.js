@@ -30999,7 +30999,7 @@ const Payment_hdrInsert = async (req, res) => {
 
 const Payment_hdrUpdate = async (req, res) => {
   const { Payment_ID, Payment_Date, Payment_Type, Party_Type, Party_ID, Payment_Mode, Account_ID, Reference_No, Reference_Date,
-    Amount, Narration, BillNo_match, Adjusted_Amount, Unadjusted_Amount, company_code, location_code, modified_by, } = req.body;
+    Amount, Narration, BillNo_match, Adjusted_Amount, Status, Unadjusted_Amount, company_code, location_code, modified_by, } = req.body;
 
   try {
     const pool = await sql.connect(dbConfig);
@@ -31023,8 +31023,9 @@ const Payment_hdrUpdate = async (req, res) => {
       .input("company_code", sql.NVarChar, company_code)
       .input("location_code", sql.NVarChar, location_code)
       .input("modified_by", sql.NVarChar, modified_by)
+      .input("Status", sql.NVarChar, Status)
       .query(`EXEC sp_Payment_hdr @mode, @Payment_ID, @Payment_Date, @Payment_Type, @Party_Type, @Party_ID, @Payment_Mode, @Account_ID, @Reference_No,
-      @Reference_Date, @Amount, @Narration, '', '', @BillNo_match, @Adjusted_Amount, @Unadjusted_Amount, '', '', '', '', 0, 0, @company_code,
+      @Reference_Date, @Amount, @Narration, @Status, '', @BillNo_match, @Adjusted_Amount, @Unadjusted_Amount, '', '', '', '', 0, 0, @company_code,
       @location_code, '', '', '', @modified_by, ''`);
 
     res.status(200).json({

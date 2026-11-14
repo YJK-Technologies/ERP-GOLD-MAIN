@@ -207,27 +207,27 @@ function TaxInvoice() {
     setScreens(selected.value);
   };
 
-  // const filteredOptionScreens = screensDrop.map((option) => ({
-  //   value: option.descriptions,
-  //   label: option.attributedetails_name,
-  // }));
-
-  // For permission-based filtering of screens, we can filter the screensDrop array based on the user's permissions. If the user has 'all permission', they can see all options. Otherwise, we check if the specific option is included in their permissions.
-  const filteredOptionScreens = screensDrop
-  .filter((option) => {
-    // Convert the backend option to lowercase to match the purchasePermission array
-    const optionName = option.attributedetails_name.toLowerCase();
-    
-    // Check if the user has 'all permission' or the specific right (e.g., 'add', 'delete')
-    return (
-      purchasePermission.includes('all permission') || 
-      purchasePermission.includes(optionName)
-    );
-  })
-  .map((option) => ({
+  const filteredOptionScreens = screensDrop.map((option) => ({
     value: option.descriptions,
     label: option.attributedetails_name,
   }));
+
+  // For permission-based filtering of screens, we can filter the screensDrop array based on the user's permissions. If the user has 'all permission', they can see all options. Otherwise, we check if the specific option is included in their permissions.
+  // const filteredOptionScreens = screensDrop
+  // .filter((option) => {
+  //   // Convert the backend option to lowercase to match the purchasePermission array
+  //   const optionName = option.attributedetails_name.toLowerCase();
+    
+  //   // Check if the user has 'all permission' or the specific right (e.g., 'add', 'delete')
+  //   return (
+  //     purchasePermission.includes('all permission') || 
+  //     purchasePermission.includes(optionName)
+  //   );
+  // })
+  // .map((option) => ({
+  //   value: option.descriptions,
+  //   label: option.attributedetails_name,
+  // }));
 
   const filteredOptionStatus = pendingStatusDrop.map((option) => ({
     value: option.attributedetails_name,
@@ -2012,7 +2012,7 @@ function TaxInvoice() {
         await saveTaxInvoiceDetails(new_running_no);
         await SaveTaxDetails(new_running_no);
         await saveTIDetailsTerms(new_running_no);
-
+        console.log(Screens)
         if (Screens === "Authorized") {
           await InvoiceFsPosting(new_running_no);
         }
