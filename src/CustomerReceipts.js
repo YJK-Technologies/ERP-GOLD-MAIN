@@ -502,6 +502,7 @@ const handleReceiptSelect = async (selectedReceiptNo) => {
       try {
         const Header = {
           company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           Tran_type: "CR",
           Tran_no: receiptNo,
           Tran_date: receiptDate,
