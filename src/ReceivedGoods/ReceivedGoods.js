@@ -8,6 +8,7 @@ import ReceivedGoodsPopup from "./ReceivedGoodsHelp";
 import * as XLSX from "xlsx";
 import { useLocation } from 'react-router-dom';
 import Select from "react-select";
+import { showConfirmationToast } from "../ToastConfirmation";
 
 const config = require("../Apiconfig");
 
@@ -28,6 +29,8 @@ function AssetsReturn({ }) {
   const [amendmentNo, setAmendmentNo] = useState('');
   const [selectedAmendmentNo, setSelectedAmendmentNo] = useState('');
   const [amendmentNoDrop, setAmendmentNoDrop] = useState([]);
+
+  const [loading, setLoading] = useState(false);
 
   const handleChangeAmendmentNo = (selectedOption) => {
     setSelectedAmendmentNo(selectedOption);
@@ -361,87 +364,191 @@ function AssetsReturn({ }) {
     setTransactionDate(formattedToday);
   }, []);
 
-  const authorizeSelectedRows = async () => {
-    if (!transactionNo) {
-      toast.warning("Please select a Transaction No.");
-      return;
-    }
+  // const authorizeSelectedRows = async () => {
+  //   if (!transactionNo) {
+  //     toast.warning("Please select a Transaction No.");
+  //     return;
+  //   }
 
-    if (
-      amendmentNo === "" ||
-      amendmentNo === null ||
-      amendmentNo === undefined
-    ) {
-      toast.warning("Please select an Amendment No.");
-      return;
-    }
+  //   if (
+  //     amendmentNo === "" ||
+  //     amendmentNo === null ||
+  //     amendmentNo === undefined
+  //   ) {
+  //     toast.warning("Please select an Amendment No.");
+  //     return;
+  //   }
 
-    if (!selectedscreens?.value) {
-      toast.warning("Please select a Status.");
-      return;
-    }
+  //   if (!selectedscreens?.value) {
+  //     toast.warning("Please select a Status.");
+  //     return;
+  //   }
 
-    if (!gridApi) {
-      toast.warning("Grid is not ready.");
-      return;
-    }
+  //   if (!gridApi) {
+  //     toast.warning("Grid is not ready.");
+  //     return;
+  //   }
 
-    const allRowsData = [];
+  //   const allRowsData = [];
 
-    gridApi.forEachNode((node) => {
-      allRowsData.push(node.data);
-    });
+  //   gridApi.forEachNode((node) => {
+  //     allRowsData.push(node.data);
+  //   });
 
-    if (allRowsData.length === 0) {
-      toast.warning("No rows available for authorization.");
-      return;
-    }
+  //   if (allRowsData.length === 0) {
+  //     toast.warning("No rows available for authorization.");
+  //     return;
+  //   }
 
-    const editedData = allRowsData.map((row) => ({
-      transactionNo: transactionNo,
-      amendment_no: Number(amendmentNo),
-      status: Screens,
-      modified_by: sessionStorage.getItem("selectedUserCode"),
-    }));
+  //   const editedData = allRowsData.map((row) => ({
+  //     transactionNo: transactionNo,
+  //     amendment_no: Number(amendmentNo),
+  //     status: Screens,
+  //     modified_by: sessionStorage.getItem("selectedUserCode"),
+  //   }));
 
-    console.log("AU Mode Payload:", editedData);
+  //   console.log("AU Mode Payload:", editedData);
 
-    try {
-      const response = await fetch(
-        `${config.apiBaseUrl}/authorizeReceivedGoods`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            company_code: sessionStorage.getItem("selectedCompanyCode"),
-          },
-          body: JSON.stringify({
-            editedData: editedData,
-          }),
-        }
-      );
+  //   try {
+  //     const response = await fetch(
+  //       `${config.apiBaseUrl}/authorizeReceivedGoods`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           company_code: sessionStorage.getItem("selectedCompanyCode"),
+  //         },
+  //         body: JSON.stringify({
+  //           editedData: editedData,
+  //         }),
+  //       }
+  //     );
 
-      const result = await response.json();
+  //     const result = await response.json();
 
-      if (response.ok) {
-        console.log("AU Mode Response:", result);
+  //     if (response.ok) {
+  //       console.log("AU Mode Response:", result);
 
-        toast.success("Received Goods authorization updated successfully.");
+  //       toast.success("Received Goods authorization updated successfully.");
 
-        // Refresh grid after authorization
-        await fetchReceivedGoodsData(transactionNo);
+  //       // Refresh grid after authorization
+  //       await fetchReceivedGoodsData(transactionNo);
 
-      } else {
-        toast.warning(
-          result.message || "Failed to update Received Goods authorization."
+  //     } else {
+  //       toast.warning(
+  //         result.message || "Failed to update Received Goods authorization."
+  //       );
+  //     }
+
+  //   } catch (error) {
+  //     console.error("AU Mode Error:", error);
+  //     toast.error("Authorization Error: " + error.message);
+  //   }
+  // };
+
+
+const authorizeSelectedRows = async () => {
+  if (!transactionNo) {
+    toast.warning("Please select a Transaction No.");
+    return;
+  }
+
+  if (
+    amendmentNo === "" ||
+    amendmentNo === null ||
+    amendmentNo === undefined
+  ) {
+    toast.warning("Please select an Amendment No.");
+    return;
+  }
+
+  if (!selectedscreens?.value) {
+    toast.warning("Please select a Status.");
+    return;
+  }
+
+  if (!gridApi) {
+    toast.warning("Grid is not ready.");
+    return;
+  }
+
+  const allRowsData = [];
+
+  gridApi.forEachNode((node) => {
+    allRowsData.push(node.data);
+  });
+
+  if (allRowsData.length === 0) {
+    toast.warning("No rows available for authorization.");
+    return;
+  }
+
+  // Dynamic action label and value
+  const actionLabel = selectedscreens?.label || "authorize";
+  const actionValue = selectedscreens?.value || "AU";
+
+  // Confirmation toast
+  showConfirmationToast(
+    `Are you sure you want to ${actionLabel} the data?`,
+    async () => {
+      try {
+        setLoading(true);
+
+        const editedData = allRowsData.map((row) => ({
+          transactionNo: transactionNo,
+          amendment_no: Number(amendmentNo),
+          status: Screens,
+          modified_by: sessionStorage.getItem("selectedUserCode"),
+        }));
+
+        console.log("AU Mode Payload:", editedData);
+
+        const response = await fetch(
+          `${config.apiBaseUrl}/authorizeReceivedGoods`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              company_code: sessionStorage.getItem("selectedCompanyCode"),
+            },
+            body: JSON.stringify({
+              editedData: editedData,
+            }),
+          }
         );
-      }
 
-    } catch (error) {
-      console.error("AU Mode Error:", error);
-      toast.error("Authorization Error: " + error.message);
+        const result = await response.json();
+
+        if (response.ok) {
+          console.log("AU Mode Response:", result);
+
+          toast.success(
+            `Received Goods Data ${actionValue} Successfully`
+          );
+
+          // Refresh grid after authorization
+          await fetchReceivedGoodsData(transactionNo);
+
+        } else {
+          toast.warning(
+            result.message || "Failed to update Received Goods authorization."
+          );
+        }
+
+      } catch (error) {
+        console.error("AU Mode Error:", error);
+        toast.error("Authorization Error: " + error.message);
+
+      } finally {
+        setLoading(false);
+      }
+    },
+    () => {
+      toast.info(`Data ${actionLabel} cancelled.`);
     }
-  };
+  );
+};
+
 
   const fetchReceivedGoodsData = async (TransactionNo) => {
     try {
@@ -747,7 +854,6 @@ function AssetsReturn({ }) {
       );
     }
   };
-
 
 
   const [open, setOpen] = React.useState(false);

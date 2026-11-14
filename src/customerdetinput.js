@@ -683,7 +683,7 @@ function CustomerDetInput({ }) {
                         maxLength={18}
                         ref={code}
                         onKeyDown={(e) => handleKeyDown(e, Address1, code)}
-                      /><button onClick={handleClickOpen} class="cushdrcode position-absolute me-5" required title="Add Header"><i class="fa-solid fa-plus"></i></button>
+                      /><button onClick={handleClickOpen} class="atthdrcode position-absolute me-5" required title="Add Header"><i class="fa-solid fa-plus"></i></button>
                       {/* {error && !customer_code && <div className="text-danger">Code  should not be blank</div>} */}
                     </div>
                   </div>

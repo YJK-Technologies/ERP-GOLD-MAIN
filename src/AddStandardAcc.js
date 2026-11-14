@@ -310,7 +310,7 @@ body: JSON.stringify({ company_code }),
                 placeholder=""
                 ref={Base}
                 onKeyDown={(e) => handleKeyDown(e, Account, Base)}
-              /><button onClick={handleNavigateToForm} class="stahdrcode position-absolute pb-2  me-5" required title="Add Standard Code"><i class="fa-solid fa-plus"></i></button>
+              /><button onClick={handleNavigateToForm} class="atthdrcode position-absolute pb-2  me-5" required title="Add Standard Code"><i class="fa-solid fa-plus"></i></button>
               </div>
               </div>
                
