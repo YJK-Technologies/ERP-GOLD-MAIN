@@ -1120,7 +1120,7 @@ function UserInput({}) {
                         src={selectedImage || DefaultProductImage}
                         alt="Selected Preview"
                         className="avatar rounded sm mt-4"
-                        style={{ height: "200px", width: "200px" }}
+                        style={{ height: "150px", width: "150px" }}
                       />
                     </div>
                   </div>

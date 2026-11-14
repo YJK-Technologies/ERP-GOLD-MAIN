@@ -657,7 +657,7 @@ function VenDetInput({ }) {
                         maxLength={18}
                         ref={code}
                         onKeyDown={(e) => handleKeyDown(e, Address1, code)}
-                      /><button onClick={handleClickOpen} class="vendorhdrcode position-absolute me-5 pt-2" required title="Add Header"><i class="fa-solid fa-plus"></i></button>
+                      /><button onClick={handleClickOpen} class="atthdrcode position-absolute me-5 pt-2" required title="Add Header"><i class="fa-solid fa-plus"></i></button>
 
                     </div>
                   </div>

@@ -770,6 +770,7 @@ const CustomerLedger = () => {
                             className="border-secondary"
                             classNamePrefix="react-select"
                             styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                            isClearable
                         />
                     </div>
                     {/* Customer Code with Search Icon and Enter Key Trigger */}
@@ -827,6 +828,7 @@ const CustomerLedger = () => {
                             onChange={handleChangeCurrency}
                             options={filteredOptionCurrency}
                             styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                            isClearable
                         />
                     </div>
                     {/* <div className="col-12 col-md-2">
@@ -838,6 +840,7 @@ const CustomerLedger = () => {
                                 className="border-secondary"
                                 classNamePrefix="react-select"
                                 styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                                isClearable
                             />
                         </div> */}
                     <div className="col-12 col-md-2" title="Select the Voucher Type">
@@ -849,6 +852,7 @@ const CustomerLedger = () => {
                             className="border-secondary"
                             classNamePrefix="react-select"
                             styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                            isClearable
                         />
                     </div>
                     <div className="col-12 col-md-2" title="Select the Status">
@@ -860,6 +864,7 @@ const CustomerLedger = () => {
                             className="border-secondary"
                             classNamePrefix="react-select"
                             styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                            isClearable
                         />
                     </div>
                     <div className="col-12 col-md-2" title="Select the From Date">

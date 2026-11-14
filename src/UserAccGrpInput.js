@@ -289,7 +289,7 @@ function UserAccInput({ }) {
                           ref={Standard}
                           onKeyDown={(e) => handleKeyDown(e, Status, Standard)}
                         />
-                        <button onClick={handleNavigateToForm} class="userhdrcode position-absolute me-5 pb-2" required title="Add Standard Code"><i class="fa-solid fa-plus"></i></button>
+                        <button onClick={handleNavigateToForm} class="atthdrcode position-absolute me-5 pb-2" required title="Add Standard Code"><i class="fa-solid fa-plus"></i></button>
                       </div>
                     </div>
                   </div>

@@ -57,13 +57,13 @@ const ItemPage = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ company_code: companyCode,item_code:item }),
+          body: JSON.stringify({ company_code: companyCode, item_code: item }),
         });
-        if(response.ok){
+        if (response.ok) {
           const data = await response.json();
           setRowData(data);
         }
-        else if(response.status === 404){
+        else if (response.status === 404) {
           console.log('Data not found')
           setRowData([])
         }
@@ -75,11 +75,11 @@ const ItemPage = () => {
   }, [item]);
 
   const filteredOptionItem = Array.isArray(itemDrop)
-  ? itemDrop.map((option) => ({
+    ? itemDrop.map((option) => ({
       value: option.Item_code,
       label: `${option.Item_code} - ${option.Item_name}`,
     }))
-  : [];
+    : [];
 
 
   const handleChangeItem = (selected) => {
@@ -94,36 +94,42 @@ const ItemPage = () => {
 
   return (
     <div className="container-fluid Topnav-screen">
-     <ToastContainer position="top-right" className="toast-design" theme="colored" />
-     <div className="shadow-lg p-0 bg-body-tertiary rounded mb-2 me-2">
+      <ToastContainer position="top-right" className="toast-design" theme="colored" />
+      <div className="shadow-lg p-0 bg-body-tertiary rounded mb-2 me-2">
         <div className="d-flex justify-content-between">
           <h1 className="purbut">Total Stock</h1>
           <div className="mobileview">
             <div class="d-flex justify-content-between">
-            <div class="d-flex justify-content-start">
-            <h1 className='h1 mt-3'>Total Stock</h1>
-            </div>
-            <div class="d-flex justify-content-end">
-              <button
-                class="btn btn-danger mt-3 mb-3 rounded-3 me-5"
-                style={{ cursor: "pointer" }}
-                onClick={goBack}
-              >
-                <i class="fa-solid fa-xmark"></i>
-              </button>
+              <div class="d-flex justify-content-start">
+                <h1 className='h1 mt-3'>Total Stock</h1>
+              </div>
+              <div className="d-flex justify-content-end">
+                <button
+                  className="btn btn-danger mt-3 mb-3 rounded-3 me-5"
+                  style={{ cursor: "pointer" }}
+                  title="Close"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="top"
+                  onClick={goBack}
+                >
+                  <i className="fa-solid fa-xmark"></i>
+                </button>
               </div>
             </div>
           </div>
           <div className="purbut">
-            <div className="d-flex justify-content-end me-5">
-              <button
-                class="btn btn-danger mt-3 mb-3 rounded-3"
-                style={{ cursor: "pointer" }}
-                onClick={goBack}
-              >
-                <i class="fa-solid fa-xmark"></i>
-              </button>
-            </div>
+            <div className="d-flex justify-content-end">
+                <button
+                  className="btn btn-danger mt-3 mb-3 rounded-3 me-5"
+                  style={{ cursor: "pointer" }}
+                  title="Close"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="top"
+                  onClick={goBack}
+                >
+                  <i className="fa-solid fa-xmark"></i>
+                </button>
+              </div>
           </div>
         </div>
       </div>

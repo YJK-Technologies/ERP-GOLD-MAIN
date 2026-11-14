@@ -48,6 +48,8 @@ function AdjustmentGrid() {
   });
   const [gridApi, setGridApi] = useState(null);
 
+  const companyCode = sessionStorage.getItem('selectedCompanyCode');
+
   const onGridReady = (params) => {
     setGridApi(params.api);
   };
@@ -1019,7 +1021,7 @@ console.log(transaction_type)
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ transaction_no: transactionNo }),
+        body: JSON.stringify({ transaction_no: transactionNo, company_code: sessionStorage.getItem('selectedCompanyCode') }),
       });
 
       if (response.ok) {
