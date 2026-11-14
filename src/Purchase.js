@@ -1487,6 +1487,7 @@ function Purchase() {
       const Header = {
         company_code: sessionStorage.getItem('selectedCompanyCode'),
         vendor_code: vendor_code,
+        vendor_name: vendor_name,
         pay_type: payType,
         type: purchaseType,
         Entry_date: entryDate,
@@ -2122,23 +2123,55 @@ function Purchase() {
         console.error('entry element not found');
       }
 
+      // const purchasetype = document.getElementById('purchaseType');
+      // if (purchasetype) {
+      //   const selectedPay = filteredOptionPurchase.find(option => option.value === PurchaseType);
+      //   setSelected(selectedPay);
+      //   setPurchaseType(selectedPay.value);
+      // } else {
+      //   console.error('entry element not found');
+      // }
+
       const purchasetype = document.getElementById('purchaseType');
-      if (purchasetype) {
-        const selectedPay = filteredOptionPurchase.find(option => option.value === PurchaseType);
-        setSelected(selectedPay);
-        setPurchaseType(selectedPay.value);
-      } else {
-        console.error('entry element not found');
-      }
+if (purchasetype) {
+  const selectedPay = filteredOptionPurchase.find(
+    option => option.value === PurchaseType
+  );
+
+  if (selectedPay) {
+    setSelected(selectedPay);
+    setPurchaseType(selectedPay.value);
+  } else {
+    console.error('PurchaseType option not found:', PurchaseType);
+    setSelected(null);
+    setPurchaseType('');
+  }
+}
+
+      // const paytype = document.getElementById('paytype');
+      // if (paytype) {
+      //   const selectedPay = filteredOptionPay.find(option => option.value === PayType);
+      //   setselectedPay(selectedPay);
+      //   setPayType(selectedPay.value);
+      // } else {
+      //   console.error('entry element not found');
+      // }
 
       const paytype = document.getElementById('paytype');
-      if (paytype) {
-        const selectedPay = filteredOptionPay.find(option => option.value === PayType);
-        setselectedPay(selectedPay);
-        setPayType(selectedPay.value);
-      } else {
-        console.error('entry element not found');
-      }
+if (paytype) {
+  const selectedPay = filteredOptionPay.find(
+    option => option.value === PayType
+  );
+
+  if (selectedPay) {
+    setselectedPay(selectedPay);
+    setPayType(selectedPay.value);
+  } else {
+    console.error('PayType option not found:', PayType);
+    setselectedPay(null);
+    setPayType('');
+  }
+}
 
       const totalPurchaseAmount = document.getElementById('totalPurchaseAmount');
       if (totalPurchaseAmount) {
@@ -3222,7 +3255,7 @@ function Purchase() {
                   <h1 align="left" className="purbut me-5">Purchase</h1>
                 </div>
                 <div className="d-flex justify-content-end purbut me-3">
-                  <div class="exp-form-floating">
+                  <div class="exp-form-floating" title='Select the Mode'>
                     <Select
                       id="returnType"
                       className="exp-input-field col-md-6 mt-2"
@@ -3477,7 +3510,7 @@ function Purchase() {
                     <input
                       className="exp-input-field form-control"
                       id='party_name'
-                      title='Enter the Vendor Name'
+                      title='Vendor Name Auto-Generated'
                       required
                       value={vendor_name}
                       onChange={(e) => setVendorName(e.target.value)}

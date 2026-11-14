@@ -111,35 +111,82 @@ function JournalVoucher() {
     setTotals({ debit: drTotal, credit: crTotal });
   }, [rowData]);
 
-  const accountCodeRenderer = (params) => {
-    return (
-      <div className="position-relative d-flex align-items-center" style={{ minHeight: "100%" }}>
-        <div className="flex-grow-1">
-          <input 
-            type="text" 
-            className="form-control" 
-            value={params.value || ""}
+  // const accountCodeRenderer = (params) => {
+  //   return (
+  //     <div className="position-relative d-flex align-items-center" style={{ minHeight: "100%" }}>
+  //       <div className="flex-grow-1">
+  //         <input 
+  //           type="text" 
+  //           className="form-control" 
+  //           value={params.value || ""}
+  //           onChange={(e) => params.setValue(e.target.value)}
+  //           style={{ width: "100%", height: "28px", fontSize: "13px" }}
+  //         />
+  //       </div>
+  //       <span
+  //         className="icon searchIcon"
+  //         style={{ position: "absolute", right: "5px", top: "50%", transform: "translateY(-50%)", cursor: "pointer" }}
+  //         onClick={() => {
+  //           // Store the row index so we know which row to update later
+  //           setCurrentRowIndex(params.node.rowIndex);
+  //           setOpenCOAPopup(true);
+  //         }}
+  //       >
+  //         <i className="fa fa-search text-secondary"></i>
+  //       </span>
+  //     </div>
+  //   );
+  // };
+
+  // Handle COA Selection from Popup
+
+
+const accountCodeRenderer = (params) => {
+  const cellWidth = params.column.getActualWidth();
+  const isWideEnough = cellWidth > 30;
+  const showSearchIcon = isWideEnough;
+
+  return (
+    <div
+      className="position-relative d-flex align-items-center"
+      style={{ minHeight: '100%' }}
+    >
+      <div className="flex-grow-1">
+        {params.editing ? (
+          <input
+            type="text"
+            className="form-control"
+            value={params.value || ''}
             onChange={(e) => params.setValue(e.target.value)}
-            style={{ width: "100%", height: "28px", fontSize: "13px" }}
+            style={{ width: '100%' }}
           />
-        </div>
+        ) : (
+          params.value
+        )}
+      </div>
+
+      {showSearchIcon && (
         <span
           className="icon searchIcon"
-          style={{ position: "absolute", right: "5px", top: "50%", transform: "translateY(-50%)", cursor: "pointer" }}
+          style={{
+            position: 'absolute',
+            right: '-10px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+          }}
           onClick={() => {
-            // Store the row index so we know which row to update later
             setCurrentRowIndex(params.node.rowIndex);
             setOpenCOAPopup(true);
           }}
         >
-          <i className="fa fa-search text-secondary"></i>
+          <i className="fa fa-search"></i>
         </span>
-      </div>
-    );
-  };
+      )}
+    </div>
+  );
+};
 
-  // Handle COA Selection from Popup
-  const handleCOASelect = (selectedData) => {
+const handleCOASelect = (selectedData) => {
     if (selectedData && selectedData.length > 0 && currentRowIndex !== null) {
       const selectedAccount = selectedData[0]; 
       

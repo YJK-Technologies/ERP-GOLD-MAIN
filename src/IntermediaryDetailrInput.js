@@ -478,7 +478,7 @@ function IntermediaryDetailInput({}) {
                       {mode !== "update" && (
                         <button
                           onClick={handleClickOpen}
-                          class="inthdrcode position-absolute pb-2  me-5"
+                          class="atthdrcode position-absolute pb-2  me-5"
                           required
                           title="Add Header"
                         >

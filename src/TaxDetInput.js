@@ -408,7 +408,7 @@ function TaxDetInput({ }) {
                         isDisabled={mode === "update"}
                         onKeyDown={(e) => handleKeyDown(e, taxnamedet, taxtypehdr)}
                       />
-                      {mode !== "update" && (<button onClick={handleClickOpen} class="taxhdrcode position-absolute pt-2 me-5" required title="Add Header"><i class="fa-solid fa-plus"></i></button>)}
+                      {mode !== "update" && (<button onClick={handleClickOpen} class="atthdrcode position-absolute pt-2 me-5" required title="Add Header"><i class="fa-solid fa-plus"></i></button>)}
                     </div>
                     {/* {error && !tax_type_header && <div className="text-danger">Tax Type should not be blank</div>} */}
 

@@ -205,25 +205,37 @@ input[type="date"]{
 }*/
 
 
-.atthdrcode{
- /* Adjust based on your preference */
- 
- 
+/* .atthdrcode{
+
   right: -55px;
-  top: 1; /* Adjust for proper alignment */
+  top: 1; 
   z-index: 1;
- 
-
-
-
+} */
+.atthdrcode {
+  right: -50px;
+  top: 0px;
+  z-index: 1;
+  width: 35px;
+  height: 30px;
+  padding: 3px;
+  font-size: 12px;
 }
 .stahdrcode{
   right: -55px;
    z-index: 1;
 }
-.inthdrcode{
+/* .inthdrcode{
   right: -55px;
    z-index: 1;
+} */
+.inthdrcode{
+  right: -50px;
+  top: 0px;
+  z-index: 1;
+  width: 35px;
+  height: 30px;
+  padding: 3px;
+  font-size: 12px;
 }
 .prohdrcode, .taxhdrcode, .vendorhdrcode ,.cushdrcode{
    right: -55px;

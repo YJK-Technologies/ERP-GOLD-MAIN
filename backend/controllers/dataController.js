@@ -16973,7 +16973,7 @@ const Journalsearch = async (req, res) => {
 
 //code added by Harish 10-10-2024
 const getAdjustmentDetails = async (req, res) => {
-  const { transaction_no } = req.body;
+  const { transaction_no, company_code} = req.body;
 
   try {
     // Connect to the database
@@ -16984,7 +16984,8 @@ const getAdjustmentDetails = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "AD")
       .input("transaction_no", sql.NVarChar, transaction_no)
-      .query(`EXEC sp_getdata @mode,@transaction_no,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
+      .input("company_code", sql.NVarChar, company_code)
+      .query(`EXEC sp_getdata @mode,@transaction_no,@company_code,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
 
     // Check if data is found
     if (result.recordset.length > 0) {
