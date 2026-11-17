@@ -34056,6 +34056,48 @@ const getAllVendorCode = async (req, res) => {
 };
 //Code ended by Dinesh Gokul on 11-11-2026 
 
+//Code added by Dinesh Gokul on 17-11-2026 
+const getTrialBalanceReport = async (req, res) => {
+  const { company_code, location_code, Fin_year, Tran_type,
+    from_date, to_date, account_from, account_to, account_groups, cost_center } = req.body;
+
+  try {
+    // Connect to the database
+    const pool = await connection.connectToDatabase();
+
+    // Execute the stored procedure
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "TBR")
+      .input("company_code", sql.NVarChar, company_code || "")
+      .input("location_code", sql.NVarChar, location_code || "")
+      .input("Fin_year", sql.NVarChar, Fin_year || "")
+      .input("Tran_type", sql.NVarChar, Tran_type || "")
+      .input("from_date", sql.NVarChar, from_date || "")
+      .input("to_date", sql.NVarChar, to_date || "")
+      .input("account_from", sql.NVarChar, account_from || "")
+      .input("account_to", sql.NVarChar, account_to || "")
+      .input("account_groups", sql.NVarChar, account_groups || "")
+      .input("cost_center", sql.NVarChar, cost_center || "")
+      .query(`EXEC sp_trial_balance_report @mode, @company_code,@location_code,@Fin_year,@from_date,@to_date,@Tran_type,@account_from,@account_to,@account_groups,@cost_center`);
+
+    // Send response
+    if (result.recordset && result.recordset.length > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json("Data not found");
+    }
+
+  } catch (err) {
+    console.error("Customer Ledger Report Error:", err);
+
+    res.status(500).json({
+      message: err.message || "Internal Server Error"
+    });
+  }
+};
+//Code ended by Dinesh Gokul on 17-11-2026 
+
 module.exports = {
   login,
   forgetPassword,
@@ -35154,6 +35196,7 @@ module.exports = {
   deleteGroupMaster,
   searchGroupMaster,
   addGroupMaster,
-  getGroupTypeCode
+  getGroupTypeCode,
+  getTrialBalanceReport
 
 };

@@ -155,42 +155,321 @@ const TrialBalance = () => {
         return Number(val).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     };
 
+    const handleClear = () => {
+        setRowData([]);
+        setTotals({ debit: 0, credit: 0, diff: 0 });
+    };
+
     // --- Actions ---
 
-    const handleGenerateReport = () => {
+    // const handleGenerateReport = () => {
+    //     setLoading(true);
+
+    //     return new Promise((resolve) => {
+    //         const dummyData = [
+    //             { s_no: 1, account_code: "1001", account_name: "Cash Account", account_group: "Current Assets", op_debit: 50000, op_credit: 0, per_debit: 200000, per_credit: 150000, cl_debit: 100000, cl_credit: 0 },
+    //             { s_no: 2, account_code: "1002", account_name: "Bank Account", account_group: "Current Assets", op_debit: 300000, op_credit: 0, per_debit: 500000, per_credit: 400000, cl_debit: 400000, cl_credit: 0 },
+    //             { s_no: 3, account_code: "1101", account_name: "Accounts Receivable", account_group: "Current Assets", op_debit: 200000, op_credit: 0, per_debit: 600000, per_credit: 550000, cl_debit: 250000, cl_credit: 0 },
+    //             { s_no: 4, account_code: "1102", account_name: "Inventory", account_group: "Current Assets", op_debit: 500000, op_credit: 0, per_debit: 300000, per_credit: 250000, cl_debit: 550000, cl_credit: 0 },
+    //             { s_no: 5, account_code: "2001", account_name: "Accounts Payable", account_group: "Current Liabilities", op_debit: 0, op_credit: 400000, per_debit: 300000, per_credit: 450000, cl_debit: 0, cl_credit: 550000 },
+    //             { s_no: 6, account_code: "2101", account_name: "Statutory Liabilities", op_debit: 0, op_credit: 100000, per_debit: 120000, per_credit: 140000, cl_debit: 0, cl_credit: 120000 },
+    //             { s_no: 7, account_code: "3001", account_name: "Capital Account", account_group: "Equity", op_debit: 0, op_credit: 1000000, per_debit: 0, per_credit: 0, cl_debit: 0, cl_credit: 1000000 },
+    //             { s_no: 8, account_code: "4001", account_name: "Sales Account", account_group: "Income", op_debit: 0, op_credit: 0, per_debit: 0, per_credit: 800000, cl_debit: 0, cl_credit: 800000 },
+    //             { s_no: 9, account_code: "5001", account_name: "Purchase Account", account_group: "Expense", op_debit: 0, op_credit: 0, per_debit: 400000, per_credit: 0, cl_debit: 400000, cl_credit: 0 },
+    //             { s_no: 10, account_code: "5101", account_name: "Rent Expense", account_group: "Expense", op_debit: 0, op_credit: 0, per_debit: 100000, per_credit: 0, cl_debit: 100000, cl_credit: 0 },
+    //             { s_no: 11, account_code: "5102", account_name: "Salary Expense", account_group: "Expense", op_debit: 0, op_credit: 0, per_debit: 200000, per_credit: 0, cl_debit: 200000, cl_credit: 0 },
+    //             { s_no: 12, account_code: "5103", account_name: "Other Expenses", account_group: "Expense", op_debit: 0, op_credit: 0, per_debit: 50000, per_credit: 0, cl_debit: 50000, cl_credit: 0 }
+    //         ];
+
+    //         const totalsCalc = dummyData.reduce((acc, row) => {
+    //             acc.op_debit += row.op_debit;
+    //             acc.op_credit += row.op_credit;
+    //             acc.per_debit += row.per_debit;
+    //             acc.per_credit += row.per_credit;
+    //             acc.cl_debit += row.cl_debit;
+    //             acc.cl_credit += row.cl_credit;
+    //             return acc;
+    //         }, {
+    //             op_debit: 0,
+    //             op_credit: 0,
+    //             per_debit: 0,
+    //             per_credit: 0,
+    //             cl_debit: 0,
+    //             cl_credit: 0
+    //         });
+
+    //         const totalRow = {
+    //             s_no: "",
+    //             account_code: "",
+    //             account_name: "TOTAL",
+    //             account_group: "",
+    //             op_debit: totalsCalc.op_debit,
+    //             op_credit: totalsCalc.op_credit,
+    //             per_debit: totalsCalc.per_debit,
+    //             per_credit: totalsCalc.per_credit,
+    //             cl_debit: totalsCalc.cl_debit,
+    //             cl_credit: totalsCalc.cl_credit,
+    //             isTotalRow: true
+    //         };
+
+    //         const finalRows = [...dummyData, totalRow];
+
+    //         setTotals({
+    //             debit: totalsCalc.cl_debit,
+    //             credit: totalsCalc.cl_credit,
+    //             diff: totalsCalc.cl_debit - totalsCalc.cl_credit
+    //         });
+
+    //         setRowData(finalRows);
+    //         setLoading(false);
+
+    //         // toast.success("Report generated successfully!");
+
+    //         // Return the data directly instead of waiting for React state
+    //         resolve(finalRows);
+    //     });
+    // };
+
+    // const handleExportExcel = async () => {
+
+    //     // 1. Generate report data
+    //     const generatedRows = await handleGenerateReport();
+
+    //     if (!generatedRows || generatedRows.length === 0) {
+    //         toast.warning("No data to export.");
+    //         return;
+    //     }
+
+    //     // 2. Excel Header Information
+    //     const headerData = [
+    //         ['Trial Balance Report'],
+    //         [`Company Name: ${selectedCompany?.label || companyName}`],
+    //         [`Financial Year: ${selectedFinancialYearId?.label || ''}`],
+    //         [`Date Range: ${formatDate(fromDate)} to ${formatDate(toDate)}`],
+    //         []
+    //     ];
+
+    //     // 3. Prepare Export Data
+    //     const exportRows = generatedRows.map((row) => ({
+    //         "S.No.": row.s_no,
+    //         "Account Code": row.account_code,
+    //         "Account Name": row.account_name,
+    //         "Account Group": row.account_group,
+    //         "Opening Debit (₹)": row.op_debit,
+    //         "Opening Credit (₹)": row.op_credit,
+    //         "Period Debit (₹)": row.per_debit,
+    //         "Period Credit (₹)": row.per_credit,
+    //         "Closing Debit (₹)": row.cl_debit,
+    //         "Closing Credit (₹)": row.cl_credit
+    //     }));
+
+    //     // 4. Create Worksheet with Header
+    //     const worksheet = XLSX.utils.aoa_to_sheet(headerData);
+
+    //     // 5. Add Report Data Starting from Row 6
+    //     XLSX.utils.sheet_add_json(worksheet, exportRows, {
+    //         origin: 'A6'
+    //     });
+
+    //     // 6. Create Workbook
+    //     const workbook = XLSX.utils.book_new();
+
+    //     XLSX.utils.book_append_sheet(
+    //         workbook,
+    //         worksheet,
+    //         'Trial_Balance'
+    //     );
+
+    //     // 7. Download Excel File
+    //     XLSX.writeFile(workbook, 'Trial_Balance.xlsx');
+
+    //     // toast.success("Trial Balance exported successfully!");
+    // };
+
+    // const handlePrint = () => {
+
+    //     if (!selectedFinancialYearId || !selectedFinancialYearId.value) {
+    //         toast.warning("Please select a Financial Year before printing.");
+    //         return;
+    //     }
+    //     if (!fromDate) {
+    //         toast.warning("Please select a From Date before printing.");
+    //         return;
+    //     }
+    //     if (!toDate) {
+    //         toast.warning("Please select a To Date before printing.");
+    //         return;
+    //     }
+    //     if (new Date(fromDate) > new Date(toDate)) {
+    //         toast.warning("From Date cannot be greater than To Date.");
+    //         return;
+    //     }
+
+    //     // STEP 1: Prepare dummy data if report has not been generated
+    //     const dummyData = [
+    //         { s_no: 1, account_code: "1001", account_name: "Cash Account", account_group: "Current Assets", op_debit: 50000, op_credit: 0, per_debit: 200000, per_credit: 150000, cl_debit: 100000, cl_credit: 0 },
+    //         { s_no: 2, account_code: "1002", account_name: "Bank Account", account_group: "Current Assets", op_debit: 300000, op_credit: 0, per_debit: 500000, per_credit: 400000, cl_debit: 400000, cl_credit: 0 },
+    //         { s_no: 3, account_code: "1101", account_name: "Accounts Receivable", account_group: "Current Assets", op_debit: 200000, op_credit: 0, per_debit: 600000, per_credit: 550000, cl_debit: 250000, cl_credit: 0 },
+    //         { s_no: 4, account_code: "1102", account_name: "Inventory", account_group: "Current Assets", op_debit: 500000, op_credit: 0, per_debit: 300000, per_credit: 250000, cl_debit: 550000, cl_credit: 0 },
+    //         { s_no: 5, account_code: "2001", account_name: "Accounts Payable", account_group: "Current Liabilities", op_debit: 0, op_credit: 400000, per_debit: 300000, per_credit: 450000, cl_debit: 0, cl_credit: 550000 },
+    //         { s_no: 6, account_code: "2101", account_name: "Statutory Liabilities", op_debit: 0, op_credit: 100000, per_debit: 120000, per_credit: 140000, cl_debit: 0, cl_credit: 120000 },
+    //         { s_no: 7, account_code: "3001", account_name: "Capital Account", account_group: "Equity", op_debit: 0, op_credit: 1000000, per_debit: 0, per_credit: 0, cl_debit: 0, cl_credit: 1000000 },
+    //         { s_no: 8, account_code: "4001", account_name: "Sales Account", account_group: "Income", op_debit: 0, op_credit: 0, per_debit: 0, per_credit: 800000, cl_debit: 0, cl_credit: 800000 },
+    //         { s_no: 9, account_code: "5001", account_name: "Purchase Account", account_group: "Expense", op_debit: 0, op_credit: 0, per_debit: 400000, per_credit: 0, cl_debit: 400000, cl_credit: 0 },
+    //         { s_no: 10, account_code: "5101", account_name: "Rent Expense", account_group: "Expense", op_debit: 0, op_credit: 0, per_debit: 100000, per_credit: 0, cl_debit: 100000, cl_credit: 0 },
+    //         { s_no: 11, account_code: "5102", account_name: "Salary Expense", account_group: "Expense", op_debit: 0, op_credit: 0, per_debit: 200000, per_credit: 0, cl_debit: 200000, cl_credit: 0 },
+    //         { s_no: 12, account_code: "5103", account_name: "Other Expenses", account_group: "Expense", op_debit: 0, op_credit: 0, per_debit: 50000, per_credit: 0, cl_debit: 50000, cl_credit: 0 }
+    //     ];
+
+    //     // STEP 2: Use existing report data or dummy data
+    //     const rowsToUse = rowData.length > 0
+    //         ? rowData.filter(row => !row.isTotalRow)
+    //         : dummyData;
+
+    //     // STEP 3: Calculate totals
+    //     const totalsCalc = rowsToUse.reduce((acc, row) => {
+    //         acc.op_debit += Number(row.op_debit) || 0;
+    //         acc.op_credit += Number(row.op_credit) || 0;
+    //         acc.per_debit += Number(row.per_debit) || 0;
+    //         acc.per_credit += Number(row.per_credit) || 0;
+    //         acc.cl_debit += Number(row.cl_debit) || 0;
+    //         acc.cl_credit += Number(row.cl_credit) || 0;
+    //         return acc;
+    //     }, {
+    //         op_debit: 0,
+    //         op_credit: 0,
+    //         per_debit: 0,
+    //         per_credit: 0,
+    //         cl_debit: 0,
+    //         cl_credit: 0
+    //     });
+
+    //     const calculatedTotals = {
+    //         debit: totalsCalc.cl_debit,
+    //         credit: totalsCalc.cl_credit,
+    //         diff: totalsCalc.cl_debit - totalsCalc.cl_credit
+    //     };
+
+    //     // STEP 4: Update main screen data if dummy data is used
+    //     if (rowData.length === 0) {
+    //         setRowData([...dummyData, {
+    //             s_no: "",
+    //             account_code: "",
+    //             account_name: "TOTAL",
+    //             account_group: "",
+    //             op_debit: totalsCalc.op_debit,
+    //             op_credit: totalsCalc.op_credit,
+    //             per_debit: totalsCalc.per_debit,
+    //             per_credit: totalsCalc.per_credit,
+    //             cl_debit: totalsCalc.cl_debit,
+    //             cl_credit: totalsCalc.cl_credit,
+    //             isTotalRow: true
+    //         }]);
+
+    //         setTotals(calculatedTotals);
+    //     }
+
+    //     // STEP 5: Prepare filter details
+    //     const filtersPayload = {
+    //         companyName: selectedCompany?.label || "YJK Technologies",
+    //         financialYear: selectedFinancialYearId?.label || selectedFY?.label || "2026 - 2027",
+    //         branch: selectedBranch?.label || "All Branches",
+    //         ledgerType: selectedLedgerType?.label || "All Ledgers",
+    //         fromDate: fromDate,
+    //         toDate: toDate,
+    //         accountGroup: selectedGroup?.label || "All Groups",
+    //         costCentre: selectedCostCentre?.label || "All Cost Centres",
+    //         accountFrom: accountFrom,            // <-- Added
+    //         accountTo: accountTo,                // <-- Added
+    //         includeZeroBalance: includeZeroBalance, // <-- Added
+    //         showOpeningBalance: showOpeningBalance, // <-- Added
+    //         showTransactions: showTransactions,     // <-- Added
+    //         currency: "INR"
+    //     };
+
+    //     // STEP 6: Save data for print screen
+    //     localStorage.setItem(
+    //         "TrialBalanceFilters",
+    //         LZString.compressToUTF16(JSON.stringify(filtersPayload))
+    //     );
+
+    //     localStorage.setItem(
+    //         "TrialBalanceRows",
+    //         LZString.compressToUTF16(JSON.stringify(rowsToUse))
+    //     );
+
+    //     localStorage.setItem(
+    //         "TrialBalanceMetrics",
+    //         LZString.compressToUTF16(JSON.stringify(calculatedTotals))
+    //     );
+
+    //     // STEP 7: Open print screen
+    //     window.open("/TriBalPrint", "_blank");
+    // };
+
+    // --- Actions ---
+
+    // 1. Fetch real data from backend
+    const handleGenerateReport = async () => {
         setLoading(true);
 
-        return new Promise((resolve) => {
-            const dummyData = [
-                { s_no: 1, account_code: "1001", account_name: "Cash Account", account_group: "Current Assets", op_debit: 50000, op_credit: 0, per_debit: 200000, per_credit: 150000, cl_debit: 100000, cl_credit: 0 },
-                { s_no: 2, account_code: "1002", account_name: "Bank Account", account_group: "Current Assets", op_debit: 300000, op_credit: 0, per_debit: 500000, per_credit: 400000, cl_debit: 400000, cl_credit: 0 },
-                { s_no: 3, account_code: "1101", account_name: "Accounts Receivable", account_group: "Current Assets", op_debit: 200000, op_credit: 0, per_debit: 600000, per_credit: 550000, cl_debit: 250000, cl_credit: 0 },
-                { s_no: 4, account_code: "1102", account_name: "Inventory", account_group: "Current Assets", op_debit: 500000, op_credit: 0, per_debit: 300000, per_credit: 250000, cl_debit: 550000, cl_credit: 0 },
-                { s_no: 5, account_code: "2001", account_name: "Accounts Payable", account_group: "Current Liabilities", op_debit: 0, op_credit: 400000, per_debit: 300000, per_credit: 450000, cl_debit: 0, cl_credit: 550000 },
-                { s_no: 6, account_code: "2101", account_name: "Statutory Liabilities", op_debit: 0, op_credit: 100000, per_debit: 120000, per_credit: 140000, cl_debit: 0, cl_credit: 120000 },
-                { s_no: 7, account_code: "3001", account_name: "Capital Account", account_group: "Equity", op_debit: 0, op_credit: 1000000, per_debit: 0, per_credit: 0, cl_debit: 0, cl_credit: 1000000 },
-                { s_no: 8, account_code: "4001", account_name: "Sales Account", account_group: "Income", op_debit: 0, op_credit: 0, per_debit: 0, per_credit: 800000, cl_debit: 0, cl_credit: 800000 },
-                { s_no: 9, account_code: "5001", account_name: "Purchase Account", account_group: "Expense", op_debit: 0, op_credit: 0, per_debit: 400000, per_credit: 0, cl_debit: 400000, cl_credit: 0 },
-                { s_no: 10, account_code: "5101", account_name: "Rent Expense", account_group: "Expense", op_debit: 0, op_credit: 0, per_debit: 100000, per_credit: 0, cl_debit: 100000, cl_credit: 0 },
-                { s_no: 11, account_code: "5102", account_name: "Salary Expense", account_group: "Expense", op_debit: 0, op_credit: 0, per_debit: 200000, per_credit: 0, cl_debit: 200000, cl_credit: 0 },
-                { s_no: 12, account_code: "5103", account_name: "Other Expenses", account_group: "Expense", op_debit: 0, op_credit: 0, per_debit: 50000, per_credit: 0, cl_debit: 50000, cl_credit: 0 }
-            ];
+        try {
+            // Map frontend states to the stored procedure parameters
+            const payload = {
+                mode: 'TBR',
+                company_code: sessionStorage.getItem('selectedCompanyCode'),
+                location_code: sessionStorage.getItem('selectedLocationCode') || '',
+                Fin_year: selectedFinancialYearId?.value || '',
+                from_date: fromDate,
+                to_date: toDate,
+                Tran_type: selectedLedgerType?.value === 'All Ledgers' ? '' : (selectedLedgerType?.value || ''),
+                account_from: accountFrom || '',
+                account_to: accountTo || '',
+                account_groups: selectedGroup?.value === 'All Groups' ? '' : (selectedGroup?.value || ''),
+                cost_center: selectedCostCentre?.value === 'All Cost Centres' ? '' : (selectedCostCentre?.value || '')
+            };
 
-            const totalsCalc = dummyData.reduce((acc, row) => {
-                acc.op_debit += row.op_debit;
-                acc.op_credit += row.op_credit;
-                acc.per_debit += row.per_debit;
-                acc.per_credit += row.per_credit;
-                acc.cl_debit += row.cl_debit;
-                acc.cl_credit += row.cl_credit;
+            // NOTE: Ensure this endpoint matches your actual Node.js route that executes sp_trial_balance_report
+            const response = await fetch(`${config.apiBaseUrl}/getTrialBalanceReport`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch data from backend");
+            }
+
+            let resultData = await response.json();
+
+            // Apply frontend filter for "Include Zero Balance Accounts" if the SP returns them
+            if (!includeZeroBalance) {
+                resultData = resultData.filter(row => 
+                    row.op_debit !== 0 || row.op_credit !== 0 || 
+                    row.per_debit !== 0 || row.per_credit !== 0 || 
+                    row.cl_debit !== 0 || row.cl_credit !== 0
+                );
+            }
+
+            if (!resultData || resultData.length === 0) {
+                toast.warning("No records found for the selected criteria.");
+                setRowData([]);
+                setTotals({ debit: 0, credit: 0, diff: 0 });
+                setLoading(false);
+                return [];
+            }
+
+            // Calculate Totals dynamically based on fetched data
+            const totalsCalc = resultData.reduce((acc, row) => {
+                acc.op_debit += Number(row.op_debit) || 0;
+                acc.op_credit += Number(row.op_credit) || 0;
+                acc.per_debit += Number(row.per_debit) || 0;
+                acc.per_credit += Number(row.per_credit) || 0;
+                acc.cl_debit += Number(row.cl_debit) || 0;
+                acc.cl_credit += Number(row.cl_credit) || 0;
                 return acc;
             }, {
-                op_debit: 0,
-                op_credit: 0,
-                per_debit: 0,
-                per_credit: 0,
-                cl_debit: 0,
-                cl_credit: 0
+                op_debit: 0, op_credit: 0, per_debit: 0, per_credit: 0, cl_debit: 0, cl_credit: 0
             });
 
             const totalRow = {
@@ -207,7 +486,7 @@ const TrialBalance = () => {
                 isTotalRow: true
             };
 
-            const finalRows = [...dummyData, totalRow];
+            const finalRows = [...resultData, totalRow];
 
             setTotals({
                 debit: totalsCalc.cl_debit,
@@ -215,27 +494,23 @@ const TrialBalance = () => {
                 diff: totalsCalc.cl_debit - totalsCalc.cl_credit
             });
 
+            // If you uncommented the AG Grid in the main screen, this populates it
             setRowData(finalRows);
             setLoading(false);
 
-            // toast.success("Report generated successfully!");
+            // Return the raw data (without total row) for Print and Excel to use
+            return resultData; 
 
-            // Return the data directly instead of waiting for React state
-            resolve(finalRows);
-        });
+        } catch (error) {
+            console.error("Error generating report:", error);
+            toast.error("An error occurred while fetching the report.");
+            setLoading(false);
+            return [];
+        }
     };
-
-
-    const handleClear = () => {
-        setRowData([]);
-        setTotals({ debit: 0, credit: 0, diff: 0 });
-    };
-
-
 
     const handleExportExcel = async () => {
-
-        // 1. Generate report data
+        // ... (Keep your existing handleExportExcel function exactly as it is) ...
         const generatedRows = await handleGenerateReport();
 
         if (!generatedRows || generatedRows.length === 0) {
@@ -285,45 +560,11 @@ const TrialBalance = () => {
 
         // 7. Download Excel File
         XLSX.writeFile(workbook, 'Trial_Balance.xlsx');
-
-        // toast.success("Trial Balance exported successfully!");
     };
 
 
-
-    // const handlePrint = () => {
-    //     if (rowData.length === 0) {
-    //         toast.warning("Please generate the report before printing.");
-    //         return;
-    //     }
-
-    //     const filtersPayload = {
-    //         companyName: selectedCompany?.label || "YJK Technologies",
-    //         financialYear: selectedFinancialYearId?.label || selectedFY?.label || "2026 - 2027",
-    //         branch: selectedBranch?.label || "All Branches",
-    //         ledgerType: selectedLedgerType?.label || "All Ledgers",
-    //         fromDate: fromDate,
-    //         toDate: toDate,
-    //         accountGroup: selectedGroup?.label || "All Groups",
-    //         costCentre: selectedCostCentre?.label || "All Cost Centres",
-    //         currency: "INR" 
-    //     };
-
-    //     // Filter out the AG Grid total row to prevent duplication in the print screen
-    //     const rowsToPrint = rowData.filter((row) => !row.isTotalRow);
-
-    //     // Compress and save to localStorage
-    //     localStorage.setItem("TrialBalanceFilters", LZString.compressToUTF16(JSON.stringify(filtersPayload)));
-    //     localStorage.setItem("TrialBalanceRows", LZString.compressToUTF16(JSON.stringify(rowsToPrint)));
-    //     localStorage.setItem("TrialBalanceMetrics", LZString.compressToUTF16(JSON.stringify(totals)));
-
-    //     // Open print view in a new tab (Ensure your routing file matches this URL path)
-    //     window.open("/TriBalPrint", "_blank");
-    // };
-
-
-    const handlePrint = () => {
-
+    // 2. Update handlePrint to await real data
+    const handlePrint = async () => {
         if (!selectedFinancialYearId || !selectedFinancialYearId.value) {
             toast.warning("Please select a Financial Year before printing.");
             return;
@@ -341,29 +582,16 @@ const TrialBalance = () => {
             return;
         }
 
-        // STEP 1: Prepare dummy data if report has not been generated
-        const dummyData = [
-            { s_no: 1, account_code: "1001", account_name: "Cash Account", account_group: "Current Assets", op_debit: 50000, op_credit: 0, per_debit: 200000, per_credit: 150000, cl_debit: 100000, cl_credit: 0 },
-            { s_no: 2, account_code: "1002", account_name: "Bank Account", account_group: "Current Assets", op_debit: 300000, op_credit: 0, per_debit: 500000, per_credit: 400000, cl_debit: 400000, cl_credit: 0 },
-            { s_no: 3, account_code: "1101", account_name: "Accounts Receivable", account_group: "Current Assets", op_debit: 200000, op_credit: 0, per_debit: 600000, per_credit: 550000, cl_debit: 250000, cl_credit: 0 },
-            { s_no: 4, account_code: "1102", account_name: "Inventory", account_group: "Current Assets", op_debit: 500000, op_credit: 0, per_debit: 300000, per_credit: 250000, cl_debit: 550000, cl_credit: 0 },
-            { s_no: 5, account_code: "2001", account_name: "Accounts Payable", account_group: "Current Liabilities", op_debit: 0, op_credit: 400000, per_debit: 300000, per_credit: 450000, cl_debit: 0, cl_credit: 550000 },
-            { s_no: 6, account_code: "2101", account_name: "Statutory Liabilities", op_debit: 0, op_credit: 100000, per_debit: 120000, per_credit: 140000, cl_debit: 0, cl_credit: 120000 },
-            { s_no: 7, account_code: "3001", account_name: "Capital Account", account_group: "Equity", op_debit: 0, op_credit: 1000000, per_debit: 0, per_credit: 0, cl_debit: 0, cl_credit: 1000000 },
-            { s_no: 8, account_code: "4001", account_name: "Sales Account", account_group: "Income", op_debit: 0, op_credit: 0, per_debit: 0, per_credit: 800000, cl_debit: 0, cl_credit: 800000 },
-            { s_no: 9, account_code: "5001", account_name: "Purchase Account", account_group: "Expense", op_debit: 0, op_credit: 0, per_debit: 400000, per_credit: 0, cl_debit: 400000, cl_credit: 0 },
-            { s_no: 10, account_code: "5101", account_name: "Rent Expense", account_group: "Expense", op_debit: 0, op_credit: 0, per_debit: 100000, per_credit: 0, cl_debit: 100000, cl_credit: 0 },
-            { s_no: 11, account_code: "5102", account_name: "Salary Expense", account_group: "Expense", op_debit: 0, op_credit: 0, per_debit: 200000, per_credit: 0, cl_debit: 200000, cl_credit: 0 },
-            { s_no: 12, account_code: "5103", account_name: "Other Expenses", account_group: "Expense", op_debit: 0, op_credit: 0, per_debit: 50000, per_credit: 0, cl_debit: 50000, cl_credit: 0 }
-        ];
+        // STEP 1: Fetch real data directly when print is clicked
+        const fetchedRows = await handleGenerateReport();
 
-        // STEP 2: Use existing report data or dummy data
-        const rowsToUse = rowData.length > 0
-            ? rowData.filter(row => !row.isTotalRow)
-            : dummyData;
+        if (!fetchedRows || fetchedRows.length === 0) {
+            // Warning toast is already handled inside handleGenerateReport
+            return;
+        }
 
-        // STEP 3: Calculate totals
-        const totalsCalc = rowsToUse.reduce((acc, row) => {
+        // STEP 2: Calculate metrics from the fetched real data
+        const totalsCalc = fetchedRows.reduce((acc, row) => {
             acc.op_debit += Number(row.op_debit) || 0;
             acc.op_credit += Number(row.op_credit) || 0;
             acc.per_debit += Number(row.per_debit) || 0;
@@ -372,12 +600,7 @@ const TrialBalance = () => {
             acc.cl_credit += Number(row.cl_credit) || 0;
             return acc;
         }, {
-            op_debit: 0,
-            op_credit: 0,
-            per_debit: 0,
-            per_credit: 0,
-            cl_debit: 0,
-            cl_credit: 0
+            op_debit: 0, op_credit: 0, per_debit: 0, per_credit: 0, cl_debit: 0, cl_credit: 0
         });
 
         const calculatedTotals = {
@@ -386,28 +609,9 @@ const TrialBalance = () => {
             diff: totalsCalc.cl_debit - totalsCalc.cl_credit
         };
 
-        // STEP 4: Update main screen data if dummy data is used
-        if (rowData.length === 0) {
-            setRowData([...dummyData, {
-                s_no: "",
-                account_code: "",
-                account_name: "TOTAL",
-                account_group: "",
-                op_debit: totalsCalc.op_debit,
-                op_credit: totalsCalc.op_credit,
-                per_debit: totalsCalc.per_debit,
-                per_credit: totalsCalc.per_credit,
-                cl_debit: totalsCalc.cl_debit,
-                cl_credit: totalsCalc.cl_credit,
-                isTotalRow: true
-            }]);
-
-            setTotals(calculatedTotals);
-        }
-
-        // STEP 5: Prepare filter details
+        // STEP 3: Prepare filter details for the print screen header
         const filtersPayload = {
-            companyName: selectedCompany?.label || "YJK Technologies",
+            companyName: selectedCompany?.label || companyName || "YJK Technologies",
             financialYear: selectedFinancialYearId?.label || selectedFY?.label || "2026 - 2027",
             branch: selectedBranch?.label || "All Branches",
             ledgerType: selectedLedgerType?.label || "All Ledgers",
@@ -415,15 +619,15 @@ const TrialBalance = () => {
             toDate: toDate,
             accountGroup: selectedGroup?.label || "All Groups",
             costCentre: selectedCostCentre?.label || "All Cost Centres",
-            accountFrom: accountFrom,            // <-- Added
-            accountTo: accountTo,                // <-- Added
-            includeZeroBalance: includeZeroBalance, // <-- Added
-            showOpeningBalance: showOpeningBalance, // <-- Added
-            showTransactions: showTransactions,     // <-- Added
+            accountFrom: accountFrom,            
+            accountTo: accountTo,                
+            includeZeroBalance: includeZeroBalance, 
+            showOpeningBalance: showOpeningBalance, 
+            showTransactions: showTransactions,     
             currency: "INR"
         };
 
-        // STEP 6: Save data for print screen
+        // STEP 4: Save compressed real data to localStorage
         localStorage.setItem(
             "TrialBalanceFilters",
             LZString.compressToUTF16(JSON.stringify(filtersPayload))
@@ -431,7 +635,7 @@ const TrialBalance = () => {
 
         localStorage.setItem(
             "TrialBalanceRows",
-            LZString.compressToUTF16(JSON.stringify(rowsToUse))
+            LZString.compressToUTF16(JSON.stringify(fetchedRows))
         );
 
         localStorage.setItem(
@@ -439,7 +643,7 @@ const TrialBalance = () => {
             LZString.compressToUTF16(JSON.stringify(calculatedTotals))
         );
 
-        // STEP 7: Open print screen
+        // STEP 5: Open print screen
         window.open("/TriBalPrint", "_blank");
     };
 
