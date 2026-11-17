@@ -11411,7 +11411,7 @@ const POdeletedetData = async (req, res) => {
 
 
 const getAllPOtaxData = async (req, res) => {
-  const { company_code } = req.body;
+  const { company_code,location_code } = req.body;
   let pool;
   try {
     pool = await sql.connect(dbConfig);
@@ -11419,7 +11419,8 @@ const getAllPOtaxData = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "A") // Insert mode
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_purchase_order_tax_details_test 'A',@company_code,'','','','',0,0,'','','','',0,0,'','',''
+      .input("location_code", sql.NVarChar, location_code)
+      .query(`EXEC sp_purchase_order_tax_details_test 'A',@company_code,@location_code,'','','','',0,0,'','','','',0,0,'','',''
 ,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     res.json(result.recordset);
@@ -11924,7 +11925,7 @@ const getQuotationTaxDetailView = async (req, res) => {
 };
 
 const getPOSearchData = async (req, res) => {
-  const { transaction_no, company_code, Entry_date, vendor_name, ShipTo_customer_name } = req.body;
+  const { transaction_no, company_code,location_code, Entry_date, vendor_name, ShipTo_customer_name } = req.body;
 
   try {
     // Connect to the database
@@ -11936,10 +11937,11 @@ const getPOSearchData = async (req, res) => {
       .input("mode", sql.NVarChar, "SC")
       .input("transaction_no", sql.NVarChar, transaction_no)
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("Entry_date", sql.NVarChar, Entry_date)
       .input("vendor_name", sql.NVarChar, vendor_name)
       .input("ShipTo_customer_name", sql.NVarChar, ShipTo_customer_name)
-      .query(`EXEC sp_purchase_order_details @mode,@company_code,'',@Entry_date,@transaction_no,'',@vendor_name,'','','','',@ShipTo_customer_name,'',
+      .query(`EXEC sp_purchase_order_details @mode,@company_code,@location_code,@Entry_date,@transaction_no,'',@vendor_name,'','','','',@ShipTo_customer_name,'',
 '', '','',0,'','',0,0,0,0,0,0,'','','','','','','','','','','','','',0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     // Send response
@@ -25048,7 +25050,7 @@ const getSalesReturnAmountCalculation = async (req, res) => {
 
 //CODE ADDED BY PAVUN 27-01-2025
 const getReceivedGoods = async (req, res) => {
-  const { company_code, bill_no } = req.body;
+  const { company_code,location_code, bill_no } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -25056,8 +25058,9 @@ const getReceivedGoods = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "SC")
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("bill_no", sql.NVarChar, bill_no)
-      .query(`EXEC sp_received_goods_test @mode,@company_code,@bill_no,'',0,'','',0,0,'',0,0,'',0,'','','','','','', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_received_goods @mode,@company_code,@location_code,@bill_no,'',0,'','',0,0,'',0,0,'',0,'','','','','','', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
@@ -25092,6 +25095,7 @@ const updateReceivedGoods = async (req, res) => {
         .request()
         .input("mode", sql.NVarChar, "U")
         .input("company_code", sql.NVarChar, req.headers["company_code"])
+        .input("location_code", sql.NVarChar, req.headers["location_code"])
         .input("bill_no", sql.NVarChar, updatedRow.transactionNo)
         .input("bill_date", sql.NVarChar, updatedRow.transactionDate)
         .input("status", sql.NVarChar, updatedRow.status)
@@ -25102,9 +25106,10 @@ const updateReceivedGoods = async (req, res) => {
         .input("keyfield", sql.NVarChar, updatedRow.keyfield)
         .input("qty_to_receive", sql.Decimal(10, 2), updatedRow.qty_to_receive)
         .query(`
-          EXEC sp_received_goods_test
+          EXEC sp_received_goods
             @mode,
             @company_code,
+            @location_code,
             @bill_no,
             @bill_date,
             0,
@@ -25159,7 +25164,7 @@ const updateReceivedGoods = async (req, res) => {
 // Code  Added by Harish 28-01-2025
 
 const getReceivedGoodsReport = async (req, res) => {
-  const { company_code, bill_no, item_code, item_name, pending, start_date, end_date } = req.body;
+  const { company_code,location_code, bill_no, item_code, item_name, pending, start_date, end_date } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -25167,13 +25172,14 @@ const getReceivedGoodsReport = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "DF")
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("bill_no", sql.NVarChar, bill_no)
       .input("item_code", sql.NVarChar, item_code)
       .input("item_name", sql.NVarChar, item_name)
       .input("pending", sql.NVarChar, pending)
       .input("start_date", sql.NVarChar, start_date)
       .input("end_date", sql.NVarChar, end_date)
-      .query(`EXEC sp_received_goods_test @mode,@company_code,@bill_no,'',0,@item_code,@item_name,0,0,@pending,0,0,'',0,'','',@start_date,@end_date,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+      .query(`EXEC sp_received_goods @mode,@company_code,@location_code,@bill_no,'',0,@item_code,@item_name,0,0,@pending,0,0,'',0,'','',@start_date,@end_date,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
 `);
 
     if (result.recordset.length > 0) {
@@ -25257,7 +25263,7 @@ const getPurchaseAnalysis = async (req, res) => {
 };
 
 const getReceivedGoodsHelp = async (req, res) => {
-  const { company_code, bill_no, bill_date, item_name, item_code } = req.body;
+  const { company_code,location_code, bill_no, bill_date, item_name, item_code } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -25265,11 +25271,12 @@ const getReceivedGoodsHelp = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "RGH")
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("bill_no", sql.NVarChar, bill_no)
       .input("bill_date", sql.NVarChar, bill_date)
       .input("item_name", sql.NVarChar, item_name)
       .input("item_code", sql.NVarChar, item_code)
-      .query(`EXEC sp_received_goods_test @mode,@company_code,@bill_no,@bill_date,0,@item_code,@item_name,0,0,'',0,0,'',0,'','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_received_goods @mode,@company_code,@location_code,@bill_no,@bill_date,0,@item_code,@item_name,0,0,'',0,0,'',0,'','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -32056,6 +32063,7 @@ const insertReceivedGoods = async (req, res) => {
         .request()
         .input("mode", sql.NVarChar, "I")
         .input("company_code", sql.NVarChar, req.headers["company_code"])
+        .input("location_code", sql.NVarChar, req.headers["location_code"])
         .input("bill_no", sql.NVarChar, updatedRow.transactionNo)
         .input("bill_date", sql.NVarChar, updatedRow.transactionDate)
         .input("item_sno", sql.NVarChar, updatedRow.itemSNo)
@@ -32071,9 +32079,10 @@ const insertReceivedGoods = async (req, res) => {
         .input("keyfield", sql.NVarChar, updatedRow.keyfield)
         .input("created_by", sql.NVarChar, updatedRow.created_by)
         .query(`
-          EXEC sp_received_goods_test
+          EXEC sp_received_goods
             @mode,
             @company_code,
+            @location_code,
             @bill_no,
             @bill_date,
             @item_sno,
@@ -32127,7 +32136,7 @@ const insertReceivedGoods = async (req, res) => {
 
 //Code added by Dinesh Gokul on 26-10-2026
 const getAmendmentNumberDrop = async (req, res) => {
-  const { company_code, bill_no } = req.body;
+  const { company_code,location_code, bill_no } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -32135,8 +32144,9 @@ const getAmendmentNumberDrop = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "AM")
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("bill_no", sql.NVarChar, bill_no)
-      .query(`EXEC sp_received_goods_test @mode,@company_code,@bill_no,'',0,'','',0,0,'',0,0,'',0,'','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_received_goods @mode,@company_code,@location_code,@bill_no,'',0,'','',0,0,'',0,0,'',0,'','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
@@ -32173,6 +32183,7 @@ const authorizeReceivedGoods = async (req, res) => {
     for (const updatedRow of editedData) {
 
       const companyCode = req.headers["company_code"];
+      const location_code = req.headers["location_code"];
       const billNo = updatedRow.transactionNo;
       const amendmentNo = updatedRow.amendment_no;
 
@@ -32195,6 +32206,7 @@ const authorizeReceivedGoods = async (req, res) => {
         .request()
         .input("mode", sql.NVarChar(2), "AU")
         .input("company_code", sql.NVarChar, companyCode)
+        .input("location_code", sql.NVarChar, location_code)
         .input("bill_no", sql.NVarChar, billNo)
         .input("status", sql.NVarChar, updatedRow.status)
         .input("amendment_no", sql.Int, Number(amendmentNo))
@@ -32207,7 +32219,7 @@ const authorizeReceivedGoods = async (req, res) => {
           ""
         )
         .query(`
-          EXEC sp_received_goods_test @mode, @company_code, @bill_no, '', 0, '', '', 0, 0, '', 0, 0, @status, @amendment_no, '', '', '', '', '', @modified_by, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL `);
+          EXEC sp_received_goods @mode, @company_code,@location_code, @bill_no, '', 0, '', '', 0, 0, '', 0, 0, @status, @amendment_no, '', '', '', '', '', @modified_by, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL `);
 
       processedAmendments.add(amendmentKey);
 

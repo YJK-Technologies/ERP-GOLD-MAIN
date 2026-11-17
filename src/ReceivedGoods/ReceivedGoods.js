@@ -88,6 +88,7 @@ function AssetsReturn({ }) {
           },
           body: JSON.stringify({
             company_code: sessionStorage.getItem("selectedCompanyCode"),
+            location_code: sessionStorage.getItem("selectedLocationCode"),
             bill_no: String(billNo).trim(),
           }),
         }
@@ -510,6 +511,7 @@ const authorizeSelectedRows = async () => {
             headers: {
               "Content-Type": "application/json",
               company_code: sessionStorage.getItem("selectedCompanyCode"),
+              location_code: sessionStorage.getItem("selectedLocationCode"),
             },
             body: JSON.stringify({
               editedData: editedData,
@@ -556,6 +558,7 @@ const authorizeSelectedRows = async () => {
 
       const body = {
         company_code: sessionStorage.getItem("selectedCompanyCode"),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
         bill_no: billNo,
       };
 
@@ -816,8 +819,8 @@ const authorizeSelectedRows = async () => {
     }
 
     try {
-      const company_code =
-        sessionStorage.getItem("selectedCompanyCode");
+      const company_code = sessionStorage.getItem("selectedCompanyCode");
+      const location_code = sessionStorage.getItem("selectedLocationCode");
 
       const response = await fetch(
         `${config.apiBaseUrl}/insertReceivedGoods`,
@@ -826,6 +829,7 @@ const authorizeSelectedRows = async () => {
           headers: {
             "Content-Type": "application/json",
             company_code: company_code,
+            location_code: location_code,
           },
           body: JSON.stringify({
             editedData: editedData,
