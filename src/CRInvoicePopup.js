@@ -337,7 +337,8 @@ export default function TaxInvoicePopup({ open, handleClose, handletaxinvoice, i
         body: JSON.stringify({
           bill_no, bill_date, sales_type: salesType, pay_type: payType, billTo_customer_name, shipTo_customer_name,
           invoice_type: invoicetype, customer_code: customerCode,
-          company_code: sessionStorage.getItem('selectedCompanyCode')
+          company_code: sessionStorage.getItem('selectedCompanyCode'),
+          location_code: sessionStorage.getItem('selectedLocationCode')
         })
       });
       if (response.ok) {
