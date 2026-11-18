@@ -1874,10 +1874,6 @@ function PurchaseOrder() {
         const [{ transaction_no }] = searchData;
         setTransactionNo(transaction_no);
 
-        setShowExcelButton(true);
-        setDelButtonVisible(true);
-        setPrintButtonVisible(true);
-
         await savePurchaseOrderDetails(transaction_no);
         await savePurchaseOrderTaxDetail(transaction_no);
         await savequoDetailTerms(transaction_no);
