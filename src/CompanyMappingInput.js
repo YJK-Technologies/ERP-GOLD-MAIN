@@ -1,3 +1,4 @@
+//CompanyMappingInput.js
 import React, { useState, useEffect, useRef } from "react";
 import "./input.css";
 import "bootstrap/dist/css/bootstrap.min.css";
