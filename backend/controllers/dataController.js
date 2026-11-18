@@ -11158,7 +11158,7 @@ const productdeletehdrData = async (req, res) => {
 
 //code added by AK on 27 aug 2024 // code begins
 const addPurchaseOrderheader = async (req, res) => {
-  const { company_code, Entry_date, transaction_no, vendor_code,
+  const { company_code, location_code, Entry_date, transaction_no, vendor_code,
     purchase_amount, add_fright, less_fright, tax_amount, rounded_off, loading_charges, cartage_paid, other_charges, total_amount, tax_acc_code, rounded_off_acc_code, loading_charges_acc_code, cartage_paid_acc_code, other_charges_acc_code, purchase_amount_acc_code, delivery_date, credit, remarks, created_by, modified_by,
     tempstr1, tempstr2, tempstr3, tempstr4, datetime1, datetime2, datetime3, datetime4,
   } = req.body;
@@ -11169,6 +11169,7 @@ const addPurchaseOrderheader = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "I")
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("Entry_date", sql.Date, Entry_date)
       .input("transaction_no", sql.NVarChar, transaction_no)
       .input("vendor_code", sql.NVarChar, vendor_code)
@@ -11200,7 +11201,7 @@ const addPurchaseOrderheader = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(`EXEC sp_purchase_order_hdr_test @mode,@company_code, @Entry_date,@transaction_no,@vendor_code, @purchase_amount,@add_fright,@less_fright,@tax_amount,@rounded_off,@loading_charges,@cartage_paid,@other_charges,@total_amount,@tax_acc_code,@rounded_off_acc_code,
+      .query(`EXEC sp_purchase_order_hdr @mode,@company_code, @location_code, @Entry_date,@transaction_no,@vendor_code, @purchase_amount,@add_fright,@less_fright,@tax_amount,@rounded_off,@loading_charges,@cartage_paid,@other_charges,@total_amount,@tax_acc_code,@rounded_off_acc_code,
         @loading_charges_acc_code,  @cartage_paid_acc_code, @other_charges_acc_code,@purchase_amount_acc_code,@delivery_date,@credit,@remarks,'',
         @created_by, @modified_by, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
     if (result.recordset.length > 0) {
@@ -11223,7 +11224,7 @@ const getAllPOhdrData = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "A")
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_purchase_order_hdr_test @mode,@company_code,'','','',0,0,0,0,0,0,0,0,00,'','','','','','','','','','','','', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
+      .query(`EXEC sp_purchase_order_hdr @mode,@company_code,'','','','',0,0,0,0,0,0,0,0,00,'','','','','','','','','','','','', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
 
     res.json(result.recordset);
   } catch (err) {
@@ -11234,7 +11235,7 @@ const getAllPOhdrData = async (req, res) => {
 
 const POdeletehdrData = async (req, res) => {
   // const purch_autonosToDelete = req.body.purch_autonos;
-  const { company_code, transaction_no, modified_by } = req.body;
+  const { company_code, location_code, transaction_no, modified_by } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -11243,9 +11244,10 @@ const POdeletehdrData = async (req, res) => {
         .request()
         .input("mode", sql.NVarChar, "D")
         .input("company_code", sql.NVarChar, company_code)
+        .input("location_code", sql.NVarChar, location_code)
         .input("transaction_no", sql.NVarChar, transaction_no)
         .input("modified_by", sql.NVarChar, modified_by)
-        .query(`EXEC sp_purchase_order_hdr_test @mode,@company_code,'',@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','','','','','','','','',@modified_by, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
+        .query(`EXEC sp_purchase_order_hdr @mode,@company_code,@location_code,'',@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','','','','','','','','',@modified_by, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
     } catch (error) {
       if (error.number === 547) {
         res.status(400).json("first delete the Purchase Order details  ");
@@ -11289,7 +11291,7 @@ const getItemCodeQuotation = async (req, res) => {
   }
 };
 const addPurchaseOrderdetail = async (req, res) => {
-  const { company_code, Entry_date, transaction_no, vendor_code, vendor_name, vendor_addr_1, vendor_addr_2, vendor_addr_3, vendor_addr_4, ShipTo_customer_name, ShipTo_customer_addr_1, ShipTo_customer_addr_2, ShipTo_customer_addr_3, ShipTo_customer_addr_4,
+  const { company_code, location_code, Entry_date, transaction_no, vendor_code, vendor_name, vendor_addr_1, vendor_addr_2, vendor_addr_3, vendor_addr_4, ShipTo_customer_name, ShipTo_customer_addr_1, ShipTo_customer_addr_2, ShipTo_customer_addr_3, ShipTo_customer_addr_4,
     ItemSNo, item_code, item_name, bill_qty, bill_rate, item_amt, weight, total_weight, tax_amount, hsn, contact_person, contact_number, ship_to_contact_number, ship_to_contact_person, state, country, ship_to_state, ship_to_country,
     ShipTo_customer_code, vendor_gst_no, ShipTo_vendor_gst_no, Discount_Type, Discount_Value, created_by, modified_by, tempstr1, tempstr2, tempstr3, tempstr4, datetime1, datetime2, datetime3, datetime4
   } = req.body;
@@ -11300,6 +11302,7 @@ const addPurchaseOrderdetail = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "I") // Insert mode
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("Entry_date", sql.Date, Entry_date)
       .input("transaction_no", sql.NVarChar, transaction_no)
       .input("vendor_code", sql.NVarChar, vendor_code)
@@ -11346,7 +11349,7 @@ const addPurchaseOrderdetail = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(`EXEC sp_purchase_order_details_test @mode,@company_code,@Entry_date,@transaction_no,@vendor_code, @vendor_name,@vendor_addr_1,@vendor_addr_2,@vendor_addr_3,@vendor_addr_4,@ShipTo_customer_name,@ShipTo_customer_addr_1,@ShipTo_customer_addr_2,@ShipTo_customer_addr_3,@ShipTo_customer_addr_4,@ItemSNo,
+      .query(`EXEC sp_purchase_order_details @mode,@company_code,@location_code,@Entry_date,@transaction_no,@vendor_code, @vendor_name,@vendor_addr_1,@vendor_addr_2,@vendor_addr_3,@vendor_addr_4,@ShipTo_customer_name,@ShipTo_customer_addr_1,@ShipTo_customer_addr_2,@ShipTo_customer_addr_3,@ShipTo_customer_addr_4,@ItemSNo,
             @item_code,@item_name, @bill_qty,@bill_rate,@item_amt,@weight,@total_weight,@tax_amount,@hsn,@contact_person,@contact_number,@ship_to_contact_number,@ship_to_contact_person,@state,@country,@ship_to_state,@ship_to_country,@ShipTo_customer_code,
             @vendor_gst_no,@ShipTo_vendor_gst_no,@Discount_Type, @Discount_Value,@created_by, @modified_by, NULL, NULL, NULL, NULL, NULL, NULL, NULL,NULL`);
     {
@@ -11367,7 +11370,7 @@ const getAllPOdetData = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "A") // Insert mode
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_purchase_order_details_test 'A',@company_code,'','','','','','','','','','','', '','',0,'','',0,0,0,0,0,0,'','','','','','','','','','','','','',0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_purchase_order_details 'A',@company_code,'','','','','','','','','','','','', '','',0,'','',0,0,0,0,0,0,'','','','','','','','','','','','','',0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     res.json(result.recordset);
   } catch (err) {
@@ -11378,7 +11381,7 @@ const getAllPOdetData = async (req, res) => {
 
 const POdeletedetData = async (req, res) => {
   // const purch_autonosToDelete = req.body.purch_autonos;
-  const { company_code, transaction_no } = req.body;
+  const { company_code, location_code, transaction_no } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -11387,8 +11390,9 @@ const POdeletedetData = async (req, res) => {
         .request()
         .input("mode", sql.NVarChar, "D")
         .input("company_code", sql.NVarChar, company_code)
+        .input("location_code", sql.NVarChar, location_code)
         .input("transaction_no", sql.NVarChar, transaction_no)
-        .query(`EXEC sp_purchase_order_details_test 'D',@company_code,'',@transaction_no,'','','','','','','','','', '','',0,'','',0,0,0,0,0,0,'','','','','','','','','','','','','',0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+        .query(`EXEC sp_purchase_order_details 'D',@company_code,@location_code,'',@transaction_no,'','','','','','','','','', '','',0,'','',0,0,0,0,0,0,'','','','','','','','','','','','','',0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     } catch (err) {
       if (err.number === 547) {
         res.status(400).json("first delete the Purchase order details  ");
@@ -11407,7 +11411,7 @@ const POdeletedetData = async (req, res) => {
 
 
 const getAllPOtaxData = async (req, res) => {
-  const { company_code } = req.body;
+  const { company_code,location_code } = req.body;
   let pool;
   try {
     pool = await sql.connect(dbConfig);
@@ -11415,7 +11419,8 @@ const getAllPOtaxData = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "A") // Insert mode
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_purchase_order_tax_details 'A',@company_code,'','','',0,0,'','','','',0,0,'','',''
+      .input("location_code", sql.NVarChar, location_code)
+      .query(`EXEC sp_purchase_order_tax_details_test 'A',@company_code,@location_code,'','','','',0,0,'','','','',0,0,'','',''
 ,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     res.json(result.recordset);
@@ -11427,7 +11432,7 @@ const getAllPOtaxData = async (req, res) => {
 
 const addPOtaxdetail = async (req, res) => {
   const {
-    company_code, Entry_date, transaction_no, vendor_code, ItemSNo, TaxSNo, item_code, item_name, tax_type, tax_name_details, tax_amt, tax_per, tax_acode,
+    company_code, location_code, Entry_date, transaction_no, vendor_code, ItemSNo, TaxSNo, item_code, item_name, tax_type, tax_name_details, tax_amt, tax_per, tax_acode,
     created_by, modified_by,
     tempstr1, tempstr2, tempstr3, tempstr4, datetime1, datetime2, datetime3, datetime4,
 
@@ -11439,6 +11444,7 @@ const addPOtaxdetail = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "I") // Insert mode
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("Entry_date", sql.Date, Entry_date)
       .input("transaction_no", sql.NVarChar, transaction_no)
       .input("vendor_code", sql.NVarChar, vendor_code)
@@ -11462,7 +11468,7 @@ const addPOtaxdetail = async (req, res) => {
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
       .query(
-        `EXEC sp_purchase_order_tax_details @mode,@company_code,@Entry_date,@transaction_no,@vendor_code,@ItemSNo,@TaxSNo,@item_code,@item_name,@tax_type,@tax_name_details,
+        `EXEC sp_purchase_order_tax_details_test @mode,@company_code,@location_code,@Entry_date,@transaction_no,@vendor_code,@ItemSNo,@TaxSNo,@item_code,@item_name,@tax_type,@tax_name_details,
         @tax_amt,@tax_per,@tax_acode,@created_by,@modified_by,@tempstr1,@tempstr2,@tempstr3,@tempstr4,@datetime1,@datetime2,@datetime3,@datetime4`);
     res.json({ success: true, message: "Data inserted successfully" });
   } catch (err) {
@@ -11472,15 +11478,16 @@ const addPOtaxdetail = async (req, res) => {
 };
 
 const PODeleteTaxData = async (req, res) => {
-  const { company_code, transaction_no } = req.body;
+  const { company_code, location_code, transaction_no } = req.body;
   try {
     const pool = await connection.connectToDatabase();
     await pool
       .request()
       .input("mode", sql.NVarChar, "D")
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("transaction_no", sql.NVarChar, transaction_no)
-      .query(`EXEC sp_purchase_order_tax_details 'D',@company_code,'',@transaction_no,'',0,0,'','','','',0,0,'','',''
+      .query(`EXEC sp_purchase_order_tax_details_test 'D',@company_code,@location_code,'',@transaction_no,'',0,0,'','','','',0,0,'','',''
                  ,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
 
     res.status(200).json("Purchase order tax deleted successfully");
@@ -11918,7 +11925,7 @@ const getQuotationTaxDetailView = async (req, res) => {
 };
 
 const getPOSearchData = async (req, res) => {
-  const { transaction_no, company_code, Entry_date, vendor_name, ShipTo_customer_name } = req.body;
+  const { transaction_no, company_code,location_code, Entry_date, vendor_name, ShipTo_customer_name } = req.body;
 
   try {
     // Connect to the database
@@ -11930,10 +11937,11 @@ const getPOSearchData = async (req, res) => {
       .input("mode", sql.NVarChar, "SC")
       .input("transaction_no", sql.NVarChar, transaction_no)
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("Entry_date", sql.NVarChar, Entry_date)
       .input("vendor_name", sql.NVarChar, vendor_name)
       .input("ShipTo_customer_name", sql.NVarChar, ShipTo_customer_name)
-      .query(`EXEC sp_purchase_order_details_test @mode,@company_code,@Entry_date,@transaction_no,'',@vendor_name,'','','','',@ShipTo_customer_name,'',
+      .query(`EXEC sp_purchase_order_details @mode,@company_code,@location_code,@Entry_date,@transaction_no,'',@vendor_name,'','','','',@ShipTo_customer_name,'',
 '', '','',0,'','',0,0,0,0,0,0,'','','','','','','','','','','','','',0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     // Send response
@@ -17379,7 +17387,7 @@ const gettaxinvoicetotamt = async (req, res) => {
 //Code Added by Harish on 25-10-2024
 const addtaxInvoicehdr = async (req, res) => {
   const {
-    company_code, bill_date, bill_no, dely_chlno, warehouse_code, sales_type, customer_code, sale_amt, less_frit, less_disc, less_amt, net_amt, excs_amt,
+    company_code, location_code, bill_date, bill_no, dely_chlno, warehouse_code, sales_type, customer_code, sale_amt, less_frit, less_disc, less_amt, net_amt, excs_amt,
     cess_amt, dely_amt, roff_amt, othr_amt, bill_amt, tax_amount, total_item, total_qty, pay_type, broker_code, tpot_code, sman_code, vehl_no, mark_name, payment_mode,
     customer_name, entry_no, roff_acccode, order_type, deli_charge, billTo_customer_name, billTo_customer_addr_1, billTo_customer_addr_2, billTo_customer_addr_3,
     billTo_customer_addr_4, billTo_customer_state, billTo_customer_country, billTo_customer_mobile_no, billTo_contact_person, shipTo_customer_name, shipTo_customer_addr_1, shipTo_customer_addr_2, shipTo_customer_addr_3,
@@ -17393,6 +17401,7 @@ const addtaxInvoicehdr = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "I") // Insert mode
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("bill_date", sql.NVarChar, bill_date)
       .input("bill_no", sql.NVarChar, bill_no)
       .input("dely_chlno", sql.NVarChar, dely_chlno)
@@ -17464,16 +17473,16 @@ const addtaxInvoicehdr = async (req, res) => {
       .input("supplier_ref", sql.NVarChar, supplier_ref)
       .input("delivered_through", sql.NVarChar, delivered_through)
       .input("created_by", sql.NVarChar, created_by)
-      .query(`EXEC sp_taxInvoice_Header_test @mode, @company_code, @bill_date, @bill_no, @dely_chlno, @warehouse_code, @sales_type,
-@customer_code, @sale_amt, @less_frit, @less_disc, @less_amt, @net_amt, @excs_amt, @cess_amt, @dely_amt, @roff_amt, @othr_amt,
-@bill_amt, @tax_amount, @total_item, @total_qty, @pay_type, @broker_code, @tpot_code, @sman_code, @vehl_no, @mark_name,
-@payment_mode, @customer_name, @entry_no, @roff_acccode, @order_type, @deli_charge, @billTo_customer_name ,
-@billTo_customer_addr_1, @billTo_customer_addr_2, @billTo_customer_addr_3, @billTo_customer_addr_4, @billTo_customer_state,
-@billTo_customer_country, @billTo_customer_mobile_no, @billTo_contact_person, @shipTo_customer_name,  @shipTo_customer_addr_1,
-@shipTo_customer_addr_2, @shipTo_customer_addr_3, @shipTo_customer_addr_4, @shipTo_customer_state, @shipTo_customer_country,
-@shipTo_customer_mobile_no, @shipTo_contact_person,@tax_acc_code, @sale_amt_acc_code, @othr_amt_acc_code, @advance_amount, @shipTo_customer_code,
-@bal_amt,@invoice_type,@pending,@billTo_customer_gst_no,@ShipTo_customer_gst_no,@delivery_note,@dispatched_through,@destination,@po_no,@po_date,@document_type,
-@Performa_bill_no,@Eway_bill_no,@supplier_ref,@delivered_through,'',@created_by,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_taxInvoice_Header @mode, @company_code, @location_code, @bill_date, @bill_no, @dely_chlno, @warehouse_code, @sales_type,
+      @customer_code, @sale_amt, @less_frit, @less_disc, @less_amt, @net_amt, @excs_amt, @cess_amt, @dely_amt, @roff_amt, @othr_amt,
+      @bill_amt, @tax_amount, @total_item, @total_qty, @pay_type, @broker_code, @tpot_code, @sman_code, @vehl_no, @mark_name,
+      @payment_mode, @customer_name, @entry_no, @roff_acccode, @order_type, @deli_charge, @billTo_customer_name ,
+      @billTo_customer_addr_1, @billTo_customer_addr_2, @billTo_customer_addr_3, @billTo_customer_addr_4, @billTo_customer_state,
+      @billTo_customer_country, @billTo_customer_mobile_no, @billTo_contact_person, @shipTo_customer_name,  @shipTo_customer_addr_1,
+      @shipTo_customer_addr_2, @shipTo_customer_addr_3, @shipTo_customer_addr_4, @shipTo_customer_state, @shipTo_customer_country,
+      @shipTo_customer_mobile_no, @shipTo_contact_person,@tax_acc_code, @sale_amt_acc_code, @othr_amt_acc_code, @advance_amount, @shipTo_customer_code,
+      @bal_amt,@invoice_type,@pending,@billTo_customer_gst_no,@ShipTo_customer_gst_no,@delivery_note,@dispatched_through,@destination,@po_no,@po_date,@document_type,
+      @Performa_bill_no,@Eway_bill_no,@supplier_ref,@delivered_through,'',@created_by,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -17488,16 +17497,17 @@ const addtaxInvoicehdr = async (req, res) => {
 
 
 const TaxInvoicehdrDelteData = async (req, res) => {
-  const { company_code, bill_no, invoice_type, modified_by } = req.body;
+  const { company_code, location_code, bill_no, invoice_type, modified_by } = req.body;
   try {
     const pool = await connection.connectToDatabase();
     try {
       await pool.request()
         .input("company_code", company_code)
+        .input("location_code", location_code)
         .input("bill_no", bill_no)
         .input("invoice_type", invoice_type)
         .input("modified_by", modified_by)
-        .query(` EXEC sp_taxInvoice_Header_test 'D',@company_code,'',@bill_no,'','','','',0,0,0,0,0,0,0,0,0,0,0,0,0,0,'','','','','','','','','','','',0,'','','','','','','','','','','','','','','','','','','','','',0,'',0,@invoice_type,'','','','','','','','','','','','','','','',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+        .query(` EXEC sp_taxInvoice_Header 'D',@company_code,@location_code,'',@bill_no,'','','','',0,0,0,0,0,0,0,0,0,0,0,0,0,0,'','','','','','','','','','','',0,'','','','','','','','','','','','','','','','','','','','','',0,'',0,@invoice_type,'','','','','','','','','','','','','','','',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     } catch (err) {
       if (err.number === 547) {
         res.status(400).json("First Delete the Invoice Details and Tax Details Data");
@@ -17522,7 +17532,7 @@ const getAlltaxinvoicehdrData = async (req, res) => {
       .input("mode", sql.NVarChar, "A")
       .input("company_code", sql.NVarChar, company_code)
       .input("invoice_type", sql.NVarChar, invoice_type)
-      .query(`EXEC sp_taxInvoice_Header_test @mode,@company_code,'','','','','','',0,0,0,0,0,0,0,0,0,0,0,0,0,0,'','','','','','','','','','','',0,'','','','','','','','','','','','','','','','','','','','','',0,'',0,@invoice_type,'','','','','','','','','','','','','','','',,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_taxInvoice_Header @mode,@company_code,'','','','','','','',0,0,0,0,0,0,0,0,0,0,0,0,0,0,'','','','','','','','','','','',0,'','','','','','','','','','','','','','','','','','','','','',0,'',0,@invoice_type,'','','','','','','','','','','','','','','',,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     res.json(result.recordset);
   } catch (err) {
     console.error("Error", err);
@@ -17640,17 +17650,18 @@ const getAlltaxinvoicehdrData = async (req, res) => {
 
 
 const TaxInvoiceDeldetData = async (req, res) => {
-  const { company_code, bill_no, invoice_type } = req.body;
+  const { company_code, location_code, bill_no, invoice_type } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
     try {
       await pool.request()
         .input("company_code", company_code)
+        .input("location_code", location_code)
         .input("bill_no", bill_no)
         .input("invoice_type", invoice_type)
         .input("modified_by", sql.NVarChar, req.headers['modified-by'])
-        .query(`EXEC sp_tax_invoice_details_list 'D',@company_code,'',@bill_no,0,'','','','','','','',0,0,0,0,0,0,'','',@invoice_type,'',0,'',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+        .query(`EXEC sp_tax_invoice_details_list 'D',@company_code,@location_code,'',@bill_no,0,'','','','','','','',0,0,0,0,0,0,'','',@invoice_type,'',0,'',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     } catch (error) {
       if (error.number === 547) {
         // Foreign key constraint violation
@@ -17679,7 +17690,7 @@ const getAllTaxInvoiceDetData = async (req, res) => {
       .input("mode", sql.NVarChar, "A")
       .input("company_code", sql.NVarChar, company_code)
       .input("invoice_type", sql.NVarChar, invoice_type)
-      .query(`EXEC sp_tax_invoice_details_list @mode,@company_code,'','',0,'','','','','','','',0,0,0,0,0,0,'','',@invoice_type,'',0,'',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_tax_invoice_details_list @mode,@company_code,'','','',0,'','','','','','','',0,0,0,0,0,0,'','',@invoice_type,'',0,'',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
@@ -17730,11 +17741,8 @@ const addTaxInvoiceTaxdetail = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(
-        `EXEC sp_taxInvoice_tax_details @mode,@company_code,@bill_date,@bill_no,@customer_code,@pay_type,@ItemSNo,@TaxSNo,@item_code,@item_name,@tax_type,@tax_name_details,
-              @tax_amt,@tax_per,@tax_acode,@Product_SNo,@invoice_type,
-              @created_by,@modified_by,
-              @tempstr1,@tempstr2,@tempstr3,@tempstr4,@datetime1,@datetime2,@datetime3,@datetime4`);
+      .query(`EXEC sp_taxInvoice_tax_details @mode,@company_code,@bill_date,@bill_no,@customer_code,@pay_type,@ItemSNo,@TaxSNo,@item_code,@item_name,@tax_type,@tax_name_details,
+              @tax_amt,@tax_per,@tax_acode,@Product_SNo,@invoice_type,@created_by,@modified_by,@tempstr1,@tempstr2,@tempstr3,@tempstr4,@datetime1,@datetime2,@datetime3,@datetime4`);
     res.json({ success: true, message: "Data inserted successfully" });
   } catch (err) {
     console.error("Error", err);
@@ -17823,8 +17831,7 @@ const gettaxsearchdata = async (req, res) => {
       .input("shipTo_customer_name", sql.NVarChar, shipTo_customer_name)
       .input("company_code", sql.NVarChar, company_code)
       .input("invoice_type", sql.NVarChar, invoice_type)
-      .query(`
-        EXEC sp_taxInvoice_Header_test 'sc',@company_code,@bill_date,@bill_no,'','',@sales_type,'',0,0,0,0,0,0,0,0,0,0,0,0,0,0,@pay_type,'','','','','','','','','','',0,@billTo_customer_name,'','','','','','','','',@shipTo_customer_name,'','','','','','','','','','','',0,'',0,@invoice_type,'','','','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
+      .query(`EXEC sp_taxInvoice_Header 'sc',@company_code,'',@bill_date,@bill_no,'','',@sales_type,'',0,0,0,0,0,0,0,0,0,0,0,0,0,0,@pay_type,'','','','','','','','','','',0,@billTo_customer_name,'','','','','','','','',@shipTo_customer_name,'','','','','','','','','','','',0,'',0,@invoice_type,'','','','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
     // Send response
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset); // 200 OK if data is found
@@ -20334,30 +20341,9 @@ const getCustomerDetails = async (req, res) => {
 };
 
 const addTaxInvoicedetail_list = async (req, res) => {
-  const { company_code,
-    bill_date,
-    bill_no,
-    SNo,
-    code,
-    name,
-    Description,
-    dely_chlno,
-    warehouse_code,
-    customer_code,
-    customer_name,
-    bill_qty,
-    bill_rate,
-    unit_price,
-    pay_type,
-    sales_type,
-    tax_amt,
-    type,
-    hsn_code,
-    invoice_type,
-    Discount_Type,
-    Discount_Value,
-    created_by
-  } = req.body;
+  const { company_code, location_code, bill_date, bill_no, SNo, code, name, Description, dely_chlno, warehouse_code,
+    customer_code, customer_name, bill_qty, bill_rate, unit_price, pay_type, sales_type, tax_amt, type, hsn_code,
+    invoice_type, Discount_Type, Discount_Value, created_by } = req.body;
   let pool;
   try {
     pool = await sql.connect(dbConfig);
@@ -20365,6 +20351,7 @@ const addTaxInvoicedetail_list = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "I") // Insert mode
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("bill_date", sql.Date, bill_date)
       .input("bill_no", sql.NVarChar, bill_no)
       .input("SNo", sql.Int, SNo)
@@ -20387,7 +20374,7 @@ const addTaxInvoicedetail_list = async (req, res) => {
       .input("Discount_Type", sql.NVarChar, Discount_Type)
       .input("Discount_Value", sql.Decimal(10, 2), Discount_Value)
       .input("created_by", sql.NVarChar, created_by)
-      .query(`EXEC sp_tax_invoice_details_list @mode,@company_code,@bill_date,@bill_no,@SNo,@code,@name,@Description,@dely_chlno,@warehouse_code,@customer_code,@customer_name,@bill_qty,@bill_rate,@unit_price,@pay_type,@sales_type,@tax_amt,@type,@hsn_code,@invoice_type,
+      .query(`EXEC sp_tax_invoice_details_list @mode,@company_code,@location_code.@bill_date,@bill_no,@SNo,@code,@name,@Description,@dely_chlno,@warehouse_code,@customer_code,@customer_name,@bill_qty,@bill_rate,@unit_price,@pay_type,@sales_type,@tax_amt,@type,@hsn_code,@invoice_type,
         @Discount_Type,@Discount_Value,@created_by,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     res.json({ success: true, message: "Data inserted successfully" });
   } catch (err) {
@@ -21648,21 +21635,8 @@ const getIdentityDocuments = async (req, res) => {
 //code Added by Harish 24/12/2024
 
 const POTermsandConditions = async (req, res) => {
-  const {
-    transaction_no,
-    company_code,
-    Terms_conditions,
-    created_by,
-    modified_by,
-    tempstr1,
-    tempstr2,
-    tempstr3,
-    tempstr4,
-    datetime1,
-    datetime2,
-    datetime3,
-    datetime4,
-  } = req.body;
+  const { transaction_no, company_code, location_code, Terms_conditions, created_by, modified_by, tempstr1,
+    tempstr2, tempstr3, tempstr4, datetime1, datetime2, datetime3, datetime4, } = req.body;
   let pool;
   try {
     pool = await sql.connect(dbConfig);
@@ -21671,6 +21645,7 @@ const POTermsandConditions = async (req, res) => {
       .input("mode", sql.NVarChar, "I") // Insert mode
       .input("transaction_no", sql.NVarChar, transaction_no)
       .input("company_code", sql.VarChar, company_code)
+      .input("location_code", sql.VarChar, location_code)
       .input("Terms_conditions", sql.VarChar, Terms_conditions)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
@@ -21682,8 +21657,7 @@ const POTermsandConditions = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(
-        `EXEC sp_Terms_conditions_Purchaseorder @mode,@transaction_no,@company_code,@Terms_conditions,@created_by,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_Terms_conditions_Purchaseorder_test @mode,@transaction_no,@company_code,@location_code,@Terms_conditions,@created_by,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     res.status(200).json("PO Terms & Conditions Data Inserted successfully");
   } catch (err) {
@@ -21697,7 +21671,7 @@ const POTermsandConditions = async (req, res) => {
 
 
 const POTermsandConditionsDelete = async (req, res) => {
-  const { transaction_no, company_code } = req.body;
+  const { transaction_no, company_code, location_code } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -21705,8 +21679,9 @@ const POTermsandConditionsDelete = async (req, res) => {
       .request()
       .input("transaction_no", sql.NVarChar, transaction_no)
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
 
-      .query(`EXEC sp_Terms_conditions_Purchaseorder 'D',@transaction_no,@company_code,'','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_Terms_conditions_Purchaseorder_test 'D',@transaction_no,@company_code,@location_code,'','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     res.status(200).json("data deleted successfully");
   } catch (err) {
@@ -21722,7 +21697,7 @@ const POTermsandConditionsDelete = async (req, res) => {
 const getallPOTermsandConditions = async (req, res) => {
   try {
     await connection.connectToDatabase();
-    const result = await sql.query(`EXEC sp_Terms_conditions_Purchaseorder 'A','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+    const result = await sql.query(`EXEC sp_Terms_conditions_Purchaseorder_test 'A','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     res.json(result.recordset);
   } catch (err) {
@@ -22897,7 +22872,7 @@ const getDeletedPoSearchData = async (req, res) => {
       .input("Entry_date", sql.NVarChar, Entry_date)
       .input("vendor_name", sql.NVarChar, vendor_name)
       .input("ShipTo_customer_name", sql.NVarChar, ShipTo_customer_name)
-      .query(`EXEC sp_purchase_order_details_test @mode,@company_code,@Entry_date,@transaction_no,'',@vendor_name,'','','','',@ShipTo_customer_name,'',
+      .query(`EXEC sp_purchase_order_details @mode,@company_code,'',@Entry_date,@transaction_no,'',@vendor_name,'','','','',@ShipTo_customer_name,'',
 '', '','',0,'','',0,0,0,0,0,0,'','','','','','','','','','','','','',0,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     if (result.recordset.length > 0) {
@@ -23052,7 +23027,7 @@ const getDeletedTaxInvoiceSearchData = async (req, res) => {
       .input("shipTo_customer_name", sql.NVarChar, shipTo_customer_name)
       .input("company_code", sql.NVarChar, company_code)
       .input("invoice_type", sql.NVarChar, invoice_type)
-      .query(`EXEC sp_taxInvoice_Header_test @mode,@company_code,@bill_date,@bill_no,'','',@sales_type,'',0,0,0,0,0,0,0,0,0,0,0,0,0,0,@pay_type,'','','','','','','','','','',0,@billTo_customer_name,'','','','','','','','',@shipTo_customer_name,'','','','','','','','','','','',0,'',0,@invoice_type,'','','','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
+      .query(`EXEC sp_taxInvoice_Header @mode,@company_code,'',@bill_date,@bill_no,'','',@sales_type,'',0,0,0,0,0,0,0,0,0,0,0,0,0,0,@pay_type,'','','','','','','','','','',0,@billTo_customer_name,'','','','','','','','',@shipTo_customer_name,'','','','','','','','','','','',0,'',0,@invoice_type,'','','','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -25075,7 +25050,7 @@ const getSalesReturnAmountCalculation = async (req, res) => {
 
 //CODE ADDED BY PAVUN 27-01-2025
 const getReceivedGoods = async (req, res) => {
-  const { company_code, bill_no } = req.body;
+  const { company_code,location_code, bill_no } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -25083,8 +25058,9 @@ const getReceivedGoods = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "SC")
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("bill_no", sql.NVarChar, bill_no)
-      .query(`EXEC sp_received_goods_test @mode,@company_code,@bill_no,'',0,'','',0,0,'',0,0,'',0,'','','','','','', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_received_goods @mode,@company_code,@location_code,@bill_no,'',0,'','',0,0,'',0,0,'',0,'','','','','','', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
@@ -25119,6 +25095,7 @@ const updateReceivedGoods = async (req, res) => {
         .request()
         .input("mode", sql.NVarChar, "U")
         .input("company_code", sql.NVarChar, req.headers["company_code"])
+        .input("location_code", sql.NVarChar, req.headers["location_code"])
         .input("bill_no", sql.NVarChar, updatedRow.transactionNo)
         .input("bill_date", sql.NVarChar, updatedRow.transactionDate)
         .input("status", sql.NVarChar, updatedRow.status)
@@ -25129,9 +25106,10 @@ const updateReceivedGoods = async (req, res) => {
         .input("keyfield", sql.NVarChar, updatedRow.keyfield)
         .input("qty_to_receive", sql.Decimal(10, 2), updatedRow.qty_to_receive)
         .query(`
-          EXEC sp_received_goods_test
+          EXEC sp_received_goods
             @mode,
             @company_code,
+            @location_code,
             @bill_no,
             @bill_date,
             0,
@@ -25186,7 +25164,7 @@ const updateReceivedGoods = async (req, res) => {
 // Code  Added by Harish 28-01-2025
 
 const getReceivedGoodsReport = async (req, res) => {
-  const { company_code, bill_no, item_code, item_name, pending, start_date, end_date } = req.body;
+  const { company_code,location_code, bill_no, item_code, item_name, pending, start_date, end_date } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -25194,13 +25172,14 @@ const getReceivedGoodsReport = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "DF")
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("bill_no", sql.NVarChar, bill_no)
       .input("item_code", sql.NVarChar, item_code)
       .input("item_name", sql.NVarChar, item_name)
       .input("pending", sql.NVarChar, pending)
       .input("start_date", sql.NVarChar, start_date)
       .input("end_date", sql.NVarChar, end_date)
-      .query(`EXEC sp_received_goods_test @mode,@company_code,@bill_no,'',0,@item_code,@item_name,0,0,@pending,0,0,'',0,'','',@start_date,@end_date,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+      .query(`EXEC sp_received_goods @mode,@company_code,@location_code,@bill_no,'',0,@item_code,@item_name,0,0,@pending,0,0,'',0,'','',@start_date,@end_date,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
 `);
 
     if (result.recordset.length > 0) {
@@ -25284,7 +25263,7 @@ const getPurchaseAnalysis = async (req, res) => {
 };
 
 const getReceivedGoodsHelp = async (req, res) => {
-  const { company_code, bill_no, bill_date, item_name, item_code } = req.body;
+  const { company_code,location_code, bill_no, bill_date, item_name, item_code } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -25292,11 +25271,12 @@ const getReceivedGoodsHelp = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "RGH")
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("bill_no", sql.NVarChar, bill_no)
       .input("bill_date", sql.NVarChar, bill_date)
       .input("item_name", sql.NVarChar, item_name)
       .input("item_code", sql.NVarChar, item_code)
-      .query(`EXEC sp_received_goods_test @mode,@company_code,@bill_no,@bill_date,0,@item_code,@item_name,0,0,'',0,0,'',0,'','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_received_goods @mode,@company_code,@location_code,@bill_no,@bill_date,0,@item_code,@item_name,0,0,'',0,0,'',0,'','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -26426,7 +26406,7 @@ const Userdropdown = async (req, res) => {
 
 // Code Ended by Harish 22/02/25
 const updPurchaseOrderheader = async (req, res) => {
-  const { company_code, Entry_date, transaction_no, vendor_code,
+  const { company_code, location_code, Entry_date, transaction_no, vendor_code,
     purchase_amount, add_fright, less_fright, tax_amount, rounded_off, loading_charges, cartage_paid, other_charges, total_amount, tax_acc_code, rounded_off_acc_code,
     loading_charges_acc_code, cartage_paid_acc_code, other_charges_acc_code, purchase_amount_acc_code, delivery_date, credit, remarks, created_by, modified_by, authroization_status
   } = req.body;
@@ -26437,6 +26417,7 @@ const updPurchaseOrderheader = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "U")
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("Entry_date", sql.Date, Entry_date)
       .input("transaction_no", sql.NVarChar, transaction_no)
       .input("vendor_code", sql.NVarChar, vendor_code)
@@ -26461,7 +26442,7 @@ const updPurchaseOrderheader = async (req, res) => {
       .input("authroization_status", sql.NVarChar, authroization_status)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
-      .query(`EXEC sp_purchase_order_hdr_test @mode,@company_code, @Entry_date,@transaction_no,@vendor_code, @purchase_amount,@add_fright,@less_fright,@tax_amount,@rounded_off,@loading_charges,@cartage_paid,@other_charges,@total_amount,@tax_acc_code,@rounded_off_acc_code,
+      .query(`EXEC sp_purchase_order_hdr @mode,@company_code, @location_code, @Entry_date,@transaction_no,@vendor_code, @purchase_amount,@add_fright,@less_fright,@tax_amount,@rounded_off,@loading_charges,@cartage_paid,@other_charges,@total_amount,@tax_acc_code,@rounded_off_acc_code,
           @loading_charges_acc_code,  @cartage_paid_acc_code, @other_charges_acc_code,@purchase_amount_acc_code,@delivery_date,@credit,@remarks,@authroization_status,
           @created_by, @modified_by, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
     res.json({ success: true, message: "Data Updated successfully" });
@@ -26647,7 +26628,7 @@ const updDeliveryChallanheader = async (req, res) => {
 };
 
 const TaxInvoiceUpdate = async (req, res) => {
-  const { company_code, bill_date, bill_no, dely_chlno, warehouse_code, sales_type, customer_code, sale_amt, less_frit, less_disc, less_amt, net_amt, excs_amt,
+  const { company_code, location_code, bill_date, bill_no, dely_chlno, warehouse_code, sales_type, customer_code, sale_amt, less_frit, less_disc, less_amt, net_amt, excs_amt,
     cess_amt, dely_amt, roff_amt, othr_amt, bill_amt, tax_amount, total_item, total_qty, pay_type, broker_code, tpot_code, sman_code, vehl_no, mark_name, payment_mode,
     customer_name, entry_no, roff_acccode, order_type, deli_charge, billTo_customer_name, billTo_customer_addr_1, billTo_customer_addr_2, billTo_customer_addr_3,
     billTo_customer_addr_4, billTo_customer_state, billTo_customer_country, billTo_customer_mobile_no, billTo_contact_person, shipTo_customer_name, shipTo_customer_addr_1, shipTo_customer_addr_2, shipTo_customer_addr_3,
@@ -26661,6 +26642,7 @@ const TaxInvoiceUpdate = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "U")
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("bill_date", sql.NVarChar, bill_date)
       .input("bill_no", sql.NVarChar, bill_no)
       .input("dely_chlno", sql.NVarChar, dely_chlno)
@@ -26734,7 +26716,7 @@ const TaxInvoiceUpdate = async (req, res) => {
       .input("authroization_status", sql.NVarChar, authroization_status)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
-      .query(`EXEC sp_taxInvoice_Header_test @mode, @company_code, @bill_date, @bill_no, @dely_chlno, @warehouse_code, @sales_type,
+      .query(`EXEC sp_taxInvoice_Header @mode, @company_code, @location_code, @bill_date, @bill_no, @dely_chlno, @warehouse_code, @sales_type,
               @customer_code, @sale_amt, @less_frit, @less_disc, @less_amt, @net_amt,@excs_amt, @cess_amt, @dely_amt, @roff_amt, @othr_amt,
               @bill_amt, @tax_amount, @total_item, @total_qty, @pay_type, @broker_code,@tpot_code, @sman_code, @vehl_no, @mark_name,
               @payment_mode, @customer_name, @entry_no, @roff_acccode, @order_type,@deli_charge, @billTo_customer_name ,
@@ -32081,6 +32063,7 @@ const insertReceivedGoods = async (req, res) => {
         .request()
         .input("mode", sql.NVarChar, "I")
         .input("company_code", sql.NVarChar, req.headers["company_code"])
+        .input("location_code", sql.NVarChar, req.headers["location_code"])
         .input("bill_no", sql.NVarChar, updatedRow.transactionNo)
         .input("bill_date", sql.NVarChar, updatedRow.transactionDate)
         .input("item_sno", sql.NVarChar, updatedRow.itemSNo)
@@ -32096,9 +32079,10 @@ const insertReceivedGoods = async (req, res) => {
         .input("keyfield", sql.NVarChar, updatedRow.keyfield)
         .input("created_by", sql.NVarChar, updatedRow.created_by)
         .query(`
-          EXEC sp_received_goods_test
+          EXEC sp_received_goods
             @mode,
             @company_code,
+            @location_code,
             @bill_no,
             @bill_date,
             @item_sno,
@@ -32152,7 +32136,7 @@ const insertReceivedGoods = async (req, res) => {
 
 //Code added by Dinesh Gokul on 26-10-2026
 const getAmendmentNumberDrop = async (req, res) => {
-  const { company_code, bill_no } = req.body;
+  const { company_code,location_code, bill_no } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -32160,8 +32144,9 @@ const getAmendmentNumberDrop = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "AM")
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("bill_no", sql.NVarChar, bill_no)
-      .query(`EXEC sp_received_goods_test @mode,@company_code,@bill_no,'',0,'','',0,0,'',0,0,'',0,'','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_received_goods @mode,@company_code,@location_code,@bill_no,'',0,'','',0,0,'',0,0,'',0,'','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
@@ -32198,6 +32183,7 @@ const authorizeReceivedGoods = async (req, res) => {
     for (const updatedRow of editedData) {
 
       const companyCode = req.headers["company_code"];
+      const location_code = req.headers["location_code"];
       const billNo = updatedRow.transactionNo;
       const amendmentNo = updatedRow.amendment_no;
 
@@ -32220,6 +32206,7 @@ const authorizeReceivedGoods = async (req, res) => {
         .request()
         .input("mode", sql.NVarChar(2), "AU")
         .input("company_code", sql.NVarChar, companyCode)
+        .input("location_code", sql.NVarChar, location_code)
         .input("bill_no", sql.NVarChar, billNo)
         .input("status", sql.NVarChar, updatedRow.status)
         .input("amendment_no", sql.Int, Number(amendmentNo))
@@ -32232,7 +32219,7 @@ const authorizeReceivedGoods = async (req, res) => {
           ""
         )
         .query(`
-          EXEC sp_received_goods_test @mode, @company_code, @bill_no, '', 0, '', '', 0, 0, '', 0, 0, @status, @amendment_no, '', '', '', '', '', @modified_by, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL `);
+          EXEC sp_received_goods @mode, @company_code,@location_code, @bill_no, '', 0, '', '', 0, 0, '', 0, 0, @status, @amendment_no, '', '', '', '', '', @modified_by, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL `);
 
       processedAmendments.add(amendmentKey);
 
@@ -32272,7 +32259,7 @@ const updateStatusPurchaseOrder = async (req, res) => {
       .input("mode", sql.NVarChar, "ASU")
       .input("company_code", sql.NVarChar, company_code)
       .input("transaction_no", sql.NVarChar, transaction_no)
-      .query(`EXEC sp_purchase_order_hdr_test @mode,@company_code,'',@transaction_no,'',0,0,0,0,0,0,0,0,00,'','','','','','','','','','','','', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
+      .query(`EXEC sp_purchase_order_hdr @mode,@company_code,'','',@transaction_no,'',0,0,0,0,0,0,0,0,00,'','','','','','','','','','','','', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
 
     res.status(200).json("Purchase order updated successfully");
   } catch (err) {
@@ -33311,7 +33298,7 @@ const getInvoicedata = async (req, res) => {
       .input("invoice_type", sql.NVarChar, invoice_type)
       .input("customer_code", sql.NVarChar, customer_code)
       .query(`
-        EXEC sp_taxInvoice_Header_test 'SCC',@company_code,@bill_date,@bill_no,'','',@sales_type,@customer_code,0,0,0,0,0,0,0,0,0,0,0,0,0,0,@pay_type,'','','','','','','','','','',0,@billTo_customer_name,'','','','','','','','',@shipTo_customer_name,'','','','','','','','','','','',0,'',0,@invoice_type,'','','','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
+        EXEC sp_taxInvoice_Header 'SCC',@company_code,'',@bill_date,@bill_no,'','',@sales_type,@customer_code,0,0,0,0,0,0,0,0,0,0,0,0,0,0,@pay_type,'','','','','','','','','','',0,@billTo_customer_name,'','','','','','','','',@shipTo_customer_name,'','','','','','','','','','','',0,'',0,@invoice_type,'','','','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL `);
     // Send response
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset); // 200 OK if data is found
