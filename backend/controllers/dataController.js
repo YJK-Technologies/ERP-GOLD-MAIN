@@ -20379,7 +20379,7 @@ const addTaxInvoicedetail_list = async (req, res) => {
       .input("Discount_Type", sql.NVarChar, Discount_Type)
       .input("Discount_Value", sql.Decimal(10, 2), Discount_Value)
       .input("created_by", sql.NVarChar, created_by)
-      .query(`EXEC sp_tax_invoice_details_list @mode,@company_code,@location_code.@bill_date,@bill_no,@SNo,@code,@name,@Description,@dely_chlno,@warehouse_code,@customer_code,@customer_name,@bill_qty,@bill_rate,@unit_price,@pay_type,@sales_type,@tax_amt,@type,@hsn_code,@invoice_type,
+      .query(`EXEC sp_tax_invoice_details_list @mode,@company_code,@location_code,@bill_date,@bill_no,@SNo,@code,@name,@Description,@dely_chlno,@warehouse_code,@customer_code,@customer_name,@bill_qty,@bill_rate,@unit_price,@pay_type,@sales_type,@tax_amt,@type,@hsn_code,@invoice_type,
         @Discount_Type,@Discount_Value,@created_by,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     res.json({ success: true, message: "Data inserted successfully" });
   } catch (err) {
