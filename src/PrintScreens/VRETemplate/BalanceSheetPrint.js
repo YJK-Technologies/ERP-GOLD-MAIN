@@ -147,7 +147,7 @@ const BalanceSheetPrint = () => {
 
         return (
             <div className="mb-4">
-                <h6 className="fw-bold bg-light p-2 mb-0 border border-dark border-bottom-0 border-top-0 text-primary text-uppercase" style={{fontSize: '13px'}}>
+                <h6 className="fw-bold bg-light p-2 mb-0 border border-dark border-bottom-0 text-primary text-uppercase" style={{fontSize: '13px'}}>
                     {title}
                 </h6>
                 <table className="invoiceTable w-100 border-top-0" style={{ tableLayout: "fixed" }}>
