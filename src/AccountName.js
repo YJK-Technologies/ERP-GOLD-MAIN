@@ -1,3 +1,4 @@
+//AccountName.js
 import React, { useState, useEffect } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
@@ -55,8 +56,6 @@ function Chart_of_accountsScreen() {
 
   const [statusgriddrop, setStatusGriddrop] = useState([]);
   
-  // const [selectedStatus, setSelectedStatus] = useState('');
-
   // Audit Logs
   const [createdBy, setCreatedBy] = useState("");
   const [modifiedBy, setModifiedBy] = useState("");
@@ -68,7 +67,7 @@ function Chart_of_accountsScreen() {
     .filter((p) => p.screen_type === "ChartOfAccounts")
     .map((p) => p.permission_type.toLowerCase());
 
-      useEffect(() => {
+  useEffect(() => {
     const company_code = sessionStorage.getItem("selectedCompanyCode");
     const location_code = sessionStorage.getItem("selectedLocationCode");
     const reqOptions = {
@@ -107,7 +106,6 @@ function Chart_of_accountsScreen() {
       .then((val) => setStatusdrop(val))
       .catch((error) => console.error("Error fetching Report Type:", error));
 
-    // Assuming a standard route for currency
     fetch(`${config.apiBaseUrl}/getCurrencyCode`, reqOptions)
       .then((data) => data.json())
       .then((val) => setCurrencyDrop(val))
@@ -132,11 +130,11 @@ function Chart_of_accountsScreen() {
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-  // Filtered Options mapping (removed "All" object to prevent DB insert errors)
-  const filteredOptionStatus = statusdrop.map((option) => ({
+  const filteredOptionStatus =[ { value: "All", label: "All" },
+    ...statusdrop.map((option) => ({
     value: option.attributedetails_name,
     label: option.descriptions,
-  }));
+  }))];
 
   const filteredOptionGroup = groupDrop.map((option) => ({
     value: option.attributedetails_name,
@@ -168,7 +166,6 @@ function Chart_of_accountsScreen() {
     label: option.Currency_Code,
   }));
 
-  // Handle Changes
   const handleChangeStatus = (selectedStatus) => {
     setSelectedStatus(selectedStatus);
     setStatus(selectedStatus ? selectedStatus.value : "");
@@ -204,32 +201,6 @@ function Chart_of_accountsScreen() {
     setCurrencyCode(selected ? selected.value : "");
   };
 
-  // Fetch Dropdowns on Load
-  // useEffect(() => {
-  //   const company_code = sessionStorage.getItem("selectedCompanyCode");
-  //   fetch(`${config.apiBaseUrl}/status`, {
-  //     method: "POST",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify({ company_code }),
-  //   })
-  //     .then((res) => res.json())
-  //     .then((data) => setStatusDrop(data.map((opt) => opt.attributedetails_name)))
-  //     .catch((err) => console.error("Error fetching status:", err));
-  // }, []);
-
-  //   const filteredOptionStatus = [
-  //   { value: "All", label: "All" },
-  //   ...statusDrop.map((option) => ({
-  //     value: option.attributedetails_name,
-  //     label: option.attributedetails_name,
-  //   })),
-  // ];
-
-  //   const handleChangeStatus = (selectedStatus) => {
-  //   setSelectedStatus(selectedStatus);
-  //   setStatus(selectedStatus ? selectedStatus.value : "");
-  // };
-
   const handleSearch = async () => {
     setLoading(true);
     try {
@@ -252,6 +223,7 @@ function Chart_of_accountsScreen() {
         setRowData(searchData);
       } else if (response.status === 404) {
         toast.warning("Data not found");
+        setRowData([]);
       } else {
         const errorResponse = await response.json();
         toast.warning(errorResponse.message || "Search Failed");
@@ -302,7 +274,6 @@ function Chart_of_accountsScreen() {
         const modified_by = sessionStorage.getItem("selectedUserCode");
         const company_code = sessionStorage.getItem("selectedCompanyCode");
         const location_code = sessionStorage.getItem("selectedLocationCode");
-
         
         const payloadData = selectedRowsData.map(row => ({
            ...row, company_code, modified_by, location_code
@@ -392,6 +363,16 @@ function Chart_of_accountsScreen() {
     navigate("/AddAccountName", { state: { mode: "create" } });
   };
 
+  // Navigating to Update Screen with Row Data
+  const handleNavigateWithRowData = (selectedData) => {
+    navigate("/AddAccountName", {
+      state: {
+        mode: "update",
+        selectedData,
+      },
+    });
+  };
+
   const formatDate = (dateString) => {
     if (!dateString) return "";
     return new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date(dateString));
@@ -406,10 +387,34 @@ function Chart_of_accountsScreen() {
     }
   };
 
-  // AG-Grid Columns matching all 14 fields
+  // Shared Link Renderer Component for Multiple Columns
+  const linkCellRenderer = (params) => {
+    return (
+      <span
+        style={{ cursor: "pointer", color: "#007bff", textDecoration: "underline" }}
+        onClick={() => handleNavigateWithRowData(params.data)}
+        title="Click to Edit"
+      >
+        {params.value}
+      </span>
+    );
+  };
+
   const columnDefs = [
-    { headerCheckboxSelection: true, checkboxSelection: true, headerName: "Account Code", field: "account_code", editable: false },
-    { headerName: "Account Name", field: "account_name", editable: true },
+    { 
+      headerCheckboxSelection: true, 
+      checkboxSelection: true, 
+      headerName: "Account Code", 
+      field: "account_code", 
+      editable: false,
+      cellRenderer: linkCellRenderer 
+    },
+    { 
+      headerName: "Account Name", 
+      field: "account_name", 
+      editable: true,
+      cellRenderer: linkCellRenderer 
+    },
     { headerName: "Account Group", field: "account_group", editable: true },
     { headerName: "Account Class", field: "account_class", editable: true },
     { headerName: "Report Section", field: "report_section", editable: true },
@@ -467,7 +472,7 @@ function Chart_of_accountsScreen() {
           </div>
         </div>
 
-        {/* Filter Area Card containing all 14 fields */}
+        {/* Filter Area Card */}
         <div className="shadow-lg p-1 pb-4 bg-body-tertiary rounded mb-2">
           <div className="row ms-4 mt-3 mb-3 me-4">
 
@@ -504,118 +509,118 @@ function Chart_of_accountsScreen() {
             </div>
 
             {/* Account Group */}
-<div className="col-md-3 form-group mb-2">
-  <div className="exp-form-floating">
-    <label className="exp-form-labels">Account Group</label>
-    <Select
-      id="account_group"
-      options={filteredOptionGroup}
-      value={selectedGroup}
-      onChange={handleChangeGroup}
-      className="exp-input-field"
-      classNamePrefix="react-select"
-      isClearable
-      placeholder=""
-      title="Account Group"
-      styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
-    />
-  </div>
-</div>
+            <div className="col-md-3 form-group mb-2">
+              <div className="exp-form-floating">
+                <label className="exp-form-labels">Account Group</label>
+                <Select
+                  id="account_group"
+                  options={filteredOptionGroup}
+                  value={selectedGroup}
+                  onChange={handleChangeGroup}
+                  className="exp-input-field"
+                  classNamePrefix="react-select"
+                  isClearable
+                  placeholder=""
+                  title="Account Group"
+                  styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                />
+              </div>
+            </div>
 
-{/* Account Class */}
-<div className="col-md-3 form-group mb-2">
-  <div className="exp-form-floating">
-    <label className="exp-form-labels">Account Class</label>
-    <Select
-      id="account_class"
-      options={filteredOptionClass}
-      value={selectedClass}
-      onChange={handleChangeClass}
-      className="exp-input-field"
-      classNamePrefix="react-select"
-      isClearable
-      placeholder=""
-      title="Account Class"
-      styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
-    />
-  </div>
-</div>
+            {/* Account Class */}
+            <div className="col-md-3 form-group mb-2">
+              <div className="exp-form-floating">
+                <label className="exp-form-labels">Account Class</label>
+                <Select
+                  id="account_class"
+                  options={filteredOptionClass}
+                  value={selectedClass}
+                  onChange={handleChangeClass}
+                  className="exp-input-field"
+                  classNamePrefix="react-select"
+                  isClearable
+                  placeholder=""
+                  title="Account Class"
+                  styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                />
+              </div>
+            </div>
 
-{/* Report Section */}
-<div className="col-md-3 form-group mb-2">
-  <div className="exp-form-floating">
-    <label className="exp-form-labels">Report Section</label>
-    <Select
-      id="report_section"
-      options={filteredOptionSection}
-      value={selectedSection}
-      onChange={handleChangeSection}
-      className="exp-input-field"
-      classNamePrefix="react-select"
-      isClearable
-      placeholder=""
-      title="Report Section"
-      styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
-    />
-  </div>
-</div>
+            {/* Report Section */}
+            <div className="col-md-3 form-group mb-2">
+              <div className="exp-form-floating">
+                <label className="exp-form-labels">Report Section</label>
+                <Select
+                  id="report_section"
+                  options={filteredOptionSection}
+                  value={selectedSection}
+                  onChange={handleChangeSection}
+                  className="exp-input-field"
+                  classNamePrefix="react-select"
+                  isClearable
+                  placeholder=""
+                  title="Report Section"
+                  styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                />
+              </div>
+            </div>
 
-{/* Report Line */}
-<div className="col-md-3 form-group mb-2">
-  <div className="exp-form-floating">
-    <label className="exp-form-labels">Report Line</label>
-    <Select
-      id="report_line"
-      options={filteredOptionLine}
-      value={selectedLine}
-      onChange={handleChangeLine}
-      className="exp-input-field"
-      classNamePrefix="react-select"
-      isClearable
-      placeholder=""
-      title="Report Line"
-      styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
-    />
-  </div>
-</div>
+            {/* Report Line */}
+            <div className="col-md-3 form-group mb-2">
+              <div className="exp-form-floating">
+                <label className="exp-form-labels">Report Line</label>
+                <Select
+                  id="report_line"
+                  options={filteredOptionLine}
+                  value={selectedLine}
+                  onChange={handleChangeLine}
+                  className="exp-input-field"
+                  classNamePrefix="react-select"
+                  isClearable
+                  placeholder=""
+                  title="Report Line"
+                  styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                />
+              </div>
+            </div>
 
-{/* Report Type */}
-<div className="col-md-3 form-group mb-2">
-  <div className="exp-form-floating">
-    <label className="exp-form-labels">Report Type</label>
-    <Select
-      id="report_type"
-      options={filteredOptionType}
-      value={selectedType}
-      onChange={handleChangeType}
-      className="exp-input-field"
-      classNamePrefix="react-select"
-      isClearable
-      placeholder=""
-      title="Report Type"
-      styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
-    />
-  </div>
-</div>
+            {/* Report Type */}
+            <div className="col-md-3 form-group mb-2">
+              <div className="exp-form-floating">
+                <label className="exp-form-labels">Report Type</label>
+                <Select
+                  id="report_type"
+                  options={filteredOptionType}
+                  value={selectedType}
+                  onChange={handleChangeType}
+                  className="exp-input-field"
+                  classNamePrefix="react-select"
+                  isClearable
+                  placeholder=""
+                  title="Report Type"
+                  styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                />
+              </div>
+            </div>
 
-{/* Currency Code */}
-<div className="col-md-3 form-group mb-2">
-  <div className="exp-form-floating">
-    <label className="exp-form-labels">Currency Code</label>
-    <Select
-      id="currency_code"
-      options={filteredOptionCurrency}
-      value={selectedCurrency}
-      onChange={handleChangeCurrency}
-      className="exp-input-field"
-      classNamePrefix="react-select"
-      isClearable
-      placeholder=""
-      title="Currency Code"
-      styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
-    />
-  </div>
-</div>
+            {/* Currency Code */}
+            <div className="col-md-3 form-group mb-2">
+              <div className="exp-form-floating">
+                <label className="exp-form-labels">Currency Code</label>
+                <Select
+                  id="currency_code"
+                  options={filteredOptionCurrency}
+                  value={selectedCurrency}
+                  onChange={handleChangeCurrency}
+                  className="exp-input-field"
+                  classNamePrefix="react-select"
+                  isClearable
+                  placeholder=""
+                  title="Currency Code"
+                  styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+                />
+              </div>
+            </div>
 
             {/* Is Control Account */}
             <div className="col-md-3 form-group mb-2">
@@ -750,18 +755,13 @@ function Chart_of_accountsScreen() {
             <div className="col-md-3 form-group mb-2">
               <div className="exp-form-floating pt-3">
                 <div className="d-flex justify-content-center">
-                  <icon
-                    type="button"
-                    className="popups-btn fs-6 p-3 me-3"
-                    onClick={handleSearch}
-                    title="Search"
+                  <icon type="button" className="popups-btn fs-6 p-3 me-3" 
+                    onClick={handleSearch} title="Search" 
                   >
                     <i className="fas fa-search"></i>
                   </icon>
                 
-                  <icon
-                    type="button"
-                    className="popups-btn fs-6 p-3"
+                  <icon type="button" className="popups-btn fs-6 p-3"
                     onClick={reloadGridData}
                     title="Refresh"
                   >

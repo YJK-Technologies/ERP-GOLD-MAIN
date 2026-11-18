@@ -1614,6 +1614,7 @@ function TaxInvoice() {
 
       const Header = {
         company_code: sessionStorage.getItem("selectedCompanyCode"),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
         pay_type: payType,
         sales_type: salesType,
         invoice_type: invoicetype,
@@ -1719,6 +1720,7 @@ function TaxInvoice() {
       for (const row of rowData) {
         const Details = {
           company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           created_by: sessionStorage.getItem("selectedUserCode"),
           customer_code: headerRowData[0].billTo,
           customer_name: headerRowData[1].billTo,
@@ -1784,6 +1786,7 @@ function TaxInvoice() {
 
           const Details = {
             company_code: sessionStorage.getItem("selectedCompanyCode"),
+            location_code: sessionStorage.getItem("selectedLocationCode"),
             item_code: row.productItemCode,
             item_name: row.productItemName,
             pay_type: payType,
@@ -1840,6 +1843,7 @@ function TaxInvoice() {
       for (const row of validRows) {
         const Details = {
           created_by: sessionStorage.getItem("selectedUserCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           company_code: sessionStorage.getItem("selectedCompanyCode"),
           invoice_type: invoicetype,
           bill_no: bill_no,
@@ -1935,6 +1939,7 @@ function TaxInvoice() {
 
       const Header = {
         company_code: sessionStorage.getItem("selectedCompanyCode"),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
         authroization_status: Screens === "Modified" ? "Draft" : Screens,
         bill_no: new_running_no,
         invoice_type: invoicetype,
