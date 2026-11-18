@@ -1,3 +1,4 @@
+//CompanyMappingGrid.js
 import React, { useState, useEffect } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
@@ -149,8 +150,7 @@ function CompanyMappingGrid() {
     setLoading(true);
     try {
       const company_code = sessionStorage.getItem("selectedCompanyCode");
-      const response = await fetch(
-        `${config.apiBaseUrl}/companymappingsearchdata`,
+      const response = await fetch(`${config.apiBaseUrl}/companymappingsearchdata`,
         {
           method: "POST",
           headers: {

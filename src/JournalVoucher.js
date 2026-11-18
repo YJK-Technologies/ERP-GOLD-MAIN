@@ -409,7 +409,7 @@ const handleCOASelect = (selectedData) => {
             await saveJournalVoucherDetails(voucherNo, validRows);
             
 
-                    if (Screens === "Authorized") {
+          if (Screens === "Authorized") {
           await InvoiceFsPosting(voucherNo);
         }
          toast.success(`Journal Voucher Data ${selectedscreens?.value || "Updated"} Successfully`);
@@ -593,13 +593,9 @@ const handleCOASelect = (selectedData) => {
               {/* <label>
                 Voucher No <span className="text-danger">*</span>
               </label> */}
-              <label
-                          for="cno"
-                          class="exp-form-labels"
-                          className={`${error && !voucherNo ? "text-danger" : ""}`}
-                        >
-                          Voucher No<span className="text-danger">*</span>
-                        </label>
+              <label for="cno" class="exp-form-labels" className={`${error && !voucherNo ? "text-danger" : ""}`} >
+                Voucher No<span className="text-danger">*</span>
+              </label>
               <div className="d-flex justify-content-end position-relative">
                 <input 
                   type="text" 
