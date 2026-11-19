@@ -401,11 +401,26 @@ useEffect(() => {
     setLoading(true);
 
     try {
+
+      
       const Header = {
         company_code: sessionStorage.getItem("selectedCompanyCode"),
         transaction_date,
         created_by: sessionStorage.getItem("selectedUserCode"),
       };
+
+      // commented for testing purpose, uncomment when needed
+      // const Header = {
+      //   company_code: sessionStorage.getItem("selectedCompanyCode"),
+      //   transaction_date,
+      //   created_by: sessionStorage.getItem("selectedUserCode"),
+      //   details: validRows.map((row) => ({
+      //     Item_SNo: row.serialNumber,
+      //     Item_code: row.itemCode,
+      //     Item_name: row.itemName,
+      //     bill_qty: Number(row.billQty),
+      //   })),
+      // };
 
       const response = await fetch(`${config.apiBaseUrl}/openingitemhdr`, {
         method: "POST",
@@ -418,10 +433,18 @@ useEffect(() => {
       if (response.ok) {
         const searchData = await response.json();
         console.log(searchData);
+
+        
         const [{ transaction_no }] = searchData;
         settransaction_no(transaction_no);
         await OpeningItemDetails(transaction_no);
         toast.success("Data Inserted Successfully");
+
+        // commented for testing purpose, uncomment when needed
+        // const [{ transaction_no }] = searchData;
+        // settransaction_no(transaction_no);
+        // toast.success("Data Inserted Successfully");
+
       } else {
         const errorResponse = await response.json();
         toast.warning(errorResponse.message || "Failed to insert sales data");
