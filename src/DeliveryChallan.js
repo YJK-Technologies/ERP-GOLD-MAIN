@@ -1171,6 +1171,7 @@ function DeliveryChallan() {
 
             const Header = {
                 company_code: sessionStorage.getItem('selectedCompanyCode'),
+                location_code: sessionStorage.getItem("selectedLocationCode"),
                 transport_charges: Totaltransport,
                 bill_to_customer_code: billToData['Customer Code'],
                 customer_name: billToData['Customer Name'],
@@ -1278,6 +1279,7 @@ function DeliveryChallan() {
 
             const Header = {
                 company_code: sessionStorage.getItem('selectedCompanyCode'),
+                location_code: sessionStorage.getItem("selectedLocationCode"),
                 bill_to_customer_code: billToData['Customer Code'],
                 customer_name: billToData['Customer Name'],
                 customer_addr_1: billToData['Address 1'],
@@ -1359,6 +1361,7 @@ function DeliveryChallan() {
                 const Details = {
                     created_by: sessionStorage.getItem('selectedUserCode'),
                     company_code: sessionStorage.getItem('selectedCompanyCode'),
+                    location_code: sessionStorage.getItem("selectedLocationCode"),
                     transaction_no: transaction_no,
                     transaction_date: transactionDate,
                     code: row.productItemCode,
@@ -1408,6 +1411,7 @@ function DeliveryChallan() {
                 const Details = {
                     created_by: sessionStorage.getItem('selectedUserCode'),
                     company_code: sessionStorage.getItem('selectedCompanyCode'),
+                    location_code: sessionStorage.getItem("selectedLocationCode"),
                     transaction_no: transaction_no,
                     Terms_conditions: row.Terms_conditions,
                 };
@@ -1775,6 +1779,7 @@ function DeliveryChallan() {
                 body: JSON.stringify({
                     transaction_no: new_running_no,
                     company_code: sessionStorage.getItem("selectedCompanyCode"),
+                    location_code: sessionStorage.getItem("selectedLocationCode"),
                     modified_by: sessionStorage.getItem("selectedUserCode")
                 })
             });
@@ -1798,7 +1803,8 @@ function DeliveryChallan() {
                 },
                 body: JSON.stringify({
                     transaction_no: new_running_no.toString(),
-                    company_code: sessionStorage.getItem("selectedCompanyCode")
+                    company_code: sessionStorage.getItem("selectedCompanyCode"),
+                    location_code: sessionStorage.getItem("selectedLocationCode"),
                 })
             });
             if (response.ok) {
@@ -1821,7 +1827,8 @@ function DeliveryChallan() {
                 },
                 body: JSON.stringify({
                     transaction_no: new_running_no.toString(),
-                    company_code: sessionStorage.getItem("selectedCompanyCode")
+                    company_code: sessionStorage.getItem("selectedCompanyCode"),
+                    location_code: sessionStorage.getItem("selectedLocationCode"),
                 })
             });
             if (response.ok) {
