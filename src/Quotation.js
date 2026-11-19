@@ -1167,6 +1167,7 @@ function Quotation() {
 
       const Header = {
         company_code: sessionStorage.getItem("selectedCompanyCode"),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
         authroization_status: Screens === "Modified" ? "Draft" : Screens,
         transaction_no: transactionNo,
         customer_code: billToData["Customer Code"],
@@ -1273,6 +1274,7 @@ function Quotation() {
 
       const Header = {
         company_code: sessionStorage.getItem("selectedCompanyCode"),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
         customer_code: billToData["Customer Code"],
         customer_name: billToData["Customer Name"],
         customer_addr_1: billToData["Address 1"],
@@ -1343,14 +1345,9 @@ function Quotation() {
       for (const row of validRows) {
         const formData = new FormData();
 
-        formData.append(
-          "created_by",
-          sessionStorage.getItem("selectedUserCode"),
-        );
-        formData.append(
-          "company_code",
-          sessionStorage.getItem("selectedCompanyCode"),
-        );
+        formData.append("created_by",sessionStorage.getItem("selectedUserCode"),);
+        formData.append("company_code",sessionStorage.getItem("selectedCompanyCode"),);
+        formData.append("location_code",sessionStorage.getItem("selectedLocationCode"),);
         formData.append("item_code", row.itemCode);
         formData.append("item_name", row.itemName);
         formData.append("bill_qty", row.purchaseQty);
@@ -1418,6 +1415,7 @@ function Quotation() {
             customer_code,
             transaction_no: transaction_no.toString(),
             company_code: sessionStorage.getItem("selectedCompanyCode"),
+            location_code: sessionStorage.getItem("selectedLocationCode"),
             item_code: row.itemCode,
             item_name: row.itemName,
             ItemSNo: taxRow.ItemSNO,
@@ -1473,6 +1471,7 @@ function Quotation() {
         const Details = {
           created_by: sessionStorage.getItem("selectedUserCode"),
           company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           transaction_no: transaction_no,
           Terms_conditions: row.Terms_conditions,
         };
@@ -1778,6 +1777,7 @@ function Quotation() {
         body: JSON.stringify({
           transaction_no: transactionNo,
           company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           modified_by: sessionStorage.getItem("selectedUserCode"),
         }),
       });
@@ -1807,6 +1807,7 @@ function Quotation() {
         body: JSON.stringify({
           transaction_no: transactionNo,
           company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
         }),
       });
       if (response.ok) {
@@ -1834,6 +1835,7 @@ function Quotation() {
         body: JSON.stringify({
           transaction_no: transactionNo,
           company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
         }),
       });
       if (response.ok) {
@@ -1863,6 +1865,7 @@ function Quotation() {
           body: JSON.stringify({
             transaction_no: transactionNo.toString(),
             company_code: sessionStorage.getItem("selectedCompanyCode"),
+            location_code: sessionStorage.getItem("selectedLocationCode"),
           }),
         },
       );
