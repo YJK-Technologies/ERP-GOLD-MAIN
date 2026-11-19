@@ -20795,33 +20795,132 @@ const getCurrentStockItemCode = async (req, res) => {
   }
 };
 
-const addOpeningBalanceItemHdr = async (req, res) => {
-  const { company_code, transaction_no, transaction_date, created_by, modified_by } = req.body;
+// commented for testing purpose, uncomment when needed - original code
+// const addOpeningBalanceItemHdr = async (req, res) => {
+//   const { company_code, transaction_no, transaction_date, created_by, modified_by } = req.body;
 
+//   try {
+//     const pool = await connection.connectToDatabase();
+
+//     const result = await pool
+//       .request()
+//       .input("mode", sql.NVarChar, "I")
+//       .input("company_code", sql.NVarChar, company_code)
+//       .input("transaction_no", sql.NVarChar, transaction_no)
+//       .input("transaction_date", sql.Date, transaction_date)
+//       .input("created_by", sql.NVarChar, created_by)
+//       .input("modified_by", sql.NVarChar, modified_by)
+//       .query(`EXEC sp_opening_item_hdr @mode,@company_code,@transaction_no,@transaction_date,@created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+
+//     // Send response
+//     if (result.recordset.length > 0) {
+//       res.status(200).json(result.recordset); // 200 OK if data is found
+//     } else {
+//       res.status(404).json("Data not found"); // 404 Not Found if no data is found
+//     }
+//   } catch (err) {
+//     console.error("Error", err);
+//     res.status(500).json({ message: err.message || 'Internal Server Error' });
+//   }
+// }
+
+// commented for testing purpose, uncomment when needed 
+// const addOpeningBalanceItemHdr = async (req, res) => {
+//   const { company_code, transaction_no, transaction_date, created_by, modified_by, details } = req.body;
+
+//   try {
+//     const pool = await connection.connectToDatabase();
+
+//     const result = await pool
+//       .request()
+//       .input("mode", sql.NVarChar, "I")
+//       .input("company_code", sql.NVarChar, company_code)
+//       .input("transaction_no", sql.NVarChar, transaction_no)
+//       .input("transaction_date", sql.Date, transaction_date)
+//       .input("created_by", sql.NVarChar, created_by)
+//       .input("modified_by", sql.NVarChar, modified_by)
+//       .input("details_json", sql.NVarChar(sql.MAX), JSON.stringify(details || []))
+//       .query(`EXEC sp_opening_item_hdr_test @mode,@company_code,@transaction_no,@transaction_date,@created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,@details_json`);
+
+//     // Send response
+//     if (result.recordset.length > 0) {
+//       res.status(200).json(result.recordset); // 200 OK if data is found
+//     } else {
+//       res.status(404).json("Data not found"); // 404 Not Found if no data is found
+//     }
+//   } catch (err) {
+//     console.error("Error", err);
+//     res.status(500).json({ message: err.message || 'Internal Server Error' });
+//   }
+// }
+
+const addOpeningBalanceItemHdr = async (req, res) => {
+  const { company_code, transaction_no, transaction_date, created_by, modified_by, details } = req.body;
+
+  // 1. Pre-validate details BEFORE touching SQL or sp_numberseries
+  if (!Array.isArray(details) || details.length === 0) {
+    return res.status(400).json({ message: "At least one valid item detail is required." });
+  }
+
+  for (const row of details) {
+    if (!row.Item_code?.trim() || Number(row.bill_qty) <= 0) {
+      return res.status(400).json({ message: "Each item must have a valid Item Code and Bill Qty greater than 0." });
+    }
+  }
+
+  let transaction;
   try {
     const pool = await connection.connectToDatabase();
+    transaction = new sql.Transaction(pool);
+    await transaction.begin();
 
-    const result = await pool
-      .request()
+    // 2. Call Header SP inside the transaction
+    const hdrResult = await new sql.Request(transaction)
       .input("mode", sql.NVarChar, "I")
       .input("company_code", sql.NVarChar, company_code)
-      .input("transaction_no", sql.NVarChar, transaction_no)
+      .input("transaction_no", sql.NVarChar, transaction_no || "")
       .input("transaction_date", sql.Date, transaction_date)
       .input("created_by", sql.NVarChar, created_by)
-      .input("modified_by", sql.NVarChar, modified_by)
-      .query(`EXEC sp_opening_item_hdr @mode,@company_code,@transaction_no,@transaction_date,@created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .input("modified_by", sql.NVarChar, modified_by || "")
+      .query(`EXEC sp_opening_item_hdr_test2 @mode,@company_code,@transaction_no,@transaction_date,@created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
-    // Send response
-    if (result.recordset.length > 0) {
-      res.status(200).json(result.recordset); // 200 OK if data is found
-    } else {
-      res.status(404).json("Data not found"); // 404 Not Found if no data is found
+    if (!hdrResult.recordset || hdrResult.recordset.length === 0) {
+      throw new Error("Failed to generate transaction number from header.");
     }
+
+    const generatedTransactionNo = hdrResult.recordset[0].transaction_no.trim();
+
+    // 3. Call Details SP for every row inside the SAME transaction
+    for (const row of details) {
+      await new sql.Request(transaction)
+        .input("mode", sql.NVarChar, "I")
+        .input("transaction_no", sql.NVarChar, generatedTransactionNo)
+        .input("company_code", sql.NVarChar, company_code)
+        .input("transaction_date", sql.Date, transaction_date)
+        .input("Item_code", sql.NVarChar, row.Item_code)
+        .input("Item_name", sql.NVarChar, row.Item_name)
+        .input("bill_qty", sql.Decimal(10, 2), row.bill_qty)
+        .input("Item_SNo", sql.BigInt, row.Item_SNo)
+        .input("created_by", sql.NVarChar, created_by)
+        .query(`EXEC sp_opening_item_details @mode,@transaction_no,@company_code,@transaction_date,@Item_code,@Item_name,@bill_qty,@Item_SNo,@created_by,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+    }
+
+    // 4. Commit ONLY after header AND all details succeed
+    await transaction.commit();
+    res.status(200).json(hdrResult.recordset);
   } catch (err) {
+    // Rolls back header, any partial details, logs, AND tbl_numberseries
+    if (transaction) {
+      try {
+        await transaction.rollback();
+      } catch (rbErr) {
+        console.error("Rollback error:", rbErr);
+      }
+    }
     console.error("Error", err);
-    res.status(500).json({ message: err.message || 'Internal Server Error' });
+    res.status(500).json({ message: err.message || "Internal Server Error" });
   }
-}
+};
 
 
 const getTotalStockValueDetails = async (req, res) => {
