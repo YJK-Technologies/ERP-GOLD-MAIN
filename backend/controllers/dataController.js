@@ -10433,7 +10433,7 @@ const addDeliveryChallanheader = async (req, res) => {
                   @Ship_to_customer_code,@ShipTo_customer_addr_1,@ShipTo_customer_addr_2,@ShipTo_customer_addr_3,@ShipTo_customer_addr_4,@ShipTo_customer_state,
                   @ShipTo_customer_country,@ShipTo_customer_mobile_no,@ShipTocontact_person,@purchase_amount,@add_fright,@less_fright,@rounded_off,@loading_charges,
                   @cartage_paid,@other_charges,@lorry_no,@broker_code,@transport_code,@status,@total_amount,@rounded_off_acc_code,@loading_charges_acc_code,
-                  @cartage_paid_acc_code,@other_charges_acc_code,@purchase_amount_acc_code,@customer_gst_no,@ShipTocustomer_gst_no,@delivery_note, @dispatched_through,@destination,@note_not_for_sale,@created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`)
+                  @cartage_paid_acc_code,@other_charges_acc_code,@purchase_amount_acc_code,@customer_gst_no,@ShipTocustomer_gst_no,@delivery_note, @dispatched_through,@destination,@note_not_for_sale,'',@created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`)
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -10456,7 +10456,7 @@ const getAllDChdrData = async (req, res) => {
       .input("mode", sql.NVarChar, "A") // Insert mode
       .input("company_code", sql.NVarChar, company_code)
       .query(`EXEC sp_delivery_challan_hdr_test @mode,@company_code,'','','',0,'','','','','',
-                   '','','','','','','','','','','','','','','','','',0,0,0,0,0,0,0,'','','','',0,'','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+                   '','','','','','','','','','','','','','','','','',0,0,0,0,0,0,0,'','','','',0,'','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     res.json(result.recordset);
   } catch (err) {
     console.error("Error", err);
@@ -10478,7 +10478,7 @@ const DCdeletehdrData = async (req, res) => {
       .input("transaction_no", sql.NVarChar, transaction_no)
       .input("modified_by", sql.NVarChar, modified_by)
       .query(`EXEC sp_delivery_challan_hdr_test @mode,@company_code,@location_code,@transaction_no,'',0,'','','','','',
-             '','','','','','','','','','','','','','','','','',0,0,0,0,0,0,0,'','','','',0,'','','','','','','','','','','','',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+             '','','','','','','','','','','','','','','','','',0,0,0,0,0,0,0,'','','','',0,'','','','','','','','','','','','','',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     res.status(200).json("Delivery challan deleted successfully");
   } catch (err) {
     console.error(err);
@@ -10655,7 +10655,7 @@ const addQuotationheader = async (req, res) => {
         @customer_addr_3,@customer_addr_4, @customer_state,@customer_country,@customer_mobile_no,@contact_person, 
         @Entry_date, @transaction_no, @customer_code, @purchase_amount,@tax_amount, @add_fright, @less_fright, 
         @rounded_off, @loading_charges, @cartage_paid, @other_charges, @total_amount, @customer_gst_no,
-        @kind_attention,@quotation_validity, @created_by, @modified_by, NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
+        @kind_attention,@quotation_validity, '', @created_by, @modified_by, NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -10705,7 +10705,7 @@ const updQuotationheader = async (req, res) => {
       .input("authroization_status", sql.NVarChar, authroization_status)
       .input("modified_by", sql.NVarChar, modified_by)
       .query(`EXEC sp_quotation_hdr @mode ,@company_code, @location_code, @customer_name,@customer_addr_1,@customer_addr_2,@customer_addr_3,@customer_addr_4, @customer_state,@customer_country,@customer_mobile_no,@contact_person, @Entry_date, @transaction_no,
-        @customer_code, @purchase_amount,@tax_amount, @add_fright, @less_fright, @rounded_off, @loading_charges, @cartage_paid, @other_charges, @total_amount, @customer_gst_no,@kind_attention,@quotation_validity, '', @modified_by, NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
+        @customer_code, @purchase_amount,@tax_amount, @add_fright, @less_fright, @rounded_off, @loading_charges, @cartage_paid, @other_charges, @total_amount, @customer_gst_no,@kind_attention,@quotation_validity, @authroization_status, '', @modified_by, NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
     res.json(result.recordset);
 
   } catch (err) {
@@ -10724,7 +10724,7 @@ const getAllquotehdrData = async (req, res) => {
       .input("mode", sql.NVarChar, "A") // Insert mode
       .input("company_code", sql.NVarChar, company_code)
       .input("location_code", sql.NVarChar, location_code)
-      .query(`EXEC sp_quotation_hdr 'A',@company_code,@location_code,'','','','','','','','','','','','',0,0,0,0,0,0,0,0,0,'','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_quotation_hdr 'A',@company_code,@location_code,'','','','','','','','','','','','',0,0,0,0,0,0,0,0,0,'','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     res.json(result.recordset);
   } catch (err) {
     console.error("Error", err);
@@ -10745,7 +10745,7 @@ const quotedeletehdrData = async (req, res) => {
         .input("location_code", sql.NVarChar, location_code)
         .input("transaction_no", sql.NVarChar, transaction_no)
         .input("modified_by", sql.NVarChar, modified_by)
-        .query(`EXEC sp_quotation_hdr @mode,@company_code,@location_code,'','','','','','','','','','',@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+        .query(`EXEC sp_quotation_hdr @mode,@company_code,@location_code,'','','','','','','','','','',@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','','',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     } catch (err) {
       if (err.number === 547) {
         // Foreign key constraint violation
@@ -11814,7 +11814,7 @@ const getDcSearchData = async (req, res) => {
       .input("customer_name", sql.NVarChar, customer_name)
       .input("ShipTo_customer_name", sql.NVarChar, ShipTo_customer_name)
       .query(`EXEC sp_delivery_challan_hdr_test @mode,@company_code,@location_code,@transaction_no,@transaction_date,0,'','',@customer_name,'','',
-                           '','','','','','','',@ShipTo_customer_name,'','','','','','','','','',0,0,0,0,0,0,0,'','','','',0,'','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+                           '','','','','','','',@ShipTo_customer_name,'','','','','','','','','',0,0,0,0,0,0,0,'','','','',0,'','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -11872,7 +11872,7 @@ const getQuotationSearchData = async (req, res) => {
       .input("Entry_date", sql.NVarChar, Entry_date)
       .input("customer_name", sql.NVarChar, customer_name)
       .input("contact_person", sql.NVarChar, contact_person)
-      .query(`EXEC sp_quotation_hdr @mode,@company_code,@location_code,@customer_name,'','','','','','','',@contact_person,@Entry_date,@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','','', NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_quotation_hdr @mode,@company_code,@location_code,@customer_name,'','','','','','','',@contact_person,@Entry_date,@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','','','', NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
     // Send response
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset); // 200 OK if data is found
@@ -22700,7 +22700,7 @@ const getDeletedDcSearchData = async (req, res) => {
       .input("customer_name", sql.NVarChar, customer_name)
       .input("ShipTo_customer_name", sql.NVarChar, ShipTo_customer_name)
       .query(`EXEC sp_delivery_challan_hdr_test @mode,@company_code,@location_code,@transaction_no,@transaction_date,0,'','',@customer_name,'','',
-               '','','','','','','',@ShipTo_customer_name,'','','','','','','','','',0,0,0,0,0,0,0,'','','','',0,'','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+               '','','','','','','',@ShipTo_customer_name,'','','','','','','','','',0,0,0,0,0,0,0,'','','','',0,'','','','','','','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -23004,7 +23004,7 @@ const getDeletedQuotationSearchData = async (req, res) => {
       .input("Entry_date", sql.NVarChar, Entry_date)
       .input("customer_name", sql.NVarChar, customer_name)
       .input("contact_person", sql.NVarChar, contact_person)
-      .query(`EXEC sp_quotation_hdr @mode,@company_code,@location_code,@customer_name,'','','','','','','',@contact_person,@Entry_date,@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','','', NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_quotation_hdr @mode,@company_code,@location_code,@customer_name,'','','','','','','',@contact_person,@Entry_date,@transaction_no,'',0,0,0,0,0,0,0,0,0,'','','','','','', NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -26561,7 +26561,7 @@ const updDeliveryChallanheader = async (req, res) => {
     ShipTo_customer_country, ShipTo_customer_mobile_no, ShipTocontact_person, purchase_amount, add_fright, less_fright, rounded_off, loading_charges,
     cartage_paid, other_charges, lorry_no, broker_code, transport_code, status, total_amount, rounded_off_acc_code, loading_charges_acc_code,
     cartage_paid_acc_code, other_charges_acc_code, purchase_amount_acc_code, customer_gst_no, ShipTocustomer_gst_no, delivery_note, dispatched_through,
-    destination, note_not_for_sale, modified_by, } = req.body;
+    destination, note_not_for_sale, authroization_status, modified_by, } = req.body;
   let pool;
   try {
     pool = await sql.connect(dbConfig);
@@ -26618,13 +26618,14 @@ const updDeliveryChallanheader = async (req, res) => {
       .input("dispatched_through", sql.NVarChar, dispatched_through)
       .input("destination", sql.NVarChar, destination)
       .input("note_not_for_sale", sql.NVarChar, note_not_for_sale)
+      .input("authroization_status", sql.NVarChar, authroization_status)
       .input("modified_by", sql.NVarChar, modified_by)
       .query(`EXEC sp_delivery_challan_hdr_test @mode,@company_code,@location_code,@transaction_no,@transaction_date,@transport_charges,@pay_type,@sales_type,@customer_name,@bill_to_customer_code,@customer_addr_1,
                          @customer_addr_2,@customer_addr_3,@customer_addr_4,@customer_state,@customer_country,@customer_mobile_no,@contact_person,@ShipTo_customer_name,
                         @Ship_to_customer_code,@ShipTo_customer_addr_1,@ShipTo_customer_addr_2,@ShipTo_customer_addr_3,@ShipTo_customer_addr_4,@ShipTo_customer_state,
                         @ShipTo_customer_country,@ShipTo_customer_mobile_no,@ShipTocontact_person,@purchase_amount,@add_fright,@less_fright,@rounded_off,@loading_charges,
                         @cartage_paid,@other_charges,@lorry_no,@broker_code,@transport_code,@status,@total_amount,@rounded_off_acc_code,@loading_charges_acc_code,
-                        @cartage_paid_acc_code,@other_charges_acc_code,@purchase_amount_acc_code,@customer_gst_no,@ShipTocustomer_gst_no,@delivery_note, @dispatched_through,@destination,@note_not_for_sale,'',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`)
+                        @cartage_paid_acc_code,@other_charges_acc_code,@purchase_amount_acc_code,@customer_gst_no,@ShipTocustomer_gst_no,@delivery_note, @dispatched_through,@destination,@note_not_for_sale,@authroization_status,'',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`)
     res.json({ success: true, message: "Data Updated successfully" });
 
   } catch (err) {

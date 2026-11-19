@@ -180,38 +180,44 @@ function DeliveryChallan() {
         }
     }, [location]);
 
-    useEffect(() => {
-        const savedScreen = sessionStorage.getItem('DeliveryChallanScreenSelection');
-        if (savedScreen) {
-            setSelectedscreens({ value: savedScreen, label: savedScreen === 'Add' ? 'Add' : 'Delete' });
-            setScreens(savedScreen);
-        } else {
-            setSelectedscreens({ value: 'Add', label: 'Add' });
-            setScreens('Add');
+  useEffect(() => {
+    fetch(`${config.apiBaseUrl}/getEvent`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setScreensDrop(data);
+
+        // Automatically set a default option (e.g., "Draft" or the first record)
+        const defaultScreen =
+          data.find((item) => item.descriptions === "Draft") || data[0];
+
+        if (defaultScreen && !selectedscreens) {
+          setSelectedscreens({
+            value: defaultScreen.descriptions,
+            label: defaultScreen.attributedetails_name,
+          });
+          setScreens(defaultScreen.descriptions);
         }
-    }, []);
+      })
+      .catch((error) => console.error("Error fetching purchase types:", error));
+  }, []);
 
-    useEffect(() => {
-        const company_code = sessionStorage.getItem('selectedCompanyCode');
+  const handleChangeScreens = (selected) => {
+    setSelectedscreens(selected);
+    setScreens(selected.value);
+  };
 
-        fetch(`${config.apiBaseUrl}/getEvent`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ company_code })
-        })
-            .then((data) => data.json())
-            .then((val) => setScreensDrop(val))
-            .catch((error) => console.error('Error fetching data:', error));
-    }, []);
-
-    const handleChangeScreens = (selected) => {
-        setSelectedscreens(selected);
-        const screenValue = selected?.value === 'Add' ? 'Add' : 'Delete';
-        setScreens(screenValue);
-        sessionStorage.setItem('DeliveryChallanScreenSelection', screenValue);
-    };
+    // const handleChangeScreens = (selected) => {
+    //     setSelectedscreens(selected);
+    //     const screenValue = selected?.value === 'Add' ? 'Add' : 'Delete';
+    //     setScreens(screenValue);
+    //     sessionStorage.setItem('DeliveryChallanScreenSelection', screenValue);
+    // };
 
     const filteredOptionPay = paydrop.map((option) => ({
         value: option.attributedetails_name,
@@ -658,7 +664,6 @@ function DeliveryChallan() {
         setOpen1(false);
         setOpen2(false);
         setOpen3(false);
-        setOpen4(false);
     };
 
     //CODE FOR TOTAL WEIGHT, TOTAL TAX AND TOTAL AMOUNT CALCULATION
@@ -1172,6 +1177,7 @@ function DeliveryChallan() {
             const Header = {
                 company_code: sessionStorage.getItem('selectedCompanyCode'),
                 location_code: sessionStorage.getItem("selectedLocationCode"),
+                authroization_status: Screens === "Modified" ? "Draft" : Screens,
                 transport_charges: Totaltransport,
                 bill_to_customer_code: billToData['Customer Code'],
                 customer_name: billToData['Customer Name'],
@@ -1237,6 +1243,19 @@ function DeliveryChallan() {
         }
     };
 
+  const handleMasterAction = () => {
+    // screens variable-il current selected value irukum
+    if (Screens === "Draft") {
+      handleSaveButtonClick();
+    } else if (Screens && Screens.trim() !== "") {
+      // Draft illama vera entha status irunthalum update function call aagum
+      handleUpdateButtonClick();
+    } else {
+      toast.warning(
+        "Please select a valid transaction event from the dropdown.",
+      );
+    }
+  };
     //CODE TO SAVE PURCHASE HEADER 
     const handleSaveButtonClick = async () => {
 
@@ -2442,475 +2461,8 @@ function DeliveryChallan() {
         }
     };
 
-    //Deleted Screen functionality
-    const [deletedRowData, setDeletedRowData] = useState([]);
-    const [deletedRowDataTerms, setDeletedRowDataTerms] = useState([]);
-    const [transactionNo, setTransactionNo] = useState("");
-    const [Transactiondate, setTransactiondate] = useState("");
-    const [PayType, setPaytype] = useState("");
-    const [SalesType, setSalestype] = useState("");
-    const [Total, setTotal] = useState("");
-    const [Transport, setTransport] = useState("");
-    const [RoundOff, setRoundOff] = useState("");
-    const [GrandTotal, setGrandTotal] = useState("");
-
-    const deletedColumnHeader = [
-        { headerName: 'Details', field: 'fieldName', maxWidth: 240, editable: false },
-        {
-            headerName: 'Bill To',
-            field: 'deletedBillTo',
-            editable: false,
-        },
-        {
-            headerName: 'Ship To',
-            field: 'deletedShipTo',
-            editable: false,
-        }
-    ];
-
-    const [deletedHeaderRowData, setDeletedHeaderRowData] = useState([
-        { fieldName: 'Customer Code', deletedBillTo: '', deletedShipTo: '' },
-        { fieldName: 'Customer Name', deletedBillTo: '', deletedShipTo: '' },
-        { fieldName: 'Address 1', deletedBillTo: '', deletedShipTo: '' },
-        { fieldName: 'Address 2', deletedBillTo: '', deletedShipTo: '' },
-        { fieldName: 'Address 3', deletedBillTo: '', deletedShipTo: '' },
-        { fieldName: 'Address 4', deletedBillTo: '', deletedShipTo: '' },
-        { fieldName: 'State', deletedBillTo: '', deletedShipTo: '' },
-        { fieldName: 'Country', deletedBillTo: '', deletedShipTo: '' },
-        { fieldName: 'Mobile No', deletedBillTo: '', deletedShipTo: '' },
-        { fieldName: 'GST No', deletedBillTo: '', deletedShipTo: '' },
-        { fieldName: 'Contact Person', deletedBillTo: '', deletedShipTo: '' },
-    ]);
-
-
-    const [deleterowdatapatch, setdeleterowdatapatch] = useState([
-        { fieldName: 'Delivery Note', deleteNotes: '' },
-        { fieldName: 'Dispatched Through', deleteNotes: '' },
-        { fieldName: 'Destination', deleteNotes: '' },
-        { fieldName: 'Note For Sale', deleteNotes: '' }
-    ]);
-
-
-    const deletecolumnPatch = [
-        {
-            headerName: 'Details',
-            field: 'fieldName',
-            editable: false
-        },
-        {
-            headerName: 'Notes',
-            field: 'deleteNotes',
-            editable: true,
-            onCellValueChanged: onCellValueChangedBillTo,
-            cellEditorParams: {
-                maxLength: 250
-            },
-        }
-    ];
-
-
-    const deletedColumnDefs = [
-        {
-            headerName: 'S.No',
-            field: 'deletedSerialNumber',
-            maxWidth: 80,
-            sortable: false
-        },
-        {
-            headerName: 'Item Code',
-            field: 'deletedProductItemCode',
-            editable: false,
-            filter: true,
-            cellEditorParams: {
-                maxLength: 18,
-            },
-            sortable: false,
-        },
-        {
-            headerName: 'Item Name',
-            field: 'deletedProductItemName',
-            editable: false,
-            filter: true,
-            sortable: false,
-        },
-        {
-            headerName: 'Product Description',
-            field: 'deletedProductDescription',
-            editable: false,
-            filter: true,
-            sortable: false,
-        },
-        {
-            headerName: 'HSN/SAC',
-            field: 'deletedHSNCode',
-            editable: false,
-            filter: true,
-            sortable: false,
-        },
-        {
-            headerName: 'Qty',
-            field: 'deletedPurchaseQty',
-            editable: false,
-            filter: true,
-        },
-        {
-            headerName: 'Price',
-            field: 'deletedUnitPrice',
-            editable: false,
-            filter: true,
-            sortable: false,
-        },
-        {
-            headerName: 'Type',
-            field: 'deletedType',
-            editable: false,
-            filter: true,
-            sortable: false,
-        },
-        {
-            headerName: 'Total',
-            field: 'deletedTotalItemAmount',
-            editable: false,
-            filter: true,
-            sortable: false,
-        }
-    ];
-
-    const deletedTermsConditions = [
-        {
-            headerName: 'S.No',
-            field: 'deletedSerialNumber',
-            maxWidth: 70,
-            valueGetter: (params) => params.node.rowIndex + 1,
-            sortable: false,
-            minHeight: 50,
-            maxHeight: 50,
-        },
-        {
-            headerName: 'Terms & Conditions',
-            field: 'deletedTermsConditions',
-            maxLength: 250,
-            maxHeight: 50,
-            sortable: false,
-            editable: false,
-            flex: true
-        },
-    ];
-
-    const handleDeletedKeyPress = (e) => {
-        if (e.key === 'Enter') {
-            handleDeletedTransaction(transactionNo)
-        }
-    };
-
-    const handleDeletedTransaction = async (code) => {
-        setLoading(true);
-        try {
-            const response = await fetch(`${config.apiBaseUrl}/getDeletedDeliveryChallan`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ transaction_no: code, company_code: sessionStorage.getItem("selectedCompanyCode") }) // Send company_no and company_name as search criteria
-            });
-            if (response.ok) {
-                const searchData = await response.json();
-                if (searchData.Header && searchData.Header.length > 0) {
-                    const item = searchData.Header[0];
-                    setGrandTotal(item.total_amount.toFixed(2));
-                    setTransactionNo(item.transaction_no);
-                    setPaytype(item.pay_type);
-                    setSalestype(item.sales_type);
-                    setRoundOff(parseFloat(item.rounded_off).toFixed(2));
-                    setTransport(parseFloat(item.transport_charges).toFixed(2));
-                    setTransactiondate(formatDate(item.transaction_date));
-                    setTotal(parseFloat(item.purchase_amount).toFixed(2));
-
-                    setDeletedHeaderRowData([
-                        { fieldName: 'Customer Code', deletedBillTo: item.bill_to_customer_code, deletedShipTo: item.Ship_to_customer_code },
-                        { fieldName: 'Customer Name', deletedBillTo: item.customer_name, deletedShipTo: item.ShipTo_customer_name },
-                        { fieldName: 'Address 1', deletedBillTo: item.customer_addr_1, deletedShipTo: item.ShipTo_customer_addr_1 },
-                        { fieldName: 'Address 2', deletedBillTo: item.customer_addr_2, deletedShipTo: item.ShipTocustomer_addr_2 },
-                        { fieldName: 'Address 3', deletedBillTo: item.customer_addr_3, deletedShipTo: item.ShipTocustomer_addr_3 },
-                        { fieldName: 'Address 4', deletedBillTo: item.customer_addr_4, deletedShipTo: item.ShipTocustomer_addr_4 },
-                        { fieldName: 'State', deletedBillTo: item.customer_state, deletedShipTo: item.ShipTocustomer_state },
-                        { fieldName: 'Country', deletedBillTo: item.customer_country, deletedShipTo: item.ShipTocustomer_country },
-                        { fieldName: 'Mobile No', deletedBillTo: item.customer_mobile_no, deletedShipTo: item.ShipTocustomer_mobile_no },
-                        { fieldName: 'GST No', deletedBillTo: item.customer_gst_no, deletedShipTo: item.ShipTocustomer_gst_no },
-                        { fieldName: 'Contact Person', deletedBillTo: item.contact_person, deletedShipTo: item.ShipTocontact_person }
-                    ]);
-
-                    setdeleterowdatapatch([
-                        { fieldName: 'Delivery Note', deleteNotes: item.delivery_note },
-                        { fieldName: 'Dispatched Through', deleteNotes: item.dispatched_through },
-                        { fieldName: 'Destination', deleteNotes: item.Destination },
-                        { fieldName: 'Note For Sale', deleteNotes: item.note_not_for_sale },
-                    ]);
-
-                }
-                else {
-                    console.log("Header Data is empty or not found");
-                    setTransactionNo('');
-                    setGrandTotal('');
-                    setPaytype('');
-                    setSalestype('');
-                    setRoundOff("");
-                    setTransport("");
-                    setTransactiondate("");
-                    setTotal("");
-                }
-
-                if (searchData.Detail && searchData.Detail.length > 0) {
-                    const updatedRowData = searchData.Detail.map(item => {
-                        setTransport(item.transport_charges)
-                        return {
-                            deletedSerialNumber: item.SNo,
-                            deletedProductItemCode: item.code,
-                            deletedProductItemName: item.name,
-                            deletedProductDescription: item.Description,
-                            deletedHSNCode: item.hsn_code,
-                            deletedPurchaseQty: item.bill_qty,
-                            deletedUnitPrice: item.unit_price,
-                            deletedType: item.type,
-                            deletedTotalItemAmount: parseFloat(item.bill_rate).toFixed(2)
-                        };
-                    });
-                    setDeletedRowData(updatedRowData);
-                }
-                if (searchData.Terms && searchData.Terms.length > 0) {
-                    const updatedRowData = searchData.Terms.map(item => {
-                        return {
-                            deletedTermsConditions: item.Terms_conditions,
-                        };
-                    });
-                    setDeletedRowDataTerms(updatedRowData);
-                }
-                else {
-                    console.log("Detail Data is empty or not found");
-                    setRowData([])
-                }
-                console.log("data fetched successfully")
-            } else if (response.status === 404) {
-                toast.warning('Data not found');
-                setTransactionNo('');
-                setGrandTotal('');
-                setPaytype('');
-                setSalestype('');
-                setRoundOff("");
-                setTransport("");
-                setTransactiondate("");
-                setTotal("");
-                setRowData([])
-            } else {
-                const errorResponse = await response.json();
-                console.error(errorResponse.message);
-                toast.warning(errorResponse.message || "Internal Server Error");
-            }
-        } catch (error) {
-            console.error("Error fetching search data:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const [open4, setOpen4] = React.useState(false);
-
-    const handleDeletedDc = () => {
-        setOpen4(true);
-    };
-
-    const handleDeletedDcData = async (data) => {
-        if (data && data.length > 0) {
-            const [{ TransactionNo, GSTNo, ShipTo_GSTNo, TransactionDate, bill_to_customer_code, CustomerName, CustomerAddr1, CustomerAddr2, CustomerAddr3, CustomerAddr4, CustomerState, CustomerCountry,
-                ContactPerson, ContactMobileNo, Ship_to_customer_code, ShipToCustomerName, ShipToCustomerAddr1, ShipToCustomerAddr2, ShipToCustomerAddr3, ShipToCustomerAddr4, ShipToCustomerState, ShipToCustomerCountry,
-                ShipToContactPerson, SalesType, PayType, ShipToContactMobileNo, PurchaseAmount, RoundOff, Transport_charges, TotalAmount, destination, Note_not_for_sale, Dispatched_through, Delivery_note }] = data;
-
-            const transactionNumber = document.getElementById('transactionNo');
-            if (transactionNumber) {
-                transactionNumber.value = TransactionNo;
-                setTransactionNo(TransactionNo);
-            } else {
-                console.error('transactionNumber element not found');
-            }
-
-            const transactiondate = document.getElementById('Transactiondate');
-            if (transactiondate) {
-                transactiondate.value = TransactionDate;
-                setTransactiondate(formatDate(TransactionDate));
-                console.error('entry element not found');
-            }
-
-            const total = document.getElementById('Total');
-            if (total) {
-                total.value = PurchaseAmount;
-                setTotal(formatToTwoDecimalPoints(PurchaseAmount));
-            } else {
-                console.error('PurchaseAmount element not found');
-            }
-
-            const grandTotal = document.getElementById('GrandTotal');
-            if (grandTotal) {
-                grandTotal.value = TotalAmount;
-                setGrandTotal(formatToTwoDecimalPoints(TotalAmount));
-            } else {
-                console.error('TotalAmount element not found');
-            }
-
-            const transport = document.getElementById('Transport');
-            if (transport) {
-                transport.value = Transport_charges;
-                setTransport(formatToTwoDecimalPoints(Transport_charges));
-            } else {
-                console.error('Transport_charges element not found');
-            }
-
-            const roundOff = document.getElementById('RoundOff');
-            if (roundOff) {
-                roundOff.value = RoundOff;
-                setRoundOff(RoundOff);
-            } else {
-                console.error('RoundOff element not found');
-            }
-
-            const paytype = document.getElementById('PayType');
-            if (paytype) {
-                paytype.value = PayType;
-                setPaytype(PayType);
-            } else {
-                console.error('PayType element not found');
-            }
-
-            const salestype = document.getElementById('SalesType');
-            if (salestype) {
-                salestype.value = SalesType;
-                setSalestype(SalesType);
-            } else {
-                console.error('SalesType element not found');
-            }
-
-            await deletedDetailView(TransactionNo);
-
-            setDeletedHeaderRowData([
-                { fieldName: 'Customer Code', deletedBillTo: bill_to_customer_code, deletedShipTo: Ship_to_customer_code },
-                { fieldName: 'Customer Name', deletedBillTo: CustomerName, deletedShipTo: ShipToCustomerName },
-                { fieldName: 'Address 1', deletedBillTo: CustomerAddr1, deletedShipTo: ShipToCustomerAddr1 },
-                { fieldName: 'Address 2', deletedBillTo: CustomerAddr2, deletedShipTo: ShipToCustomerAddr2 },
-                { fieldName: 'Address 3', deletedBillTo: CustomerAddr3, deletedShipTo: ShipToCustomerAddr3 },
-                { fieldName: 'Address 4', deletedBillTo: CustomerAddr4, deletedShipTo: ShipToCustomerAddr4 },
-                { fieldName: 'State', deletedBillTo: CustomerState, deletedShipTo: ShipToCustomerState },
-                { fieldName: 'Country', deletedBillTo: CustomerCountry, deletedShipTo: ShipToCustomerCountry },
-                { fieldName: 'Mobile No', deletedBillTo: ContactMobileNo, deletedShipTo: ShipToContactMobileNo },
-                { fieldName: 'GST No', deletedBillTo: GSTNo, deletedShipTo: ShipTo_GSTNo },
-                { fieldName: 'Contact Person', deletedBillTo: ContactPerson, deletedShipTo: ShipToContactPerson }
-            ]);
-
-            setdeleterowdatapatch([
-                { fieldName: 'Destination', deleteNotes: destination },
-                { fieldName: 'Note For Sale', deleteNotes: Note_not_for_sale },
-                { fieldName: 'Dispatched Through', deleteNotes: Dispatched_through },
-                { fieldName: 'Delivery Note', deleteNotes: Delivery_note },
-
-            ]);
-
-        } else {
-            console.log("Data not fetched...!");
-        }
-        console.log(data);
-    };
-
-    const deletedDetailView = async (TransactionNo) => {
-        try {
-            const response = await fetch(`${config.apiBaseUrl}/getDeletedDcDetailView`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ transaction_no: TransactionNo, company_code: sessionStorage.getItem("selectedCompanyCode") })
-            });
-
-            if (response.ok) {
-                const searchData = await response.json();
-
-                const newRowData = [];
-                searchData.forEach(item => {
-                    const {
-                        Description,
-                        SNo,
-                        bill_qty,
-                        bill_rate,
-                        code,
-                        hsn_code,
-                        name,
-                        type,
-                        unit_price
-                    } = item;
-
-                    newRowData.push({
-                        deletedSerialNumber: SNo,
-                        deletedProductItemCode: code,
-                        deletedProductItemName: name,
-                        deletedHSNCode: hsn_code,
-                        deletedPurchaseQty: bill_qty,
-                        deletedUnitPrice: unit_price,
-                        deletedType: type,
-                        deletedProductDescription: Description,
-                        deletedTotalItemAmount: parseFloat(bill_rate).toFixed(2),
-                    });
-                });
-
-                await deletedTermsConditionsView(TransactionNo);
-
-                setDeletedRowData(newRowData);
-            } else if (response.status === 404) {
-                console.log("Data not found");
-                setDeletedRowData([]);
-            } else {
-                const errorResponse = await response.json();
-                console.error(errorResponse.message);
-                toast.warning(errorResponse.message || "Internal Server Error");
-            }
-        } catch (error) {
-            console.error("Error fetching search data:", error);
-        }
-    };
-
-    const deletedTermsConditionsView = async (TransactionNo) => {
-        try {
-            const response = await fetch(`${config.apiBaseUrl}/getDeletedDcTerms`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ transaction_no: TransactionNo, company_code: sessionStorage.getItem("selectedCompanyCode") })
-            });
-
-            if (response.ok) {
-                const searchData = await response.json();
-                console.log(searchData)
-
-                const newRowData = [];
-                searchData.forEach(item => {
-                    const { Terms_conditions } = item;
-                    newRowData.push({ deletedTermsConditions: Terms_conditions });
-                });
-
-                setDeletedRowDataTerms(newRowData);
-            } else if (response.status === 404) {
-                console.log("Data not found");
-                setDeletedRowDataTerms([]);
-            } else {
-                const errorResponse = await response.json();
-                console.error(errorResponse.message);
-                toast.warning(errorResponse.message || "Internal Server Error");
-            }
-        } catch (error) {
-            console.error("Error fetching search data:", error);
-        }
-    };
-
     return (
         <div className="">
-            {Screens === 'Add' ? (
                 <div className="container-fluid Topnav-screen">
                     {loading && <LoadingScreen />}
                     <ToastContainer position="top-right" className="toast-design" theme="colored" autoClose={3000} />
@@ -2944,7 +2496,7 @@ function DeliveryChallan() {
                                     )} */}
 
                                     {/* Added for removing permission check for save button, as per the requirement. */}
-                                        <savebutton className="purbut" onClick={handleSaveButtonClick} title='Save' >
+                                        {/* <savebutton className="purbut" onClick={handleSaveButtonClick} title='Save' >
                                             <i class="fa-regular fa-floppy-disk"></i>
                                         </savebutton>
 
@@ -2957,7 +2509,11 @@ function DeliveryChallan() {
                                         <delbutton className="purbut" onClick={handleDeleteButtonClick} title='Delete' >
                                             <i class="fa-solid fa-trash"></i>
                                         </delbutton>
-                                    )}
+                                    )} */}
+
+                                    <savebutton className="purbut" onClick={handleMasterAction} title="Save / Update" >
+                                        <i class="fa-regular fa-floppy-disk"></i>
+                                    </savebutton>
                                     {['all permission', 'view'].some(permission => DcPermission.includes(permission)) && (
                                         <printbutton className="purbut" title="Print" onClick={generateReport} >
                                             <i class="fa-solid fa-file-pdf"></i>
@@ -2996,7 +2552,7 @@ function DeliveryChallan() {
                                             )} */}
 
                                             {/* Added for removing permission check for save button, as per the requirement. */}
-                                                <li class="iconbutton d-flex justify-content-center text-success">
+                                                {/* <li class="iconbutton d-flex justify-content-center text-success">
                                                         <icon class="icon" onClick={handleSaveButtonClick}>
                                                             <i class="fa-regular fa-floppy-disk"></i>
                                                         </icon>
@@ -3008,7 +2564,10 @@ function DeliveryChallan() {
                                                         <i class="fa-solid fa-trash"></i>
                                                     </icon>
                                                 )}
-                                            </li>
+                                            </li> */}
+                                            <savebutton className="purbut" onClick={handleMasterAction} title="Save / Update" >
+                                                <i class="fa-regular fa-floppy-disk"></i>
+                                            </savebutton>
                                             <li class="iconbutton  d-flex justify-content-center text-warning">
                                                 {['all permission', 'view'].some(permission => DcPermission.includes(permission)) && (
                                                     <icon class="icon" onClick={generateReport}>
@@ -3353,279 +2912,6 @@ function DeliveryChallan() {
                         </div>
                     </div>
                 </div>
-            ) : (
-                <div className="container-fluid Topnav-screen">
-                    {loading && <LoadingScreen />}
-                    <ToastContainer position="top-right" className="toast-design" theme="colored"/>
-                    <div>
-                        <div className="shadow-lg p-1 bg-body-tertiary rounded  mb-2 mt-2">
-                            <div class="d-flex justify-content-between">
-                                <div className="d-flex justify-content-start">
-                                    <h1 align="left" className="purbut me-5">Deleted Delivery Challan</h1>
-                                </div>
-                                <div className="d-flex justify-content-end purbut me-3">
-                                    <div class="exp-form-floating">
-                                        <Select
-                                            id="returnType"
-                                            className="exp-input-field col-md-6 mt-2"
-                                            classNamePrefix="react-select"
-                                            placeholder=""
-                                            required
-                                            value={selectedscreens}
-                                            onChange={handleChangeScreens}
-                                            options={filteredOptionScreens}
-                                            data-tip="Please select a default warehouse"
-                                            styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mobileview">
-                                <div class="d-flex justify-content-between">
-                                    <div className="d-flex justify-content-start">
-                                        <h1 align='left' className="h1">Delivery Challan</h1>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="shadow-lg p-1 bg-body-tertiary rounded  pt-3 pb-4" align="left">
-                            <div className="row ms-4 me-3">
-                                <div className="col-md-3">
-                                    <div className="col-md-12 form-group mb-2">
-                                        <label htmlFor="party_code" className={`${deleteError && !new_running_no ? "red" : ""}`}>
-                                            Transaction No{showAsterisk && <span className="text-danger">*</span>}
-                                        </label>
-                                        <div className="exp-form-floating">
-                                            <div class="d-flex justify-content-end">
-                                                <input
-                                                    id="transactionNo"
-                                                    className="exp-input-field form-control justify-content-start"
-                                                    type="text"
-                                                    placeholder=""
-                                                    title="Enter the Transaction No"
-                                                    required
-                                                    value={transactionNo}
-                                                    maxLength={50}
-                                                    onChange={(e) => setTransactionNo(e.target.value)}
-                                                    onKeyPress={handleDeletedKeyPress}
-                                                    autoComplete='off'
-                                                />
-                                                <div className='position-absolute mt-1 me-2'>
-                                                    <span className="icon searchIcon"
-                                                        onClick={handleDeletedDc}>
-                                                        <i class="fa fa-search"></i>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-md-12 form-group mb-2 " >
-                                        <div class="exp-form-floating" >
-                                            <label for="">Transaction Date</label>
-                                            <input
-                                                name="transactionDate"
-                                                id="Transactiondate"
-                                                title="Enter the Transaction Date"
-                                                className="exp-input-field form-control"
-                                                type="date"
-                                                placeholder=""
-                                                required
-                                                value={Transactiondate}
-                                                onChange={(e) => setTransactiondate(e.target.value)}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="col-md-12 form-group mb-2">
-                                        <div className="exp-form-floating">
-                                            <label htmlFor="">Pay Type</label>
-                                            <div title="Please select a paytype">
-                                                <input
-                                                    id="PayType"
-                                                    value={PayType}
-                                                    onChange={(e) => setPaytype(e.target.value)}
-                                                    className="exp-input-field form-control"
-                                                    title="Enter the Pay Type"
-                                                    placeholder=""
-                                                    required
-                                                    data-tip="Please select a payment type"
-                                                    autoComplete="off"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-md-12 form-group mb-2">
-                                        <div className="exp-form-floating">
-                                            <label htmlFor="">Sales Type </label>
-                                            <div title="Please select a sales type">
-                                                <input
-                                                    id="SalesType"
-                                                    value={SalesType}
-                                                    onChange={(e) => setSalestype(e.target.value)}
-                                                    className="exp-input-field  form-control"
-                                                    title="Enter the Sales Type"
-                                                    placeholder=""
-                                                    required
-                                                    data-tip="Please select a sales type"
-                                                    autoComplete="off"
-                                                /></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-md-4">
-                                    <div className="ag-theme-alpine" style={{ height: 285, width: "100%" }}>
-                                        <AgGridReact
-                                            columnDefs={deletedTermsConditions}
-                                            rowData={deletedRowDataTerms}
-                                            defaultColDef={{ editable: true }}
-                                            headerHeight={28}
-                                            rowHeight={25}
-                                            onRowClicked={handleRowClicked}
-                                            onColumnMoved={onColumnMoved}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="col-md-4">
-                                    <div className="ag-theme-alpine" style={{ height: 285, width: "120%" }}>
-                                        <AgGridReact
-                                            rowData={deleterowdatapatch}
-                                            columnDefs={deletecolumnPatch}
-                                            defaultColDef={{ flex: 1 }}
-                                            headerHeight={28}
-                                            rowHeight={25}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='purbut Desktop'>
-                                <div class="d-flex justify-content-between ms-3" style={{ marginBlock: "", marginTop: "10px" }} >
-                                    <div align="left" class="d-flex justify-content-start" style={{ marginLeft: "22px" }}>
-                                        <purButton type="button" onClick={handleSwiftButtonClick} >
-                                            Copy
-                                        </purButton>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='mobile-only mobileview'>
-                                <div class="d-flex justify-content-between " style={{ marginBlock: "", marginTop: "10px" }} >
-                                    <div align="left" class="d-flex justify-content-start" style={{ marginLeft: "6px" }}>
-                                        <purButton type="button" onClick={handleSwiftButtonClick} >
-                                            Copy
-                                        </purButton>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="ag-theme-alpine" style={{ height: 360, width: '100%' }}>
-                                <AgGridReact
-                                    columnDefs={deletedColumnHeader}
-                                    rowData={deletedHeaderRowData}
-                                    defaultColDef={{ flex: 1 }}
-                                    headerHeight={28}
-                                    rowHeight={25}
-                                />
-                            </div>
-                        </div>
-                        <div className="shadow-lg p-1 bg-body-tertiary rounded mt-2 pt-3 pb-4" align="left">
-                            <div className='row ms-3 me-3'>
-                                <div className="col-md-3 form-group mb-2">
-                                    <div class="exp-form-floating">
-                                        <label for="" class="exp-form-labels" className="partyName">Total</label>
-                                        <input
-                                            id="Total"
-                                            class="exp-input-field form-control input"
-                                            type="text"
-                                            placeholder=""
-                                            title="Enter the Total"
-                                            required
-                                            value={Total}
-                                            onChange={(e) => setTotal(e.target.value)}
-                                            readOnly
-                                        />
-                                    </div>
-                                </div>
-                                <div className="col-md-3 form-group mb-2">
-                                    <div className="exp-form-floating">
-                                        <label htmlFor="transport" className="exp-form-labels partyName">Transport</label>
-                                        <input
-                                            name="totalTaxAmount"
-                                            id="Transport"
-                                            type="text"
-                                            className="exp-input-field form-control input"
-                                            title="Enter the Transport"
-                                            placeholder=""
-                                            maxLength={18}
-                                            required
-                                            value={Transport}
-                                            onChange={(e) => setTransport(e.target.value)}
-                                            autoComplete='off'
-                                        />
-                                    </div>
-                                </div>
-                                <div className="col-md-3 form-group mb-2">
-                                    <div class="exp-form-floating">
-                                        <label for="" class="exp-form-labels" className="partyName">Round Off</label>
-                                        <input
-                                            name=""
-                                            id="RoundOff"
-                                            type="text"
-                                            className="exp-input-field form-control input"
-                                            title="Enter the Round Off"
-                                            placeholder=""
-                                            required
-                                            value={RoundOff}
-                                            onChange={(e) => setRoundOff(e.target.value)}
-                                            readOnly
-                                        />
-                                    </div>
-                                </div>
-                                <div className="col-md-3 form-group mb-2">
-                                    <div class="exp-form-floating">
-                                        <label for="" class="exp-form-labels" className="partyName">Grand Total</label>
-                                        <input
-                                            name=""
-                                            id="GrandTotal"
-                                            type="text"
-                                            className="exp-input-field form-control input"
-                                            title="Enter the Grand Total"
-                                            placeholder=""
-                                            required
-                                            value={GrandTotal}
-                                            onChange={(e) => setGrandTotal(e.target.value)}
-                                            readOnly
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="ag-theme-alpine mt-2" style={{ height: 437, width: "100%" }}>
-                                <AgGridReact
-                                    columnDefs={deletedColumnDefs}
-                                    rowData={deletedRowData}
-                                    defaultColDef={{ editable: true, resizable: true }}
-                                    onRowClicked={handleRowClicked}
-                                    onColumnMoved={onColumnMoved}
-                                    headerHeight={28}
-                                    rowHeight={25}
-                                />
-                            </div>
-
-                        </div>
-                    </div>
-                    <div>
-                        <DeletedDcOPopup open={open4} handleClose={handleClose} handleDeletedDcData={handleDeletedDcData} />
-                    </div>
-                    <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
-                        <div className="row ms-2">
-                            <div className="d-flex justify-content-start">
-                                <p className="col-md-6">{labels.createdBy}: {additionalData.created_by}</p>
-                                <p className="col-md-6">{labels.createdDate}: {additionalData.created_date}</p>
-                            </div>
-                            <div className="d-flex justify-content-start">
-                                <p className="col-md-6">{labels.modifiedBy}: {additionalData.modified_by}</p>
-                                <p className="col-md-6"> {labels.modifiedDate}: {additionalData.modified_date}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
