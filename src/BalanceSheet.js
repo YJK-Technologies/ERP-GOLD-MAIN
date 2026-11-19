@@ -56,6 +56,10 @@ const BalanceSheet = () => {
     const [currencyDrop, setCurrencyDrop] = useState([]);
     const [currency, setCurrency] = useState("");
 
+    const [liabilitiesData, setLiabilitiesData] = useState([]);
+    const [assetsData, setAssetsData] = useState([]);
+    const [loading, setLoading] = useState(false);
+
     const filteredOptionFinancialYear = Array.isArray(financialYearIdDrop)
         ? financialYearIdDrop.map((option) => ({
             value: option.Keyfield,
@@ -127,43 +131,96 @@ const BalanceSheet = () => {
             .catch((err) => console.error("Error fetching currency dropdown:", err));
     }, []);
 
-    // Dummy Data
-    const liabilitiesData = [
-        { type: "header", name: "1. Equity" },
-        { name: "Share Capital", note: "1", current: "10,00,000", prev: "8,00,000" },
-        { name: "Reserves and Surplus", note: "2", current: "3,50,000", prev: "2,00,000" },
-        { name: "Current Year Profit", note: "3", current: "2,00,000", prev: "1,50,000" },
-        { type: "subtotal", name: "Total Equity", current: "15,50,000", prev: "11,50,000" },
-        { type: "header", name: "2. Non-Current Liabilities" },
-        { name: "Long Term Borrowings", note: "4", current: "5,00,000", prev: "6,00,000" },
-        { name: "Other Non-Current Liabilities", note: "5", current: "1,00,000", prev: "50,000" },
-        { type: "subtotal", name: "Total Non-Current Liabilities", current: "6,00,000", prev: "6,50,000" },
-        { type: "header", name: "3. Current Liabilities" },
-        { name: "Sundry Creditors", note: "6", current: "3,00,000", prev: "2,50,000" },
-        { name: "GST Payable", note: "7", current: "75,000", prev: "50,000" },
-        { name: "Outstanding Expenses", note: "8", current: "75,000", prev: "50,000" },
-        { name: "Short Term Loans", note: "9", current: "1,00,000", prev: "1,00,000" },
-        { name: "Other Current Liabilities", note: "10", current: "50,000", prev: "50,000" },
-        { type: "subtotal", name: "Total Current Liabilities", current: "6,00,000", prev: "5,00,000" },
-    ];
+    // Function to group flat SQL data into the UI structure
+    const processBalanceSheetData = (rawData, accountClass) => {
+        const filteredData = rawData.filter(item => item.account_class === accountClass);
+        if (filteredData.length === 0) return [];
 
-    const assetsData = [
-        { type: "header", name: "1. Non-Current Assets" },
-        { name: "Property, Plant and Equipment", note: "11", current: "8,00,000", prev: "8,00,000" },
-        { name: "Less: Accumulated Depreciation", note: "11A", current: "(1,00,000)", prev: "(75,000)" },
-        { name: "Capital Work in Progress", note: "12", current: "50,000", prev: "25,000" },
-        { name: "Other Non-Current Assets", note: "13", current: "3,50,000", prev: "3,00,000" },
-        { type: "subtotal", name: "Total Non-Current Assets", current: "11,00,000", prev: "10,25,000" },
-        { type: "header", name: "2. Current Assets" },
-        { name: "Closing Inventory", note: "14", current: "4,00,000", prev: "3,00,000" },
-        { name: "Sundry Debtors", note: "15", current: "4,00,000", prev: "3,00,000" },
-        { name: "Bank Balances", note: "16", current: "4,00,000", prev: "3,00,000" },
-        { name: "Cash in Hand", note: "17", current: "50,000", prev: "25,000" },
-        { name: "GST Input Credit", note: "18", current: "1,50,000", prev: "1,00,000" },
-        { name: "Loans and Advances", note: "19", current: "2,50,000", prev: "2,00,000" },
-        { name: "Other Current Assets", note: "20", current: "-", prev: "50,000" },
-        { type: "subtotal", name: "Total Current Assets", current: "16,50,000", prev: "12,75,000" },
-    ];
+        const grouped = {};
+        filteredData.forEach(item => {
+            if (!grouped[item.report_section]) {
+                grouped[item.report_section] = [];
+            }
+            grouped[item.report_section].push(item);
+        });
+
+        const formattedData = [];
+        Object.keys(grouped).forEach(section => {
+            // 1. Add Header Row
+            formattedData.push({ type: "header", name: section });
+            
+            let sectionCurrentTotal = 0;
+            let sectionPrevTotal = 0;
+
+            // 2. Add Detail Rows
+            grouped[section].forEach(row => {
+                formattedData.push({
+                    name: row.report_line,
+                    note: row.note_no,
+                    current: row.current_amount !== 0 ? Number(row.current_amount).toLocaleString('en-IN', { minimumFractionDigits: 2 }) : "-",
+                    prev: row.prev_amount !== 0 ? Number(row.prev_amount).toLocaleString('en-IN', { minimumFractionDigits: 2 }) : "-"
+                });
+                sectionCurrentTotal += Number(row.current_amount) || 0;
+                sectionPrevTotal += Number(row.prev_amount) || 0;
+            });
+
+            // 3. Add Subtotal Row
+            const subtotalName = section.replace(/^\d+\.\s*/, ''); // Removes "1. " from "1. Equity"
+            formattedData.push({ 
+                type: "subtotal", 
+                name: `Total ${subtotalName}`, 
+                current: sectionCurrentTotal !== 0 ? sectionCurrentTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 }) : "-", 
+                prev: sectionPrevTotal !== 0 ? sectionPrevTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 }) : "-" 
+            });
+        });
+
+        return formattedData;
+    };
+
+    // Fetch data from Node.js backend and return it
+    const fetchBalanceSheetData = async () => {
+        setLoading(true);
+        try {
+            const payload = {
+                company_code: sessionStorage.getItem('selectedCompanyCode'),
+                location_code: sessionStorage.getItem('selectedLocationCode') || '',
+                Fin_year: selectedFinancialYearId?.value || "",
+                as_on_date: asOnDate,
+                currency: currency || "",
+                report_basis: reportBasis?.value || ""
+            };
+
+            const response = await fetch(`${config.apiBaseUrl}/getBalanceSheetReport`, { 
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                const rawData = await response.json();
+                const newLiabilities = processBalanceSheetData(rawData, "Liabilities");
+                const newAssets = processBalanceSheetData(rawData, "Assets");
+                
+                // Return the structured data directly
+                return { liabilities: newLiabilities, assets: newAssets };
+            } else {
+                toast.warning("No records found for the selected criteria.");
+                return null;
+            }
+        } catch (error) {
+            console.error("Error fetching balance sheet:", error);
+            toast.error("Failed to load Balance Sheet data.");
+            return null;
+        } finally {
+            setLoading(false);
+        }
+    };
+    // Automatically fetch when crucial filters change
+    useEffect(() => {
+        if (asOnDate && companyName) {
+            fetchBalanceSheetData();
+        }
+    }, [asOnDate, financialYearId, currency, reportBasis]);
 
     // Combine data for AG Grid side-by-side view
     const [rowData, setRowData] = useState([]);
@@ -211,7 +268,11 @@ const BalanceSheet = () => {
         }
     ], [asOnDate, compareWithPrevYear]);
 
-    const handlePrint = () => {
+    const handlePrint = async () => {
+        const data = await fetchBalanceSheetData();
+        
+        if (!data) return; // Stop if fetch failed
+
         const filtersPayload = {
             companyName: companyName,
             branch: selectedBranch.label,
@@ -221,15 +282,17 @@ const BalanceSheet = () => {
             reportBasis: reportBasis.label,
         };
 
-        const gridData = { liabilities: liabilitiesData, assets: assetsData };
-
         localStorage.setItem("BalanceSheetFilters", LZString.compressToUTF16(JSON.stringify(filtersPayload)));
-        localStorage.setItem("BalanceSheetData", LZString.compressToUTF16(JSON.stringify(gridData)));
+        localStorage.setItem("BalanceSheetData", LZString.compressToUTF16(JSON.stringify(data)));
 
         window.open("/BalShePrint", "_blank");
     };
 
-    const handleExportToExcel = () => {
+    const handleExportToExcel = async () => {
+        const data = await fetchBalanceSheetData();
+        
+        if (!data) return; // Stop if fetch failed
+
         const headerData = [
             ['Balance Sheet'],
             [`Company Name: ${companyName}`],
@@ -240,17 +303,16 @@ const BalanceSheet = () => {
             []
         ];
 
-        // Format for Excel - 2 tables one after another
         const exportRows = [];
         
         exportRows.push(["A. EQUITY AND LIABILITIES", "Note No.", `As on ${asOnDate} (₹)`, "Previous Year (₹)"]);
-        liabilitiesData.forEach(row => {
+        data.liabilities.forEach(row => {
             exportRows.push([row.name, row.note || "", row.current || "", row.prev || ""]);
         });
 
         exportRows.push([]); // Empty row spacing
         exportRows.push(["B. ASSETS", "Note No.", `As on ${asOnDate} (₹)`, "Previous Year (₹)"]);
-        assetsData.forEach(row => {
+        data.assets.forEach(row => {
             exportRows.push([row.name, row.note || "", row.current || "", row.prev || ""]);
         });
 
@@ -415,4 +477,4 @@ const BalanceSheet = () => {
     );
 };
 
-export default BalanceSheet;
+export default BalanceSheet; 

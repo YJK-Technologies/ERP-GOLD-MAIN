@@ -34105,6 +34105,42 @@ const getTrialBalanceReport = async (req, res) => {
 };
 //Code ended by Dinesh Gokul on 17-11-2026 
 
+const getBalanceSheetReport = async (req, res) => {
+  const { company_code, location_code, Fin_year, as_on_date,
+    currency, report_basis } = req.body;
+
+  try {
+    // Connect to the database
+    const pool = await connection.connectToDatabase();
+
+    // Execute the stored procedure
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "BSR")
+      .input("company_code", sql.NVarChar, company_code || "")
+      .input("location_code", sql.NVarChar, location_code || "")
+      .input("Fin_year", sql.NVarChar, Fin_year || "")
+      .input("as_on_date", sql.NVarChar, as_on_date || "")
+      .input("currency", sql.NVarChar, currency || "")
+      .input("report_basis", sql.NVarChar, report_basis || "")
+      .query(`EXEC sp_balance_sheet_report @mode, @company_code,@location_code,@Fin_year,@as_on_date,@currency,@report_basis`);
+
+    // Send response
+    if (result.recordset && result.recordset.length > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json("Data not found");
+    }
+
+  } catch (err) {
+    console.error("Customer Ledger Report Error:", err);
+
+    res.status(500).json({
+      message: err.message || "Internal Server Error"
+    });
+  }
+};
+
 module.exports = {
   login,
   forgetPassword,
@@ -35204,6 +35240,7 @@ module.exports = {
   searchGroupMaster,
   addGroupMaster,
   getGroupTypeCode,
-  getTrialBalanceReport
+  getTrialBalanceReport,
+  getBalanceSheetReport
 
 };
