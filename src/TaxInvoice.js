@@ -1879,6 +1879,7 @@ function TaxInvoice() {
     try {
       const Header = {
         company_code: sessionStorage.getItem("selectedCompanyCode"),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
         Tran_type: "IP",
         Tran_no: bill_no,
         Tran_date: bill_date,
