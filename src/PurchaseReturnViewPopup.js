@@ -249,6 +249,7 @@ export default function PurchaseReturnView({ open, handleClose, handleItemView, 
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           transaction_no: "",
           transaction_date: "",
           vendor_code: vCode,
@@ -290,6 +291,7 @@ export default function PurchaseReturnView({ open, handleClose, handleItemView, 
         },
         body: JSON.stringify({
           company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           transaction_no, transaction_date, vendor_code, vendor_name, purchase_type: purchaseType, pay_type: payType, return_no
         }) // Send company_no and company_name as search criteria
       });
