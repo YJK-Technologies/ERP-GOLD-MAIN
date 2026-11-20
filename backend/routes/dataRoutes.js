@@ -1126,6 +1126,7 @@ router.post("/getVoucherType", dataController.getVoucherType);
 router.post("/getAllVendorCode", dataController.getAllVendorCode);
 router.post("/getTrialBalanceReport", dataController.getTrialBalanceReport);
 router.post("/getBalanceSheetReport", dataController.getBalanceSheetReport);
+router.post("/get_fs_post_data", dataController.get_fs_post_data);
 
 
 

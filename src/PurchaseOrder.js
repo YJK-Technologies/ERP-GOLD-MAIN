@@ -98,6 +98,87 @@ function PurchaseOrder() {
   const location = useLocation();
   const savedPath = sessionStorage.getItem("currentPath");
 
+  const [showPostingGrid, setShowPostingGrid] = useState(false);
+
+  const [postingRowData, setPostingRowData] = useState([]);
+
+  const columnDefsPosting = [
+    {
+      headerName: "S.No",
+      valueGetter: (params) => params.node.rowIndex + 1,
+      maxWidth: 80,
+    },
+    {
+      headerName: "Financial Year",
+      field: "Fin_year",
+      minWidth: 130,
+    },
+    {
+      headerName: "Financial Period",
+      field: "Fin_period",
+      minWidth: 130,
+    },
+    {
+      headerName: "Transaction Type",
+      field: "Tran_type",
+      minWidth: 120,
+    },
+    {
+      headerName: "Transaction No",
+      field: "Tran_no",
+      minWidth: 170,
+    },
+    {
+      headerName: "Transaction Date",
+      field: "Transaction_date",
+      minWidth: 130,
+    },
+    {
+      headerName: "Posting Status",
+      field: "Posting_status",
+      minWidth: 120,
+    },
+    {
+      headerName: "Dr / Cr",
+      field: "DrCr_flag",
+      minWidth: 100,
+      cellStyle: (params) => ({
+        fontWeight: "bold",
+        color: params.value === "Dr" ? "#198754" : "#dc3545",
+      }),
+    },
+    {
+      headerName: "Account Code",
+      field: "account_no",
+      minWidth: 150,
+    },
+    {
+      headerName: "Cost Center",
+      field: "cost_center",
+      minWidth: 120,
+    },
+    {
+      headerName: "Base Amount",
+      field: "base_amount",
+      minWidth: 130,
+      valueFormatter: (params) =>
+        Number(params.value || 0).toFixed(2),
+    },
+    {
+      headerName: "Transaction Amount",
+      field: "tran_amount",
+      minWidth: 150,
+      valueFormatter: (params) =>
+        Number(params.value || 0).toFixed(2),
+    },
+    {
+      headerName: "Remarks",
+      field: "remarks",
+      minWidth: 300,
+      flex: 1,
+    },
+  ];
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!["F1", "F3", "F4", "F5", "F6", "F8"].includes(e.key)) {
@@ -236,20 +317,20 @@ function PurchaseOrder() {
 
   // For permission-based filtering of screens, we can filter the screensDrop array based on the user's permissions. If the user has 'all permission', they can see all options. Otherwise, we check if the specific option is included in their permissions.
   const filteredOptionScreens = screensDrop
-  .filter((option) => {
-    // Convert the backend option to lowercase to match the purchaseOrderPermission array
-    const optionName = option.attributedetails_name.toLowerCase();
-    
-    // Check if the user has 'all permission' or the specific right (e.g., 'add', 'delete')
-    return (
-      purchaseOrderPermission.includes('all permission') || 
-      purchaseOrderPermission.includes(optionName)
-    );
-  })
-  .map((option) => ({
-    value: option.descriptions,
-    label: option.attributedetails_name,
-  }));
+    .filter((option) => {
+      // Convert the backend option to lowercase to match the purchaseOrderPermission array
+      const optionName = option.attributedetails_name.toLowerCase();
+
+      // Check if the user has 'all permission' or the specific right (e.g., 'add', 'delete')
+      return (
+        purchaseOrderPermission.includes('all permission') ||
+        purchaseOrderPermission.includes(optionName)
+      );
+    })
+    .map((option) => ({
+      value: option.descriptions,
+      label: option.attributedetails_name,
+    }));
 
   useEffect(() => {
     const fetchData = async () => {
@@ -2776,12 +2857,53 @@ function PurchaseOrder() {
         console.log("Detail Data is empty or not found");
         setrowDataTerms([]);
       }
+
+      await fetchFSPostingData(code);
+
       console.log("data fetched successfully");
     } catch (error) {
       console.error("Error fetching search data:", error);
       toast.error(error.message || "Failed to fetch data");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchFSPostingData = async (transactionNo) => {
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/get_fs_post_data`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
+            location_code: sessionStorage.getItem("selectedLocationCode"),
+            Tran_type: transactionNo,
+            Tran_no: "GR",
+          }),
+        }
+      );
+
+      if (response.status === 404) {
+        setPostingRowData([]);
+        return;
+      }
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to fetch FS Posting");
+      }
+
+      const postingData = await response.json();
+
+      setPostingRowData(postingData);
+
+    } catch (error) {
+      console.error("FS Posting Fetch Error:", error);
+      setPostingRowData([]);
+      toast.error(error.message || "Failed to fetch FS Posting");
     }
   };
 
@@ -3269,9 +3391,6 @@ function PurchaseOrder() {
         { fieldName: "Remarks", notes: remarks },
       ]);
 
-      await PODetailView(TransactionNo);
-      await POTax(TransactionNo);
-
       setHeaderRowData([
         {
           fieldName: "Vendor / Customer Code",
@@ -3325,6 +3444,11 @@ function PurchaseOrder() {
           shipTo: ShipToContactPerson,
         },
       ]);
+
+      await PODetailView(TransactionNo);
+      await POTax(TransactionNo);
+      await fetchFSPostingData(TransactionNo);
+
     } else {
       console.log("Data not fetched...!");
     }
@@ -3614,15 +3738,15 @@ function PurchaseOrder() {
                     </savebutton>
                   )} */}
 
-                  {/* Added for removing permission check for save button, as per the requirement. */}
-                  <savebutton
-                      className="purbut"
-                      onClick={handleMasterAction}
-                      title="Save / Update"
-                    >
-                      <i class="fa-regular fa-floppy-disk"></i>
-                  </savebutton>
-                  
+                {/* Added for removing permission check for save button, as per the requirement. */}
+                <savebutton
+                  className="purbut"
+                  onClick={handleMasterAction}
+                  title="Save / Update"
+                >
+                  <i class="fa-regular fa-floppy-disk"></i>
+                </savebutton>
+
                 {/* {["update", "all permission"].some((permission) => purchaseOrderPermission.includes(permission)) && (
                     <savebutton
                       className="purbut"
@@ -3734,10 +3858,10 @@ function PurchaseOrder() {
                     {/* Added for removing permission check for save button, as per the requirement. */}
                     <li class="iconbutton d-flex justify-content-center text-success">
                       <icon class="icon" onClick={handleMasterAction}>
-                            <i class="fa-regular fa-floppy-disk"></i>
+                        <i class="fa-regular fa-floppy-disk"></i>
                       </icon>
                     </li>
-                    
+
                     {/* <li class="iconbutton  d-flex justify-content-center text-danger">
                       {["delete", "all permission"].some((permission) => purchaseOrderPermission.includes(permission)) && (
                         <icon class="icon" onClick={handleDeleteButtonClick}>
@@ -4061,7 +4185,7 @@ function PurchaseOrder() {
               style={{ height: 280, width: "102%" }}
             >
               <AgGridReact
-                columnDefs={ activeTable === "myTable" ? columnDefs : columnDefsTax }
+                columnDefs={activeTable === "myTable" ? columnDefs : columnDefsTax}
                 rowData={activeTable === "myTable" ? rowData : rowDataTax}
                 defaultColDef={{ editable: true, flex: 1 }}
                 // getRowId={(params) => String(params.data.serialNumber)}
@@ -4082,6 +4206,57 @@ function PurchaseOrder() {
                 rowHeight={25}
               />
             </div>
+          </div>
+
+          <div
+            className="shadow-lg p-2 bg-body-tertiary rounded mt-2 pt-2 pb-2"
+            align="left"
+          >
+            <div className="d-flex justify-content-between align-items-center">
+              <div className="d-flex align-items-center ms-3">
+                <h6 className="mb-0 fw-bold">
+                  Account Posting & Affected Screens Details
+                </h6>
+              </div>
+              <div className="d-flex me-4">
+                <icon
+                  type="button"
+                  className="popups-btn"
+                  title={
+                    showPostingGrid
+                      ? "Hide Posting Details"
+                      : "Show Posting Details"
+                  }
+                  onClick={() => setShowPostingGrid(!showPostingGrid)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <FontAwesomeIcon icon={showPostingGrid ? faMinus : faPlus} />
+                </icon>
+              </div>
+            </div>
+
+            {showPostingGrid && (
+              <div className="mt-3">
+                <div
+                  className="ag-theme-alpine"
+                  style={{ height: 350, width: "100%" }}
+                >
+                  <AgGridReact
+                    columnDefs={columnDefsPosting}
+                    rowData={postingRowData}
+                    defaultColDef={{
+                      editable: false,
+                      resizable: true,
+                      filter: true,
+                      sortable: true,
+                    }}
+                    animateRows={true}
+                    headerHeight={28}
+                    rowHeight={25}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
         <div>
