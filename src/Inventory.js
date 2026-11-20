@@ -763,7 +763,7 @@ function Sales() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ bill_no: billNo, company_code: sessionStorage.getItem('selectedCompanyCode') })
+        body: JSON.stringify({ bill_no: billNo, company_code: sessionStorage.getItem('selectedCompanyCode'), location_code: sessionStorage.getItem("selectedLocationCode"), })
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -1452,6 +1452,7 @@ function Sales() {
     try {
       const Header = {
         company_code: sessionStorage.getItem('selectedCompanyCode'),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
         customer_code: customerCode,
         customer_name: customerName,
         pay_type: payType,
@@ -1515,6 +1516,7 @@ function Sales() {
       for (const row of validRows) {
         const Details = {
           company_code: sessionStorage.getItem('selectedCompanyCode'),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           bill_no: transaction_no,
           item_code: row.itemCode,
           item_name: row.itemName,
@@ -1572,6 +1574,7 @@ function Sales() {
           }
           const Details = {
             company_code: sessionStorage.getItem('selectedCompanyCode'),
+            location_code: sessionStorage.getItem("selectedLocationCode"),
             bill_no: transaction_no,
             item_code: row.itemCode,
             item_name: row.itemName,
@@ -1618,6 +1621,7 @@ function Sales() {
         const Details = {
           created_by: sessionStorage.getItem('selectedUserCode'),
           company_code: sessionStorage.getItem('selectedCompanyCode'),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           bill_no: transaction_no,
           Terms_conditions: row.Terms_conditions,
         };
@@ -2175,7 +2179,7 @@ function Sales() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ bill_no: billNo, company_code: sessionStorage.getItem('selectedCompanyCode') })
+        body: JSON.stringify({ bill_no: billNo, company_code: sessionStorage.getItem('selectedCompanyCode'), location_code: sessionStorage.getItem("selectedLocationCode"), })
       });
       if (response.ok) {
         return true
@@ -2195,7 +2199,7 @@ function Sales() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ bill_no: billNo, company_code: sessionStorage.getItem('selectedCompanyCode') })
+        body: JSON.stringify({ bill_no: billNo, company_code: sessionStorage.getItem('selectedCompanyCode'), location_code: sessionStorage.getItem("selectedLocationCode"), })
       });
       if (response.ok) {
         return true
@@ -2215,7 +2219,7 @@ function Sales() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ bill_no: billNo, company_code: sessionStorage.getItem('selectedCompanyCode') })
+        body: JSON.stringify({ bill_no: billNo, company_code: sessionStorage.getItem('selectedCompanyCode'), location_code: sessionStorage.getItem("selectedLocationCode"), })
       });
       if (response.ok) {
         return true;
@@ -2237,7 +2241,8 @@ function Sales() {
         },
         body: JSON.stringify({
           bill_no: billNo,
-          company_code: sessionStorage.getItem("selectedCompanyCode")
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
         })
       });
       if (response.ok) {
@@ -3399,6 +3404,7 @@ function Sales() {
         body: JSON.stringify({
           bill_no: billNo,
           company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           authroization_status: selectedStatus.value
         })
       });
@@ -3455,6 +3461,7 @@ function Sales() {
         body: JSON.stringify({
           bill_no: billNo,
           company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           authroization_status: selectedStatus.value
         })
       });
@@ -3511,6 +3518,7 @@ function Sales() {
         body: JSON.stringify({
           bill_no: billNo,
           company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           authroization_status: selectedStatus.value
         })
       });

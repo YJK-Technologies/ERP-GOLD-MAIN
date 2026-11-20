@@ -19,6 +19,7 @@ import { showConfirmationToast } from "./ToastConfirmation";
 import TaxInvoiceCustomerPopup from "./SalesVendorPopup";
 import { useLocation } from "react-router-dom";
 import DeletedTaxInvoicePopup from "./DeletedTaxInvoicePopup";
+import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import LZString from "lz-string";
 import LoadingScreen from "./Loading";
@@ -84,6 +85,87 @@ function TaxInvoice() {
   const location = useLocation();
   const savedPath = sessionStorage.getItem("currentPath");
   const navigate = useNavigate();
+
+    const [showPostingGrid, setShowPostingGrid] = useState(false);
+  
+    const [postingRowData, setPostingRowData] = useState([]);
+  
+    const columnDefsPosting = [
+      {
+        headerName: "S.No",
+        valueGetter: (params) => params.node.rowIndex + 1,
+        maxWidth: 80,
+      },
+      {
+        headerName: "Financial Year",
+        field: "Fin_year",
+        minWidth: 130,
+      },
+      {
+        headerName: "Financial Period",
+        field: "Fin_period",
+        minWidth: 130,
+      },
+      {
+        headerName: "Transaction Type",
+        field: "Tran_type",
+        minWidth: 120,
+      },
+      {
+        headerName: "Transaction No",
+        field: "Tran_no",
+        minWidth: 170,
+      },
+      {
+        headerName: "Transaction Date",
+        field: "Transaction_date",
+        minWidth: 130,
+      },
+      {
+        headerName: "Posting Status",
+        field: "Posting_status",
+        minWidth: 120,
+      },
+      {
+        headerName: "Dr / Cr",
+        field: "DrCr_flag",
+        minWidth: 100,
+        cellStyle: (params) => ({
+          fontWeight: "bold",
+          color: params.value === "Dr" ? "#198754" : "#dc3545",
+        }),
+      },
+      {
+        headerName: "Account Code",
+        field: "account_no",
+        minWidth: 150,
+      },
+      {
+        headerName: "Cost Center",
+        field: "cost_center",
+        minWidth: 120,
+      },
+      {
+        headerName: "Base Amount",
+        field: "base_amount",
+        minWidth: 130,
+        valueFormatter: (params) =>
+          Number(params.value || 0).toFixed(2),
+      },
+      {
+        headerName: "Transaction Amount",
+        field: "tran_amount",
+        minWidth: 150,
+        valueFormatter: (params) =>
+          Number(params.value || 0).toFixed(2),
+      },
+      {
+        headerName: "Remarks",
+        field: "remarks",
+        minWidth: 300,
+        flex: 1,
+      },
+    ];
 
   //code added by Pavun purpose of set user permisssion
   const permissions = JSON.parse(sessionStorage.getItem("permissions")) || {};
@@ -2552,10 +2634,51 @@ function TaxInvoice() {
         console.error(errorResponse.message);
         toast.error(errorResponse.message);
       }
+
+    await fetchFSPostingData(code);
+
     } catch (error) {
       console.error("Error fetching search data:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchFSPostingData = async (transactionNo) => {
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/get_fs_post_data`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
+            location_code: sessionStorage.getItem("selectedLocationCode"),
+            Tran_type: "IP",
+            Tran_no: transactionNo,
+          }),
+        }
+      );
+
+      if (response.status === 404) {
+        setPostingRowData([]);
+        return;
+      }
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to fetch FS Posting");
+      }
+
+      const postingData = await response.json();
+
+      setPostingRowData(postingData);
+
+    } catch (error) {
+      console.error("FS Posting Fetch Error:", error);
+      setPostingRowData([]);
+      toast.error(error.message || "Failed to fetch FS Posting");
     }
   };
 
@@ -3938,7 +4061,57 @@ function TaxInvoice() {
               />
             </div>
           </div>
-        </div>
+          <div
+            className="shadow-lg p-2 bg-body-tertiary rounded mt-2 pt-2 pb-2"
+            align="left"
+          >
+            <div className="d-flex justify-content-between align-items-center">
+              <div className="d-flex align-items-center ms-3">
+                <h6 className="mb-0 fw-bold">
+                  Account Posting & Affected Screens Details
+                </h6>
+              </div>
+              <div className="d-flex me-4">
+                <icon
+                  type="button"
+                  className="popups-btn"
+                  title={
+                    showPostingGrid
+                      ? "Hide Posting Details"
+                      : "Show Posting Details"
+                  }
+                  onClick={() => setShowPostingGrid(!showPostingGrid)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <FontAwesomeIcon icon={showPostingGrid ? faMinus : faPlus} />
+                </icon>
+              </div>
+            </div>
+
+            {showPostingGrid && (
+              <div className="mt-3">
+                <div
+                  className="ag-theme-alpine"
+                  style={{ height: 350, width: "100%" }}
+                >
+                  <AgGridReact
+                    columnDefs={columnDefsPosting}
+                    rowData={postingRowData}
+                    defaultColDef={{
+                      editable: false,
+                      resizable: true,
+                      filter: true,
+                      sortable: true,
+                    }}
+                    animateRows={true}
+                    headerHeight={28}
+                    rowHeight={25}
+                  />
+                </div>
+              </div>
+            )}
+          </div>        
+          </div>
         <div>
           <TaxInvoicePopup open={open} handleClose={handleClose} handletaxinvoice={handletaxinvoice} invoicetype={isChecked ? "Proforma Invoice" : invoicetype} />
           <TaxInvoiceCustomerPopup open={open1} handleClose={handleClose} handleVendor={handleCustomerBillTo} />
