@@ -217,7 +217,7 @@ export default function InventoryHdrPopup({ open, handleClose, handleData }) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ bill_date, bill_no, dely_chlno, sales_type: salesType, customer_code, customer_name, pay_type: payType, order_type: orderType, company_code: sessionStorage.getItem("selectedCompanyCode") })
+        body: JSON.stringify({ bill_date, bill_no, dely_chlno, sales_type: salesType, customer_code, customer_name, pay_type: payType, order_type: orderType, company_code: sessionStorage.getItem("selectedCompanyCode"), location_code: sessionStorage.getItem("selectedLocationCode"), })
       });
       if (response.ok) {
         const searchData = await response.json();

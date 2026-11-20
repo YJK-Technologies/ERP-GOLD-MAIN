@@ -743,7 +743,7 @@ function Purchase() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), vendor_code: code })
+        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), location_code: sessionStorage.getItem("selectedLocationCode"), vendor_code: code })
       });
 
       if (response.ok) {
@@ -806,7 +806,8 @@ function Purchase() {
         },
         body: JSON.stringify({
           transaction_no: transactionNo,
-          company_code: sessionStorage.getItem('selectedCompanyCode')
+          company_code: sessionStorage.getItem('selectedCompanyCode'),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
         })
       });
       if (response.ok) {
@@ -1465,11 +1466,7 @@ function Purchase() {
       return;
     }
 
-
-
-
     const filteredRowData = rowData.filter(row => row.purchaseQty > 0 && row.TotalItemAmount > 0 && row.purchaseAmt > 0);
-
 
     const hasNullWarehouse = filteredRowData.some((row) => !row.warehouse || row.warehouse.trim() === '');
     if (hasNullWarehouse) {
@@ -1486,6 +1483,7 @@ function Purchase() {
     try {
       const Header = {
         company_code: sessionStorage.getItem('selectedCompanyCode'),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
         vendor_code: vendor_code,
         vendor_name: vendor_name,
         pay_type: payType,
@@ -1512,7 +1510,6 @@ function Purchase() {
         console.log(searchData);
         const [{ transaction_no }] = searchData;
         setTransactionNumber(transaction_no);
-
 
         await savePurchaseDetails(transaction_no);
         await savePurTaxDetails(transaction_no);
@@ -1547,6 +1544,7 @@ function Purchase() {
       for (const row of validRows) {
         const Details = {
           company_code: sessionStorage.getItem('selectedCompanyCode'),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           created_by: sessionStorage.getItem('selectedUserCode'),
           item_code: row.itemCode,
           item_name: row.itemName,
@@ -1588,7 +1586,6 @@ function Purchase() {
     }
   };
 
-
   const savePurTaxDetails = async (transaction_no) => {
     try {
       for (const row of rowData) {
@@ -1597,6 +1594,7 @@ function Purchase() {
         for (const taxRow of matchingTaxRows) {
           const Details = {
             company_code: sessionStorage.getItem('selectedCompanyCode'),
+            location_code: sessionStorage.getItem("selectedLocationCode"),
             item_code: row.itemCode,
             item_name: row.itemName,
             vendor_code: vendor_code,
@@ -1642,7 +1640,7 @@ function Purchase() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ transaction_no: transactionNumber, company_code: sessionStorage.getItem('selectedCompanyCode') })
+        body: JSON.stringify({ transaction_no: transactionNumber, company_code: sessionStorage.getItem('selectedCompanyCode'), location_code: sessionStorage.getItem("selectedLocationCode"), })
       });
 
       if (response.ok) {
@@ -1665,7 +1663,7 @@ function Purchase() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ transaction_no: transactionNumber, company_code: sessionStorage.getItem('selectedCompanyCode') })
+        body: JSON.stringify({ transaction_no: transactionNumber, company_code: sessionStorage.getItem('selectedCompanyCode'), location_code: sessionStorage.getItem("selectedLocationCode"), })
       });
 
       if (response.ok) {
@@ -1688,7 +1686,7 @@ function Purchase() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ transaction_no: transactionNumber, company_code: sessionStorage.getItem('selectedCompanyCode') })
+        body: JSON.stringify({ transaction_no: transactionNumber, company_code: sessionStorage.getItem('selectedCompanyCode'), location_code: sessionStorage.getItem("selectedLocationCode"), })
       });
 
       if (response.ok) {
@@ -2373,7 +2371,7 @@ if (paytype) {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          company_code: sessionStorage.getItem('selectedCompanyCode'), transaction_no: transactionNumber,
+          company_code: sessionStorage.getItem('selectedCompanyCode'), location_code: sessionStorage.getItem("selectedLocationCode"), transaction_no: transactionNumber,
           modified_by: sessionStorage.getItem("selectedUserCode")
 
         })
@@ -2398,7 +2396,7 @@ if (paytype) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), transaction_no: transactionNumber })
+        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), location_code: sessionStorage.getItem("selectedLocationCode"), transaction_no: transactionNumber })
       });
       if (response.ok) {
         console.log("Rows deleted successfully:", transactionNumber);
@@ -2419,7 +2417,7 @@ if (paytype) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), transaction_no: transactionNumber })
+        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), location_code: sessionStorage.getItem("selectedLocationCode"), transaction_no: transactionNumber })
       });
       if (response.ok) {
         return true
@@ -2875,7 +2873,7 @@ if (paytype) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), transaction_no: code }) // Send company_no and company_name as search criteria
+        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), location_code: sessionStorage.getItem("selectedLocationCode"), transaction_no: code }) // Send company_no and company_name as search criteria
       });
 
       if (!response.ok) {
@@ -3178,6 +3176,7 @@ if (paytype) {
         body: JSON.stringify({
           transaction_no: transactionNumber,
           company_code: sessionStorage.getItem('selectedCompanyCode'),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           authroization_status: selectedStatus.value
         })
       });
@@ -3201,6 +3200,7 @@ if (paytype) {
         body: JSON.stringify({
           transaction_no: transactionNumber,
           company_code: sessionStorage.getItem('selectedCompanyCode'),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           authroization_status: selectedStatus.value
         })
       });
@@ -3224,6 +3224,7 @@ if (paytype) {
         body: JSON.stringify({
           transaction_no: transactionNumber,
           company_code: sessionStorage.getItem('selectedCompanyCode'),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           authroization_status: selectedStatus.value
         })
       });
