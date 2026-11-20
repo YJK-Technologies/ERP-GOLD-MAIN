@@ -148,6 +148,7 @@
           body: JSON.stringify({
             transaction_no: "",
             company_code: sessionStorage.getItem("selectedCompanyCode"),
+            location_code: sessionStorage.getItem("selectedLocationCode"),
             transaction_date: "",
             vendor_code: vCode, // Send auto-populated vendor code
             vendor_name: "",
@@ -247,7 +248,7 @@
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            transaction_no, company_code: sessionStorage.getItem("selectedCompanyCode"),
+            transaction_no, company_code: sessionStorage.getItem("selectedCompanyCode"), location_code: sessionStorage.getItem("selectedLocationCode"),
             transaction_date, vendor_code, vendor_name, purchase_type: purchase_type, pay_type: pay_type
           }) // Send company_no and company_name as search criteria
         });
