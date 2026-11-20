@@ -167,7 +167,7 @@ export default function SalesDeletedPopup({ open, handleClose, handleDeletedData
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ bill_date, bill_no, sales_type, customer_code, customer_name, pay_type, order_type, company_code: sessionStorage.getItem('selectedCompanyCode') })
+        body: JSON.stringify({ bill_date, bill_no, sales_type, customer_code, customer_name, pay_type, order_type, company_code: sessionStorage.getItem('selectedCompanyCode'), location_code: sessionStorage.getItem("selectedLocationCode"), })
       });
       if (response.ok) {
         const searchData = await response.json();

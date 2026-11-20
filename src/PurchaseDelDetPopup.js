@@ -196,7 +196,7 @@ export default function ItemPopup({ open, handleClose, handlePurchaseDeleteData 
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), transaction_no, transaction_date, vendor_code, vendor_name, purchase_type: purchase_type, pay_type: pay_type }) // Send company_no and company_name as search criteria
+        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), location_code: sessionStorage.getItem("selectedLocationCode"), transaction_no, transaction_date, vendor_code, vendor_name, purchase_type: purchase_type, pay_type: pay_type }) // Send company_no and company_name as search criteria
       });
       if (response.ok) {
         const searchData = await response.json();
