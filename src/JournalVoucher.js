@@ -13,7 +13,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // IMPORT YOUR POPUP HERE
 import COAPopup from './COAPopup';
 import JVPopup from './JVPopup';
-const config = require('./Apiconfig'); 
+const config = require('./Apiconfig');
 
 function JournalVoucher() {
   const gridRef = useRef(null);
@@ -53,9 +53,90 @@ function JournalVoucher() {
   const voucherTypeOptions = [{ label: 'Journal', value: 'Journal' }, { label: 'Adjustment', value: 'Adjustment' }];
   const costCenterOptions = ['Head Office', 'Branch', 'Select'];
 
-    const [rowData, setRowData] = useState([
+  const [rowData, setRowData] = useState([
     { accountCode: '', accountName: '', description: '', drCrFlag: 'Dr', amount: '', costCenter: 'Select' }
   ]);
+
+  const [showPostingGrid, setShowPostingGrid] = useState(false);
+
+  const [postingRowData, setPostingRowData] = useState([]);
+
+  const columnDefsPosting = [
+    {
+      headerName: "S.No",
+      valueGetter: (params) => params.node.rowIndex + 1,
+      maxWidth: 80,
+    },
+    {
+      headerName: "Financial Year",
+      field: "Fin_year",
+      minWidth: 130,
+    },
+    {
+      headerName: "Financial Period",
+      field: "Fin_period",
+      minWidth: 130,
+    },
+    {
+      headerName: "Transaction Type",
+      field: "Tran_type",
+      minWidth: 120,
+    },
+    {
+      headerName: "Transaction No",
+      field: "Tran_no",
+      minWidth: 170,
+    },
+    {
+      headerName: "Transaction Date",
+      field: "Transaction_date",
+      minWidth: 130,
+    },
+    {
+      headerName: "Posting Status",
+      field: "Posting_status",
+      minWidth: 120,
+    },
+    {
+      headerName: "Dr / Cr",
+      field: "DrCr_flag",
+      minWidth: 100,
+      cellStyle: (params) => ({
+        fontWeight: "bold",
+        color: params.value === "Dr" ? "#198754" : "#dc3545",
+      }),
+    },
+    {
+      headerName: "Account Code",
+      field: "account_no",
+      minWidth: 150,
+    },
+    {
+      headerName: "Cost Center",
+      field: "cost_center",
+      minWidth: 120,
+    },
+    {
+      headerName: "Base Amount",
+      field: "base_amount",
+      minWidth: 130,
+      valueFormatter: (params) =>
+        Number(params.value || 0).toFixed(2),
+    },
+    {
+      headerName: "Transaction Amount",
+      field: "tran_amount",
+      minWidth: 150,
+      valueFormatter: (params) =>
+        Number(params.value || 0).toFixed(2),
+    },
+    {
+      headerName: "Remarks",
+      field: "remarks",
+      minWidth: 300,
+      flex: 1,
+    },
+  ];
 
   // 2. Fetch Status Events (Dropdown Options)
   useEffect(() => {
@@ -93,7 +174,7 @@ function JournalVoucher() {
   const calculateTotals = useCallback(() => {
     let drTotal = 0;
     let crTotal = 0;
-    
+
     if (gridRef.current && gridRef.current.api) {
       gridRef.current.api.forEachNode((node) => {
         const amt = parseFloat(node.data.amount) || 0;
@@ -141,73 +222,73 @@ function JournalVoucher() {
   // Handle COA Selection from Popup
 
 
-const accountCodeRenderer = (params) => {
-  const cellWidth = params.column.getActualWidth();
-  const isWideEnough = cellWidth > 30;
-  const showSearchIcon = isWideEnough;
+  const accountCodeRenderer = (params) => {
+    const cellWidth = params.column.getActualWidth();
+    const isWideEnough = cellWidth > 30;
+    const showSearchIcon = isWideEnough;
 
-  return (
-    <div
-      className="position-relative d-flex align-items-center"
-      style={{ minHeight: '100%' }}
-    >
-      <div className="flex-grow-1">
-        {params.editing ? (
-          <input
-            type="text"
-            className="form-control"
-            value={params.value || ''}
-            onChange={(e) => params.setValue(e.target.value)}
-            style={{ width: '100%' }}
-          />
-        ) : (
-          params.value
+    return (
+      <div
+        className="position-relative d-flex align-items-center"
+        style={{ minHeight: '100%' }}
+      >
+        <div className="flex-grow-1">
+          {params.editing ? (
+            <input
+              type="text"
+              className="form-control"
+              value={params.value || ''}
+              onChange={(e) => params.setValue(e.target.value)}
+              style={{ width: '100%' }}
+            />
+          ) : (
+            params.value
+          )}
+        </div>
+
+        {showSearchIcon && (
+          <span
+            className="icon searchIcon"
+            style={{
+              position: 'absolute',
+              right: '-10px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+            }}
+            onClick={() => {
+              setCurrentRowIndex(params.node.rowIndex);
+              setOpenCOAPopup(true);
+            }}
+          >
+            <i className="fa fa-search"></i>
+          </span>
         )}
       </div>
+    );
+  };
 
-      {showSearchIcon && (
-        <span
-          className="icon searchIcon"
-          style={{
-            position: 'absolute',
-            right: '-10px',
-            top: '50%',
-            transform: 'translateY(-50%)',
-          }}
-          onClick={() => {
-            setCurrentRowIndex(params.node.rowIndex);
-            setOpenCOAPopup(true);
-          }}
-        >
-          <i className="fa fa-search"></i>
-        </span>
-      )}
-    </div>
-  );
-};
-
-const handleCOASelect = (selectedData) => {
+  const handleCOASelect = (selectedData) => {
     if (selectedData && selectedData.length > 0 && currentRowIndex !== null) {
-      const selectedAccount = selectedData[0]; 
-      
+      const selectedAccount = selectedData[0];
+
       const updatedRowData = [...rowData];
       updatedRowData[currentRowIndex] = {
         ...updatedRowData[currentRowIndex],
         accountCode: selectedAccount.account_code,
         accountName: selectedAccount.account_name,
       };
-      
+
       setRowData(updatedRowData);
     }
   };
 
   const handleAddRow = () => {
     const newRow = {
-      accountCode: '', 
-      accountName: '', 
-      description: '', 
-      drCrFlag: 'Dr', 
-      amount: '', 
+      accountCode: '',
+      accountName: '',
+      description: '',
+      drCrFlag: 'Dr',
+      amount: '',
       costCenter: 'Select'
     };
     setRowData([...rowData, newRow]);
@@ -223,7 +304,7 @@ const handleCOASelect = (selectedData) => {
       } else {
         setRowData(updatedRowData);
       }
-      setTimeout(calculateTotals, 50); 
+      setTimeout(calculateTotals, 50);
     }
   };
 
@@ -232,19 +313,19 @@ const handleCOASelect = (selectedData) => {
     { headerName: 'Account Code', field: 'accountCode', minWidth: 160, cellRenderer: accountCodeRenderer },
     { headerName: 'Account Name', field: 'accountName', minWidth: 180, editable: true },
     { headerName: 'Description (Remarks)', field: 'description', minWidth: 200, editable: true },
-    { 
-      headerName: 'Dr/Cr', 
-      field: 'drCrFlag', 
-      minWidth: 90, 
+    {
+      headerName: 'Dr/Cr',
+      field: 'drCrFlag',
+      minWidth: 90,
       editable: true,
       cellEditor: 'agSelectCellEditor',
       cellEditorParams: { values: ['Dr', 'Cr'] }
     },
     { headerName: 'Amount (₹)', field: 'amount', type: 'rightAligned', minWidth: 120, editable: true },
-    { 
-      headerName: 'Cost Center', 
-      field: 'costCenter', 
-      minWidth: 130, 
+    {
+      headerName: 'Cost Center',
+      field: 'costCenter',
+      minWidth: 130,
       editable: true,
       cellEditor: 'agSelectCellEditor',
       cellEditorParams: { values: costCenterOptions }
@@ -290,8 +371,8 @@ const handleCOASelect = (selectedData) => {
         company_code: companyCode,
         location_code: locationCode,
         jv_date: voucherDate,
-        fin_year: "", 
-        fin_period: "", 
+        fin_year: "",
+        fin_period: "",
         voucher_type: voucherType?.value,
         currency: currency?.value,
         exch_rate: Number(exchangeRate),
@@ -401,18 +482,18 @@ const handleCOASelect = (selectedData) => {
 
           if (response.ok) {
             await fetch(`${config.apiBaseUrl}/deleteJournalVoucherDetailByJvNo`, {
-               method: "POST",
-               headers: { "Content-Type": "application/json" },
-               body: JSON.stringify({ company_code: companyCode, jv_no: voucherNo })
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ company_code: companyCode, jv_no: voucherNo })
             });
 
             await saveJournalVoucherDetails(voucherNo, validRows);
-            
 
-          if (Screens === "Authorized") {
-          await InvoiceFsPosting(voucherNo);
-        }
-         toast.success(`Journal Voucher Data ${selectedscreens?.value || "Updated"} Successfully`);
+
+            if (Screens === "Authorized") {
+              await InvoiceFsPosting(voucherNo);
+            }
+            toast.success(`Journal Voucher Data ${selectedscreens?.value || "Updated"} Successfully`);
           } else {
             const errorResponse = await response.json();
             toast.error("Error updating data: " + errorResponse.message);
@@ -477,7 +558,7 @@ const handleCOASelect = (selectedData) => {
   // Centralized Fetch Function
   const handleJVSelect = async (selectedVoucherNo) => {
     if (!selectedVoucherNo) return;
-    
+
     setLoading(true);
     try {
       const response = await fetch(`${config.apiBaseUrl}/getJVData`, {
@@ -495,10 +576,10 @@ const handleCOASelect = (selectedData) => {
         const searchData = await response.json();
         // Exact match filter to avoid partial SQL matches
         const data = searchData.filter(item => item.jv_no === selectedVoucherNo);
-        
+
         if (data && data.length > 0) {
-          const header = data[0]; 
-          
+          const header = data[0];
+
           setVoucherNo(header.jv_no || "");
           setVoucherDate(header.jv_date ? new Date(header.jv_date).toISOString().split('T')[0] : "");
           setVoucherType({ label: header.voucher_type, value: header.voucher_type });
@@ -506,13 +587,13 @@ const handleCOASelect = (selectedData) => {
           setExchangeRate(header.exch_rate || 1);
           setRefNo(header.reference_no || "");
           setNarration(header.hdr_narration || "");
-          
+
           const matchedScreen = filteredOptionScreens.find(opt => opt.value === header.status);
           if (matchedScreen) setSelectedscreens(matchedScreen);
 
           const detailsGridRows = data.map((item) => ({
             accountCode: item.account_no || '',
-            accountName: item.account_name || '', 
+            accountName: item.account_name || '',
             description: item.dtl_remarks || '',
             drCrFlag: item.drcr_flag || 'Dr',
             amount: item.tran_amount || 0,
@@ -523,6 +604,7 @@ const handleCOASelect = (selectedData) => {
           setTimeout(calculateTotals, 100);
           setOpenJVPopup(false); // Close popup if it was open
           toast.success("Journal Voucher Fetched Successfully");
+          await fetchFSPostingData(selectedVoucherNo);
         } else {
           toast.warning("Voucher Number not found");
           handleReload();
@@ -546,10 +628,48 @@ const handleCOASelect = (selectedData) => {
     }
   };
 
+  const fetchFSPostingData = async (transactionNo) => {
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/get_fs_post_data`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
+            location_code: sessionStorage.getItem("selectedLocationCode"),
+            Tran_type: transactionNo,
+            Tran_no: "JV",
+          }),
+        }
+      );
+
+      if (response.status === 404) {
+        setPostingRowData([]);
+        return;
+      }
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to fetch FS Posting");
+      }
+
+      const postingData = await response.json();
+
+      setPostingRowData(postingData);
+
+    } catch (error) {
+      console.error("FS Posting Fetch Error:", error);
+      setPostingRowData([]);
+      toast.error(error.message || "Failed to fetch FS Posting");
+    }
+  };
+
   return (
     <div className="container-fluid Topnav-screen">
       <ToastContainer position="top-right" className="toast-design" theme="colored" />
-      
+
       {/* Top Header Section */}
       <div className="shadow-lg p-1 bg-body-tertiary rounded mb-2 mt-2">
         <div className="d-flex justify-content-between">
@@ -557,7 +677,7 @@ const handleCOASelect = (selectedData) => {
             <h1 align="left" className="purbut me-5 ms-2 mt-1">Journal Voucher</h1>
           </div>
           <div className="d-flex justify-content-end purbut me-3 align-items-center">
-            
+
             <div className="exp-form-floating mt-2" style={{ minWidth: '150px' }}>
               <Select
                 id="returnType"
@@ -571,15 +691,15 @@ const handleCOASelect = (selectedData) => {
                 styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
               />
             </div>
-            
+
             <savebutton className="purbut ms-3" title='Save / Update' onClick={handleMasterAction} disabled={loading}>
               <i className="fa-regular fa-floppy-disk"></i>
             </savebutton>
-            
+
             <printbutton className="purbut ms-3" title='Reload' onClick={handleReload}>
               <i className="fa-solid fa-arrow-rotate-right"></i>
             </printbutton>
-            
+
           </div>
         </div>
       </div>
@@ -587,7 +707,7 @@ const handleCOASelect = (selectedData) => {
       {/* Form Fields Section */}
       <div className="shadow-sm p-3 bg-white rounded pt-3 pb-2" align="left">
         <div className="row ms-1 me-1 mb-3">
-          
+
           <div className="col-md-2 mb-2">
             <div className="exp-form-floating">
               {/* <label>
@@ -597,19 +717,19 @@ const handleCOASelect = (selectedData) => {
                 Voucher No<span className="text-danger">*</span>
               </label>
               <div className="d-flex justify-content-end position-relative">
-                <input 
-                  type="text" 
-                  className="exp-input-field form-control bg-light" 
-                  value={voucherNo} 
+                <input
+                  type="text"
+                  className="exp-input-field form-control"
+                  value={voucherNo}
                   onChange={(e) => setVoucherNo(e.target.value)}
                   onKeyPress={handleKeyPressVoucherNo}
-                  placeholder="" 
+                  placeholder=""
                   autoComplete="off"
                 />
                 <div className="position-absolute mt-1 me-2">
-                  <span 
-                    className="icon searchIcon" 
-                    style={{ cursor: "pointer" }} 
+                  <span
+                    className="icon searchIcon"
+                    style={{ cursor: "pointer" }}
                     title="Search Voucher"
                     onClick={() => setOpenJVPopup(true)}
                   >
@@ -619,7 +739,7 @@ const handleCOASelect = (selectedData) => {
               </div>
             </div>
           </div>
-          
+
           <div className="col-md-2 mb-2">
             <div className="exp-form-floating">
               {/* <label>Voucher Date <span className="text-danger">*</span></label> */}
@@ -631,17 +751,17 @@ const handleCOASelect = (selectedData) => {
           <div className="col-md-2 mb-2">
             <div className="exp-form-floating">
               <label>Voucher Type</label>
-              <Select 
-                className="exp-input-field" 
-                classNamePrefix="react-select" 
-                value={voucherType} 
-                onChange={setVoucherType} 
-                options={voucherTypeOptions} 
+              <Select
+                className="exp-input-field"
+                classNamePrefix="react-select"
+                value={voucherType}
+                onChange={setVoucherType}
+                options={voucherTypeOptions}
                 isClearable
               />
             </div>
           </div>
-          
+
           <div className="col-md-2 mb-2">
             <div className="exp-form-floating">
               <label>Reference No</label>
@@ -652,12 +772,12 @@ const handleCOASelect = (selectedData) => {
           <div className="col-md-2 mb-2">
             <div className="exp-form-floating">
               <label>Currency</label>
-              <Select 
-                className="exp-input-field" 
-                classNamePrefix="react-select" 
-                value={currency} 
-                onChange={setCurrency} 
-                options={currencyOptions} 
+              <Select
+                className="exp-input-field"
+                classNamePrefix="react-select"
+                value={currency}
+                onChange={setCurrency}
+                options={currencyOptions}
                 isClearable
               />
             </div>
@@ -666,12 +786,12 @@ const handleCOASelect = (selectedData) => {
           <div className="col-md-2 mb-2">
             <div className="exp-form-floating">
               <label>Exchange Rate</label>
-              <input 
-                type="number" 
+              <input
+                type="number"
                 step="0.01"
-                className="exp-input-field form-control" 
-                value={exchangeRate} 
-                onChange={(e) => setExchangeRate(e.target.value)} 
+                className="exp-input-field form-control"
+                value={exchangeRate}
+                onChange={(e) => setExchangeRate(e.target.value)}
               />
             </div>
           </div>
@@ -690,10 +810,10 @@ const handleCOASelect = (selectedData) => {
 
       {/* AG-Grid Section */}
       <div className="shadow-sm p-3 mt-3 bg-white rounded" align="left">
-        
+
         <div className="d-flex justify-content-between mb-2 align-items-center">
           <h5 className="mb-0 text-secondary">Line Items</h5>
-          
+
           <div className="d-flex justify-content-end align-items-center" style={{ marginRight: "15px" }}>
             <icon
               type="button"
@@ -704,7 +824,7 @@ const handleCOASelect = (selectedData) => {
             >
               <FontAwesomeIcon icon={faPlus} />
             </icon>
-            
+
             <icon
               type="button"
               className="popups-btn m-0"
@@ -718,7 +838,7 @@ const handleCOASelect = (selectedData) => {
         </div>
 
         <div className="ag-theme-alpine" style={{ height: 250, width: "100%" }}>
-          <AgGridReact 
+          <AgGridReact
             ref={gridRef}
             rowData={rowData}
             columnDefs={columnDefs}
@@ -749,18 +869,69 @@ const handleCOASelect = (selectedData) => {
           </div>
         </div>
       </div>
-      
+
+      <div
+        className="shadow-lg p-2 bg-body-tertiary rounded mt-2 pt-2 pb-2"
+        align="left"
+      >
+        <div className="d-flex justify-content-between align-items-center">
+          <div className="d-flex align-items-center ms-3">
+            <h6 className="mb-0 fw-bold">
+              Account Posting & Affected Screens Details
+            </h6>
+          </div>
+          <div className="d-flex me-4">
+            <icon
+              type="button"
+              className="popups-btn"
+              title={
+                showPostingGrid
+                  ? "Hide Posting Details"
+                  : "Show Posting Details"
+              }
+              onClick={() => setShowPostingGrid(!showPostingGrid)}
+              style={{ cursor: "pointer" }}
+            >
+              <FontAwesomeIcon icon={showPostingGrid ? faMinus : faPlus} />
+            </icon>
+          </div>
+        </div>
+
+        {showPostingGrid && (
+          <div className="mt-3">
+            <div
+              className="ag-theme-alpine"
+              style={{ height: 350, width: "100%" }}
+            >
+              <AgGridReact
+                columnDefs={columnDefsPosting}
+                rowData={postingRowData}
+                defaultColDef={{
+                  editable: false,
+                  resizable: true,
+                  filter: true,
+                  sortable: true,
+                }}
+                animateRows={true}
+                headerHeight={28}
+                rowHeight={25}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Chart of Accounts Popup Component */}
-      <COAPopup 
-        open={openCOAPopup} 
-        handleClose={() => setOpenCOAPopup(false)} 
-        handleCOASelect={handleCOASelect} 
+      <COAPopup
+        open={openCOAPopup}
+        handleClose={() => setOpenCOAPopup(false)}
+        handleCOASelect={handleCOASelect}
       />
 
-      <JVPopup 
-        open={openJVPopup} 
-        handleClose={() => setOpenJVPopup(false)} 
-        handleJVSelect={handleJVSelect} 
+      <JVPopup
+        open={openJVPopup}
+        handleClose={() => setOpenJVPopup(false)}
+        handleJVSelect={handleJVSelect}
       />
 
     </div>
