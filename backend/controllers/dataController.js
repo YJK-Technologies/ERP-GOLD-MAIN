@@ -34142,7 +34142,7 @@ const get_fs_post_data = async (req, res) => {
       .input("location_code", sql.NVarChar, location_code)
       .input("Tran_type", sql.NVarChar, Tran_type)
       .input("Tran_no", sql.NVarChar, Tran_no)
-      .query(`EXEC sp_fs_postings @mode,@company_code,@location_code,'','',@Tran_type,@Tran_no,'','','','','','',0,0,'',0,'',NULL,'',NULL`);
+      .query(`EXEC sp_fs_postings_test @mode,@company_code,@location_code,'','',@Tran_type,@Tran_no,'','','','','','',0,0,'',0,'',NULL,'',NULL`);
 
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset); 
