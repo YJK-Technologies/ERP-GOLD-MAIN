@@ -292,8 +292,8 @@ function CustomerReceipts() {
           body: JSON.stringify({
             company_code: sessionStorage.getItem("selectedCompanyCode"),
             location_code: sessionStorage.getItem("selectedLocationCode"),
-            Tran_type: transactionNo,
-            Tran_no: "CR",
+            Tran_type: "CR",
+            Tran_no: transactionNo,
           }),
         }
       );

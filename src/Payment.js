@@ -1305,7 +1305,7 @@ function Payment() {
           body: JSON.stringify({
             company_code: sessionStorage.getItem("selectedCompanyCode"),
             location_code: sessionStorage.getItem("selectedLocationCode"),
-            Tran_type: "GR",
+            Tran_type: "PY",
             Tran_no: transactionNo,
           }),
         }

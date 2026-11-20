@@ -2655,8 +2655,8 @@ function TaxInvoice() {
           body: JSON.stringify({
             company_code: sessionStorage.getItem("selectedCompanyCode"),
             location_code: sessionStorage.getItem("selectedLocationCode"),
-            Tran_type: transactionNo,
-            Tran_no: "IP",
+            Tran_type: "IP",
+            Tran_no: transactionNo,
           }),
         }
       );
