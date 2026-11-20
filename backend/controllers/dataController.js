@@ -34241,6 +34241,32 @@ const getBalanceSheetReport = async (req, res) => {
   }
 };
 
+const get_fs_post_data = async (req, res) => {
+  const { Tran_type, Tran_no, company_code, location_code } = req.body;
+  try {
+    // Connect to the database
+    const pool = await connection.connectToDatabase();
+    // Execute the query
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "GPT")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("Tran_type", sql.NVarChar, Tran_type)
+      .input("Tran_no", sql.NVarChar, Tran_no)
+      .query(`EXEC sp_fs_postings @mode,@company_code,@location_code,'','',@Tran_type,@Tran_no,'','','','','','',0,0,'',0,'',NULL,'',NULL`);
+    // Send response
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset); // 200 OK if data is found
+    } else {
+      res.status(404).json("Data not found"); // 404 Not Found if no data is found
+    }
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+
 module.exports = {
   login,
   forgetPassword,
@@ -35341,6 +35367,7 @@ module.exports = {
   addGroupMaster,
   getGroupTypeCode,
   getTrialBalanceReport,
-  getBalanceSheetReport
+  getBalanceSheetReport,
+  get_fs_post_data
 
 };
