@@ -3391,9 +3391,6 @@ function PurchaseOrder() {
         { fieldName: "Remarks", notes: remarks },
       ]);
 
-      await PODetailView(TransactionNo);
-      await POTax(TransactionNo);
-
       setHeaderRowData([
         {
           fieldName: "Vendor / Customer Code",
@@ -3447,6 +3444,11 @@ function PurchaseOrder() {
           shipTo: ShipToContactPerson,
         },
       ]);
+
+      await PODetailView(TransactionNo);
+      await POTax(TransactionNo);
+      await fetchFSPostingData(TransactionNo);
+
     } else {
       console.log("Data not fetched...!");
     }
