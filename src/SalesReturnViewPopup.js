@@ -182,6 +182,7 @@ export default function SalesRetrunView({ open, handleClose, handleDataView, sel
         body: JSON.stringify({
           bill_date: "",
           company_code: sessionStorage.getItem('selectedCompanyCode'),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           bill_no: "",
           return_no: "",
           dely_chlno: "",
@@ -240,7 +241,8 @@ export default function SalesRetrunView({ open, handleClose, handleDataView, sel
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ bill_date, company_code: sessionStorage.getItem('selectedCompanyCode'), bill_no, return_no, dely_chlno, sales_type: salesType, customer_code, customer_name, pay_type: payType, order_type })
+        body: JSON.stringify({ bill_date, company_code: sessionStorage.getItem('selectedCompanyCode'), 
+          location_code: sessionStorage.getItem("selectedLocationCode"),bill_no, return_no, dely_chlno, sales_type: salesType, customer_code, customer_name, pay_type: payType, order_type })
       });
       if (response.ok) {
         const searchData = await response.json();

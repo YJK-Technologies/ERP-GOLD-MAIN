@@ -679,6 +679,7 @@ function SalesReturn() {
     try {
       const Header = {
         company_code: sessionStorage.getItem('selectedCompanyCode'),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
         customer_name: customerName,
         customer_code: customerCode,
         return_date: return_date,
@@ -732,6 +733,7 @@ function SalesReturn() {
       for (const row of rowData) {
         const Details = {
           company_code: sessionStorage.getItem('selectedCompanyCode'),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           return_no: new_running_no,
           ItemSNo: row.serialNumber,
           bill_date: billDate,
@@ -790,6 +792,7 @@ function SalesReturn() {
         for (const taxRow of matchingTaxRows) {
           const Details = {
             company_code: sessionStorage.getItem('selectedCompanyCode'),
+            location_code: sessionStorage.getItem("selectedLocationCode"),
             return_no: new_running_no,
             item_code: row.itemCode,
             item_name: row.itemName,
@@ -1131,7 +1134,9 @@ function SalesReturn() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ return_no: returnNo, company_code: sessionStorage.getItem('selectedCompanyCode') }),
+        body: JSON.stringify({ return_no: returnNo, company_code: sessionStorage.getItem('selectedCompanyCode'),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
+         }),
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -2008,6 +2013,7 @@ function SalesReturn() {
           body: JSON.stringify({
             return_no: return_no,
             company_code: sessionStorage.getItem("selectedCompanyCode"),
+            location_code: sessionStorage.getItem("selectedLocationCode"),
             authroization_status: selectedStatus.value
           })
         }
@@ -2048,6 +2054,7 @@ function SalesReturn() {
           body: JSON.stringify({
             return_no: return_no,
             company_code: sessionStorage.getItem("selectedCompanyCode"),
+            location_code: sessionStorage.getItem("selectedLocationCode"),
             authroization_status: selectedStatus.value
           })
         }
@@ -2088,6 +2095,7 @@ function SalesReturn() {
           body: JSON.stringify({
             return_no: return_no,
             company_code: sessionStorage.getItem("selectedCompanyCode"),
+            location_code: sessionStorage.getItem("selectedLocationCode"),
             authroization_status: selectedStatus.value
           })
         }
