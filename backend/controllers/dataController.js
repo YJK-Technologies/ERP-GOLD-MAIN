@@ -33751,36 +33751,20 @@ const getJournalVoucherDetailData = async (req, res) => {
 
 // Node.js API Controller
 const getCOAData = async (req, res) => {
-  const {
-    company_code, location_code, account_code, account_name,
-    account_group, account_class
-  } = req.body;
+  const { company_code, location_code, account_code, account_name, account_group, account_class } = req.body;
 
   try {
-    const pool = await connection.connectToDatabase(); // Adjust based on your db config
-    const result = await pool.request()
+    const pool = await connection.connectToDatabase(); 
+    const result = await pool
+      .request()
       .input("mode", sql.NVarChar, "SC")
       .input("account_code", sql.NVarChar, account_code || '')
       .input("account_name", sql.NVarChar, account_name || '')
       .input("account_group", sql.NVarChar, account_group || '')
       .input("account_class", sql.NVarChar, account_class || '')
-      .input("report_section", sql.NVarChar, '')
-      .input("report_line", sql.NVarChar, '')
-      .input("report_type", sql.NVarChar, '')
-      .input("currency_code", sql.NVarChar, '')
-      .input("iscontrolaccount", sql.Bit, null)
-      .input("isbankaccount", sql.Bit, null)
-      .input("allowmanualposting", sql.Bit, null)
-      .input("effectivefrom", sql.Date, null)
-      .input("effectiveto", sql.Date, null)
-      .input("status", sql.NVarChar, '')
       .input("company_code", sql.NVarChar, company_code)
       .input("location_code", sql.NVarChar, location_code)
-      .input("created_by", sql.NVarChar, '')
-      .input("created_date", sql.Date, null)
-      .input("modified_by", sql.NVarChar, '')
-      .input("modified_date", sql.Date, null)
-      .query(`EXEC sp_chart_of_accounts_hdr 'SC',@account_code,@account_name,@account_group,@account_class,@report_section,@report_line,@report_type,@currency_code,@iscontrolaccount,@isbankaccount,@allowmanualposting,@effectivefrom,@effectiveto,@status,@company_code,@location_code,@created_by,@created_date,@modified_by,@modified_date`);
+      .query(`EXEC sp_chart_of_accounts_hdr @mode,@account_code,@account_name,@account_group,@account_class,'','','','',0,0,0,NULL,NULL,'',@company_code,@location_code,'','','',''`);
 
     if (result.recordset && result.recordset.length > 0) {
       res.status(200).json(result.recordset);
@@ -33796,7 +33780,7 @@ const getCOAData = async (req, res) => {
 
 //Code Added By Pavun on 07-11-2026
 const InvoiceFsPosting = async (req, res) => {
-  const { Tran_type, Tran_no, Tran_date, modified_by, company_code, location_code,created_by } = req.body;
+  const { Tran_type, Tran_no, Tran_date, modified_by, company_code, location_code,VendCust_code,created_by } = req.body;
 
   try {
     const pool = await sql.connect(dbConfig);
@@ -33805,12 +33789,13 @@ const InvoiceFsPosting = async (req, res) => {
       .input("mode", sql.NVarChar, "I")
       .input("company_code", sql.NVarChar, company_code)
       .input("location_code", sql.NVarChar, location_code)
+      .input("VendCust_code", sql.NVarChar, VendCust_code)
       .input("Tran_type", sql.NVarChar, Tran_type)
       .input("Tran_no", sql.NVarChar, Tran_no)
       .input("Tran_date", sql.Date, Tran_date)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
-      .query(`EXEC sp_fs_postings @mode,@company_code,@location_code,'','',@Tran_type,@Tran_no,@Tran_date,'Posted','','','','INR',0,0,'',NULL,@created_by,NULL,@modified_by,NULL`);
+      .query(`EXEC sp_fs_postings_test @mode,@company_code,@location_code,'','',@Tran_type,@Tran_no,@Tran_date,'Posted','',@VendCust_code,'','INR',0,0,'',NULL,@created_by,NULL,@modified_by,NULL`);
 
     res.status(200).json("Invoice Posting Successfully");
   } catch (err) {
@@ -34266,6 +34251,30 @@ const getBalanceSheetReport = async (req, res) => {
     res.status(500).json({
       message: err.message || "Internal Server Error"
     });
+  }
+};
+
+const get_fs_post_data = async (req, res) => {
+  const { Tran_type, Tran_no, company_code, location_code } = req.body;
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "GPT")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .input("Tran_type", sql.NVarChar, Tran_type)
+      .input("Tran_no", sql.NVarChar, Tran_no)
+      .query(`EXEC sp_fs_postings @mode,@company_code,@location_code,'','',@Tran_type,@Tran_no,'','','','','','',0,0,'',0,'',NULL,'',NULL`);
+
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset); 
+    } else {
+      res.status(404).json("Data not found");
+    }
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
   }
 };
 
@@ -35369,6 +35378,7 @@ module.exports = {
   addGroupMaster,
   getGroupTypeCode,
   getTrialBalanceReport,
-  getBalanceSheetReport
+  getBalanceSheetReport,
+  get_fs_post_data
 
 };

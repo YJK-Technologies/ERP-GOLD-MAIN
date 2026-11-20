@@ -121,155 +121,84 @@ function Payment() {
 
   const [amount, setAmount] = useState(0);
 
-  // --- ACCOUNT POSTING & SCREEN IMPACT STATES ---
   const [showPostingGrid, setShowPostingGrid] = useState(false);
 
-  const [postingRowData, setPostingRowData] = useState([
-    // 1. Screens directly affected by a Payment
-    {
-      serialNumber: 1,
-      category: "Direct Impact",
-      screen: "Payment",
-      impact: "Direct",
-      description: "Stores the payment header, payment details, account, party and amount.",
-    },
-    {
-      serialNumber: 2,
-      category: "Direct Impact",
-      screen: "Chart of Accounts",
-      impact: "Direct / balance impact",
-      description: "The selected bank, cash, supplier or customer ledger accounts are used for accounting entries. The account master itself normally is not modified.",
-    },
-    {
-      serialNumber: 3,
-      category: "Direct Impact",
-      screen: "Journal",
-      impact: "Accounting impact",
-      description: "The payment should generate debit and credit entries in the accounting ledger. A separate Journal screen may or may not be used to display them.",
-    },
-    {
-      serialNumber: 4,
-      category: "Direct Impact",
-      screen: "Purchase",
-      impact: "Outstanding impact",
-      description: "When paying a supplier against a purchase invoice, its outstanding balance decreases.",
-    },
-    {
-      serialNumber: 5,
-      category: "Direct Impact",
-      screen: "Invoice",
-      impact: "Outstanding impact",
-      description: "When a payment settles an invoice, the amount due should decrease. This depends on whether Invoice represents a sales invoice, purchase invoice, or both in your ERP.",
-    },
-    // 2. Other screens affected depending on the transaction
-    {
-      serialNumber: 6,
-      category: "Conditional Impact",
-      screen: "Debit / Credit Note",
-      impact: "Conditional (Allocation)",
-      description: "If the payment settles an amount arising from a debit or credit note, according to your allocation rules.",
-    },
-    {
-      serialNumber: 7,
-      category: "Conditional Impact",
-      screen: "Purchase Return",
-      impact: "Conditional (Supplier Refund)",
-      description: "If a supplier refund or adjustment relates to a purchase return.",
-    },
-    {
-      serialNumber: 8,
-      category: "Conditional Impact",
-      screen: "Sales Return",
-      impact: "Conditional (Customer Refund)",
-      description: "If a customer refund or adjustment relates to a sales return.",
-    },
-    {
-      serialNumber: 9,
-      category: "Conditional Impact",
-      screen: "Pending Customer",
-      impact: "Conditional (Customer Balance)",
-      description: "If this screen tracks customer outstanding balances and the payment is a customer receipt or refund.",
-    },
-    {
-      serialNumber: 10,
-      category: "Conditional Impact",
-      screen: "Standard Account",
-      impact: "Setup / Mapping",
-      description: "If this screen defines standard ledger mappings used to determine the accounts for payment postings. Normally, no record is inserted here for each payment.",
-    },
-    {
-      serialNumber: 11,
-      category: "Conditional Impact",
-      screen: "User Account Group",
-      impact: "Permissions Only",
-      description: "Only if it controls the user's permissions or account access; a normal payment does not modify its data.",
-    },
-    {
-      serialNumber: 12,
-      category: "Conditional Impact",
-      screen: "Base Account",
-      impact: "Classification",
-      description: "Usually no direct change. It may influence account classification or ledger setup.",
-    },
-    {
-      serialNumber: 13,
-      category: "Conditional Impact",
-      screen: "Asset Allocation",
-      impact: "Conditional (Asset Workflow)",
-      description: "Only if the payment is specifically associated with an asset purchase or allocation workflow.",
-    },
-  ]);
+  const [postingRowData, setPostingRowData] = useState([]);
 
   const columnDefsPosting = [
     {
       headerName: "S.No",
-      field: "serialNumber",
+      valueGetter: (params) => params.node.rowIndex + 1,
       maxWidth: 80,
-      sortable: false,
-      editable: false,
     },
     {
-      headerName: "Effect Type",
-      field: "category",
-      minWidth: 160,
-      maxWidth: 180,
-      filter: true,
-      sortable: true,
-      editable: false,
+      headerName: "Financial Year",
+      field: "Fin_year",
+      minWidth: 130,
+    },
+    {
+      headerName: "Financial Period",
+      field: "Fin_period",
+      minWidth: 130,
+    },
+    {
+      headerName: "Transaction Type",
+      field: "Tran_type",
+      minWidth: 120,
+    },
+    {
+      headerName: "Transaction No",
+      field: "Tran_no",
+      minWidth: 170,
+    },
+    {
+      headerName: "Transaction Date",
+      field: "Transaction_date",
+      minWidth: 130,
+    },
+    {
+      headerName: "Posting Status",
+      field: "Posting_status",
+      minWidth: 120,
+    },
+    {
+      headerName: "Dr / Cr",
+      field: "DrCr_flag",
+      minWidth: 100,
       cellStyle: (params) => ({
-        fontWeight: "600",
-        color: params.value === "Direct Impact" ? "#0d6efd" : "#6c757d",
+        fontWeight: "bold",
+        color: params.value === "Dr" ? "#198754" : "#dc3545",
       }),
     },
     {
-      headerName: "Screen",
-      field: "screen",
-      minWidth: 180,
-      maxWidth: 220,
-      filter: true,
-      sortable: true,
-      editable: false,
-      cellStyle: { fontWeight: "bold" },
+      headerName: "Account Code",
+      field: "account_no",
+      minWidth: 150,
     },
     {
-      headerName: "Impact / Trigger",
-      field: "impact",
-      minWidth: 220,
-      maxWidth: 260,
-      filter: true,
-      sortable: true,
-      editable: false,
+      headerName: "Cost Center",
+      field: "cost_center",
+      minWidth: 120,
     },
     {
-      headerName: "Reason / When it is affected",
-      field: "description",
+      headerName: "Base Amount",
+      field: "base_amount",
+      minWidth: 130,
+      valueFormatter: (params) =>
+        Number(params.value || 0).toFixed(2),
+    },
+    {
+      headerName: "Transaction Amount",
+      field: "tran_amount",
+      minWidth: 150,
+      valueFormatter: (params) =>
+        Number(params.value || 0).toFixed(2),
+    },
+    {
+      headerName: "Remarks",
+      field: "remarks",
+      minWidth: 300,
       flex: 1,
-      minWidth: 350,
-      filter: true,
-      sortable: false,
-      editable: false,
-      wrapText: true,
-      autoHeight: true,
     },
   ];
 
@@ -460,20 +389,20 @@ function Payment() {
 
   // For permission-based filtering of screens, we can filter the screensDrop array based on the user's permissions. If the user has 'all permission', they can see all options. Otherwise, we check if the specific option is included in their permissions.
   const filteredOptionScreens = screensDrop
-  .filter((option) => {
-    // Convert the backend option to lowercase to match the PaymentPermission array
-    const optionName = option.attributedetails_name.toLowerCase();
-    
-    // Check if the user has 'all permission' or the specific right (e.g., 'add', 'delete')
-    return (
-      PaymentPermission.includes('all permission') || 
-      PaymentPermission.includes(optionName)
-    );
-  })
-  .map((option) => ({
-    value: option.descriptions,
-    label: option.attributedetails_name,
-  }));
+    .filter((option) => {
+      // Convert the backend option to lowercase to match the PaymentPermission array
+      const optionName = option.attributedetails_name.toLowerCase();
+
+      // Check if the user has 'all permission' or the specific right (e.g., 'add', 'delete')
+      return (
+        PaymentPermission.includes('all permission') ||
+        PaymentPermission.includes(optionName)
+      );
+    })
+    .map((option) => ({
+      value: option.descriptions,
+      label: option.attributedetails_name,
+    }));
 
   const filteredOptionPartyType = partyTypeDrop.map((opt) => ({
     value: opt.attributedetails_name,
@@ -512,7 +441,7 @@ function Payment() {
     setBankCashAccount(selectedOption ? selectedOption.value : "");
   };
 
-    const handleChangeScreens = (selected) => {
+  const handleChangeScreens = (selected) => {
     setSelectedscreens(selected);
     setScreens(selected.value);
   };
@@ -866,7 +795,7 @@ function Payment() {
     // NEW STRICT CHECK: Block over-payment instantly in the UI
     if (newValue > params.data.Outstanding_Amount) {
       toast.warning(`Adjustment amount cannot exceed the outstanding balance (₹${params.data.Outstanding_Amount})!`);
-      return false; 
+      return false;
     }
 
     params.data.Adjust_Amount = newValue;
@@ -1055,19 +984,19 @@ function Payment() {
     },
   ];
 
-    const handleMasterAction = () => {
-      // screens variable-il current selected value irukum
-      if (Screens === "Draft") {
-        handleSaveButtonClick();
-      } else if (Screens && Screens.trim() !== "") {
-        // Draft illama vera entha status irunthalum update function call aagum
-        handleUpdateButtonClick();
-      } else {
-        toast.warning(
-          "Please select a valid transaction event from the dropdown.",
-        );
-      }
-    };
+  const handleMasterAction = () => {
+    // screens variable-il current selected value irukum
+    if (Screens === "Draft") {
+      handleSaveButtonClick();
+    } else if (Screens && Screens.trim() !== "") {
+      // Draft illama vera entha status irunthalum update function call aagum
+      handleUpdateButtonClick();
+    } else {
+      toast.warning(
+        "Please select a valid transaction event from the dropdown.",
+      );
+    }
+  };
 
   // 1. Header Field Validation
   const handleSaveButtonClick = async () => {
@@ -1298,16 +1227,10 @@ function Payment() {
 
         setPartyCode(savedPartyCode);
         setPartyName(savedPartyCode);
-
         setPartyName(headerItem.Party_ID || "");
-
-        setTransactionDate(
-          headerItem.Payment_Date ? formatDate(headerItem.Payment_Date) : "",
-        );
-
+        setTransactionDate(headerItem.Payment_Date ? formatDate(headerItem.Payment_Date) : "");
         setTransactionNumber(headerItem.Payment_ID || "");
         setPaymentMode(headerItem.Payment_Mode || "");
-
         setSelectedPaymentMode(
           headerItem.Payment_Mode
             ? {
@@ -1316,9 +1239,7 @@ function Payment() {
             }
             : null,
         );
-
         setBankCashAccount(headerItem.Account_ID ?? "");
-
         setSelectedBankCashAccount(
           headerItem.Account_ID != null
             ? {
@@ -1327,15 +1248,12 @@ function Payment() {
             }
             : null,
         );
-
         setRefTransactionNumber(headerItem.Reference_No || "");
-
         setRefTransactionDate(
           headerItem.Reference_Date
             ? formatDate(headerItem.Reference_Date)
             : "",
         );
-
         setAmount(headerItem.Amount ?? 0);
         setNarration(headerItem.Narration || "");
         setKeyfieldHeader(headerItem.Keyfield || "");
@@ -1367,11 +1285,50 @@ function Payment() {
       }));
 
       setRowDataTax(taxRows);
+      await fetchFSPostingData(code);
     } catch (error) {
       console.error("Error fetching Payment data:", error);
       toast.error(error.message || "Failed to fetch payment data");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchFSPostingData = async (transactionNo) => {
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/get_fs_post_data`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            company_code: sessionStorage.getItem("selectedCompanyCode"),
+            location_code: sessionStorage.getItem("selectedLocationCode"),
+            Tran_type: transactionNo,
+            Tran_no: "GR",
+          }),
+        }
+      );
+
+      if (response.status === 404) {
+        setPostingRowData([]);
+        return;
+      }
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to fetch FS Posting");
+      }
+
+      const postingData = await response.json();
+
+      setPostingRowData(postingData);
+
+    } catch (error) {
+      console.error("FS Posting Fetch Error:", error);
+      setPostingRowData([]);
+      toast.error(error.message || "Failed to fetch FS Posting");
     }
   };
 
@@ -1444,39 +1401,39 @@ function Payment() {
     XLSX.writeFile(workbook, fileName);
   };
 
-    const InvoiceFsPosting = async (transactionNumber) => {
-      try {
-        const Header = {
-          company_code: sessionStorage.getItem("selectedCompanyCode"),
-          location_code: sessionStorage.getItem('selectedLocationCode'),
-          Tran_type: "PY",
-          Tran_no: transactionNumber,
-          Tran_date: transactionDate,
-          created_by: sessionStorage.getItem("selectedUserCode"),
-          modified_by: sessionStorage.getItem("selectedUserCode"),
-        };
-  
-        const response = await fetch(`${config.apiBaseUrl}/InvoiceFsPosting`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(Header),
-        });
-  
-        if (response.ok) {
-          console.log("Invoice Posting Successfully");
-        } else {
-          const errorResponse = await response.json();
-          console.error(errorResponse.message);
-          toast.error("Error inserting data" + errorResponse.message);
-        }
-      } catch (error) {
-        console.error("Error inserting data:", error);
-        toast.error("Error inserting data: " + error.message);
-      } finally {
-        setLoading(false);
+  const InvoiceFsPosting = async (transactionNumber) => {
+    try {
+      const Header = {
+        company_code: sessionStorage.getItem("selectedCompanyCode"),
+        location_code: sessionStorage.getItem('selectedLocationCode'),
+        Tran_type: "PY",
+        Tran_no: transactionNumber,
+        Tran_date: transactionDate,
+        created_by: sessionStorage.getItem("selectedUserCode"),
+        modified_by: sessionStorage.getItem("selectedUserCode"),
+      };
+
+      const response = await fetch(`${config.apiBaseUrl}/InvoiceFsPosting`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(Header),
+      });
+
+      if (response.ok) {
+        console.log("Invoice Posting Successfully");
+      } else {
+        const errorResponse = await response.json();
+        console.error(errorResponse.message);
+        toast.error("Error inserting data" + errorResponse.message);
       }
+    } catch (error) {
+      console.error("Error inserting data:", error);
+      toast.error("Error inserting data: " + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleUpdateButtonClick = async () => {
@@ -1676,29 +1633,29 @@ function Payment() {
 
   return (
     <div>
-        <div className="container-fluid Topnav-screen">
-          {loading && <LoadingScreen />}
-          <ToastContainer position="top-right" className="toast-design" theme="colored" />
-          <div className="shadow-lg p-2 bg-body-tertiary rounded mb-2 mt-2">
-            <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
-              <div className="d-flex align-items-center">
-                <h1 className="purbut">Payment</h1>
+      <div className="container-fluid Topnav-screen">
+        {loading && <LoadingScreen />}
+        <ToastContainer position="top-right" className="toast-design" theme="colored" />
+        <div className="shadow-lg p-2 bg-body-tertiary rounded mb-2 mt-2">
+          <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div className="d-flex align-items-center">
+              <h1 className="purbut">Payment</h1>
+            </div>
+            <div className="d-flex align-items-center gap-2 purbut">
+              <div className="exp-form-floating" style={{ minWidth: "160px" }} title="Select Screen Action" >
+                <Select
+                  id="returnType"
+                  className="exp-input-field"
+                  classNamePrefix="react-select"
+                  value={selectedscreens}
+                  onChange={handleChangeScreens}
+                  options={filteredOptionScreens}
+                  styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }), }}
+                />
               </div>
-              <div className="d-flex align-items-center gap-2 purbut">
-                <div className="exp-form-floating" style={{ minWidth: "160px" }} title="Select Screen Action" >
-                  <Select
-                    id="returnType"
-                    className="exp-input-field"
-                    classNamePrefix="react-select"
-                    value={selectedscreens}
-                    onChange={handleChangeScreens}
-                    options={filteredOptionScreens}
-                    styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }), }}
-                  />
-                </div>
 
-                {/* Commented for removing permission check for save button, as per the requirement. */}
-                {/* {saveButtonVisible &&
+              {/* Commented for removing permission check for save button, as per the requirement. */}
+              {/* {saveButtonVisible &&
                   ["add", "all permission"].some((permission) =>
                     PaymentPermission.includes(permission),
                   ) && (
@@ -1712,12 +1669,12 @@ function Payment() {
                     </savebutton>
                   )} */}
 
-                {/* Added for removing permission check for save button, as per the requirement. */}
-                <savebutton className="purbut" onClick={handleMasterAction} title="Save / Update">
-                  <i class="fa-regular fa-floppy-disk"></i>
-                </savebutton>
+              {/* Added for removing permission check for save button, as per the requirement. */}
+              <savebutton className="purbut" onClick={handleMasterAction} title="Save / Update">
+                <i class="fa-regular fa-floppy-disk"></i>
+              </savebutton>
 
-                    {/* <savebutton
+              {/* <savebutton
                       type="button"
                       className="purbut"
                       title="Save Note"
@@ -1752,172 +1709,62 @@ function Payment() {
                     </delbutton>
                   )} */}
 
-                {["all permission", "view"].some((permission) =>
-                    PaymentPermission.includes(permission),
-                  ) && (
-                    <printbutton
-                      type="button"
-                      className="purbut"
-                      title="Print PDF"
-                    >
-                      <i className="fa-solid fa-file-pdf"></i>
-                    </printbutton>
-                  )}
-
+              {["all permission", "view"].some((permission) =>
+                PaymentPermission.includes(permission),
+              ) && (
                   <printbutton
                     type="button"
                     className="purbut"
-                    title="Export Excel"
-                    onClick={handleExcelDownload}
+                    title="Print PDF"
                   >
-                    <i className="fa-solid fa-file-excel"></i>
+                    <i className="fa-solid fa-file-pdf"></i>
                   </printbutton>
+                )}
 
-                <printbutton
-                  type="button"
-                  className="purbut"
-                  title="Reload Page"
-                  onClick={handleReload}
-                >
-                  <i className="fa-solid fa-arrow-rotate-right"></i>
-                </printbutton>
-              </div>
+              <printbutton
+                type="button"
+                className="purbut"
+                title="Export Excel"
+                onClick={handleExcelDownload}
+              >
+                <i className="fa-solid fa-file-excel"></i>
+              </printbutton>
+
+              <printbutton
+                type="button"
+                className="purbut"
+                title="Reload Page"
+                onClick={handleReload}
+              >
+                <i className="fa-solid fa-arrow-rotate-right"></i>
+              </printbutton>
             </div>
           </div>
+        </div>
 
-          <div className="shadow-lg p-2 bg-body-tertiary rounded mb-2 mt-2">
-            <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
-              <div className="row ms-3 me-3">
-                <div className="col-md-6 form-group mb-2">
-                  <label htmlFor="transactionNumber">Transaction No</label>
-                  <div className="exp-form-floating">
-                    <div className="d-flex justify-content-end">
-                      <input
-                        id="transactionNumber"
-                        className="exp-input-field form-control"
-                        type="text"
-                        title="Enter Original Transaction Reference Number"
-                        value={transactionNumber}
-                        onChange={(e) => setTransactionNumber(e.target.value)}
-                        onKeyDown={handleTransactionNoKeyDown}
-                        maxLength={50}
-                        autoComplete="off"
-                      />
-                      <div className="position-absolute mt-1 me-2">
-                        <span
-                          className="icon searchIcon"
-                          title="Search Ref Transaction"
-                          onClick={handleDebitCreditNoteHelp}
-                        >
-                          <i className="fa fa-search"></i>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="col-md-6 form-group mb-2">
-                  <div className="exp-form-floating">
-                    <label htmlFor="transactionDate" className={`${error && !transactionDate ? "red" : ""}`} >
-                      Date<span className="text-danger">*</span>
-                    </label>
-                    <input
-                      name="transactionDate"
-                      id="transactionDate"
-                      className="exp-input-field form-control"
-                      type="date"
-                      title="Select Note Date"
-                      required
-                      min={financialYearStart}
-                      max={financialYearEnd}
-                      value={transactionDate}
-                      onChange={handleTransactionDateChange}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div
-            className="shadow-lg p-1 bg-body-tertiary rounded pt-3 pb-4"
-            align="left"
-          >
+        <div className="shadow-lg p-2 bg-body-tertiary rounded mb-2 mt-2">
+          <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
             <div className="row ms-3 me-3">
-              <div className="col-md-3 form-group mb-2">
-                <label
-                  htmlFor="paymentType"
-                  className={`${error && !paymentType ? "red" : ""}`}
-                >
-                  Payment Type<span className="text-danger">*</span>
-                </label>
-                <div className="exp-form-floating" title="Select Payment Type">
-                  <Select
-                    id="paymentType"
-                    value={selectedPaymentType}
-                    onChange={handleChangePaymentType}
-                    options={filteredOptionPaymentType}
-                    className="exp-input-field"
-                    classNamePrefix="react-select"
-                    styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }), }}
-                  />
-                </div>
-              </div>
-
-              <div className="col-md-3 form-group mb-2">
-                <label
-                  htmlFor="partyType"
-                  className={`${error && !partyType ? "red" : ""}`}
-                >
-                  Vendor / Customer Type<span className="text-danger">*</span>
-                </label>
-                <div
-                  className="exp-form-floating"
-                  title="Select Vendor / Customer Type"
-                >
-                  <Select
-                    id="partyType"
-                    value={selectedPartyType}
-                    onChange={handleChangePartyType}
-                    options={filteredOptionPartyType}
-                    className="exp-input-field"
-                    classNamePrefix="react-select"
-                    styles={{
-                      menu: (provided) => ({ ...provided, zIndex: 9999 }),
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className="col-md-3 form-group mb-2">
-                {/* <label
-                  htmlFor="partyCode"
-                  className={`${error && !partyCode ? "red" : ""}`}
-                >
-                  Vendor / Customer Code<span className="text-danger">*</span>
-                </label> */}
-                <label htmlFor="transactionNumber">Vendor / Customer Code</label>
-                <div
-                  className="exp-form-floating"
-                  title="Enter Vendor / Customer Code"
-                >
+              <div className="col-md-6 form-group mb-2">
+                <label htmlFor="transactionNumber">Transaction No</label>
+                <div className="exp-form-floating">
                   <div className="d-flex justify-content-end">
                     <input
-                      className="exp-input-field form-control justify-content-start"
-                      id="partyCode"
+                      id="transactionNumber"
+                      className="exp-input-field form-control"
                       type="text"
-                      value={partyCode}
-                      onChange={handlePartyCodeChange}
-                      onKeyPress={handlePartyCodeKeyPress}
-                      maxLength={18}
+                      title="Enter Original Transaction Reference Number"
+                      value={transactionNumber}
+                      onChange={(e) => setTransactionNumber(e.target.value)}
+                      onKeyDown={handleTransactionNoKeyDown}
+                      maxLength={50}
                       autoComplete="off"
-                      disabled={!partyType}
                     />
                     <div className="position-absolute mt-1 me-2">
                       <span
                         className="icon searchIcon"
-                        title="Search Vendor / Customer"
-                        onClick={handlePartyCodeSearch}
+                        title="Search Ref Transaction"
+                        onClick={handleDebitCreditNoteHelp}
                       >
                         <i className="fa fa-search"></i>
                       </span>
@@ -1926,331 +1773,441 @@ function Payment() {
                 </div>
               </div>
 
-              <div className="col-md-3 form-group mb-2">
-                {/* <label
+              <div className="col-md-6 form-group mb-2">
+                <div className="exp-form-floating">
+                  <label htmlFor="transactionDate" className={`${error && !transactionDate ? "red" : ""}`} >
+                    Date<span className="text-danger">*</span>
+                  </label>
+                  <input
+                    name="transactionDate"
+                    id="transactionDate"
+                    className="exp-input-field form-control"
+                    type="date"
+                    title="Select Note Date"
+                    required
+                    min={financialYearStart}
+                    max={financialYearEnd}
+                    value={transactionDate}
+                    onChange={handleTransactionDateChange}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          className="shadow-lg p-1 bg-body-tertiary rounded pt-3 pb-4"
+          align="left"
+        >
+          <div className="row ms-3 me-3">
+            <div className="col-md-3 form-group mb-2">
+              <label
+                htmlFor="paymentType"
+                className={`${error && !paymentType ? "red" : ""}`}
+              >
+                Payment Type<span className="text-danger">*</span>
+              </label>
+              <div className="exp-form-floating" title="Select Payment Type">
+                <Select
+                  id="paymentType"
+                  value={selectedPaymentType}
+                  onChange={handleChangePaymentType}
+                  options={filteredOptionPaymentType}
+                  className="exp-input-field"
+                  classNamePrefix="react-select"
+                  styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }), }}
+                />
+              </div>
+            </div>
+
+            <div className="col-md-3 form-group mb-2">
+              <label
+                htmlFor="partyType"
+                className={`${error && !partyType ? "red" : ""}`}
+              >
+                Vendor / Customer Type<span className="text-danger">*</span>
+              </label>
+              <div
+                className="exp-form-floating"
+                title="Select Vendor / Customer Type"
+              >
+                <Select
+                  id="partyType"
+                  value={selectedPartyType}
+                  onChange={handleChangePartyType}
+                  options={filteredOptionPartyType}
+                  className="exp-input-field"
+                  classNamePrefix="react-select"
+                  styles={{
+                    menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="col-md-3 form-group mb-2">
+              {/* <label
+                  htmlFor="partyCode"
+                  className={`${error && !partyCode ? "red" : ""}`}
+                >
+                  Vendor / Customer Code<span className="text-danger">*</span>
+                </label> */}
+              <label htmlFor="transactionNumber">Vendor / Customer Code</label>
+              <div
+                className="exp-form-floating"
+                title="Enter Vendor / Customer Code"
+              >
+                <div className="d-flex justify-content-end">
+                  <input
+                    className="exp-input-field form-control justify-content-start"
+                    id="partyCode"
+                    type="text"
+                    value={partyCode}
+                    onChange={handlePartyCodeChange}
+                    onKeyPress={handlePartyCodeKeyPress}
+                    maxLength={18}
+                    autoComplete="off"
+                    disabled={!partyType}
+                  />
+                  <div className="position-absolute mt-1 me-2">
+                    <span
+                      className="icon searchIcon"
+                      title="Search Vendor / Customer"
+                      onClick={handlePartyCodeSearch}
+                    >
+                      <i className="fa fa-search"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-md-3 form-group mb-2">
+              {/* <label
                   htmlFor="partyName"
                   className={`${error && !partyName ? "red" : ""}`}
                 >
                   Vendor / Customer Name<span className="text-danger">*</span>
                 </label> */}
-                <label htmlFor="transactionNumber">Vendor / Customer Name</label>
-                <div
-                  className="exp-form-floating"
-                  title="Vendor / Customer Name"
-                >
+              <label htmlFor="transactionNumber">Vendor / Customer Name</label>
+              <div
+                className="exp-form-floating"
+                title="Vendor / Customer Name"
+              >
+                <input
+                  className="exp-input-field form-control"
+                  id="partyName"
+                  type="text"
+                  value={partyNameDisplay}
+                  readOnly
+                  autoComplete="off"
+                />
+              </div>
+            </div>
+
+            <div className="col-md-3 form-group mb-2">
+              <label
+                htmlFor="reason"
+                className={`${error && !paymentMode ? "red" : ""}`}
+              >
+                Payment Mode<span className="text-danger">*</span>
+              </label>
+              <div className="exp-form-floating" title="Select Payment Mode">
+                <Select
+                  id="reason"
+                  value={selectedPaymentMode}
+                  onChange={handleChangePaymentMode}
+                  options={filteredOptionPaymentMode}
+                  className="exp-input-field"
+                  classNamePrefix="react-select"
+                  styles={{
+                    menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="col-md-3 form-group mb-2">
+              <label
+                htmlFor="reason"
+                className={`${error && !bankCashAccount ? "red" : ""}`}
+              >
+                Bank / Cash Account<span className="text-danger">*</span>
+              </label>
+              <div
+                className="exp-form-floating"
+                title="Select Bank / Cash Account"
+              >
+                <Select
+                  id="reason"
+                  value={selectedBankCashAccount}
+                  onChange={handleChangeBankCashAccount}
+                  options={filteredOptionBankCashAccount}
+                  className="exp-input-field"
+                  classNamePrefix="react-select"
+                  styles={{
+                    menu: (provided) => ({ ...provided, zIndex: 9999 }),
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="col-md-3 form-group mb-2">
+              <label htmlFor="transactionNumber">Reference No</label>
+              <div className="exp-form-floating">
+                <div className="d-flex justify-content-end">
                   <input
+                    id="transactionNumber"
                     className="exp-input-field form-control"
-                    id="partyName"
                     type="text"
-                    value={partyNameDisplay}
-                    readOnly
+                    title="Enter Original Transaction Reference Number"
+                    value={refTransactionNumber}
+                    onChange={(e) => setRefTransactionNumber(e.target.value)}
+                    maxLength={50}
                     autoComplete="off"
                   />
                 </div>
               </div>
+            </div>
 
-              <div className="col-md-3 form-group mb-2">
-                <label
-                  htmlFor="reason"
-                  className={`${error && !paymentMode ? "red" : ""}`}
-                >
-                  Payment Mode<span className="text-danger">*</span>
-                </label>
-                <div className="exp-form-floating" title="Select Payment Mode">
-                  <Select
-                    id="reason"
-                    value={selectedPaymentMode}
-                    onChange={handleChangePaymentMode}
-                    options={filteredOptionPaymentMode}
-                    className="exp-input-field"
-                    classNamePrefix="react-select"
-                    styles={{
-                      menu: (provided) => ({ ...provided, zIndex: 9999 }),
-                    }}
-                  />
-                </div>
+            <div className="col-md-3 form-group mb-2">
+              <div className="exp-form-floating">
+                <label htmlFor="refTransactionDate">Reference Date</label>
+                <input
+                  name="refTransactionDate"
+                  id="refTransactionDate"
+                  className="exp-input-field form-control"
+                  type="date"
+                  title="Select Transaction Date"
+                  value={refTransactionDate}
+                  onChange={(e) => setRefTransactionDate(e.target.value)}
+                />
               </div>
+            </div>
 
-              <div className="col-md-3 form-group mb-2">
-                <label
-                  htmlFor="reason"
-                  className={`${error && !bankCashAccount ? "red" : ""}`}
-                >
-                  Bank / Cash Account<span className="text-danger">*</span>
-                </label>
-                <div
-                  className="exp-form-floating"
-                  title="Select Bank / Cash Account"
-                >
-                  <Select
-                    id="reason"
-                    value={selectedBankCashAccount}
-                    onChange={handleChangeBankCashAccount}
-                    options={filteredOptionBankCashAccount}
-                    className="exp-input-field"
-                    classNamePrefix="react-select"
-                    styles={{
-                      menu: (provided) => ({ ...provided, zIndex: 9999 }),
-                    }}
-                  />
-                </div>
+            <div className="col-md-3 form-group mb-2">
+              {/* <label htmlFor="refNo">Amount</label> */}
+              <label
+                htmlFor="reason"
+                className={`${error && !amount ? "red" : ""}`}
+              >
+                Amount<span className="text-danger">*</span>
+              </label>
+              <div className="exp-form-floating">
+                <input
+                  type="number"
+                  className="exp-input-field form-control"
+                  id="refNo"
+                  title="Enter Amount"
+                  placeholder="Enter Amount"
+                  value={amount}
+                  min="0"
+                  step="0.01"
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "" || Number(value) >= 0) {
+                      setAmount(value);
+                    }
+                  }}
+                />
               </div>
+            </div>
 
-              <div className="col-md-3 form-group mb-2">
-                <label htmlFor="transactionNumber">Reference No</label>
-                <div className="exp-form-floating">
-                  <div className="d-flex justify-content-end">
-                    <input
-                      id="transactionNumber"
-                      className="exp-input-field form-control"
-                      type="text"
-                      title="Enter Original Transaction Reference Number"
-                      value={refTransactionNumber}
-                      onChange={(e) => setRefTransactionNumber(e.target.value)}
-                      maxLength={50}
-                      autoComplete="off"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-md-3 form-group mb-2">
-                <div className="exp-form-floating">
-                  <label htmlFor="refTransactionDate">Reference Date</label>
-                  <input
-                    name="refTransactionDate"
-                    id="refTransactionDate"
-                    className="exp-input-field form-control"
-                    type="date"
-                    title="Select Transaction Date"
-                    value={refTransactionDate}
-                    onChange={(e) => setRefTransactionDate(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="col-md-3 form-group mb-2">
-                {/* <label htmlFor="refNo">Amount</label> */}
-                <label
-                  htmlFor="reason"
-                  className={`${error && !amount ? "red" : ""}`}
-                >
-                  Amount<span className="text-danger">*</span>
-                </label>
-                <div className="exp-form-floating">
-                  <input
-                    type="number"
-                    className="exp-input-field form-control"
-                    id="refNo"
-                    title="Enter Amount"
-                    placeholder="Enter Amount"
-                    value={amount}
-                    min="0"
-                    step="0.01"
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      if (value === "" || Number(value) >= 0) {
-                        setAmount(value);
-                      }
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className="col-md-6 form-group mb-2">
-                <label htmlFor="narration">Remarks</label>
-                <div className="exp-form-floating">
-                  <textarea
-                    className="exp-input-field form-control"
-                    id="narration"
-                    title="Enter Remarks"
-                    value={narration}
-                    onChange={(e) => setNarration(e.target.value)}
-                  />
-                </div>
+            <div className="col-md-6 form-group mb-2">
+              <label htmlFor="narration">Remarks</label>
+              <div className="exp-form-floating">
+                <textarea
+                  className="exp-input-field form-control"
+                  id="narration"
+                  title="Enter Remarks"
+                  value={narration}
+                  onChange={(e) => setNarration(e.target.value)}
+                />
               </div>
             </div>
           </div>
+        </div>
 
-          <div
-            className="shadow-lg p-1 bg-body-tertiary rounded mt-2 pt-3 pb-4"
-            align="left"
-          >
-            <div className="d-flex justify-content-between">
-              <div className="d-flex justify-content-start ms-5">
-                <purButton
-                  type="button"
-                  className={`"toggle-btn"  ${activeTable === "myTable" ? "active" : ""}`}
-                  onClick={() => handleToggleTable("myTable")}
-                >
-                  Invoice Details
-                </purButton>
-                {/* <purButton
+        <div
+          className="shadow-lg p-1 bg-body-tertiary rounded mt-2 pt-3 pb-4"
+          align="left"
+        >
+          <div className="d-flex justify-content-between">
+            <div className="d-flex justify-content-start ms-5">
+              <purButton
+                type="button"
+                className={`"toggle-btn"  ${activeTable === "myTable" ? "active" : ""}`}
+                onClick={() => handleToggleTable("myTable")}
+              >
+                Invoice Details
+              </purButton>
+              {/* <purButton
                     type="button"
                     className={`"toggle-btn"  ${activeTable === 'myTable' ? 'active' : ''}`}
                     onClick={() => handleToggleTable('tax')}>
                     Tax Details
                 </purButton> */}
-              </div>
-              <div className="d-flex me-4 gap-2">
-                <icon
-                  type="button"
-                  className="popups-btn"
-                  title="Add Row"
-                  onClick={handleAddRow}
-                >
-                  <FontAwesomeIcon icon={faPlus} />
-                </icon>
-                <icon
-                  type="button"
-                  className="popups-btn"
-                  title="Remove Row"
-                  onClick={handleRemoveRow}
-                >
-                  <FontAwesomeIcon icon={faMinus} />
-                </icon>
-              </div>
             </div>
-
-            <div
-              className="ag-theme-alpine"
-              style={{ height: 437, width: "100%" }}
-            >
-              <AgGridReact
-                columnDefs={
-                  activeTable === "myTable" ? columnDefs : columnDefsTax
-                }
-                rowData={activeTable === "myTable" ? rowData : rowDataTax}
-                defaultColDef={{ editable: true, resizable: true }}
-                rowSelection="multiple"
-                headerHeight={28}
-                rowHeight={25}
-              />
+            <div className="d-flex me-4 gap-2">
+              <icon
+                type="button"
+                className="popups-btn"
+                title="Add Row"
+                onClick={handleAddRow}
+              >
+                <FontAwesomeIcon icon={faPlus} />
+              </icon>
+              <icon
+                type="button"
+                className="popups-btn"
+                title="Remove Row"
+                onClick={handleRemoveRow}
+              >
+                <FontAwesomeIcon icon={faMinus} />
+              </icon>
             </div>
           </div>
 
-          <PurchaseItemPopup
-            open={open}
-            handleClose={() => setOpen(false)}
-            handleItem={() => { }}
-          />
-          <PurchaseWarehousePopup
-            open={open1}
-            handleClose={() => setOpen1(false)}
-            handleWarehouse={() => { }}
-          />
-          <PurchasePopup
-            open={openPurchaseHelp}
-            handleClose={() => setOpenPurchaseHelp(false)}
-            handlePurchaseData={handlePurchaseDataSelect}
-            selectedPartyCode={partyName || ""}
-          />
-          <SalesHdrPopup
-            open={openSalesHelp}
-            handleClose={() => setOpenSalesHelp(false)}
-            handleData={handleSalesDataSelect}
-            selectedPartyCode={partyName || ""}
-          />
-          <PurchaseReturnView
-            open={openPurchaseReturnHelp}
-            handleClose={() => setOpenPurchaseReturnHelp(false)}
-            handleItemView={() => { }}
-            selectedPartyCode={partyName || ""}
-          />
-          <SalesRetrunView
-            open={openSalesReturnHelp}
-            handleClose={() => setOpenSalesReturnHelp(false)}
-            handleDataView={() => { }}
-            selectedPartyCode={partyName || ""}
-          />
-          <PaymentHelp
-            open={openDebitCreditNoteHelp}
-            handleClose={() => setOpenDebitCreditNoteHelp(false)}
-            handlePaymentData={handlePaymentData}
-          />
-          <PurchaseVendorPopup
-            open={openVendorPartyHelp}
-            handleClose={() => setOpenVendorPartyHelp(false)}
-            handleVendor={handleVendor}
-          />
-          <SalesVendorPopup
-            open={openCustomerPartyHelp}
-            handleClose={() => setOpenCustomerPartyHelp(false)}
-            handleVendor={handleCustomer}
-          />
-
-          {/* Account Postings & Affected Screens Collapsible Section */}
           <div
-            className="shadow-lg p-2 bg-body-tertiary rounded mt-2 pt-2 pb-2"
-            align="left"
+            className="ag-theme-alpine"
+            style={{ height: 437, width: "100%" }}
           >
-            <div className="d-flex justify-content-between align-items-center">
-              <div className="d-flex align-items-center ms-3">
-                <h6 className="mb-0 fw-bold">
-                  Account Posting & Affected Screens Details
-                </h6>
-              </div>
-              <div className="d-flex me-4">
-                <icon
-                  type="button"
-                  className="popups-btn"
-                  title={
-                    showPostingGrid
-                      ? "Hide Posting Details"
-                      : "Show Posting Details"
-                  }
-                  onClick={() => setShowPostingGrid(!showPostingGrid)}
-                  style={{ cursor: "pointer" }}
-                >
-                  <FontAwesomeIcon icon={showPostingGrid ? faMinus : faPlus} />
-                </icon>
-              </div>
-            </div>
+            <AgGridReact
+              columnDefs={
+                activeTable === "myTable" ? columnDefs : columnDefsTax
+              }
+              rowData={activeTable === "myTable" ? rowData : rowDataTax}
+              defaultColDef={{ editable: true, resizable: true }}
+              rowSelection="multiple"
+              headerHeight={28}
+              rowHeight={25}
+            />
+          </div>
+        </div>
 
-            {showPostingGrid && (
-              <div className="mt-3">
-                <div
-                  className="ag-theme-alpine"
-                  style={{ height: 350, width: "100%" }}
-                >
-                  <AgGridReact
-                    columnDefs={columnDefsPosting}
-                    rowData={postingRowData}
-                    defaultColDef={{
-                      editable: false,
-                      resizable: true,
-                      filter: true,
-                    }}
-                    animateRows={true}
-                    headerHeight={28}
-                    rowHeight={25}
-                  />
-                </div>
-              </div>
-            )}
+        <PurchaseItemPopup
+          open={open}
+          handleClose={() => setOpen(false)}
+          handleItem={() => { }}
+        />
+        <PurchaseWarehousePopup
+          open={open1}
+          handleClose={() => setOpen1(false)}
+          handleWarehouse={() => { }}
+        />
+        <PurchasePopup
+          open={openPurchaseHelp}
+          handleClose={() => setOpenPurchaseHelp(false)}
+          handlePurchaseData={handlePurchaseDataSelect}
+          selectedPartyCode={partyName || ""}
+        />
+        <SalesHdrPopup
+          open={openSalesHelp}
+          handleClose={() => setOpenSalesHelp(false)}
+          handleData={handleSalesDataSelect}
+          selectedPartyCode={partyName || ""}
+        />
+        <PurchaseReturnView
+          open={openPurchaseReturnHelp}
+          handleClose={() => setOpenPurchaseReturnHelp(false)}
+          handleItemView={() => { }}
+          selectedPartyCode={partyName || ""}
+        />
+        <SalesRetrunView
+          open={openSalesReturnHelp}
+          handleClose={() => setOpenSalesReturnHelp(false)}
+          handleDataView={() => { }}
+          selectedPartyCode={partyName || ""}
+        />
+        <PaymentHelp
+          open={openDebitCreditNoteHelp}
+          handleClose={() => setOpenDebitCreditNoteHelp(false)}
+          handlePaymentData={handlePaymentData}
+        />
+        <PurchaseVendorPopup
+          open={openVendorPartyHelp}
+          handleClose={() => setOpenVendorPartyHelp(false)}
+          handleVendor={handleVendor}
+        />
+        <SalesVendorPopup
+          open={openCustomerPartyHelp}
+          handleClose={() => setOpenCustomerPartyHelp(false)}
+          handleVendor={handleCustomer}
+        />
+
+        {/* Account Postings & Affected Screens Collapsible Section */}
+        <div
+          className="shadow-lg p-2 bg-body-tertiary rounded mt-2 pt-2 pb-2"
+          align="left"
+        >
+          <div className="d-flex justify-content-between align-items-center">
+            <div className="d-flex align-items-center ms-3">
+              <h6 className="mb-0 fw-bold">
+                Account Posting & Affected Screens Details
+              </h6>
+            </div>
+            <div className="d-flex me-4">
+              <icon
+                type="button"
+                className="popups-btn"
+                title={
+                  showPostingGrid
+                    ? "Hide Posting Details"
+                    : "Show Posting Details"
+                }
+                onClick={() => setShowPostingGrid(!showPostingGrid)}
+                style={{ cursor: "pointer" }}
+              >
+                <FontAwesomeIcon icon={showPostingGrid ? faMinus : faPlus} />
+              </icon>
+            </div>
           </div>
 
-          <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
-            <div className="row ms-2">
-              <div className="d-flex justify-content-start">
-                <p className="col-md-6">
-                  {labels.createdBy}: {additionalData.created_by}
-                </p>
-                <p className="col-md-6">
-                  {labels.createdDate}: {additionalData.created_date}
-                </p>
+          {showPostingGrid && (
+            <div className="mt-3">
+              <div
+                className="ag-theme-alpine"
+                style={{ height: 350, width: "100%" }}
+              >
+                <AgGridReact
+                  columnDefs={columnDefsPosting}
+                  rowData={postingRowData}
+                  defaultColDef={{
+                    editable: false,
+                    resizable: true,
+                    filter: true,
+                  }}
+                  animateRows={true}
+                  headerHeight={28}
+                  rowHeight={25}
+                />
               </div>
-              <div className="d-flex justify-content-start">
-                <p className="col-md-6">
-                  {labels.modifiedBy}: {additionalData.modified_by}
-                </p>
-                <p className="col-md-6">
-                  {labels.modifiedDate}: {additionalData.modified_date}
-                </p>
-              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
+          <div className="row ms-2">
+            <div className="d-flex justify-content-start">
+              <p className="col-md-6">
+                {labels.createdBy}: {additionalData.created_by}
+              </p>
+              <p className="col-md-6">
+                {labels.createdDate}: {additionalData.created_date}
+              </p>
+            </div>
+            <div className="d-flex justify-content-start">
+              <p className="col-md-6">
+                {labels.modifiedBy}: {additionalData.modified_by}
+              </p>
+              <p className="col-md-6">
+                {labels.modifiedDate}: {additionalData.modified_date}
+              </p>
             </div>
           </div>
         </div>
+      </div>
     </div>
   );
 }
