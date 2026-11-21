@@ -86,7 +86,7 @@ export default function AssetsHelp({ open, handleClose, handleAssetsHelp }) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), allocation_no, allocation_date, item_code, item_name })
+        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'),location_code: sessionStorage.getItem("selectedLocationCode"), allocation_no, allocation_date, item_code, item_name })
       });
       if (response.ok) {
         const searchData = await response.json();
