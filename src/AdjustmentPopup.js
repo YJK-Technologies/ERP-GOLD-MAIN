@@ -108,7 +108,8 @@ export default function AdjustmentPopup({ open, handleClose, adjustmentData }) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ transaction_no, transaction_date, transaction_type })
+        body: JSON.stringify({ transaction_no, transaction_date, transaction_type,company_code: sessionStorage.getItem("selectedCompanyCode"),
+        location_code: sessionStorage.getItem("selectedLocationCode"), })
       });
       if (response.ok) {
         const searchData = await response.json();

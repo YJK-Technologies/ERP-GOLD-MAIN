@@ -152,6 +152,7 @@ export default function InvIssuedPopup({ open, handleClose, InvIssuedData }) {
         },
         body: JSON.stringify({
           company_code: sessionStorage.getItem('selectedCompanyCode'),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           IssuanceID, DateIssued, Issued_Type: issuedType
         })
       });

@@ -12708,7 +12708,7 @@ const getUserRole = async (req, res) => {
 const getAllInventoryReceiptsDetails = async (req, res) => {
   try {
     await connection.connectToDatabase();
-    const result = await sql.query(`EXEC sp_InventoryReceipts_Details 'A','','','','','','',0,'','','',0,'','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+    const result = await sql.query(`EXEC sp_InventoryReceipts_Details_test 'A','','','','','','','',0,'','','',0,'','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     res.json(result.recordset);
   } catch (err) {
@@ -12720,7 +12720,7 @@ const getAllInventoryReceiptsDetails = async (req, res) => {
 
 const addInventoryReceiptsDetails = async (req, res) => {
   const {
-    company_code, ReceiptID, DateReceived, Warehouse, Supplier, PurchaseOrderID, ItemSNo, ItemCode, ItemName, Serial_No, QuantityReceived, Condition, ReceivedBy, ApprovalStatus, Notes,
+    company_code, location_code, ReceiptID, DateReceived, Warehouse, Supplier, PurchaseOrderID, ItemSNo, ItemCode, ItemName, Serial_No, QuantityReceived, Condition, ReceivedBy, ApprovalStatus, Notes,
     created_by, modified_by, tempstr1, tempstr2, tempstr3, tempstr4, datetime1, datetime2, datetime3, datetime4 } = req.body;
   let pool;
   try {
@@ -12729,6 +12729,7 @@ const addInventoryReceiptsDetails = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "I") // Insert mode
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("ReceiptID", sql.NVarChar, ReceiptID)
       .input("DateReceived", sql.Date, DateReceived)
       .input("Warehouse", sql.VarChar, Warehouse)
@@ -12753,7 +12754,7 @@ const addInventoryReceiptsDetails = async (req, res) => {
       .input("datetime2", sql.VarChar, datetime2)
       .input("datetime3", sql.VarChar, datetime3)
       .input("datetime4", sql.VarChar, datetime4)
-      .query(`EXEC sp_InventoryReceipts_Details @mode,@company_code,@ReceiptID,@DateReceived,@Warehouse,@Supplier,@PurchaseOrderID,@ItemSNo,@ItemCode,@ItemName,@Serial_No,@QuantityReceived,
+      .query(`EXEC sp_InventoryReceipts_Details_test @mode,@company_code,@location_code,@ReceiptID,@DateReceived,@Warehouse,@Supplier,@PurchaseOrderID,@ItemSNo,@ItemCode,@ItemName,@Serial_No,@QuantityReceived,
         @Condition,@ReceivedBy,@ApprovalStatus,@Notes,@created_by,@modified_by,@tempstr1,@tempstr2,@tempstr3,@tempstr4,@datetime1,@datetime2,@datetime3,@datetime4`);
     res.json({ success: true, message: "Data inserted successfully" });
   } catch (err) {
@@ -12763,14 +12764,15 @@ const addInventoryReceiptsDetails = async (req, res) => {
 };
 
 const deleteInventoryReceiptsDetails = async (req, res) => {
-  const { ReceiptID, company_code } = req.body;
+  const { ReceiptID, location_code, company_code } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
     await pool.request()
       .input("ReceiptID", ReceiptID)
       .input("company_code", company_code)
-      .query(`EXEC sp_InventoryReceipts_Details 'D',@company_code,@ReceiptID,'','','','',0,'','','',0,'','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .input("location_code", location_code)
+      .query(`EXEC sp_InventoryReceipts_Details_test 'D',@company_code,@location_code,@ReceiptID,'','','','',0,'','','',0,'','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     res.status(200).json("Inventory Receipt Detail deleted successfully");
   } catch (err) {
     console.error("Error", err);
@@ -12779,7 +12781,7 @@ const deleteInventoryReceiptsDetails = async (req, res) => {
 };
 
 const addInventoryReceiptsheader = async (req, res) => {
-  const { company_code, ReceiptID, DateReceived, Receipt_Type, created_by, modified_by,
+  const { company_code, location_code, ReceiptID, DateReceived, Receipt_Type, created_by, modified_by,
     tempstr1, tempstr2, tempstr3, tempstr4, datetime1, datetime2, datetime3, datetime4,
 
   } = req.body;
@@ -12790,6 +12792,7 @@ const addInventoryReceiptsheader = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "I") // Insert mode
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("ReceiptID", sql.NVarChar, ReceiptID)
       .input("DateReceived", sql.NVarChar, DateReceived)
       .input("Receipt_Type", sql.NVarChar, Receipt_Type)
@@ -12803,7 +12806,7 @@ const addInventoryReceiptsheader = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(`EXEC sp_InventoryReceipts_hdr @mode,@company_code,@ReceiptID,@DateReceived,@Receipt_Type,
+      .query(`EXEC sp_InventoryReceipts_hdr_test @mode,@company_code,@location_code,@ReceiptID,@DateReceived,@Receipt_Type,
           @created_by, @modified_by, NULL, NULL, NULL, NULL, NULL, NULL,NULL,NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
@@ -12817,13 +12820,14 @@ const addInventoryReceiptsheader = async (req, res) => {
 };
 
 const inventoryReceiptsDelete = async (req, res) => {
-  const { ReceiptID, company_code } = req.body;
+  const { ReceiptID, company_code, location_code } = req.body;
   try {
     const pool = await connection.connectToDatabase();
     await pool.request()
       .input("ReceiptID", ReceiptID)
       .input("company_code", company_code)
-      .query(`EXEC sp_InventoryReceipts_hdr 'D',@company_code,@ReceiptID,'','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`)
+      .input("location_code", location_code)
+      .query(`EXEC sp_InventoryReceipts_hdr_test 'D',@company_code,@location_code,@ReceiptID,'','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`)
     res.status(200).json("InventoryReceipts deleted successfully");
   } catch (err) {
     console.error("Error", err);
@@ -12835,7 +12839,7 @@ const inventoryReceiptsDelete = async (req, res) => {
 const inventoryReceiptsAll = async (req, res) => {
   try {
     await connection.connectToDatabase();
-    const result = await sql.query(`EXEC sp_InventoryReceipts_hdr  'A','', '', '', '', '','', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
+    const result = await sql.query(`EXEC sp_InventoryReceipts_hdr_test  'A','','','', '', '', '','', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
 
     res.json(result.recordset);
   } catch (err) {
@@ -13227,7 +13231,7 @@ const getInventoryTransaction = async (req, res) => {
 };
 
 const addInventoryIssuancehdr = async (req, res) => {
-  const { company_code, IssuanceID, DateIssued, Issued_Type, created_by, modified_by,
+  const { company_code, location_code, IssuanceID, DateIssued, Issued_Type, created_by, modified_by,
     tempstr1, tempstr2, tempstr3, tempstr4, datetime1, datetime2, datetime3, datetime4,
 
   } = req.body;
@@ -13238,6 +13242,7 @@ const addInventoryIssuancehdr = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "I") // Insert mode
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("IssuanceID", sql.NVarChar, IssuanceID)
       .input("DateIssued", sql.NVarChar, DateIssued)
       .input("Issued_Type", sql.NVarChar, Issued_Type)
@@ -13251,7 +13256,7 @@ const addInventoryIssuancehdr = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(`EXEC sp_InventoryIssuance_hdr @mode,@company_code,@IssuanceID,@DateIssued,@Issued_Type,
+      .query(`EXEC sp_InventoryIssuance_hdr_test @mode,@company_code,@location_code,@IssuanceID,@DateIssued,@Issued_Type,
                 @created_by, @modified_by, NULL, NULL, NULL, NULL, NULL, NULL,NULL,NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
@@ -13264,7 +13269,7 @@ const addInventoryIssuancehdr = async (req, res) => {
 
 
 const inventoryIssuanceDelete = async (req, res) => {
-  const { company_code, IssuanceID } = req.body;
+  const { company_code, location_code, IssuanceID } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -13273,8 +13278,9 @@ const inventoryIssuanceDelete = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "D")
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("IssuanceID", sql.NVarChar, IssuanceID)
-      .query(`EXEC sp_InventoryIssuance_hdr @mode,@company_code,@IssuanceID,'','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`)
+      .query(`EXEC sp_InventoryIssuance_hdr_test @mode,@company_code,@location_code,@IssuanceID,'','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`)
     res.status(200).json("InventoryIssuance deleted successfully");
   } catch (err) {
     console.error("Error", err);
@@ -13284,7 +13290,7 @@ const inventoryIssuanceDelete = async (req, res) => {
 
 
 const inventoryIssuanceAll = async (req, res) => {
-  const { company_code } = req.body;
+  const { company_code, location_code } = req.body;
   let pool;
   try {
     pool = await sql.connect(dbConfig);
@@ -13292,7 +13298,8 @@ const inventoryIssuanceAll = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "A") // Insert mode
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_InventoryIssuance_hdr  'A',@company_code, '', '', '', '','', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
+      .input("location_code", sql.NVarChar, location_code)
+      .query(`EXEC sp_InventoryIssuance_hdr_test  'A',@company_code,@location_code, '', '', '', '','', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
 
     res.json(result.recordset);
   } catch (err) {
@@ -13304,7 +13311,7 @@ const inventoryIssuanceAll = async (req, res) => {
 
 const addInventoryIssuancedetails = async (req, res) => {
   const {
-    company_code, IssuanceID, DateIssued, Warehouse, Department, ItemSNo, ItemCode, ItemName, Serial_No, QuantityIssued, ReasonForIssuance,
+    company_code, location_code, IssuanceID, DateIssued, Warehouse, Department, ItemSNo, ItemCode, ItemName, Serial_No, QuantityIssued, ReasonForIssuance,
     IssuedBy, ApprovalStatus, ActionTaken, Notes, created_by, modified_by,
     tempstr1, tempstr2, tempstr3, tempstr4, datetime1, datetime2, datetime3, datetime4,
 
@@ -13316,6 +13323,7 @@ const addInventoryIssuancedetails = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "I") // Insert mode
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("IssuanceID", sql.NVarChar, IssuanceID)
       .input("DateIssued", sql.NVarChar, DateIssued)
       .input("Warehouse", sql.NVarChar, Warehouse)
@@ -13340,8 +13348,7 @@ const addInventoryIssuancedetails = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(
-        `EXEC sp_InventoryIssuances_details @mode,@company_code,@IssuanceID,@DateIssued,@Warehouse,@Department,@ItemSNo,@ItemCode,@ItemName,@Serial_No,@QuantityIssued,@ReasonForIssuance,
+      .query(`EXEC sp_InventoryIssuances_details_test @mode,@company_code,@location_code,@IssuanceID,@DateIssued,@Warehouse,@Department,@ItemSNo,@ItemCode,@ItemName,@Serial_No,@QuantityIssued,@ReasonForIssuance,
             @IssuedBy,@ApprovalStatus,@ActionTaken,@Notes,@created_by,@modified_by,
             @tempstr1,@tempstr2,@tempstr3,@tempstr4,@datetime1,@datetime2,@datetime3,@datetime4`);
     res.json({ success: true, message: "Data inserted successfully" });
@@ -13352,7 +13359,7 @@ const addInventoryIssuancedetails = async (req, res) => {
 };
 
 const InventoryIssuanceDeleteDetailData = async (req, res) => {
-  const { company_code, IssuanceID } = req.body;
+  const { company_code, location_code, IssuanceID } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -13360,8 +13367,9 @@ const InventoryIssuanceDeleteDetailData = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "D")
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("IssuanceID", sql.NVarChar, IssuanceID)
-      .query(`EXEC sp_InventoryIssuances_details @mode,@company_code,@IssuanceID,'','','','',0,'','',0,'',
+      .query(`EXEC sp_InventoryIssuances_details_test @mode,@company_code,@location_code,@IssuanceID,'','','','',0,'','',0,'',
             '','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     res.status(200).json(" InventoryIssuance deleted successfully");
   } catch (err) {
@@ -13371,7 +13379,7 @@ const InventoryIssuanceDeleteDetailData = async (req, res) => {
 };
 
 const getAllInventoryIssuancedetailData = async (req, res) => {
-  const { company_code } = req.body;
+  const { company_code, location_code } = req.body;
   let pool;
   try {
     pool = await sql.connect(dbConfig);
@@ -13379,7 +13387,8 @@ const getAllInventoryIssuancedetailData = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "A") // Insert mode
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_InventoryIssuances_details 'A',@company_code,'','','','',0,'','','',0,'',
+      .input("location_code", sql.NVarChar, location_code)
+      .query(`EXEC sp_InventoryIssuances_details_test 'A',@company_code,@location_code,'','','','',0,'','','',0,'',
             '','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     res.json(result.recordset);
@@ -13702,7 +13711,7 @@ const InventoryIssuedDetailPrint = async (req, res) => {
 };
 
 const addAssetsAllocationheader = async (req, res) => {
-  const { allocation_no, allocation_date, company_code, created_by, modified_by,
+  const { allocation_no, allocation_date, company_code, location_code, created_by, modified_by,
     tempstr1, tempstr2, tempstr3, tempstr4, datetime1, datetime2, datetime3, datetime4,
 
   } = req.body;
@@ -13715,6 +13724,7 @@ const addAssetsAllocationheader = async (req, res) => {
       .input("allocation_no", sql.NVarChar, allocation_no)
       .input("allocation_date", sql.Date, allocation_date)
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
       .input("tempstr1", sql.NVarChar, tempstr1)
@@ -13725,7 +13735,7 @@ const addAssetsAllocationheader = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(`EXEC sp_Assets_Allocation_hdr @mode,@allocation_no,@allocation_date,'',@company_code,@created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_Assets_Allocation_hdr_test @mode,@allocation_no,@allocation_date,'',@company_code,@location_code,@created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
@@ -13740,15 +13750,16 @@ const addAssetsAllocationheader = async (req, res) => {
 
 
 const AssetsAllocationdelete = async (req, res) => {
-  const { company_code, allocation_no } = req.body;
+  const { company_code, location_code, allocation_no } = req.body;
   try {
     const pool = await connection.connectToDatabase();
     await pool
       .request()
       .input("mode", sql.NVarChar, "D")
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("allocation_no", sql.NVarChar, allocation_no)
-      .query(`EXEC sp_Assets_Allocation_hdr @mode,@allocation_no,'','',@company_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`)
+      .query(`EXEC sp_Assets_Allocation_hdr_test @mode,@allocation_no,'','',@company_code,@location_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`)
 
     res.status(200).json("Assets Allocation deleted successfully");
   } catch (err) {
@@ -13757,20 +13768,8 @@ const AssetsAllocationdelete = async (req, res) => {
   }
 };
 
-// const GetAllAssetsAllocationHdr = async (req, res) => {
-//   try {
-//     await connection.connectToDatabase();
-//     const result = await sql.query(`EXEC sp_Assets_Allocation_hdr 'A','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
-
-//     res.json(result.recordset);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: err.message || 'Internal Server Error' });
-//   }
-// };
-
 const GetAllAssetsAllocationHdr = async (req, res) => {
-  const { company_code } = req.body;
+  const { company_code, location_code } = req.body;
   let pool;
   try {
     pool = await sql.connect(dbConfig);
@@ -13778,7 +13777,8 @@ const GetAllAssetsAllocationHdr = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "A")
       .input("company_code", sql.VarChar, company_code)
-      .query(`EXEC sp_Assets_Allocation_hdr @mode,'','','',@company_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .input("location_code", sql.VarChar, location_code)
+      .query(`EXEC sp_Assets_Allocation_hdr_test @mode,'','','',@company_code,@location_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -13792,7 +13792,7 @@ const GetAllAssetsAllocationHdr = async (req, res) => {
 
 
 const addAssetsAllocationDeatils = async (req, res) => {
-  const { allocation_no, allocation_date, item_SNO, item_code, item_name, Serial_no, Quantity, Emp_no, company_code, created_by, modified_by,
+  const { allocation_no, location_code, allocation_date, item_SNO, item_code, item_name, Serial_no, Quantity, Emp_no, company_code, created_by, modified_by,
     tempstr1, tempstr2, tempstr3, tempstr4, datetime1, datetime2, datetime3, datetime4,
 
   } = req.body;
@@ -13811,6 +13811,7 @@ const addAssetsAllocationDeatils = async (req, res) => {
       .input("Quantity", sql.Int, Quantity)
       .input("Emp_no", sql.NVarChar, Emp_no)
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
       .input("tempstr1", sql.NVarChar, tempstr1)
@@ -13821,7 +13822,7 @@ const addAssetsAllocationDeatils = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(`EXEC sp_Assets_Allocation_Details @mode, @allocation_no, @allocation_date, @item_SNO,@item_code, @item_name,@Serial_no,@quantity,@Emp_no,@company_code,@created_by,@modified_by, 
+      .query(`EXEC sp_Assets_Allocation_Details_test @mode, @allocation_no, @allocation_date, @item_SNO,@item_code, @item_name,@Serial_no,@quantity,@Emp_no,@company_code,@location_code,@created_by,@modified_by, 
                         NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
 
     res.json({ success: true, message: "Data inserted successfully" });
@@ -13832,15 +13833,16 @@ const addAssetsAllocationDeatils = async (req, res) => {
 };
 
 const deleteAssetsAllocationDetails = async (req, res) => {
-  const { company_code, allocation_no } = req.body;
+  const { company_code, location_code, allocation_no } = req.body;
   try {
     const pool = await connection.connectToDatabase();
     await pool
       .request()
-      .input("allocation_no", sql.NVarChar, "D")
-      .input("allocation_no", sql.NVarChar, company_code)
+      .input("mode", sql.NVarChar, "D")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("allocation_no", sql.NVarChar, allocation_no)
-      .query(`EXEC sp_Assets_Allocation_Details @mode,@allocation_no,'','','','','',0,'',@company_code,'','', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`)
+      .query(`EXEC sp_Assets_Allocation_Details_test @mode,@allocation_no,'','','','','',0,'',@company_code,@location_code,'','', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`)
 
     res.status(200).json("Assets Allocation deleted successfully");
   } catch (err) {
@@ -13849,21 +13851,8 @@ const deleteAssetsAllocationDetails = async (req, res) => {
   }
 };
 
-// const GetAllAssetsAllocationDetails = async (req, res) => {
-//   try {
-//     await connection.connectToDatabase();
-//     const result = await sql.query
-//       (`EXEC sp_Assets_Allocation_Details 'a', '', '', '', '', '','',0,'','','','', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
-
-//     res.json(result.recordset);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: err.message || 'Internal Server Error' });
-//   }
-// };
-
 const GetAllAssetsAllocationDetails = async (req, res) => {
-  const { company_code } = req.body;
+  const { company_code, location_code } = req.body;
   let pool;
   try {
     pool = await sql.connect(dbConfig);
@@ -13871,7 +13860,8 @@ const GetAllAssetsAllocationDetails = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "A")
       .input("company_code", sql.VarChar, company_code)
-      .query(`EXEC sp_Assets_Allocation_Details @mode,'','','','','','',0,'',@company_code,'','', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
+      .input("location_code", sql.VarChar, location_code)
+      .query(`EXEC sp_Assets_Allocation_Details_test @mode,'','','','','','',0,'',@company_code,@location_code,'','', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -13909,17 +13899,19 @@ const InventoryReturnSearchData = async (req, res) => {
 };
 
 const InventoryReceiptSearchData = async (req, res) => {
-  const { ReceiptID, DateReceived, Receipt_Type } = req.body;
+  const { company_code, location_code, ReceiptID, DateReceived, Receipt_Type } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
     const result = await pool
       .request()
       .input("mode", sql.NVarChar, "SC")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("ReceiptID", sql.NVarChar, ReceiptID)
       .input("DateReceived", sql.NVarChar, DateReceived)
       .input("Receipt_Type", sql.NVarChar, Receipt_Type)
-      .query(`EXEC sp_InventoryReceipts_hdr @mode,'',@ReceiptID,@DateReceived,@Receipt_Type,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_InventoryReceipts_hdr_test @mode,@company_code,@location_code,@ReceiptID,@DateReceived,@Receipt_Type,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -13932,7 +13924,7 @@ const InventoryReceiptSearchData = async (req, res) => {
 };
 
 const InventoryIssuedSearchData = async (req, res) => {
-  const { company_code, IssuanceID, DateIssued, Issued_Type } = req.body;
+  const { company_code, location_code, IssuanceID, DateIssued, Issued_Type } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -13941,9 +13933,10 @@ const InventoryIssuedSearchData = async (req, res) => {
       .input("mode", sql.NVarChar, "SC")
       .input("IssuanceID", sql.NVarChar, IssuanceID)
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("DateIssued", sql.NVarChar, DateIssued)
       .input("Issued_Type", sql.NVarChar, Issued_Type)
-      .query(`EXEC sp_InventoryIssuance_hdr @mode,@company_code,@IssuanceID,@DateIssued,@Issued_Type,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_InventoryIssuance_hdr_test @mode,@company_code,@location_code,@IssuanceID,@DateIssued,@Issued_Type,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -13957,7 +13950,7 @@ const InventoryIssuedSearchData = async (req, res) => {
 
 //original
 const AssetsAllocationdeletehdr = async (req, res) => {
-  const { company_code, allocation_no } = req.body;
+  const { company_code, location_code, allocation_no } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -13965,8 +13958,9 @@ const AssetsAllocationdeletehdr = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "D")
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("allocation_no", sql.NVarChar, allocation_no)
-      .query(`EXEC sp_Assets_Allocation_hdr @mode,@allocation_no,'','',@company_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .query(`EXEC sp_Assets_Allocation_hdr_test @mode,@allocation_no,'','',@company_code,@location_code,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     res.status(200).json("Assets Data deleted successfully");
   } catch (err) {
@@ -13976,7 +13970,7 @@ const AssetsAllocationdeletehdr = async (req, res) => {
 };
 
 const AssetsAllocationdeleteDetails = async (req, res) => {
-  const { company_code, allocation_no } = req.body;
+  const { company_code, location_code, allocation_no } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -13984,8 +13978,9 @@ const AssetsAllocationdeleteDetails = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "D")
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("allocation_no", sql.NVarChar, allocation_no)
-      .query(`EXEC sp_Assets_Allocation_Details @mode,@allocation_no,'','','','','','','',@company_code,'','', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
+      .query(`EXEC sp_Assets_Allocation_Details_test @mode,@allocation_no,'','','','','','','',@company_code,@location_code,'','', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
     res.status(200).json("Assets deleted successfully");
   } catch (err) {
     console.error("Error", err);
@@ -14288,7 +14283,7 @@ const getallEmployeePopUp = async (req, res) => {
 
 
 const getallAssetsAllocationsaved = async (req, res) => {
-  const { company_code, allocation_no, allocation_date, item_SNO, item_code, item_name, Emp_no, Serial_no, Quantity } = req.body;
+  const { company_code, location_code, allocation_no, allocation_date, item_SNO, item_code, item_name, Emp_no, Serial_no, Quantity } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -14305,7 +14300,8 @@ const getallAssetsAllocationsaved = async (req, res) => {
       .input("Serial_no", sql.NVarChar, Serial_no)
       .input("Quantity", sql.NVarChar, Quantity)
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_Assets_Allocation_Details @mode, @allocation_no, @allocation_date,@item_SNO,@item_code, @item_name,@Serial_no,@Quantity,@Emp_no,@company_code,'','', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`)
+      .input("location_code", sql.NVarChar, location_code)
+      .query(`EXEC sp_Assets_Allocation_Details_test @mode, @allocation_no, @allocation_date,@item_SNO,@item_code, @item_name,@Serial_no,@Quantity,@Emp_no,@company_code,@location_code,'','', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`)
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -15738,7 +15734,7 @@ const VendorUpdate = async (req, res) => {
 // Code Added By Harish
 
 const addadjustmenthdr = async (req, res) => {
-  const { company_code, transaction_no, transaction_date, transaction_type, Data_deleted, created_by, modified_by,
+  const { company_code, location_code, transaction_no, transaction_date, transaction_type, Data_deleted, created_by, modified_by,
     tempstr1, tempstr2, tempstr3, tempstr4, datetime1, datetime2, datetime3, datetime4,
 
   } = req.body;
@@ -15750,6 +15746,7 @@ const addadjustmenthdr = async (req, res) => {
       .input("mode", sql.NVarChar, "I") // Insert mode
       .input("transaction_no", sql.NVarChar, transaction_no)
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("transaction_date", sql.Date, transaction_date)
       .input("transaction_type", sql.NVarChar, transaction_type)
       .input("Data_deleted", sql.NVarChar, Data_deleted)
@@ -15763,8 +15760,8 @@ const addadjustmenthdr = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(`EXEC [sp_adjustment_hdr] @mode,@transaction_no,@company_code,@transaction_date,@transaction_type,
-        @Data_deleted,@created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`)
+      .query(`EXEC sp_adjustment_hdr_test @mode,@transaction_no,@company_code,@location_code,@transaction_date,
+      @transaction_type,@Data_deleted,@created_by,@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`)
 
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
@@ -15777,7 +15774,7 @@ const addadjustmenthdr = async (req, res) => {
 
 
 const Adjustmnetdelhdr = async (req, res) => {
-  const { transaction_no, company_code } = req.body;
+  const { transaction_no, company_code, location_code } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -15786,7 +15783,9 @@ const Adjustmnetdelhdr = async (req, res) => {
     await pool.request()
       .input("transaction_no", transaction_no)
       .input("company_code", company_code)
-      .query(`EXEC [sp_adjustment_hdr] 'D', @transaction_no, @company_code, '', '', '', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
+      .input("location_code", location_code)
+      .query(`EXEC sp_adjustment_hdr_test 'D', @transaction_no, @company_code,@location_code, '', '', '', '', 
+      '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL`);
 
     res.status(200).json("Adjustment Header deleted successfully");
   } catch (err) {
@@ -15797,7 +15796,7 @@ const Adjustmnetdelhdr = async (req, res) => {
 
 
 const adjustmentupdatehdr = async (req, res) => {
-  const { transaction_no, company_code, transaction_date, transaction_type, Data_deleted, modified_by, created_by } = req.body;
+  const { transaction_no, company_code, location_code, transaction_date, transaction_type, Data_deleted, modified_by, created_by } = req.body;
   try {
     const pool = await connection.connectToDatabase();
 
@@ -15806,14 +15805,14 @@ const adjustmentupdatehdr = async (req, res) => {
       .input("mode", sql.NVarChar, "U")
       .input("transaction_no", sql.NVarChar, transaction_no)
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("transaction_date", sql.NVarChar, transaction_date)
       .input("transaction_type", sql.NVarChar, transaction_type)
       .input("Data_deleted", sql.NVarChar, Data_deleted)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
-
-      .query(`EXEC [sp_adjustment_hdr] @mode,@transaction_no,@company_code,@transaction_date,@transaction_type,@Data_deleted,@created_by,	@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
-`);
+      .query(`EXEC sp_adjustment_hdr_test @mode,@transaction_no,@company_code,@location_code,@transaction_date,
+      @transaction_type,@Data_deleted,@created_by,	@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     res.json({ success: true, message: "Data inserted successfully" });
   } catch (err) {
     console.error("Error", err);
@@ -15825,7 +15824,7 @@ const adjustmentupdatehdr = async (req, res) => {
 const getalladjustmnethdr = async (req, res) => {
   try {
     await connection.connectToDatabase();
-    const result = await sql.query(`EXEC [sp_adjustment_hdr] 'A','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+    const result = await sql.query(`EXEC sp_adjustment_hdr_test 'A','','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
 `);
 
     res.json(result.recordset);
@@ -15837,7 +15836,7 @@ const getalladjustmnethdr = async (req, res) => {
 
 const addadjustmnetdetails = async (req, res) => {
   const {
-    transaction_no, company_code, transaction_date, transaction_type, item_code, qty, Item_SNo, created_by, modified_by,
+    transaction_no, company_code, location_code, transaction_date, transaction_type, item_code, qty, Item_SNo, created_by, modified_by,
     tempstr1, tempstr2, tempstr3, tempstr4, datetime1, datetime2, datetime3, datetime4
   } = req.body;
 
@@ -15851,6 +15850,7 @@ const addadjustmnetdetails = async (req, res) => {
       .input("mode", sql.NVarChar, "I")
       .input("transaction_no", sql.NVarChar, transaction_no)
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("transaction_date", sql.Date, transaction_date)
       .input("transaction_type", sql.NVarChar, transaction_type)
       .input("item_code", sql.NVarChar, item_code)
@@ -15866,7 +15866,7 @@ const addadjustmnetdetails = async (req, res) => {
       .input("datetime2", sql.DateTime, datetime2)
       .input("datetime3", sql.DateTime, datetime3)
       .input("datetime4", sql.DateTime, datetime4)
-      .query(`EXEC [sp_adjustment_details] @mode, @transaction_no, @company_code, @transaction_date, @transaction_type, @item_code, @qty,@Item_SNo, '', @created_by, '', 
+      .query(`EXEC sp_adjustment_details_test @mode, @transaction_no, @company_code,@location_code, @transaction_date, @transaction_type, @item_code, @qty,@Item_SNo, '', @created_by, '', 
         @tempstr1, @tempstr2, @tempstr3, @tempstr4, @datetime1, @datetime2, @datetime3, @datetime4`);
 
     // Respond with a success message
@@ -15882,7 +15882,7 @@ const addadjustmnetdetails = async (req, res) => {
 
 
 const adjustmnetdeletedetails = async (req, res) => {
-  const { transaction_no, company_code } = req.body;
+  const { transaction_no, company_code, location_code } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -15890,7 +15890,8 @@ const adjustmnetdeletedetails = async (req, res) => {
     await pool.request()
       .input("transaction_no", transaction_no)
       .input("company_code", company_code)
-      .query(`EXEC [sp_adjustment_details] 'D',@transaction_no,@company_code,'','','',0,0,'','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .input("location_code", location_code)
+      .query(`EXEC sp_adjustment_details_test 'D',@transaction_no,@company_code,@location_code,'','','',0,0,'','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     res.status(200).json("purchase deleted successfully");
   } catch (err) {
@@ -15902,7 +15903,7 @@ const adjustmnetdeletedetails = async (req, res) => {
 const getalladjustmnetdetails = async (req, res) => {
   try {
     await connection.connectToDatabase();
-    const result = await sql.query(`EXEC [sp_adjustment_details] 'A','','','','','',0,0,'','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+    const result = await sql.query(`EXEC sp_adjustment_details_test 'A','','','','','','',0,0,'','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
 
 `);
 
@@ -16886,7 +16887,7 @@ const ObDetailPrint = async (req, res) => {
 
 // code added by Harish 09/10/2024
 const AdjustmentSearch = async (req, res) => {
-  const { transaction_no, transaction_date, transaction_type } = req.body;
+  const { transaction_no, transaction_date, transaction_type, company_code, location_code } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -16896,7 +16897,10 @@ const AdjustmentSearch = async (req, res) => {
       .input("transaction_no", sql.NVarChar, transaction_no)
       .input("transaction_date", sql.NVarChar, transaction_date)
       .input("transaction_type", sql.NVarChar, transaction_type)
-      .query(`EXEC sp_adjustment_hdr @mode,@transaction_no,'',  @transaction_date,@transaction_type,'','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
+      .query(`EXEC sp_adjustment_hdr_test @mode,@transaction_no,@company_code, @location_code, @transaction_date,
+      @transaction_type,'','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -27908,7 +27912,7 @@ const sendAutoMail = async (req, res) => {
 //code added by pavun on 07-05-25
 
 const addAssertAllocationReturnHdr = async (req, res) => {
-  const { company_code, allocation_no, allocation_date, return_date, return_person, return_reason, created_by } = req.body;
+  const { company_code, location_code, allocation_no, allocation_date, return_date, return_person, return_reason, created_by } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -27917,13 +27921,14 @@ const addAssertAllocationReturnHdr = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "I")
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("allocation_no", sql.NVarChar, allocation_no)
       .input("allocation_date", sql.Date, allocation_date)
       .input("return_date", sql.Date, return_date)
       .input("return_person", sql.NVarChar, return_person)
       .input("return_reason", sql.NVarChar, return_reason)
       .input("created_by", sql.NVarChar, created_by)
-      .query(`EXEC sp_Assets_Allocation_return_hdr @mode,@company_code,@allocation_no,@allocation_date,'',@return_date,@return_person,@return_reason,@created_by,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`)
+      .query(`EXEC sp_Assets_Allocation_return_hdr_test @mode,@company_code,@location_code,@allocation_no,@allocation_date,'',@return_date,@return_person,@return_reason,@created_by,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`)
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -27936,7 +27941,7 @@ const addAssertAllocationReturnHdr = async (req, res) => {
 };
 
 const getAssertAllocationReturnHdr = async (req, res) => {
-  const { company_code } = req.body;
+  const { company_code, location_code } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -27944,7 +27949,8 @@ const getAssertAllocationReturnHdr = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "A")
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC sp_Assets_Allocation_return_hdr @mode,@company_code,'','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`)
+      .input("location_code", sql.NVarChar, location_code)
+      .query(`EXEC sp_Assets_Allocation_return_hdr_test @mode,@company_code,@location_code,'','','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`)
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -27957,7 +27963,7 @@ const getAssertAllocationReturnHdr = async (req, res) => {
 };
 
 const addAssetsAllocationReturnDetails = async (req, res) => {
-  const { company_code, allocation_no, allocation_date, return_no, return_date, item_SNO, item_code, item_name, Emp_no, Serial_no,
+  const { company_code, location_code, allocation_no, allocation_date, return_no, return_date, item_SNO, item_code, item_name, Emp_no, Serial_no,
     Quantity, return_qty, return_person, return_reason, created_by } = req.body;
   let pool;
   try {
@@ -27966,6 +27972,7 @@ const addAssetsAllocationReturnDetails = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "I")
       .input("company_code", sql.VarChar, company_code)
+      .input("location_code", sql.VarChar, location_code)
       .input("allocation_no", sql.NVarChar, allocation_no)
       .input("allocation_date", sql.Date, allocation_date)
       .input("return_no", sql.NVarChar, return_no)
@@ -27980,7 +27987,7 @@ const addAssetsAllocationReturnDetails = async (req, res) => {
       .input("return_person", sql.NVarChar, return_person)
       .input("return_reason", sql.NVarChar, return_reason)
       .input("created_by", sql.VarChar, created_by)
-      .query(`EXEC sp_Assets_Allocation_Return_Details @mode,@company_code,@allocation_no,@allocation_date,@return_no,@return_date,@item_SNO,@item_code,@item_name,
+      .query(`EXEC sp_Assets_Allocation_Return_Details_test @mode,@company_code,@location_code,@allocation_no,@allocation_date,@return_no,@return_date,@item_SNO,@item_code,@item_name,
         @Emp_no,@Serial_no,@Quantity,@return_qty,@return_person,@return_reason,@created_by,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     res.json({ success: true, message: "Data Inserted Successfully" });
   } catch (err) {
@@ -27990,7 +27997,7 @@ const addAssetsAllocationReturnDetails = async (req, res) => {
 };
 
 const getAssetsAllocationReturnDetails = async (req, res) => {
-  const { company_code } = req.body;
+  const { company_code, location_code } = req.body;
   let pool;
   try {
     pool = await sql.connect(dbConfig);
@@ -27998,7 +28005,8 @@ const getAssetsAllocationReturnDetails = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "A")
       .input("company_code", sql.VarChar, company_code)
-      .query(`EXEC sp_Assets_Allocation_Return_Details @mode,@company_code,'','','','',0,'','','','',0,0,'','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .input("location_code", sql.VarChar, location_code)
+      .query(`EXEC sp_Assets_Allocation_Return_Details_test @mode,@company_code,@location_code,'','','','',0,'','','','',0,0,'','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
@@ -28039,7 +28047,7 @@ const getallAssetsAllocationReturn = async (req, res) => {
 };
 
 const searchCriteriaAssertReturn = async (req, res) => {
-  const { company_code, allocation_no, allocation_date, return_no, return_date, return_person, return_reason, Serial_no, Quantity } = req.body;
+  const { company_code, location_code, allocation_no, allocation_date, return_no, return_date, return_person, return_reason, Serial_no, Quantity } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -28048,13 +28056,14 @@ const searchCriteriaAssertReturn = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "SC")
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("allocation_no", sql.NVarChar, allocation_no)
       .input("allocation_date", sql.NVarChar, allocation_date)
       .input("return_no", sql.NVarChar, return_no)
       .input("return_date", sql.NVarChar, return_date)
       .input("return_person", sql.NVarChar, return_person)
       .input("return_reason", sql.NVarChar, return_reason)
-      .query(`EXEC sp_Assets_Allocation_return_hdr @mode,@company_code,@allocation_no,@allocation_date,@return_no,@return_date,@return_person,@return_reason,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`)
+      .query(`EXEC sp_Assets_Allocation_return_hdr_test @mode,@company_code,@location_code,@allocation_no,@allocation_date,@return_no,@return_date,@return_person,@return_reason,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`)
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);
     } else {
