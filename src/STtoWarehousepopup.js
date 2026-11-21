@@ -80,13 +80,13 @@ export default function StockTransferToWarehousePopup({ open, handleClose, handl
   const [locationnodrop, setLocationdrop] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState('');
 
-    useEffect(() => {
+  useEffect(() => {
     fetch(`${config.apiBaseUrl}/locationno`)
       .then((data) => data.json())
       .then((val) => setLocationdrop(val));
   }, []);
 
-    const handleChangeLocation = (selectedLocation) => {
+  const handleChangeLocation = (selectedLocation) => {
     setSelectedLocation(selectedLocation);
     setlocation_no(selectedLocation ? selectedLocation.value : '');
 
@@ -107,17 +107,17 @@ export default function StockTransferToWarehousePopup({ open, handleClose, handl
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-    const filteredOptionStatus = statusdropDown.map((option) => ({
+  const filteredOptionStatus = statusdropDown.map((option) => ({
     value: option.attributedetails_name,
     label: option.attributedetails_name,
   }));
 
-    const filteredOptionLocation = locationnodrop.map((option) => ({
+  const filteredOptionLocation = locationnodrop.map((option) => ({
     value: option.location_no,
     label: option.location_no,
   }));
 
-    const handleChangeStatus = (selectedStatus) => {
+  const handleChangeStatus = (selectedStatus) => {
     setSelectedStatus(selectedStatus);
     setstatus(selectedStatus ? selectedStatus.value : "");
   };
@@ -130,7 +130,7 @@ export default function StockTransferToWarehousePopup({ open, handleClose, handl
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({company_code : sessionStorage.getItem('selectedCompanyCode'), warehouse_code, warehouse_name, status, location_no }) // Send company_no and company_name as search criteria
+        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), warehouse_code, warehouse_name, status, location_no }) // Send company_no and company_name as search criteria
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -151,7 +151,7 @@ export default function StockTransferToWarehousePopup({ open, handleClose, handl
       }
     } catch (error) {
       console.error("Error fetching search data:", error);
-    }finally {
+    } finally {
       setLoading(false);
     }
 
@@ -174,29 +174,29 @@ export default function StockTransferToWarehousePopup({ open, handleClose, handl
   // }
 
   const handleConfirm1 = () => {
-  
+
     // Check whether a warehouse row is selected
     if (selectedRows.length === 0) {
       toast.warning("Please select a warehouse.");
       return;
     }
-  
+
     // Get the selected warehouse row
     const selectedWarehouse = selectedRows[0];
-  
+
     // Validate warehouse status
     if (selectedWarehouse.status?.toLowerCase() !== "active") {
       toast.warning("The selected warehouse is not active.");
       return;
     }
-  
+
     // Only active warehouse will reach here
     const selectedData1 = selectedRows.map(row => ({
       warehouse: row.warehouse_code
     }));
-  
+
     handleWarehouse(selectedData1);
-  
+
     handleClose();
     clearInputs();
     setRowData([]);
@@ -253,7 +253,7 @@ export default function StockTransferToWarehousePopup({ open, handleClose, handl
                           <div className="purbut mb-0 d-flex justify-content-between" >
                             <h1 align="left" className="purbut">Warehouse Help</h1>
                             <button onClick={handleClose} className="purbut btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
-                            <i class="fa-solid fa-xmark"></i>
+                              <i class="fa-solid fa-xmark"></i>
                             </button>
                           </div>
                           <div class="d-flex justify-content-between">
@@ -268,7 +268,7 @@ export default function StockTransferToWarehousePopup({ open, handleClose, handl
                             <input
                               type='text'
                               id='WarehouseCode'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               title='Enter the Warehouse Code'
                               placeholder=' Warehouse Code'
                               maxLength={18}
@@ -282,7 +282,7 @@ export default function StockTransferToWarehousePopup({ open, handleClose, handl
                             <input
                               type='text'
                               id='WarehouseName'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               title='Enter the Warehouse Name'
                               placeholder='Warehouse Name'
                               maxLength={250}
@@ -293,31 +293,33 @@ export default function StockTransferToWarehousePopup({ open, handleClose, handl
                             />
                           </div>
                           <div className="col-sm mb-2">
-                              <div title="Select the Status ">
-                                <Select
-                                  id="ahsts"
-                                  value={selectedStatus}
-                                  onChange={handleChangeStatus}
-                                  options={filteredOptionStatus}
-                                  className="exp-input-field"
-                                  placeholder="Status"
-                                  isClearable
-                                />
-                              </div>
-                          </div>                          
+                            <div title="Select the Status ">
+                              <Select
+                                id="ahsts"
+                                value={selectedStatus}
+                                onChange={handleChangeStatus}
+                                options={filteredOptionStatus}
+                                className="exp-input-field"
+                                classNamePrefix="react-select"
+                                placeholder="Status"
+                                isClearable
+                              />
+                            </div>
+                          </div>
                           <div className="col-sm mb-2">
-                              <div title="Select the Location ">
-                                <Select
-                                  id="ahsts"
-                                  value={selectedLocation}
-                                  onChange={handleChangeLocation}
-                                  options={filteredOptionLocation}
-                                  className="exp-input-field"
-                                  placeholder="Location No"
-                                  isClearable
-                                />
-                              </div>
-                          </div>  
+                            <div title="Select the Location ">
+                              <Select
+                                id="ahsts"
+                                value={selectedLocation}
+                                onChange={handleChangeLocation}
+                                options={filteredOptionLocation}
+                                className="exp-input-field"
+                                classNamePrefix="react-select"
+                                placeholder="Location No"
+                                isClearable
+                              />
+                            </div>
+                          </div>
 
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <icon className="icon popups-btn" title="Search" onClick={handlewarehouseSearch}>
@@ -340,6 +342,8 @@ export default function StockTransferToWarehousePopup({ open, handleClose, handl
                             pagination
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+                            rowHeight={25}
                           />
                         </div>
                       </div>
@@ -360,7 +364,7 @@ export default function StockTransferToWarehousePopup({ open, handleClose, handl
                           </div>
                           <div className="mb-0 d-flex justify-content-end" >
                             <button onClick={handleClose} className="closebtn2" required title="Close">
-                            <i class="fa-solid fa-xmark"></i>
+                              <i class="fa-solid fa-xmark"></i>
                             </button>
                           </div>
                         </div>
@@ -375,7 +379,7 @@ export default function StockTransferToWarehousePopup({ open, handleClose, handl
                             <input
                               type='text'
                               id='WarehouseCode'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               placeholder=' Warehouse Code'
                               maxLength={18}
                               value={warehouse_code}
@@ -388,7 +392,7 @@ export default function StockTransferToWarehousePopup({ open, handleClose, handl
                             <input
                               type='text'
                               id='WarehouseName'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               placeholder='Warehouse Name'
                               maxLength={250}
                               value={warehouse_name}
@@ -398,31 +402,33 @@ export default function StockTransferToWarehousePopup({ open, handleClose, handl
                             />
                           </div>
                           <div className="col-sm mb-2">
-                              <div title="Select the Status ">
-                                <Select
-                                  id="ahsts"
-                                  value={selectedStatus}
-                                  onChange={handleChangeStatus}
-                                  options={filteredOptionStatus}
-                                  className="exp-input-field"
-                                  placeholder="Status"
-                                  isClearable
-                                />
-                              </div>
-                          </div>                          
+                            <div title="Select the Status ">
+                              <Select
+                                id="ahsts"
+                                value={selectedStatus}
+                                onChange={handleChangeStatus}
+                                options={filteredOptionStatus}
+                                className="exp-input-field"
+                                classNamePrefix="react-select"
+                                placeholder="Status"
+                                isClearable
+                              />
+                            </div>
+                          </div>
                           <div className="col-sm mb-2">
-                              <div title="Select the Location ">
-                                <Select
-                                  id="ahsts"
-                                  value={selectedLocation}
-                                  onChange={handleChangeLocation}
-                                  options={filteredOptionLocation}
-                                  className="exp-input-field"
-                                  placeholder="Location No"
-                                  isClearable
-                                />
-                              </div>
-                          </div>  
+                            <div title="Select the Location ">
+                              <Select
+                                id="ahsts"
+                                value={selectedLocation}
+                                onChange={handleChangeLocation}
+                                options={filteredOptionLocation}
+                                className="exp-input-field"
+                                classNamePrefix="react-select"
+                                placeholder="Location No"
+                                isClearable
+                              />
+                            </div>
+                          </div>
 
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <button className="" onClick={handlewarehouseSearch}>
@@ -444,6 +450,8 @@ export default function StockTransferToWarehousePopup({ open, handleClose, handl
                               pagination
                               onSelectionChanged={handleRowSelected}
                               onRowDoubleClicked={handleRowDoubleClick}
+                              headerHeight={28}
+                              rowHeight={25}
                             />
                           </div>
                         </div>

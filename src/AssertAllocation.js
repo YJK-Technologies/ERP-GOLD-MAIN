@@ -524,7 +524,7 @@ function AssertAllocation({ }) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), transaction_no: TransactionNo })
+        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), location_code: sessionStorage.getItem("selectedLocationCode"), transaction_no: TransactionNo })
       });
 
       if (response.ok) {
@@ -856,6 +856,7 @@ function AssertAllocation({ }) {
     try {
       const Header = {
         company_code: sessionStorage.getItem('selectedCompanyCode'),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
         allocation_date: allocationadate,
         created_by: sessionStorage.getItem('selectedUserCode')
       };
@@ -903,6 +904,7 @@ function AssertAllocation({ }) {
       for (const row of validRows) {
         const Details = {
           company_code: sessionStorage.getItem('selectedCompanyCode'),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           allocation_no: allocation_no,
           allocation_date: allocationadate,
           item_SNO: row.serialNumber.toString(),
@@ -946,7 +948,7 @@ function AssertAllocation({ }) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), allocation_no: Allocationno })
+        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), location_code: sessionStorage.getItem("selectedLocationCode"), allocation_no: Allocationno })
       });
       if (response.ok) {
         console.log("Rows deleted successfully:", Allocationno);
@@ -967,7 +969,7 @@ function AssertAllocation({ }) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), allocation_no: Allocationno })
+        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), location_code: sessionStorage.getItem("selectedLocationCode"), allocation_no: Allocationno })
       });
       if (response.ok) {
         console.log("Rows deleted successfully:", Allocationno);
@@ -1040,7 +1042,7 @@ function AssertAllocation({ }) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ transaction_no: code, company_code: sessionStorage.getItem('selectedCompanyCode') })
+        body: JSON.stringify({ transaction_no: code, company_code: sessionStorage.getItem('selectedCompanyCode'), location_code: sessionStorage.getItem("selectedLocationCode"), })
       });
       if (response.ok) {
         setSaveButtonVisible(false);
