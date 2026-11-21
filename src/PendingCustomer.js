@@ -227,6 +227,7 @@ function AssetsReturn({ }) {
             const body = {
                 bill_date: transactionDate,
                 company_code: sessionStorage.getItem('selectedCompanyCode'),
+                location_code: sessionStorage.getItem("selectedLocationCode"),
                 customer_code: customer,
                 type:type
             };
@@ -282,11 +283,13 @@ function AssetsReturn({ }) {
 
         try {
             const company_code = sessionStorage.getItem('selectedCompanyCode');
+            const location_code = sessionStorage.getItem('selectedLocationCode');
             const response = await fetch(`${config.apiBaseUrl}/updatePendingCustomer`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "company_code": company_code
+                    "company_code": company_code,
+                    "location_code": location_code
                 },
                 body: JSON.stringify({ editedData: filteredRows })
             });

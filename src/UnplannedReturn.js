@@ -811,6 +811,7 @@ const UnplannedReturn = () => {
     try {
       const Header = {
         company_code: sessionStorage.getItem('selectedCompanyCode'),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
         DateReturned: returnDate,
         Return_Type: returnType,
         created_by: sessionStorage.getItem('selectedUserCode')
@@ -855,6 +856,7 @@ const UnplannedReturn = () => {
         const Details = {
           created_by: sessionStorage.getItem('selectedUserCode'),
           company_code: sessionStorage.getItem('selectedCompanyCode'),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           ReturnID: ReturnID,
           DateReturned: returnDate,
           Warehouse: row.warehouse,
@@ -945,7 +947,9 @@ const UnplannedReturn = () => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ ReturnID: returnId, company_code: sessionStorage.getItem("selectedCompanyCode") })
+        body: JSON.stringify({ ReturnID: returnId, company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
+         })
 
       });
       if (response.ok) {
@@ -966,7 +970,9 @@ const UnplannedReturn = () => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ ReturnID: returnId, company_code: sessionStorage.getItem("selectedCompanyCode") })
+        body: JSON.stringify({ ReturnID: returnId, company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
+         })
       });
       if (response.ok) {
         return true;

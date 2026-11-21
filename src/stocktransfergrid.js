@@ -114,7 +114,9 @@ useEffect(() => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({transaction_date,transaction_type,transaction_no,item_code}) // Send company_no and company_name as search criteria
+        body: JSON.stringify({company_code: sessionStorage.getItem("selectedCompanyCode"),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
+        transaction_date,transaction_type,transaction_no,item_code}) // Send company_no and company_name as search criteria
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -413,6 +415,8 @@ const onCellValueChanged = (params) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ 
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
             transaction_datesToUpdate: selectedRowsData.map(row => row.transaction_date),
             transaction_nosToUpdate: selectedRowsData.map(row => row.transaction_no),
           updatedData: selectedRowsData
@@ -487,7 +491,9 @@ const onCellValueChanged = (params) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ transaction_datesToDelete, transaction_noToDelete }), // Corrected the key name to match the server-side expectation
+        body: JSON.stringify({ company_code: sessionStorage.getItem("selectedCompanyCode"),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
+        transaction_datesToDelete, transaction_noToDelete }), // Corrected the key name to match the server-side expectation
       });
     
       if (response.ok) {

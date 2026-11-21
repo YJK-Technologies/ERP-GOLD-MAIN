@@ -256,6 +256,7 @@ function Grid() {
             const body = {
                 Item_code: item,
                 company_code: sessionStorage.getItem("selectedCompanyCode"),
+                location_code: sessionStorage.getItem("selectedLocationCode"),
             };
 
             const response = await fetch(`${config.apiBaseUrl}/getOpeningItemPeriod`, {
