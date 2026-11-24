@@ -88,6 +88,7 @@ const PurchaseOrderAnalysis = () => {
     {
       headerName: "Bill to Mobile no",
       field: "contact_number",
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: "Bill to Contact Person",
@@ -124,6 +125,7 @@ const PurchaseOrderAnalysis = () => {
     {
       headerName: "Ship to Mobile no",
       field: "ship_to_contact_number",
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: "Ship to Contact Person",
@@ -132,18 +134,22 @@ const PurchaseOrderAnalysis = () => {
     {
       headerName: "Total",
       field: "total_purchase_amount",
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: "Total Tax",
       field: "total_tax_amount",
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: "Round Off",
       field: "total_rounded_off",
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: "Grand Total",
       field: "total_amount",
+      cellStyle: { textAlign: 'right' },
     },
   ]);
 
@@ -589,7 +595,7 @@ const PurchaseOrderAnalysis = () => {
       "Total": row.total_purchase_amount.toString(),
       "Total Tax": row.total_tax_amount.toString(),
       "Round Off": row.total_rounded_off.toString(),
-      "Grand Total": row.total_amount.toString(),
+      "Grand Total": Number(row.total_amount) || 0,
     }));
   };
 
@@ -684,7 +690,8 @@ const PurchaseOrderAnalysis = () => {
               value={selectedPeriod}
               onChange={handleChangePeriod}
               options={filteredOptionPeriod}
-              className="border-secondary"
+              className="border-secondary" 
+              classNamePrefix="react-select"
               placeholder=""
               required title="Please select a item code"
               maxLength={18}
@@ -787,6 +794,9 @@ const PurchaseOrderAnalysis = () => {
             pagination={true}
             paginationAutoPageSize={true}
             onGridReady={onGridReady}
+            rowSelection="multiple"
+            headerHeight={28}
+                              rowHeight={25}
           />
         </div>
       </div>
