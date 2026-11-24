@@ -1127,6 +1127,14 @@ router.post("/getAllVendorCode", dataController.getAllVendorCode);
 router.post("/getTrialBalanceReport", dataController.getTrialBalanceReport);
 router.post("/getBalanceSheetReport", dataController.getBalanceSheetReport);
 router.post("/get_fs_post_data", dataController.get_fs_post_data);
+router.post("/Item_Category_MasterInsert", upload.single('Item_Category_Image'),dataController.Item_Category_MasterInsert)
+router.post("/Item_Category_MasterUpdate",upload.single('Item_Category_Image'),dataController.Item_Category_MasterUpdate)
+router.post("/Item_Category_MasterDelete", dataController.Item_Category_MasterDelete);
+router.post("/Categorysearch", dataController.Categorysearch);
+router.post("/CategoryFetch", dataController.CategoryFetch);
+router.post("/Item_Category_MasterUpdateRow", dataController.Item_Category_MasterUpdateRow);
+router.post("/getCategoryData", dataController.getCategoryData);
+router.post("/getDefault", dataController.getDefault);
 
 
 

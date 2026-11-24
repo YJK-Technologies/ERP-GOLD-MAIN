@@ -34227,7 +34227,288 @@ const get_fs_post_data = async (req, res) => {
     res.status(500).json({ message: err.message || 'Internal Server Error' });
   }
 };
+//code added by SakthiGanesh.J on 11-24-26
+const Item_Category_MasterInsert = async (req, res) => {
+  const {
+    Item_Category_ID,
+    Item_Category_Code,
+    Item_Category_Name,
+    Item_Category_Description,
+    Region_Code,
+    Country_Code,
+    Display_Order,
+    Record_Version,
+    Row_GUID,
+    Source_System,
+    Sync_Status,
+    company_code,
+    created_by
+  } = req.body;
 
+  let Item_Category_Image = null;
+  if (req.file) {
+    Item_Category_Image = req.file.buffer;
+  }
+
+  const Is_Active = (req.body.Is_Active === 1 || req.body.Is_Active === "1" || req.body.Is_Active === true || req.body.status === "Active") ? 1 : 0;
+  const Is_Default = (req.body.Is_Default === 1 || req.body.Is_Default === "1" || req.body.Is_Default === true) ? 1 : 0;
+  const Is_Deleted = (req.body.Is_Deleted === 1 || req.body.Is_Deleted === "1" || req.body.Is_Deleted === true) ? 1 : 0;
+
+  try {
+
+    pool = await sql.connect(dbConfig);
+
+    await pool
+      .request()
+      .input("mode", sql.NVarChar, "I")
+      .input("Item_Category_ID", sql.NVarChar, Item_Category_ID)
+      .input("Item_Category_Code", sql.NVarChar, Item_Category_Code)
+      .input("Item_Category_Name", sql.NVarChar, Item_Category_Name)
+      .input("Item_Category_Description", sql.NVarChar, Item_Category_Description)
+      .input("Item_Category_Image", sql.VarBinary, Item_Category_Image)
+      .input("Region_Code", sql.NVarChar, Region_Code)
+      .input("Country_Code", sql.NVarChar, Country_Code)
+      .input("Is_Active", sql.Bit, Is_Active)
+      .input("Is_Deleted", sql.Bit, Is_Deleted)
+      .input("Is_Default", sql.Bit, Is_Default)
+      .input("Display_Order", sql.Int, Display_Order)
+      .input("Record_Version", sql.Int, Record_Version)
+      .input("Row_GUID", sql.NVarChar, Row_GUID)
+      .input("Source_System", sql.NVarChar, Source_System)
+      .input("Sync_Status", sql.NVarChar, Sync_Status)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("created_by", sql.NVarChar, created_by)
+      .query(`EXEC sp_Item_Category_Master  @mode, @Item_Category_ID, @Item_Category_Code, @Item_Category_Name,@Item_Category_Description, @Item_Category_Image,
+      @Region_Code, @Country_Code, @Is_Active, @Is_Deleted,@Is_Default, @Display_Order, @Record_Version,@Row_GUID, @Source_System, @Sync_Status,'', @company_code, @created_by, '', '', ''`);
+
+    return res.status(200).json({ success: true, message: 'Data inserted successfully' });
+  } catch (err) {
+    console.error("Error ", err);
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const Item_Category_MasterUpdate = async (req, res) => {
+  const {
+    company_code,
+    Item_Category_Code,
+    Item_Category_Name,
+    Item_Category_Description,
+    Region_Code,
+    Country_Code,
+    Display_Order,
+    Record_Version,
+    status,
+    modified_by,
+    Keyfield
+  } = req.body;
+
+
+  let Item_Category_Image = null;
+  if (req.file) Item_Category_Image = req.file.buffer;
+
+  const Is_Active = (req.body.Is_Active === 1 || req.body.Is_Active === "1" || req.body.Is_Active === true || req.body.status === "Active") ? 1 : 0;
+  const Is_Default = (req.body.Is_Default === 1 || req.body.Is_Default === "1" || req.body.Is_Default === true) ? 1 : 0;
+
+  try {
+    pool = await connection.connectToDatabase();
+
+    await pool.request()
+      .input("mode", sql.NVarChar, "U")
+      .input("Item_Category_Code", sql.NVarChar, Item_Category_Code)
+      .input("Item_Category_Name", sql.NVarChar, Item_Category_Name)
+      .input("Item_Category_Description", sql.NVarChar, Item_Category_Description)
+      .input("Item_Category_Image", sql.VarBinary, Item_Category_Image)
+      .input("Region_Code", sql.NVarChar, Region_Code)
+      .input("Country_Code", sql.NVarChar, Country_Code)
+      .input("Is_Active", sql.Bit, Is_Active)
+      .input("Is_Default", sql.Bit, Is_Default)
+      .input("Display_Order", sql.Int, Display_Order)
+      .input("Record_Version", sql.Int, Record_Version)
+      .input("Keyfield", sql.NVarChar, Keyfield)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("modified_by", sql.NVarChar, modified_by)
+      .query(`EXEC sp_Item_Category_Master @mode,'',@Item_Category_Code,@Item_Category_Name,@Item_Category_Description,@Item_Category_Image,
+        @Region_Code,@Country_Code,@Is_Active,0,@Is_Default,@Display_Order,@Record_Version,'','',0,@Keyfield,@company_code,'','',@modified_by,''`);
+
+    res.status(200).json("Updated successfully");
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const Item_Category_MasterDelete = async (req, res) => {
+  const { keyfields, modified_by } = req.body;
+
+  if (!keyfields || keyfields.length === 0) {
+    return res.status(400).json({ message: "No keyfields provided" });
+  }
+
+  try {
+    const pool = await sql.connect(dbConfig);
+
+    for (const keyfield of keyfields) {
+      await pool.request()
+        .input("mode", sql.NVarChar, "D")
+        .input("Keyfield", sql.NVarChar, keyfield)
+        .input("modified_by", sql.NVarChar, modified_by)
+        .query(`EXEC sp_Item_Category_Master @mode, '', '', '', '', '', '', '', 0, 0, 0, 0, '', '','', '',@Keyfield,'', '','', @modified_by, ''`);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Item categories deleted successfully"
+    });
+
+  } catch (err) {
+    console.error("Delete Error:", err);
+    res.status(500).json({
+      message: err.message || "Internal Server Error"
+    });
+  }
+};
+
+const Categorysearch = async (req, res) => {
+  const { company_code, Item_Category_Code, Item_Category_Name, Item_Category_Description, Region_Code, Is_Active, Is_Default, Display_Order } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "SC")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("Item_Category_Code", sql.NVarChar, Item_Category_Code)
+      .input("Item_Category_Name", sql.NVarChar, Item_Category_Name)
+      .input("Item_Category_Description", sql.NVarChar, Item_Category_Description)
+      .input("Region_Code", sql.NVarChar, Region_Code)
+      .input("Is_Default", sql.NVarChar, Is_Default)
+      .input("Is_Active", sql.NVarChar, Is_Active)
+      .input("Display_Order", sql.NVarChar, Display_Order)
+      .query(`EXEC sp_Item_Category_Master @mode,'',@Item_Category_Code,@Item_Category_Name,@Item_Category_Description,'',@Region_Code,'',@Is_Active,0,@Is_Default,@Display_Order,'','','','','',@company_code,'','','',''`);
+
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json("Data not found");
+    }
+  } catch (err) {
+    console.error("Error", err.message);
+    return res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const CategoryFetch = async (req, res) => {
+  const { company_code } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "IC")
+      .input("company_code", sql.NVarChar, company_code)
+      .query(`EXEC sp_Item_Category_Master @mode,'','','','','','','',0,0,0,0,'','','','','',@company_code,'','','',''`);
+
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json("Data not found");
+    }
+  } catch (err) {
+    console.error("Error", err.message);
+    return res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const Item_Category_MasterUpdateRow = async (req, res) => {
+  const editedData = req.body.editedData;
+
+  if (!Array.isArray(editedData) || editedData.length === 0) {
+    return res.status(400).json("Invalid or empty editedData array");
+  }
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    for (const row of editedData) {
+
+      let Item_Category_Image = null;
+      if (row.Item_Category_Image?.type === "Buffer") {
+        Item_Category_Image = Buffer.from(row.Item_Category_Image.data);
+      }
+
+      const Is_Active = (row.Is_Active === true || row.Is_Active === 1 || row.Is_Active === "1" || row.status === "Active") ? 1 : 0;
+      const Is_Default = (row.Is_Default === true || row.Is_Default === 1 || row.Is_Default === "1") ? 1 : 0;
+
+      await pool.request()
+        .input("mode", sql.NVarChar, "U")
+        .input("Item_Category_Code", sql.NVarChar, row.Item_Category_Code)
+        .input("Item_Category_Name", sql.NVarChar, row.Item_Category_Name)
+        .input("Item_Category_Description", sql.NVarChar, row.Item_Category_Description)
+        .input("Item_Category_Image", sql.VarBinary(sql.MAX), Item_Category_Image)
+        .input("Region_Code", sql.NVarChar, row.Region_Code)
+        .input("Country_Code", sql.NVarChar, row.Country_Code)
+        .input("Is_Active", sql.Bit, Is_Active)
+        .input("Is_Default", sql.Bit, Is_Default)
+        .input("Display_Order", sql.Int, row.Display_Order)
+        .input("Record_Version", sql.Int, row.Record_Version)
+        .input("Keyfield", sql.NVarChar, row.Keyfield)
+        .input("company_code", sql.NVarChar, req.headers['company_code'])
+        .input("modified_by", sql.NVarChar, req.headers["modified-by"])
+        .query(`EXEC sp_Item_Category_Master @mode,'',@Item_Category_Code,@Item_Category_Name,@Item_Category_Description,@Item_Category_Image,
+        @Region_Code,@Country_Code,@Is_Active,0,@Is_Default,@Display_Order,@Record_Version,'','',0,@Keyfield,@company_code,'','',@modified_by,''`);
+    }
+
+    res.status(200).json("Item Category rows updated successfully");
+
+  } catch (error) {
+    console.error("Item Category Update Error:", error);
+    res.status(500).json({ message: error.message || "Internal Server Error" });
+  }
+};
+
+const getCategoryData = async (req, res) => {
+  const { company_code, Keyfield } = req.body;
+
+  try {
+    const pool = await connection.connectToDatabase();
+
+    const result = await pool
+      .request()
+      .input("mode", sql.NVarChar, "GCD")
+      .input("company_code", sql.NVarChar, company_code)
+      .input("Keyfield", sql.NVarChar, Keyfield)
+      .query(`EXEC sp_Item_Category_Master @mode,'','','','','','','',0,0,0,0,'','','','',@Keyfield,@company_code,'','','',''`);
+
+    if (result.recordset.length > 0) {
+      res.status(200).json(result.recordset);
+    } else {
+      res.status(404).json("Data not found");
+    }
+  } catch (err) {
+    console.error("Error", err.message);
+    return res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+const getDefault = async (req, res) => {
+  const { company_code } = req.body;
+  try {
+    const pool = await connection.connectToDatabase();
+    const result = await pool
+      .request()
+      .input("company_code", sql.NVarChar, company_code)
+      .query("EXEC sp_attribute_Info 'F',@company_code,'Default','','','', '',0,'','', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL");
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
+  }
+};
+//code ended by SakthiGanesh.J on 11-24-26
 module.exports = {
   login,
   forgetPassword,
@@ -35329,6 +35610,14 @@ module.exports = {
   getGroupTypeCode,
   getTrialBalanceReport,
   getBalanceSheetReport,
-  get_fs_post_data
+  get_fs_post_data,
+  Item_Category_MasterInsert,
+  Item_Category_MasterUpdate,
+  Item_Category_MasterDelete,
+  Categorysearch,
+  CategoryFetch,
+  Item_Category_MasterUpdateRow,
+  getCategoryData,
+  getDefault
 
 };
