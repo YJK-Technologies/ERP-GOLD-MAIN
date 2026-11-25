@@ -33505,7 +33505,7 @@ const getCurrencyCodeDrop = async (req, res) => {
 const addJournalVoucherHeader = async (req, res) => {
   const {
     company_code, location_code, jv_date, fin_year, fin_period,
-    voucher_type, currency, exch_rate, reference_no, narration,
+    voucher_type, currency, exchangeRate, reference_no, narration,
     total_dr_amount, total_cr_amount, status, created_by } = req.body;
 
   let pool;
@@ -33522,7 +33522,7 @@ const addJournalVoucherHeader = async (req, res) => {
       .input("fin_period", sql.NVarChar, fin_period)
       .input("voucher_type", sql.NVarChar, voucher_type)
       .input("currency", sql.NVarChar, currency)
-      .input("exch_rate", sql.Decimal(10, 4), exch_rate)
+      .input("exch_rate", sql.Decimal(10, 4), exchangeRate)
       .input("reference_no", sql.NVarChar, reference_no)
       .input("narration", sql.NVarChar, narration)
       .input("total_dr_amount", sql.Decimal(18, 2), total_dr_amount)
@@ -33745,7 +33745,7 @@ const InvoiceFsPosting = async (req, res) => {
       .input("Tran_date", sql.Date, Tran_date)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
-      .query(`EXEC sp_fs_postings_test @mode,@company_code,@location_code,'','',@Tran_type,@Tran_no,@Tran_date,'Posted','',@VendCust_code,'','INR',0,0,'',NULL,@created_by,NULL,@modified_by,NULL`);
+      .query(`EXEC sp_fs_postings_test2 @mode,@company_code,@location_code,'','',@Tran_type,@Tran_no,@Tran_date,'Posted','',@VendCust_code,'','INR',0,0,'',NULL,@created_by,NULL,@modified_by,NULL`);
 
     res.status(200).json("Invoice Posting Successfully");
   } catch (err) {
@@ -34215,7 +34215,7 @@ const get_fs_post_data = async (req, res) => {
       .input("location_code", sql.NVarChar, location_code)
       .input("Tran_type", sql.NVarChar, Tran_type)
       .input("Tran_no", sql.NVarChar, Tran_no)
-      .query(`EXEC sp_fs_postings_test @mode,@company_code,@location_code,'','',@Tran_type,@Tran_no,'','','','','','',0,0,'',0,'',NULL,'',NULL`);
+      .query(`EXEC sp_fs_postings_test2 @mode,@company_code,@location_code,'','',@Tran_type,@Tran_no,'','','','','','',0,0,'',0,'',NULL,'',NULL`);
 
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset); 
