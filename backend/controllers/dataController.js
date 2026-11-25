@@ -33745,7 +33745,7 @@ const InvoiceFsPosting = async (req, res) => {
       .input("Tran_date", sql.Date, Tran_date)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
-      .query(`EXEC sp_fs_postings_test @mode,@company_code,@location_code,'','',@Tran_type,@Tran_no,@Tran_date,'Posted','',@VendCust_code,'','INR',0,0,'',NULL,@created_by,NULL,@modified_by,NULL`);
+      .query(`EXEC sp_fs_postings_test2 @mode,@company_code,@location_code,'','',@Tran_type,@Tran_no,@Tran_date,'Posted','',@VendCust_code,'','INR',0,0,'',NULL,@created_by,NULL,@modified_by,NULL`);
 
     res.status(200).json("Invoice Posting Successfully");
   } catch (err) {
@@ -34215,7 +34215,7 @@ const get_fs_post_data = async (req, res) => {
       .input("location_code", sql.NVarChar, location_code)
       .input("Tran_type", sql.NVarChar, Tran_type)
       .input("Tran_no", sql.NVarChar, Tran_no)
-      .query(`EXEC sp_fs_postings_test @mode,@company_code,@location_code,'','',@Tran_type,@Tran_no,'','','','','','',0,0,'',0,'',NULL,'',NULL`);
+      .query(`EXEC sp_fs_postings_test2 @mode,@company_code,@location_code,'','',@Tran_type,@Tran_no,'','','','','','',0,0,'',0,'',NULL,'',NULL`);
 
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset); 
