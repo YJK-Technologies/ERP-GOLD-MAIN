@@ -274,9 +274,6 @@ function AddCategoryScreen() {
       if (response.ok) {
         toast.success(
           `Data ${mode === "create" ? "inserted" : "updated"} successfully!`,
-          {
-            onClose: () => handleNavigate(),
-          }
         );
       } else {
         const errorResponse = await response.json();
