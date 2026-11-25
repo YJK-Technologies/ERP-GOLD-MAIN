@@ -368,19 +368,33 @@ function ItemInput({ }) {
   }, []);
 
   useEffect(() => {
-    const company_code = sessionStorage.getItem("selectedCompanyCode");
-
-    fetch(`${config.apiBaseUrl}/variant`, {
-      method: "POST",
+    const company_code = sessionStorage.getItem('selectedCompanyCode');
+    fetch(`${config.apiBaseUrl}/CategoryFetch`, {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ company_code }),
+      body: JSON.stringify({ company_code })
     })
       .then((data) => data.json())
       .then((val) => setvariantdrop(val))
-      .catch((error) => console.error("Error fetching data:", error));
+      .catch((error) => console.error('Error fetching data:', error));
   }, []);
+  
+  // useEffect(() => {
+  //   const company_code = sessionStorage.getItem("selectedCompanyCode");
+
+  //   fetch(`${config.apiBaseUrl}/variant`, {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({ company_code }),
+  //   })
+  //     .then((data) => data.json())
+  //     .then((val) => setvariantdrop(val))
+  //     .catch((error) => console.error("Error fetching data:", error));
+  // }, []);
 
   useEffect(() => {
     const company_code = sessionStorage.getItem('selectedCompanyCode');
@@ -533,9 +547,13 @@ function ItemInput({ }) {
     value: option.attributedetails_name,
     label: option.attributedetails_name,
   }));
-  const filteredOptionVariant = variantdrop.map((option) => ({
-    value: option.attributedetails_name,
-    label: option.attributedetails_name,
+  // const filteredOptionVariant = variantdrop.map((option) => ({
+  //   value: option.attributedetails_name,
+  //   label: option.attributedetails_name,
+  // }));
+    const filteredOptionVariant = variantdrop.map((option) => ({
+    value: option.Item_Category_Code,
+    label: `${option.Item_Category_Code} - ${option.Item_Category_Name}`,
   }));
 
   const filteredOptiontaxitemsales = saltaxdrop.map((option) => ({

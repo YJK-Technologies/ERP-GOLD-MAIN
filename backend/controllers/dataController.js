@@ -33505,7 +33505,7 @@ const getCurrencyCodeDrop = async (req, res) => {
 const addJournalVoucherHeader = async (req, res) => {
   const {
     company_code, location_code, jv_date, fin_year, fin_period,
-    voucher_type, currency, exch_rate, reference_no, narration,
+    voucher_type, currency, exchangeRate, reference_no, narration,
     total_dr_amount, total_cr_amount, status, created_by } = req.body;
 
   let pool;
@@ -33522,7 +33522,7 @@ const addJournalVoucherHeader = async (req, res) => {
       .input("fin_period", sql.NVarChar, fin_period)
       .input("voucher_type", sql.NVarChar, voucher_type)
       .input("currency", sql.NVarChar, currency)
-      .input("exch_rate", sql.Decimal(10, 4), exch_rate)
+      .input("exch_rate", sql.Decimal(10, 4), exchangeRate)
       .input("reference_no", sql.NVarChar, reference_no)
       .input("narration", sql.NVarChar, narration)
       .input("total_dr_amount", sql.Decimal(18, 2), total_dr_amount)
