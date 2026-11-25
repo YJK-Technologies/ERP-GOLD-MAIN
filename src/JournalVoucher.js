@@ -29,6 +29,7 @@ function JournalVoucher() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showAsterisk, setShowAsterisk] = useState(false);
+  const [voucherStatus, setVoucherStatus] = useState("");
 
   // Popup State Variables
   const [openCOAPopup, setOpenCOAPopup] = useState(false);
@@ -43,6 +44,8 @@ function JournalVoucher() {
   const [screensDrop, setScreensDrop] = useState([]);
   const [Screens, setScreens] = useState("");
   const [selectedscreens, setSelectedscreens] = useState(null);
+  const [currencyDrop, setCurrencyDrop] = useState([]);
+  const [selectedCurrency, setSelectedCurrency] = useState(null);
 
   const companyCode = sessionStorage.getItem('selectedCompanyCode');
   const createdBy = sessionStorage.getItem('selectedUserCode') || 'Admin';
@@ -169,6 +172,47 @@ function JournalVoucher() {
     value: option.descriptions,
     label: option.attributedetails_name,
   }));
+
+    const handleChangeCurrency = (selectedOption) => {
+        setSelectedCurrency(selectedOption);
+        setCurrency(selectedOption ? selectedOption.value : "");
+    };
+
+    const filteredOptionCurrency = Array.isArray(currencyDrop)
+        ? currencyDrop.map((option) => {
+            const code = option.Currency_Code || option.currency_code || option.CurrencyCode || option.Keyfield;
+            const name = option.Currency_Name || option.currency_name || option.CurrencyName || option.CountryName;
+            return {
+                value: code,
+                label: `${code} - ${name}`,
+            };
+        })
+        : [];
+
+    useEffect(() => {
+        const company_code = sessionStorage.getItem("selectedCompanyCode");
+        const location_code = sessionStorage.getItem("selectedLocationCode");
+
+        fetch(`${config.apiBaseUrl}/getCurrencyCodeDrop`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ company_code, location_code }),
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error("Failed to fetch currency list");
+                }
+                return res.json();
+            })
+            .then((data) => {
+                if (Array.isArray(data)) {
+                    setCurrencyDrop(data);
+                } else {
+                    setCurrencyDrop([]);
+                }
+            })
+            .catch((err) => console.error("Error fetching currency dropdown:", err));
+    }, []);
 
   // 3. Grid Columns & Calculations
   const calculateTotals = useCallback(() => {
@@ -337,6 +381,11 @@ function JournalVoucher() {
     if (Screens === "Draft") {
       handleSaveButtonClick();
     } else if (Screens && Screens.trim() !== "") {
+      if (!voucherNo || voucherNo.trim() === "") {
+        setError(" ");
+        toast.warning("Please enter or select a valid Voucher No before updating.");
+        return;
+      }
       handleUpdateButtonClick();
     } else {
       toast.warning("Please select a valid transaction event from the dropdown.");
@@ -374,7 +423,7 @@ function JournalVoucher() {
         fin_year: "",
         fin_period: "",
         voucher_type: voucherType?.value,
-        currency: currency?.value,
+        currency: currency,
         exch_rate: Number(exchangeRate),
         reference_no: refNo,
         narration: narration,
@@ -429,21 +478,25 @@ function JournalVoucher() {
 
       if (response.ok) {
         console.log("Invoice Posting Successfully");
+        return true;
       } else {
         const errorResponse = await response.json();
         console.error(errorResponse.message);
         toast.error("Error inserting data" + errorResponse.message);
+        return false;
       }
     } catch (error) {
       console.error("Error inserting data:", error);
       toast.error("Error inserting data: " + error.message);
+      return false;
     } finally {
       setLoading(false);
     }
   };
   const handleUpdateButtonClick = async () => {
-    if (!voucherNo) {
-      toast.warning("Error: Missing JV number for Update");
+    if (!voucherNo || voucherNo.trim() === "") {
+      setError(" ");
+      toast.warning("Please enter or select a valid Voucher No before updating.");
       return;
     }
     const validRows = validatePayload();
@@ -464,7 +517,7 @@ function JournalVoucher() {
             fin_year: "",
             fin_period: "",
             voucher_type: voucherType?.value,
-            currency: currency?.value,
+            currency: currency,
             exch_rate: Number(exchangeRate),
             reference_no: refNo,
             narration: narration,
@@ -491,7 +544,13 @@ function JournalVoucher() {
 
 
             if (Screens === "Authorized") {
-              await InvoiceFsPosting(voucherNo);
+              const isPosted = await InvoiceFsPosting(voucherNo);
+              if (isPosted) {
+                await fetchFSPostingData(voucherNo);
+                setShowPostingGrid(true);
+              } else {
+                return;
+              }
             }
             toast.success(`Journal Voucher Data ${selectedscreens?.value || "Updated"} Successfully`);
           } else {
@@ -545,13 +604,17 @@ function JournalVoucher() {
 
   const handleReload = () => {
     setLoading(true);
+    setError("");
+    setVoucherNo("");
     setVoucherNo("");
     setVoucherDate("");
     setRefNo("");
     setNarration("");
+    setVoucherStatus("");
     setExchangeRate(1);
     setTotals({ debit: 0, credit: 0 });
     setRowData([{ accountCode: '', accountName: '', description: '', drCrFlag: 'Dr', amount: '', costCenter: 'Select' }]);
+    setPostingRowData([])
     setLoading(false);
   };
 
@@ -583,10 +646,14 @@ function JournalVoucher() {
           setVoucherNo(header.jv_no || "");
           setVoucherDate(header.jv_date ? new Date(header.jv_date).toISOString().split('T')[0] : "");
           setVoucherType({ label: header.voucher_type, value: header.voucher_type });
-          setCurrency({ label: header.currency, value: header.currency });
+          // setCurrency({ label: header.currency, value: header.currency });
+          setCurrency(header.currency || "");
+          const matchedCurrency = filteredOptionCurrency.find(opt => opt.value === header.currency);
+          setSelectedCurrency(matchedCurrency || (header.currency ? { value: header.currency, label: header.currency } : null));
           setExchangeRate(header.exch_rate || 1);
           setRefNo(header.reference_no || "");
           setNarration(header.hdr_narration || "");
+          setVoucherStatus(header.status || "");
 
           const matchedScreen = filteredOptionScreens.find(opt => opt.value === header.status);
           if (matchedScreen) setSelectedscreens(matchedScreen);
@@ -663,6 +730,39 @@ function JournalVoucher() {
       console.error("FS Posting Fetch Error:", error);
       setPostingRowData([]);
       toast.error(error.message || "Failed to fetch FS Posting");
+    }
+  };
+
+  const handleCellKeyDown = (params) => {
+    const { event, column, node, api } = params;
+
+    // 'amount' column-la Enter key press panna mattum trigger aagum
+    if (event.key === 'Enter' && column.getColId() === 'amount') {
+      const totalRows = api.getDisplayedRowCount();
+      const isLastRow = node.rowIndex === totalRows - 1;
+
+      if (isLastRow) {
+        const newRow = {
+          accountCode: '',
+          accountName: '',
+          description: '',
+          drCrFlag: 'Dr',
+          amount: '',
+          costCenter: 'Select'
+        };
+
+        setRowData((prev) => {
+          const updated = [...prev, newRow];
+          // Pudhu row render aanadhum adha focus panna
+          setTimeout(() => {
+            if (gridRef.current && gridRef.current.api) {
+              const nextRowIndex = updated.length - 1;
+              gridRef.current.api.setFocusedCell(nextRowIndex, 'accountCode');
+            }
+          }, 50);
+          return updated;
+        });
+      }
     }
   };
 
@@ -748,7 +848,7 @@ function JournalVoucher() {
             </div>
           </div>
 
-          <div className="col-md-2 mb-2">
+          <div className="col-md-2 mb-2" title="Select the Voucher Type">
             <div className="exp-form-floating">
               <label>Voucher Type</label>
               <Select
@@ -762,6 +862,20 @@ function JournalVoucher() {
             </div>
           </div>
 
+          {voucherStatus && (
+            <div className="col-md-2 mb-2">
+              <div className="exp-form-floating">
+                <label>Voucher Status</label>
+                <input
+                  type="text"
+                  className="exp-input-field form-control"
+                  value={voucherStatus}
+                  readOnly
+                />
+              </div>
+            </div>
+          )}
+
           <div className="col-md-2 mb-2">
             <div className="exp-form-floating">
               <label>Reference No</label>
@@ -769,7 +883,7 @@ function JournalVoucher() {
             </div>
           </div>
 
-          <div className="col-md-2 mb-2">
+          {/* <div className="col-md-2 mb-2">
             <div className="exp-form-floating">
               <label>Currency</label>
               <Select
@@ -781,7 +895,22 @@ function JournalVoucher() {
                 isClearable
               />
             </div>
+          </div> */}
+
+        <div className="col-md-2 mb-2" title="Select the Currency">
+            <div className="exp-form-floating">
+            <label>Currency</label>
+            <Select
+                id="currency"
+                className="exp-input-field"
+                classNamePrefix="react-select"
+                value={selectedCurrency}
+                onChange={handleChangeCurrency}
+                options={filteredOptionCurrency}
+                styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+            />
           </div>
+        </div>
 
           <div className="col-md-2 mb-2">
             <div className="exp-form-floating">
@@ -796,9 +925,6 @@ function JournalVoucher() {
             </div>
           </div>
 
-        </div>
-
-        <div className="row ms-1 me-1 mb-2">
           <div className="col-md-6">
             <div className="exp-form-floating">
               <label>Narration (Header)</label>
@@ -812,7 +938,7 @@ function JournalVoucher() {
       <div className="shadow-sm p-3 mt-3 bg-white rounded" align="left">
 
         <div className="d-flex justify-content-between mb-2 align-items-center">
-          <h5 className="mb-0 text-secondary">Line Items</h5>
+          <h5 className="mb-0 text-secondary"></h5>
 
           <div className="d-flex justify-content-end align-items-center" style={{ marginRight: "15px" }}>
             <icon
@@ -849,6 +975,7 @@ function JournalVoucher() {
             defaultColDef={{ resizable: true }}
             onCellValueChanged={calculateTotals}
             onRowDataUpdated={calculateTotals}
+            onCellKeyDown={handleCellKeyDown}
             stopEditingWhenCellsLoseFocus={true}
           />
         </div>
