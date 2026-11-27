@@ -156,6 +156,7 @@ export default function InvReceiptPopup({ open, handleClose, InvReceiptData }) {
         },
         body: JSON.stringify({
           company_code: sessionStorage.getItem('selectedCompanyCode'),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           ReceiptID, DateReceived, Receipt_Type: issuedType
         })
       });

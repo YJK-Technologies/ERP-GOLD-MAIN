@@ -795,6 +795,7 @@ const UnplannedReceipt = () => {
     {
       headerName: 'Serial No',
       field: 'serialno',
+      cellStyle: { textAlign: 'right' },
       editable: !showExcelButton,
       filter: true,
       sortable: false
@@ -802,6 +803,7 @@ const UnplannedReceipt = () => {
     {
       headerName: 'Qty',
       field: 'quantityReceived',
+      cellStyle: { textAlign: 'right' },
       editable: true,
       filter: true,
       sortable: false
@@ -973,6 +975,7 @@ const UnplannedReceipt = () => {
 
       const Header = {
         company_code: sessionStorage.getItem('selectedCompanyCode'),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
         DateReceived: receiptDate,
         Receipt_Type: receiptType,
         created_by: sessionStorage.getItem('selectedUserCode')
@@ -1017,6 +1020,7 @@ const UnplannedReceipt = () => {
       for (const row of validRows) {
         const Details = {
           company_code: sessionStorage.getItem('selectedCompanyCode'),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           created_by: sessionStorage.getItem('selectedUserCode'),
           ReceiptID: ReceiptID,
           DateReceived: receiptDate,
@@ -1109,7 +1113,7 @@ const UnplannedReceipt = () => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), ReceiptID: receiptId })
+        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'),location_code: sessionStorage.getItem("selectedLocationCode"), ReceiptID: receiptId })
       });
       if (response.ok) {
         return true;
@@ -1129,7 +1133,7 @@ const UnplannedReceipt = () => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), ReceiptID: receiptId })
+        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'),location_code: sessionStorage.getItem("selectedLocationCode"), ReceiptID: receiptId })
       });
       if (response.ok) {
         return true;

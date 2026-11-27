@@ -225,6 +225,8 @@ import VendorLedger from './VendorLedger.js'
 import VendorLedgerPrint from './PrintScreens/VRETemplate/VendorLedgerPrint.js'
 import BalanceSheet from './BalanceSheet.js'
 import BalanceSheetPrint from './PrintScreens/VRETemplate/BalanceSheetPrint.js'
+import Category from './Category.js'
+import AddCategory from './AddCategory.js'
 
 function Main() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
@@ -490,6 +492,8 @@ function Main() {
      { path: "/VenLedPrint", component: <VendorLedgerPrint /> },
      { path: "/BalSheRep", component: <BalanceSheet /> },
      { path: "/BalShePrint", component: <BalanceSheetPrint /> },
+     { path: "/Category", component: <Category /> },
+     { path: "/AddCategory", component: <AddCategory /> },
   ];
  
   return (

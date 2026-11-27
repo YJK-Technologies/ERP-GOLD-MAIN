@@ -257,6 +257,7 @@ function AdjustmentGrid() {
           body: JSON.stringify({
             Item_code: params.data.item_code,
             company_code: sessionStorage.getItem("selectedCompanyCode"),
+            location_code: sessionStorage.getItem("selectedLocationCode"),
           }),
         },
       );
@@ -398,6 +399,7 @@ function AdjustmentGrid() {
     {
       headerName: "Quantity",
       field: "qty",
+      cellStyle: { textAlign: 'right' },
       editable: true,
       minWidth: 700,
       valueSetter: qtyValueSetter,
@@ -461,6 +463,7 @@ function AdjustmentGrid() {
     try {
       const Header = {
         company_code: sessionStorage.getItem("selectedCompanyCode"),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
         transaction_date: transaction_date,
         transaction_type: transaction_type,
         created_by: sessionStorage.getItem("selectedUserCode"),
@@ -505,6 +508,7 @@ function AdjustmentGrid() {
       for (const row of validRows) {
         const Details = {
           company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           created_by: sessionStorage.getItem("selectedUserCode"),
           transaction_no: transaction_no,
           transaction_date: transaction_date,
@@ -594,6 +598,7 @@ function AdjustmentGrid() {
         },
         body: JSON.stringify({
           company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           transaction_no: transaction_no,
         }),
       });
@@ -623,6 +628,7 @@ function AdjustmentGrid() {
           },
           body: JSON.stringify({
             company_code: sessionStorage.getItem("selectedCompanyCode"),
+            location_code: sessionStorage.getItem("selectedLocationCode"),
             transaction_no: transaction_no,
           }),
         },
@@ -680,6 +686,7 @@ function AdjustmentGrid() {
         },
         body: JSON.stringify({
           company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           transaction_no: transaction_no,
         }),
       });
@@ -706,6 +713,7 @@ function AdjustmentGrid() {
         },
         body: JSON.stringify({
           company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           transaction_no: transaction_no,
         }),
       });
@@ -886,6 +894,7 @@ console.log(transaction_type)
         body: JSON.stringify({
           transaction_no: code,
           company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
         }),
       });
 
@@ -1201,12 +1210,7 @@ console.log(transaction_type)
                 ["add", "all permission"].some((permission) =>
                   adjusmentPermission.includes(permission),
                 ) && (
-                  <savebutton
-                    className="purbut"
-                    onClick={handleSaveButtonClick}
-                    required
-                    title="Save"
-                  >
+                  <savebutton className="purbut" onClick={handleSaveButtonClick} required title="Save">
                     {" "}
                     <i class="fa-regular fa-floppy-disk"></i>{" "}
                   </savebutton>
@@ -1214,11 +1218,7 @@ console.log(transaction_type)
               {["delete", "all permission"].some((permission) =>
                 adjusmentPermission.includes(permission),
               ) && (
-                <delbutton
-                  onClick={handleDeleteButtonClick}
-                  required
-                  title="Delete"
-                >
+                <delbutton onClick={handleDeleteButtonClick} required title="Delete">
                   <i class="fa-solid fa-trash"></i>
                 </delbutton>
               )}
@@ -1226,28 +1226,16 @@ console.log(transaction_type)
                 ["all permission", "view"].some((permission) =>
                   adjusmentPermission.includes(permission),
                 ) && (
-                  <printbutton
-                    className="purbut"
-                    title="Print"
-                    onClick={generateReport}
-                  >
+                  <printbutton className="purbut" title="Print" onClick={generateReport}>
                     <i class="fa-solid fa-file-pdf"></i>
                   </printbutton>
                 )}
               {showExcelButton && (
-                <printbutton
-                  className="purbut"
-                  title="Excel"
-                  onClick={handleExportToExcel}
-                >
+                <printbutton className="purbut" title="Excel" onClick={handleExportToExcel}>
                   <i class="fa-solid fa-file-excel"></i>
                 </printbutton>
               )}
-              <printbutton
-                className="purbut"
-                title="Reload"
-                onClick={handleReload}
-              >
+              <printbutton className="purbut" title="Reload" onClick={handleReload}>
                 <i class="fa-solid fa-arrow-rotate-right"></i>
               </printbutton>
             </div>
@@ -1320,14 +1308,8 @@ console.log(transaction_type)
           <div className="row ms-3 me-3">
             <div className="col-md-3 form-group mb-2">
               <div class="exp-form-floating">
-                <label
-                  for="rolname"
-                  className={`${deleteError && !transaction_no ? "red" : ""}`}
-                >
-                  Transaction No
-                  {isAdjustmentDataRun && (
-                    <span className="text-danger">*</span>
-                  )}
+                <label for="rolname" className={`${deleteError && !transaction_no ? "red" : ""}`}>
+                  Transaction No{isAdjustmentDataRun && (<span className="text-danger">*</span>)}
                 </label>
                 <div class="d-flex justify-content-end">
                   <input
@@ -1342,11 +1324,7 @@ console.log(transaction_type)
                     onChange={(e) => settransaction_no(e.target.value)}
                   />
                   <div className="position-absolute mt-1 me-2">
-                    <span
-                      className="icon searchIcon"
-                      title="Adjustment Help"
-                      onClick={handleadjustmentbtn}
-                    >
+                    <span className="icon searchIcon" title="Adjustment Help" onClick={handleadjustmentbtn}>
                       <i class="fa fa-search"></i>
                     </span>
                   </div>
@@ -1355,14 +1333,8 @@ console.log(transaction_type)
             </div>
             <div className="col-md-3 form-group mb-2">
               <div class="exp-form-floating">
-                <label
-                  for="rolname"
-                  className={`${error && !transaction_date ? "red" : ""}`}
-                >
-                  Transaction Date
-                  {!isAdjustmentDataRun && (
-                    <span className="text-danger">*</span>
-                  )}
+                <label for="rolname" className={`${error && !transaction_date ? "red" : ""}`}>
+                  Transaction Date{!isAdjustmentDataRun && (<span className="text-danger">*</span>)}
                 </label>
                 <input
                   id="transactionDate"
@@ -1381,14 +1353,8 @@ console.log(transaction_type)
             </div>
             <div className="col-md-3 form-group mb-2">
               <div class="exp-form-floating">
-                <label
-                  for="tcode"
-                  className={`${error && !transaction_type ? "red" : ""}`}
-                >
-                  Transaction Type
-                  {!isAdjustmentDataRun && (
-                    <span className="text-danger">*</span>
-                  )}
+                <label for="tcode" className={`${error && !transaction_type ? "red" : ""}`}>
+                  Transaction Type {!isAdjustmentDataRun && (<span className="text-danger">*</span>)}
                 </label>
                 <div title="Select the Transaction Type">
                   <Select
@@ -1408,20 +1374,10 @@ console.log(transaction_type)
             </div>
           </div>
           <div class="d-flex justify-content-end me-5 mb-2">
-            <icon
-              title="Add row"
-              type="button"
-              className="popups-btn"
-              onClick={handleAddRow}
-            >
+            <icon title="Add row" type="button" className="popups-btn" onClick={handleAddRow}>
               <FontAwesomeIcon icon={faPlus} />
             </icon>
-            <icon
-              title="Less row"
-              type="button"
-              className="popups-btn"
-              onClick={handleRemoveRow}
-            >
+            <icon title="Less row" type="button" className="popups-btn" onClick={handleRemoveRow}>
               <FontAwesomeIcon icon={faMinus} />
             </icon>
           </div>
@@ -1441,16 +1397,8 @@ console.log(transaction_type)
         </div>
       </div>
       <div>
-        <AdjustmentPopup
-          open={open1}
-          handleClose={handleClose}
-          adjustmentData={adjustmentData}
-        />
-        <SalesItemPopup
-          open={open}
-          handleClose={handleClose}
-          handleItem={handleItem}
-        />
+        <AdjustmentPopup open={open1} handleClose={handleClose} adjustmentData={adjustmentData}/>
+        <SalesItemPopup open={open} handleClose={handleClose} handleItem={handleItem}/>
       </div>
       <div className="shadow-lg p-2 bg-body-tertiary rounded mt-2 mb-2">
         <div className="row ms-2">

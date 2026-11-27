@@ -127,7 +127,9 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ transaction_no, transaction_date, item_code, Item_name, to_Warehouse, from_Warehouse, transfer_Qty, total_weight, weight }) // Send company_no and company_name as search criteria
+        body: JSON.stringify({ company_code: sessionStorage.getItem("selectedCompanyCode"),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
+        transaction_no, transaction_date, item_code, Item_name, to_Warehouse, from_Warehouse, transfer_Qty, total_weight, weight }) // Send company_no and company_name as search criteria
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -242,7 +244,7 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
                             <input
                               type='text'
                               id='transaction_no'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               maxLength={10}
                               title='Enter the Transaction No'
                               placeholder='Transaction No'
@@ -255,7 +257,7 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
                             <input
                               type='date'
                               id='transaction_date'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               title='Enter the Transaction Date'
                               placeholder='Transaction Date'
                               value={transaction_date}
@@ -267,7 +269,7 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
                             <input
                               type='text'
                               id='vendor_code'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               maxLength={18}
                               title='Enter the ItemCode'
                               placeholder='ItemCode'
@@ -282,7 +284,7 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
                             <input
                               type='text'
                               id='vendor_code'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               title='Enter the Item Name'
                               placeholder='Item Name'
                               maxLength={255}
@@ -295,7 +297,7 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
                             <input
                               type='text'
                               id='purchase_type'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               title='Enter the From Warehouse'
                               placeholder='From Warehouse'
                               maxLength={18}
@@ -308,7 +310,7 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
                             <input
                               type='text'
                               id='Pay_type'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               title='Enter the To Warehosue'
                               placeholder='To Warehosue'
                               value={to_Warehouse}
@@ -338,6 +340,8 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
                             pagination='true'
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+            rowHeight={25}
                           />
                         </div>
                       </div>
@@ -373,7 +377,7 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
                             <input
                               type='text'
                               id='transaction_no'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               maxLength={10}
                               placeholder='Transaction No'
                               value={transaction_no}
@@ -385,7 +389,7 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
                             <input
                               type='date'
                               id='transaction_date'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               placeholder='Transaction Date'
                               value={transaction_date}
                               onChange={(e) => setTransactionDate(e.target.value)}
@@ -396,7 +400,7 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
                             <input
                               type='text'
                               id='vendor_code'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               maxLength={18}
                               placeholder='ItemCode'
                               value={item_code}
@@ -408,7 +412,7 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
                             <input
                               type='text'
                               id='vendor_code'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               placeholder='Item Name'
                               maxLength={255}
                               value={Item_name}
@@ -420,7 +424,7 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
                             <input
                               type='text'
                               id='purchase_type'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               placeholder='From Warehouse'
                               maxLength={18}
                               value={from_Warehouse}
@@ -432,7 +436,7 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
                             <input
                               type='text'
                               id='Pay_type'
-                              className='form-control'
+                              className='exp-input-field form-control'
                               placeholder='To Warehosue'
                               value={to_Warehouse}
                               maxLength={18}
@@ -460,6 +464,8 @@ export default function StockItemPopup({ open, handleClose, handlePurchaseData }
                               pagination='true'
                               onSelectionChanged={handleRowSelected}
                               onRowDoubleClicked={handleRowDoubleClick}
+                              headerHeight={28}
+            rowHeight={25}
                             />
                           </div>
                         </div>

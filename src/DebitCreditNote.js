@@ -1767,6 +1767,7 @@ function DebitCreditNote() {
         {
             headerName: 'UOM',
             field: 'UOM_ID',
+            cellStyle: { textAlign: 'right' },
             editable: true,
             filter: true,
             sortable: false,
@@ -1775,6 +1776,7 @@ function DebitCreditNote() {
         {
             headerName: 'Qty',
             field: 'Qty',
+            cellStyle: { textAlign: 'right' },
             editable: true,
             filter: true,
             sortable: false,
@@ -1790,6 +1792,7 @@ function DebitCreditNote() {
         {
             headerName: 'Rate',
             field: 'purchaseAmt',
+            cellStyle: { textAlign: 'right' },
             editable: true,
             filter: true,
             sortable: false,
@@ -1798,6 +1801,7 @@ function DebitCreditNote() {
         {
             headerName: 'Tax Amount',
             field: 'TotalTaxAmount',
+            cellStyle: { textAlign: 'right' },
             editable: false,
             filter: true,
             sortable: false
@@ -1805,6 +1809,7 @@ function DebitCreditNote() {
         {
             headerName: 'Total',
             field: 'TotalItemAmount',
+            cellStyle: { textAlign: 'right' },
             editable: false,
             filter: true,
             sortable: false
@@ -1828,6 +1833,7 @@ function DebitCreditNote() {
         {
             headerName: 'tax Percentage',
             field: 'taxPer',
+            cellStyle: { textAlign: 'right' },
             editable: false,
             filter: true,
             hide: true,
@@ -1854,6 +1860,7 @@ function DebitCreditNote() {
         {
             headerName: 'Tax S.No',
             field: 'TaxSNO',
+            cellStyle: { textAlign: 'right' },
             sortable: false,
             editable: false
         },
@@ -1872,12 +1879,14 @@ function DebitCreditNote() {
         {
             headerName: 'Tax %',
             field: 'TaxPercentage',
+            cellStyle: { textAlign: 'right' },
             sortable: false,
             editable: false
         },
         {
             headerName: 'Tax Amount',
             field: 'TaxAmount',
+            cellStyle: { textAlign: 'right' },
             sortable: false,
             editable: false
         },
@@ -3544,6 +3553,7 @@ const AuthorizedHeader = async () => {
                                         title="Total Net Amount"
                                         type="text"
                                         value={total}
+                                        style={{ textAlign: "right" }}
                                         readOnly
                                     />
                                 </div>
@@ -3558,6 +3568,7 @@ const AuthorizedHeader = async () => {
                                         type="text"
                                         className="exp-input-field form-control input"
                                         value={totalTax}
+                                        style={{ textAlign: "right" }}
                                         readOnly
                                     />
                                 </div>
@@ -3571,6 +3582,7 @@ const AuthorizedHeader = async () => {
                                         type="text"
                                         className="exp-input-field form-control input"
                                         value={roundDifference}
+                                        style={{ textAlign: "right" }}
                                         readOnly
                                     />
                                 </div>
@@ -3585,6 +3597,7 @@ const AuthorizedHeader = async () => {
                                         type="text"
                                         className="exp-input-field form-control input"
                                         value={totalAmount}
+                                        style={{ textAlign: "right" }}
                                         readOnly
                                     />
                                 </div>

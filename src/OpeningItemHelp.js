@@ -80,7 +80,9 @@ export default function OIPopup({ open, handleClose, handleOb }) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), transaction_no, transaction_date, Item_code, Item_name }) // Send company_no and company_name as search criteria
+        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'),
+          location_code: sessionStorage.getItem("selectedLocationCode"), 
+          transaction_no, transaction_date, Item_code, Item_name }) // Send company_no and company_name as search criteria
       });
       if (response.ok) {
         const searchData = await response.json();

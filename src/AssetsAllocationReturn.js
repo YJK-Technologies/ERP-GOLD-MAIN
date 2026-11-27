@@ -57,22 +57,21 @@ function AssetsReturn({ }) {
     modified_date: "",
     created_date: "",
   });
+
   const handleSaveButtonClick = async () => {
     if (!Allocationno ||!allocationadate  || !return_date || !return_person || !return_reason) 
-{
+    {
       setError(" ");
       toast.warning("Error: Missing required fields");
       return;
     }
 
-     if (rowData.length === 0) {
-                toast.warning('No DC details found to save.');
-                return;
-            }
+    if (rowData.length === 0) {
+      toast.warning('No DC details found to save.');
+      return;
+    }
   } 
 
-
-  
   
   useEffect(() => {
     const today = new Date();
@@ -205,6 +204,7 @@ function AssetsReturn({ }) {
     {
       headerName: 'Serial No',
       field: 'serialno',
+      cellStyle: { textAlign: 'right' },
       editable: false,
       filter: true,
       sortable: false
@@ -212,6 +212,7 @@ function AssetsReturn({ }) {
     {
       headerName: 'Quantity',
       field: 'qty',
+      cellStyle: { textAlign: 'right' },
       editable: false,
       filter: true,
       sortable: false
@@ -219,6 +220,7 @@ function AssetsReturn({ }) {
     {
       headerName: 'Return Quantity',
       field: 'returnQty',
+      cellStyle: { textAlign: 'right' },
       editable: true,
       filter: true,
       valueSetter: qtyValueSetter,
@@ -388,6 +390,7 @@ XLSX.writeFile(
     try {
       const Header = {
         company_code: sessionStorage.getItem('selectedCompanyCode'),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
         allocation_date: allocationadate,
         return_date,
         allocation_no: Allocationno,
@@ -439,6 +442,7 @@ XLSX.writeFile(
       for (const row of validRows) {
         const Details = {
           company_code: sessionStorage.getItem('selectedCompanyCode'),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           allocation_no: Allocationno,
           allocation_date: allocationadate,
           return_no: allocation_no,
@@ -595,7 +599,7 @@ XLSX.writeFile(
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), transaction_no: TransactionNo })
+        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'),location_code: sessionStorage.getItem("selectedLocationCode"), transaction_no: TransactionNo })
       });
 
       if (response.ok) {
@@ -826,7 +830,7 @@ XLSX.writeFile(
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'), transaction_no: TransactionNo })
+        body: JSON.stringify({ company_code: sessionStorage.getItem('selectedCompanyCode'),location_code: sessionStorage.getItem("selectedLocationCode"), transaction_no: TransactionNo })
       });
 
       if (response.ok) {

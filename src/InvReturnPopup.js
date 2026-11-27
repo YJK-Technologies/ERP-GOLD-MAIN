@@ -157,6 +157,7 @@ export default function InvReturnPopup({ open, handleClose, InvReturnData }) {
         },
         body: JSON.stringify({
           company_code: sessionStorage.getItem('selectedCompanyCode'),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           ReturnID, DateReturned, Return_Type: issuedType
         }) // Send company_no and company_name as search criteria
       });

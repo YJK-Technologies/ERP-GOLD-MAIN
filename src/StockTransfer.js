@@ -941,6 +941,7 @@ function StockTransfer() {
     {
       headerName: 'Qty',
       field: 'purchaseQty',
+      cellStyle: { textAlign: 'right' },
       editable: true,
       // maxWidth: 110,
       filter: true,
@@ -955,6 +956,7 @@ function StockTransfer() {
     {
       headerName: 'Unit Weight',
       field: 'unitWeight',
+      cellStyle: { textAlign: 'right' },
       editable: false,
       // maxWidth: 150,
       filter: true,
@@ -963,6 +965,7 @@ function StockTransfer() {
     {
       headerName: 'Total Weight',
       field: 'ItemTotalWight',
+      cellStyle: { textAlign: 'right' },
       editable: false,
       // minWidth: 600,
       filter: true,
@@ -982,6 +985,7 @@ function StockTransfer() {
     {
       headerName: 'Tax S.No',
       field: 'TaxSNO',
+      cellStyle: { textAlign: 'right' },
       maxWidth: 120,
       sortable: false,
       editable: false
@@ -1003,6 +1007,7 @@ function StockTransfer() {
     {
       headerName: 'Tax %',
       field: 'TaxPercentage',
+      cellStyle: { textAlign: 'right' },
       // minWidth: 201,
       sortable: false,
       editable: false
@@ -1010,6 +1015,7 @@ function StockTransfer() {
     {
       headerName: 'Tax Amount',
       field: 'TaxAmount',
+      cellStyle: { textAlign: 'right' },
       // minWidth: 600,
       sortable: false,
       editable: false
@@ -1065,6 +1071,7 @@ function StockTransfer() {
         transaction_date: transactionDate,
         created_by: sessionStorage.getItem('selectedUserCode'),
         company_code: sessionStorage.getItem('selectedCompanyCode'),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
       };
 
       const response = await fetch(`${config.apiBaseUrl}/addstocktransferhdr`, {
@@ -1141,6 +1148,7 @@ function StockTransfer() {
         const Details = {
           created_by: sessionStorage.getItem('selectedUserCode'),
           company_code: sessionStorage.getItem('selectedCompanyCode'),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           ItemSNo: row.serialNumber,
           transaction_no: transaction_no.toString(),
           item_code: row.itemCode,
@@ -1196,7 +1204,9 @@ function StockTransfer() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ transaction_no: new_running_no.toString() })
+        body: JSON.stringify({ transaction_no: new_running_no.toString(),
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+        location_code: sessionStorage.getItem("selectedLocationCode"), })
       });
 
       if (response.ok) {
@@ -1477,7 +1487,10 @@ function StockTransfer() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ transaction_no: code }) // Send company_no and company_name as search criteria
+        body: JSON.stringify({ transaction_no: code,
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
+         }) // Send company_no and company_name as search criteria
       });
       if (response.ok) {
         setSaveButtonVisible(false)
@@ -1671,7 +1684,9 @@ function StockTransfer() {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          transaction_no: TransactionNo
+          transaction_no: TransactionNo,
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
         })
       });
 
@@ -1931,7 +1946,10 @@ function StockTransfer() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ transaction_no: new_running_no })
+        body: JSON.stringify({ transaction_no: new_running_no,
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
+         })
       });
       if (response.ok) {
         console.log("Rows deleted successfully:", new_running_no);
@@ -1950,7 +1968,9 @@ function StockTransfer() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ transaction_no: new_running_no, transaction_date: transactionDate })
+        body: JSON.stringify({ company_code: sessionStorage.getItem("selectedCompanyCode"),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
+        transaction_no: new_running_no, transaction_date: transactionDate })
       });
       if (response.ok) {
         console.log("Rows deleted successfully:", new_running_no);

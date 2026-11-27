@@ -17,8 +17,8 @@ const DCanalysis = () => {
 
   const handleTransactionClick = (transactionNo) => {
     // SessionStorage illama Direct React Router State pass panroam
-    navigate("/DeliveryChallan", { 
-      state: { transactionNo: transactionNo } 
+    navigate("/DeliveryChallan", {
+      state: { transactionNo: transactionNo }
     });
   };
 
@@ -124,6 +124,7 @@ const DCanalysis = () => {
     {
       headerName: "Ship to Mobile No",
       field: "ShipTocustomer_mobile_no",
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: "Ship to Contact Person",
@@ -132,14 +133,17 @@ const DCanalysis = () => {
     {
       headerName: "Total",
       field: "purchase_amount",
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: "Round Off",
       field: "rounded_off",
+      cellStyle: { textAlign: 'right' },
     },
     {
       headerName: "Grand Total",
       field: "total_amount",
+      cellStyle: { textAlign: 'right' },
     },
   ]);
 
@@ -308,13 +312,13 @@ const DCanalysis = () => {
     const printWindow = window.open(url, '_blank');
 
     if (printWindow) {
-        printWindow.addEventListener("beforeunload", () => {
-            sessionStorage.removeItem(headerKey);
-            sessionStorage.removeItem(detailKey);
-            console.log("Session storage cleared after print window closed.");
-        });
+      printWindow.addEventListener("beforeunload", () => {
+        sessionStorage.removeItem(headerKey);
+        sessionStorage.removeItem(detailKey);
+        console.log("Session storage cleared after print window closed.");
+      });
     }
-};
+  };
 
   const handlePrint = async () => {
     const selectedRows = gridApi.getSelectedRows();
@@ -535,7 +539,7 @@ const DCanalysis = () => {
       "Bill to Address 4": row.customer_addr_4.toString(),
       "Bill to State": row.customer_state.toString(),
       "Bill to Country": row.customer_country.toString(),
-      "Bill to Mobile No": row.customer_mobile_no.toString(),
+      "Bill to Mobile No": Number(row.customer_mobile_no) || 0,
       "Bill to Contact Person": row.contact_person,
       "Ship to Customer Name": row.ShipTo_customer_name.toString(),
       "Ship to Address 1": row.ShipTo_customer_addr_1.toString(),
@@ -544,11 +548,11 @@ const DCanalysis = () => {
       "Ship to Address 4": row.ShipTocustomer_addr_4.toString(),
       "Ship to State": row.ShipTocustomer_state.toString(),
       "Ship to Country": row.ShipTocustomer_country.toString(),
-      "Ship to Mobile No": row.ShipTocustomer_mobile_no.toString(),
+      "Ship to Mobile No": Number(row.ShipTocustomer_mobile_no) || 0,
       "Ship to  Contact Person": row.ShipTocontact_person.toString(),
-      "Total": row.purchase_amount.toString(),
-      "Round Off": row.total_amount.toString(),
-      "Grand Total": row.rounded_off.toString(),
+      "Total": Number(row.purchase_amount) || 0,
+      "Round Off": Number(row.rounded_off) || 0,
+      "Grand Total": Number(row.total_amount) || 0
     }));
   };
 
@@ -570,6 +574,40 @@ const DCanalysis = () => {
     const worksheet = XLSX.utils.aoa_to_sheet(headerData);
 
     XLSX.utils.sheet_add_json(worksheet, transformedData, { origin: 'A5' });
+
+    // Numeric columns
+    const numericColumns = [
+      "Bill to Mobile No",
+      "Ship to Mobile No",
+      "Total",
+      "Round Off",
+      "Grand Total"
+    ];
+
+    // Apply right alignment and numeric formatting
+    numericColumns.forEach((columnName) => {
+      const columnIndex = Object.keys(transformedData[0])
+        .indexOf(columnName);
+
+      for (let row = 5; row < 5 + transformedData.length; row++) {
+        const cellAddress = XLSX.utils.encode_cell({
+          r: row,
+          c: columnIndex
+        });
+
+        if (worksheet[cellAddress]) {
+          worksheet[cellAddress].t = 'n';
+          worksheet[cellAddress].z = '#,##0.00';
+          worksheet[cellAddress].s = {
+            alignment: {
+              horizontal: 'right',
+              vertical: 'center'
+            }
+          };
+        }
+      }
+    });
+
 
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Delivery Challan');
@@ -641,17 +679,18 @@ const DCanalysis = () => {
           <div className="col-md-3 form-group">
             <label className="form-label">Select Period</label>
             <div title='Please select the period'>
-            <Select
-              id="wcode"
-              value={selectedPeriod}
-              onChange={handleChangePeriod}
-              options={filteredOptionPeriod}
-              className="border-secondary"
-              placeholder=""
-              required title="Please select a item code"
-              maxLength={18}
-              styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
-            />
+              <Select
+                id="wcode"
+                value={selectedPeriod}
+                onChange={handleChangePeriod}
+                options={filteredOptionPeriod}
+                className="border-secondary"
+                classNamePrefix="react-select"
+                placeholder=""
+                required title="Please select a item code"
+                maxLength={18}
+                styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
+              />
             </div>
           </div>
           {selectedPeriod.label === "Custom Date" && (
@@ -729,17 +768,17 @@ const DCanalysis = () => {
             />
           </div>
           <div className="col-md-1">
-              <div class="exp-form-floating">
-                <div class=" d-flex justify-content-center mt-5">
-                    <icon className="popups-btn fs-6 p-3" onClick={fetchDCData} required title="Search">
-                      <i className="fas fa-search"></i>
-                    </icon>
-                    {/* <icon className="popups-btn fs-6 p-3" required title="Refresh">
+            <div class="exp-form-floating">
+              <div class=" d-flex justify-content-center mt-5">
+                <icon className="popups-btn fs-6 p-3" onClick={fetchDCData} required title="Search">
+                  <i className="fas fa-search"></i>
+                </icon>
+                {/* <icon className="popups-btn fs-6 p-3" required title="Refresh">
                       <FontAwesomeIcon icon="fa-solid fa-arrow-rotate-right" />
                     </icon> */}
-                </div>
               </div>
             </div>
+          </div>
         </div>
         <div className="ag-theme-alpine mb-4" style={{ height: 455, width: '100%' }}>
           <AgGridReact
@@ -748,6 +787,9 @@ const DCanalysis = () => {
             pagination={true}
             paginationAutoPageSize={true}
             onGridReady={onGridReady}
+            rowSelection="multiple"
+            headerHeight={28}
+            rowHeight={25}
           />
         </div>
       </div>
