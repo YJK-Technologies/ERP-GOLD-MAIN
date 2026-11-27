@@ -32249,16 +32249,8 @@ const authorizeReceivedGoods = async (req, res) => {
         .input("bill_no", sql.NVarChar, billNo)
         .input("status", sql.NVarChar, updatedRow.status)
         .input("amendment_no", sql.Int, Number(amendmentNo))
-        .input(
-          "modified_by",
-          sql.NVarChar,
-          updatedRow.modified_by ||
-          updatedRow.created_by ||
-          req.headers["modified_by"] ||
-          ""
-        )
-        .query(`
-          EXEC sp_received_goods @mode, @company_code,@location_code, @bill_no, '', 0, '', '', 0, 0, '', 0, 0, @status, @amendment_no, '', '', '', '', '', @modified_by, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL `);
+        .input("modified_by", sql.NVarChar, updatedRow.modified_by ||updatedRow.created_by ||req.headers["modified_by"] ||"")
+        .query(`EXEC sp_received_goods @mode, @company_code,@location_code, @bill_no, '', 0, '', '', 0, 0, '', 0, 0, @status, @amendment_no, '', '', '', '', '', @modified_by, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL `);
 
       processedAmendments.add(amendmentKey);
 
