@@ -454,7 +454,7 @@ function DeliveryChallan() {
         { fieldName: 'State', billTo: '', shipTo: '' },
         { fieldName: 'Country', billTo: '', shipTo: '' },
         { fieldName: 'Mobile No', billTo: '', shipTo: '' },
-        { fieldName: 'GST No', billTo: '', shipTo: '' },
+        { fieldName: 'GST No', billTo: '', shipTo: ''},
         { fieldName: 'Contact Person', billTo: '', shipTo: '' },
     ]);
 
@@ -1042,6 +1042,7 @@ function DeliveryChallan() {
         {
             headerName: 'Qty',
             field: 'purchaseQty',
+            cellStyle: { textAlign: 'right' },
             editable: true,
             filter: true,
             maxLength: 10,
@@ -1051,6 +1052,7 @@ function DeliveryChallan() {
         {
             headerName: 'Price',
             field: 'unitPrice',
+            cellStyle: { textAlign: 'right' },
             editable: true,
             filter: true,
             sortable: false,
@@ -1065,6 +1067,7 @@ function DeliveryChallan() {
         {
             headerName: 'Total',
             field: 'TotalItemAmount',
+            cellStyle: { textAlign: 'right' },
             editable: false,
             filter: true,
             sortable: false,
@@ -1089,6 +1092,7 @@ function DeliveryChallan() {
         {
             headerName: 'Tax Percentage',
             field: 'taxPercentage',
+            cellStyle: { textAlign: 'right' },
             editable: false,
             filter: true,
             hide: true,
@@ -2755,6 +2759,7 @@ function DeliveryChallan() {
                                             placeholder=""
                                             required
                                             value={TotalPurchase}
+                                            style={{ textAlign: "right" }}
                                             onChange={(e) => setTotalPurchase(e.target.value)}
                                             readOnly
                                             ref={totalRef}
@@ -2774,6 +2779,7 @@ function DeliveryChallan() {
                                             maxLength={18}
                                             required
                                             value={Totaltransport}
+                                            style={{ textAlign: "right" }}
                                             autoComplete='off'
                                             onChange={(e) => {
                                                 const value = e.target.value;
@@ -2798,6 +2804,7 @@ function DeliveryChallan() {
                                             placeholder=""
                                             required
                                             value={round_difference}
+                                            style={{ textAlign: "right" }}
                                             onChange={(e) => setRoundDifference(e.target.value)}
                                             readOnly
                                             ref={roundAmountRef}
@@ -2816,6 +2823,7 @@ function DeliveryChallan() {
                                             placeholder=""
                                             required
                                             value={TotalBill}
+                                            style={{ textAlign: "right" }}
                                             onChange={(e) => setTotalBill(e.target.value)}
                                             readOnly
                                             ref={grandTotalRef}

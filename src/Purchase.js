@@ -1216,6 +1216,7 @@ function Purchase() {
     {
       headerName: 'Unit Weight',
       field: 'unitWeight',
+      cellStyle: { textAlign: 'right' },
       editable: false,
       filter: true,
       sortable: false
@@ -1275,6 +1276,7 @@ function Purchase() {
     {
       headerName: 'Qty',
       field: 'purchaseQty',
+      cellStyle: { textAlign: 'right' },
       editable: true,
       filter: true,
       value: { bill_qty },
@@ -1287,6 +1289,7 @@ function Purchase() {
     {
       headerName: 'Total Weight',
       field: 'ItemTotalWight',
+      cellStyle: { textAlign: 'right' },
       editable: false,
       filter: true,
       sortable: false
@@ -1294,6 +1297,7 @@ function Purchase() {
     {
       headerName: 'Unit Price',
       field: 'purchaseAmt',
+      cellStyle: { textAlign: 'right' },
       editable: true,
       filter: true,
       sortable: false,
@@ -1304,6 +1308,7 @@ function Purchase() {
     {
       headerName: 'Tax Amount',
       field: 'TotalTaxAmount',
+      cellStyle: { textAlign: 'right' },
       editable: false,
       filter: true,
       sortable: false
@@ -1311,6 +1316,7 @@ function Purchase() {
     {
       headerName: 'Total',
       field: 'TotalItemAmount',
+      cellStyle: { textAlign: 'right' },
       editable: false,
       filter: true,
       sortable: false,
@@ -1361,6 +1367,7 @@ function Purchase() {
     {
       headerName: 'Tax S.No',
       field: 'TaxSNO',
+      cellStyle: { textAlign: 'right' },
       // maxWidth: 120,
       sortable: false,
       editable: false
@@ -1382,12 +1389,14 @@ function Purchase() {
     {
       headerName: 'Tax %',
       field: 'TaxPercentage',
+      cellStyle: { textAlign: 'right' },
       sortable: false,
       editable: false
     },
     {
       headerName: 'Tax Amount',
       field: 'TaxAmount',
+      cellStyle: { textAlign: 'right' },
       sortable: false,
       editable: false
     },
@@ -3614,6 +3623,7 @@ if (paytype) {
                         placeholder=""
                         required
                         value={TotalPurchase}
+                        style={{ textAlign: "right" }}
                         onChange={(e) => setTotalPurchase(e.target.value)}
                         readOnly
                       />
@@ -3631,6 +3641,7 @@ if (paytype) {
                         placeholder=""
                         required
                         value={TotalTax}
+                        style={{ textAlign: "right" }}
                         onChange={(e) => setTotalTax(e.target.value)}
                         readOnly
                       />
@@ -3648,6 +3659,7 @@ if (paytype) {
                         placeholder=""
                         required
                         value={round_difference}
+                        style={{ textAlign: "right" }}
                         onChange={(e) => setRoundDifference(e.target.value)}
                         readOnly
                       />
@@ -3665,6 +3677,7 @@ if (paytype) {
                         placeholder=""
                         required
                         value={TotalBill}
+                        style={{ textAlign: "right" }}
                         onChange={(e) => setTotalBill(e.target.value)}
                         readOnly
                       />

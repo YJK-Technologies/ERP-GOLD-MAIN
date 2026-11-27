@@ -432,7 +432,7 @@ function JournalGrid() {
       field: "journal_amount",
       editable: true,
       valueSetter: qtyValueSetter,
-      cellStyle: { textAlign: "left" },
+      cellStyle: { textAlign: 'right' },
       // minWidth: 150,
     },
     {

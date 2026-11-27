@@ -204,6 +204,7 @@ function AssetsReturn({ }) {
     {
       headerName: 'Serial No',
       field: 'serialno',
+      cellStyle: { textAlign: 'right' },
       editable: false,
       filter: true,
       sortable: false
@@ -211,6 +212,7 @@ function AssetsReturn({ }) {
     {
       headerName: 'Quantity',
       field: 'qty',
+      cellStyle: { textAlign: 'right' },
       editable: false,
       filter: true,
       sortable: false
@@ -218,6 +220,7 @@ function AssetsReturn({ }) {
     {
       headerName: 'Return Quantity',
       field: 'returnQty',
+      cellStyle: { textAlign: 'right' },
       editable: true,
       filter: true,
       valueSetter: qtyValueSetter,

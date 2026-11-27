@@ -1434,12 +1434,14 @@ function TaxInvoice() {
     {
       headerName: "HSN Code",
       field: "HSNCode",
+      cellStyle: { textAlign: 'right' },
       editable: false,
       filter: true,
     },
     {
       headerName: "Qty",
       field: "qty",
+      cellStyle: { textAlign: 'right' },
       editable: true,
       filter: true,
       sortable: false,
@@ -1448,6 +1450,7 @@ function TaxInvoice() {
     {
       headerName: "Unit Price",
       field: "unitPrice",
+      cellStyle: { textAlign: 'right' },
       editable: true,
       filter: true,
       sortable: false,
@@ -1466,6 +1469,7 @@ function TaxInvoice() {
     {
       headerName: "Discount Value",
       field: "discountValue",
+      cellStyle: { textAlign: 'right' },
       editable: true,
       filter: true,
       sortable: false,
@@ -1504,12 +1508,14 @@ function TaxInvoice() {
     {
       headerName: "Tax Amount",
       field: "taxAmount",
+      cellStyle: { textAlign: 'right' },
       editable: false,
       hide: false,
     },
     {
       headerName: "Total",
       field: "totalAmount",
+      cellStyle: { textAlign: 'right' },
       editable: false,
       filter: true,
       sortable: false,
@@ -1537,6 +1543,7 @@ function TaxInvoice() {
     {
       headerName: "Tax S.No",
       field: "TaxSNO",
+      cellStyle: { textAlign: 'right' },
       maxWidth: 120,
       sortable: false,
       editable: false,
@@ -1558,6 +1565,7 @@ function TaxInvoice() {
     {
       headerName: "Tax %",
       field: "TaxPercentage",
+      cellStyle: { textAlign: 'right' },
       // minWidth: 201,
       sortable: false,
       editable: false,
@@ -1565,6 +1573,7 @@ function TaxInvoice() {
     {
       headerName: "Tax Amount",
       field: "TaxAmount",
+      cellStyle: { textAlign: 'right' },
       // minWidth: 301,
       sortable: false,
       editable: false,
@@ -3895,6 +3904,7 @@ function TaxInvoice() {
                     placeholder=""
                     required
                     value={totalamt}
+                    style={{ textAlign: "right" }}
                     onChange={(e) => setTotalAmt(e.target.value)}
                     readOnly
                   />
@@ -3911,6 +3921,7 @@ function TaxInvoice() {
                     placeholder=""
                     required
                     value={TotalTax}
+                    style={{ textAlign: "right" }}
                     onChange={(e) => setTotalTax(e.target.value)}
                     readOnly
                   />
@@ -3927,6 +3938,7 @@ function TaxInvoice() {
                     placeholder=""
                     required
                     value={round_difference}
+                    style={{ textAlign: "right" }}
                     onChange={(e) => {
                       if (e.target.value === "0" || e.target.value === "") {
                         setRoundDifference(e.target.value);
@@ -3948,6 +3960,7 @@ function TaxInvoice() {
                     placeholder=""
                     required
                     value={TotalBill}
+                    style={{ textAlign: "right" }}
                     onChange={(e) => setTotalBill(e.target.value)}
                     readOnly
                   />

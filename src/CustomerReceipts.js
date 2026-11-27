@@ -50,7 +50,8 @@ function CustomerReceipts() {
   const [instrumentDate, setInstrumentDate] = useState("");
   const [bankCharges, setBankCharges] = useState("0.00");
   const [narration, setNarration] = useState("");
-
+  const [receiptStatus, setReceiptStatus] = useState("");
+  
   const companyCode = sessionStorage.getItem('selectedCompanyCode');
   const createdBy = sessionStorage.getItem('selectedUserCode') || 'Admin';
 
@@ -200,6 +201,7 @@ function CustomerReceipts() {
     clearCustomerFields();
     setReceiptNo("");
     setReceiptDate("");
+    setReceiptStatus("");
     setFinancialYear(null);
     setBranch(null);
     setReceiptType("Invoice Based");
@@ -214,6 +216,7 @@ function CustomerReceipts() {
     setBankCharges("0.00");
     setNarration("");
     setSelectedscreens(null);
+    setPostingRowData([]);
   };
 
   const handleShowModal = () => {
@@ -270,7 +273,7 @@ function CustomerReceipts() {
         clearCustomerFields();
       }
       
-      await fetchFSPostingData(code); 
+      // await fetchFSPostingData(code); 
 
     } catch (error) {
       console.error("Error fetching search data:", error);
@@ -334,101 +337,208 @@ const formatReceiptDate = (dateValue) => {
   return dateValue.substring(0, 10);
 };
 
+// const handleReceiptSelect = async (selectedReceiptNo) => {
+//     try {
+//         setLoading(true);
+
+//         const response = await fetch(
+//             `${config.apiBaseUrl}/getCustomerReceiptByNo`,
+//             {
+//                 method: "POST",
+//                 headers: {
+//                     "Content-Type": "application/json"
+//                 },
+//                 body: JSON.stringify({
+//                     receipt_no: selectedReceiptNo,
+//                     company_code: sessionStorage.getItem("selectedCompanyCode"),
+//                     location_code: sessionStorage.getItem("selectedLocationCode")
+//                 })
+//             }
+//         );
+
+//         if (!response.ok) {
+//             throw new Error("Receipt data not found");
+//         }
+
+//         const result = await response.json();
+
+//         if (!result || result.length === 0) {
+//             throw new Error("Receipt data not found");
+//         }
+
+//         const data = result[0];
+
+//         // Header Details
+//         setReceiptNo(data.receipt_no || "");
+//         setReceiptDate(formatReceiptDate(data.receipt_date));
+
+//         setCustomerCode(data.customer_code || "");
+//         setReceiptType(data.receipt_type || "");
+
+//         setPaymentMode({
+//             label: data.payment_mode,
+//             value: data.payment_mode
+//         });
+
+//         setBankAccCode(
+//             bankAccOptions.find(
+//                 item => item.value === data.bank_acc_code
+//             ) || {
+//                 label: data.bank_acc_code,
+//                 value: data.bank_acc_code
+//             }
+//         );
+
+//         setValueDate(formatReceiptDate(data.value_date));
+//         setTransactionRefNo(data.transaction_ref_no || "");
+//         setInstrumentNo(data.instrument_no || "");
+//         setInstrumentDate(formatReceiptDate(data.instrument_date));
+
+//         setReceivedAmount(Number(data.received_amount || 0).toFixed(2));
+//         setTdsDeducted(Number(data.tds_deducted || 0).toFixed(2));
+//         setBankCharges(Number(data.bank_charges || 0).toFixed(2));
+//         setNarration(data.narration || "");
+
+//         // Invoice Details - Same JOIN Response
+//         const invoiceRows = result
+//             .filter(item => item.invoice_no)
+//             .map(item => ({
+//                 invoiceNo: item.invoice_no || "",
+//                 invoiceDate: formatReceiptDate(item.invoice_date),
+//                 dueDate: formatReceiptDate(item.due_date),
+//                 invoiceAmount: Number(item.invoice_amount || 0).toFixed(2),
+//                 previousReceipts: Number(item.previous_receipts || 0).toFixed(2),
+//                 creditNotes: Number(item.credit_notes || 0).toFixed(2),
+//                 outstanding: Number(item.outstanding_amount || 0).toFixed(2),
+//                 allocateAmount: Number(item.allocate_amount || 0).toFixed(2),
+//                 balanceAfter: Number(item.balance_after || 0).toFixed(2)
+//             }));
+
+//         setRowData(invoiceRows);
+
+//         // Customer Master Details
+//         if (data.customer_code) {
+//             await handleSearchCustomer(data.customer_code);
+//         }
+
+//         setOpenReceiptPopup(false);
+
+//     } catch (error) {
+//         console.error("Error fetching receipt:", error);
+//         toast.error(error.message || "Failed to fetch receipt details");
+//     } finally {
+//         setLoading(false);
+//     }
+// };
+
 const handleReceiptSelect = async (selectedReceiptNo) => {
-    try {
-        setLoading(true);
+  if (!selectedReceiptNo) return;
 
-        const response = await fetch(
-            `${config.apiBaseUrl}/getCustomerReceiptByNo`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    receipt_no: selectedReceiptNo,
-                    company_code: sessionStorage.getItem("selectedCompanyCode"),
-                    location_code: sessionStorage.getItem("selectedLocationCode")
-                })
-            }
-        );
+  try {
+    setLoading(true);
 
-        if (!response.ok) {
-            throw new Error("Receipt data not found");
-        }
+    const response = await fetch(
+      `${config.apiBaseUrl}/getCustomerReceiptByNo`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          receipt_no: selectedReceiptNo,
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode")
+        })
+      }
+    );
 
-        const result = await response.json();
-
-        if (!result || result.length === 0) {
-            throw new Error("Receipt data not found");
-        }
-
-        const data = result[0];
-
-        // Header Details
-        setReceiptNo(data.receipt_no || "");
-        setReceiptDate(formatReceiptDate(data.receipt_date));
-
-        setCustomerCode(data.customer_code || "");
-        setReceiptType(data.receipt_type || "");
-
-        setPaymentMode({
-            label: data.payment_mode,
-            value: data.payment_mode
-        });
-
-        setBankAccCode(
-            bankAccOptions.find(
-                item => item.value === data.bank_acc_code
-            ) || {
-                label: data.bank_acc_code,
-                value: data.bank_acc_code
-            }
-        );
-
-        setValueDate(formatReceiptDate(data.value_date));
-        setTransactionRefNo(data.transaction_ref_no || "");
-        setInstrumentNo(data.instrument_no || "");
-        setInstrumentDate(formatReceiptDate(data.instrument_date));
-
-        setReceivedAmount(Number(data.received_amount || 0).toFixed(2));
-        setTdsDeducted(Number(data.tds_deducted || 0).toFixed(2));
-        setBankCharges(Number(data.bank_charges || 0).toFixed(2));
-        setNarration(data.narration || "");
-
-        // Invoice Details - Same JOIN Response
-        const invoiceRows = result
-            .filter(item => item.invoice_no)
-            .map(item => ({
-                invoiceNo: item.invoice_no || "",
-                invoiceDate: formatReceiptDate(item.invoice_date),
-                dueDate: formatReceiptDate(item.due_date),
-                invoiceAmount: Number(item.invoice_amount || 0).toFixed(2),
-                previousReceipts: Number(item.previous_receipts || 0).toFixed(2),
-                creditNotes: Number(item.credit_notes || 0).toFixed(2),
-                outstanding: Number(item.outstanding_amount || 0).toFixed(2),
-                allocateAmount: Number(item.allocate_amount || 0).toFixed(2),
-                balanceAfter: Number(item.balance_after || 0).toFixed(2)
-            }));
-
-        setRowData(invoiceRows);
-
-        // Customer Master Details
-        if (data.customer_code) {
-            await handleSearchCustomer(data.customer_code);
-        }
-
-        setOpenReceiptPopup(false);
-
-    } catch (error) {
-        console.error("Error fetching receipt:", error);
-        toast.error(error.message || "Failed to fetch receipt details");
-    } finally {
-        setLoading(false);
+    if (!response.ok) {
+      throw new Error("Receipt data not found");
     }
+
+    const result = await response.json();
+
+    if (!result || result.length === 0) {
+      throw new Error("Receipt data not found");
+    }
+
+    const data = result[0];
+
+    // Header Details
+    setReceiptNo(data.receipt_no || "");
+    setReceiptDate(formatReceiptDate(data.receipt_date));
+    setReceiptStatus(data.status || ""); // Set Receipt Status
+
+    // Sync top status dropdown
+    const matchedScreen = filteredOptionScreens.find(opt => opt.value === data.status);
+    if (matchedScreen) {
+      setSelectedscreens(matchedScreen);
+      setScreens(matchedScreen.value);
+    }
+
+    setCustomerCode(data.customer_code || "");
+    setReceiptType(data.receipt_type || "");
+
+    setPaymentMode({
+      label: data.payment_mode,
+      value: data.payment_mode
+    });
+
+    setBankAccCode(
+      bankAccOptions.find(
+        item => item.value === data.bank_acc_code
+      ) || {
+        label: data.bank_acc_code,
+        value: data.bank_acc_code
+      }
+    );
+
+    setValueDate(formatReceiptDate(data.value_date));
+    setTransactionRefNo(data.transaction_ref_no || "");
+    setInstrumentNo(data.instrument_no || "");
+    setInstrumentDate(formatReceiptDate(data.instrument_date));
+
+    setReceivedAmount(Number(data.received_amount || 0).toFixed(2));
+    setTdsDeducted(Number(data.tds_deducted || 0).toFixed(2));
+    setBankCharges(Number(data.bank_charges || 0).toFixed(2));
+    setNarration(data.narration || "");
+
+    // Invoice Details - Same JOIN Response
+    const invoiceRows = result
+      .filter(item => item.invoice_no)
+      .map(item => ({
+        invoiceNo: item.invoice_no || "",
+        invoiceDate: formatReceiptDate(item.invoice_date),
+        dueDate: formatReceiptDate(item.due_date),
+        invoiceAmount: Number(item.invoice_amount || 0).toFixed(2),
+        previousReceipts: Number(item.previous_receipts || 0).toFixed(2),
+        creditNotes: Number(item.credit_notes || 0).toFixed(2),
+        outstanding: Number(item.outstanding_amount || 0).toFixed(2),
+        allocateAmount: Number(item.allocate_amount || 0).toFixed(2),
+        balanceAfter: Number(item.balance_after || 0).toFixed(2)
+      }));
+
+    setRowData(invoiceRows);
+
+    // Customer Master Details
+    if (data.customer_code) {
+      await handleSearchCustomer(data.customer_code);
+    }
+
+    // Trigger FS Posting Fetch for this Receipt No
+    await fetchFSPostingData(selectedReceiptNo);
+
+    setOpenReceiptPopup(false);
+
+  } catch (error) {
+    console.error("Error fetching receipt:", error);
+    toast.error(error.message || "Failed to fetch receipt details");
+  } finally {
+    setLoading(false);
+  }
 };
 
-  const handleVendor = async (data) => {
+const handleVendor = async (data) => {
     if (data && data.length > 0) {
       const [{ 
         CustomerCode, CustomerName, CustomerType, 
@@ -557,6 +667,11 @@ const handleReceiptSelect = async (selectedReceiptNo) => {
     if (Screens === "Draft") {
       handleSaveButtonClick();
     } else if (Screens && Screens.trim() !== "") {
+      if (!receiptNo || receiptNo.trim() === "") {
+        setError(true);
+        toast.warning("Please enter or select a valid Receipt No before updating.");
+        return;
+      }
       handleUpdateButtonClick();
     } else {
       toast.warning("Please select a valid transaction event from the dropdown.");
@@ -655,8 +770,14 @@ const handleReceiptSelect = async (selectedReceiptNo) => {
   };
 
   const handleUpdateButtonClick = async () => {
-    if (!receiptNo || !receiptDate) {
-      toast.warning("Error: Missing receipt number or required fields");
+    if (!receiptNo || receiptNo.trim() === "") {
+    setError(true);
+    toast.warning("Please enter or select a valid Receipt No before updating.");
+    return;
+    }
+    if (!receiptDate || !customerCode || !paymentMode) {
+      setError(true);
+      toast.warning("Error: Missing required fields");
       return;
     }
 
@@ -699,22 +820,45 @@ const handleReceiptSelect = async (selectedReceiptNo) => {
           });
 
           if (response.ok) {
-            await saveReceiptDetails(receiptNo);
-            toast.success(`Customer Receipt Data ${actionValue} Successfully`);
+          await saveReceiptDetails(receiptNo);
 
-            if (Screens === "Authorized") {
-              await InvoiceFsPosting(receiptNo);
+          if (Screens === "Authorized") {
+            const isPosted = await InvoiceFsPosting(receiptNo);
+            if (isPosted) {
+              await fetchFSPostingData(receiptNo);
+              setShowPostingGrid(true);
+            } else {
+              return;
             }
-
-          } else {
-            const errorResponse = await response.json();
-            toast.error("Error updating data: " + errorResponse.message);
           }
-        } catch (error) {
-          toast.error("Error updating data: " + error.message);
-        } finally {
-          setLoading(false);
+
+          toast.success(`Customer Receipt Data ${actionValue} Successfully`);
+        } else {
+          const errorResponse = await response.json();
+          toast.error("Error updating data: " + errorResponse.message);
         }
+      } catch (error) {
+        toast.error("Error updating data: " + error.message);
+      } finally {
+        setLoading(false);
+      }
+        //   if (response.ok) {
+        //     await saveReceiptDetails(receiptNo);
+        //     toast.success(`Customer Receipt Data ${actionValue} Successfully`);
+
+        //     if (Screens === "Authorized") {
+        //       await InvoiceFsPosting(receiptNo);
+        //     }
+
+        //   } else {
+        //     const errorResponse = await response.json();
+        //     toast.error("Error updating data: " + errorResponse.message);
+        //   }
+        // } catch (error) {
+        //   toast.error("Error updating data: " + error.message);
+        // } finally {
+        //   setLoading(false);
+        // }
       },
       () => toast.info(`Data ${actionLabel} cancelled.`)
     );
@@ -753,9 +897,11 @@ const handleReceiptSelect = async (selectedReceiptNo) => {
   };
 
   const handleReload = () => {
+    setError(false);
     setLoading(true);
     clearAllFields();
     setLoading(false);
+    setRowData([]);
   };
 
   const handleKeyPressReceiptNo = (e) => {
@@ -810,8 +956,8 @@ const handleReceiptSelect = async (selectedReceiptNo) => {
           </div> */}
           <div className="col-md-2 form-group mb-2">
             <div className="exp-form-floating">
-              <label>
-                Receipt No. <span className="text-danger">*</span>
+              <label className={`${error && !receiptNo ? 'text-danger' : ''}`}>
+                Receipt No <span className="text-danger">*</span>
               </label>
 
               <div className="d-flex justify-content-end position-relative">
@@ -844,6 +990,19 @@ const handleReceiptSelect = async (selectedReceiptNo) => {
               <input type="date" className="exp-input-field form-control" value={receiptDate} onChange={(e) => setReceiptDate(e.target.value)} />
             </div>
           </div>
+          {receiptStatus && (
+            <div className="col-md-2 form-group mb-2">
+              <div className="exp-form-floating">
+                <label>Receipt Status</label>
+                <input
+                  type="text"
+                  className="exp-input-field form-control bg-light"
+                  value={receiptStatus}
+                  readOnly
+                />
+              </div>
+            </div>
+          )}
           {/* <div className="col-md-2 form-group mb-2">
             <div className="exp-form-floating">
               <label className={`${error && !financialYear ? 'text-danger' : ''}`}>Financial Year <span className="text-danger">*</span></label>
