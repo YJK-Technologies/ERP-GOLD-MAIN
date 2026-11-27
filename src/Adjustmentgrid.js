@@ -399,6 +399,7 @@ function AdjustmentGrid() {
     {
       headerName: "Quantity",
       field: "qty",
+      cellStyle: { textAlign: 'right' },
       editable: true,
       minWidth: 700,
       valueSetter: qtyValueSetter,

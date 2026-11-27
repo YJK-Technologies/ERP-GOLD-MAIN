@@ -895,6 +895,7 @@ function Payment() {
     {
       headerName: "Invoice Amount",
       field: "Invoice_Amount",
+      cellStyle: { textAlign: 'right' },
       editable: false,
       filter: true,
       sortable: false,
@@ -903,6 +904,7 @@ function Payment() {
     {
       headerName: "Paid",
       field: "Previous_Paid_Amount",
+      cellStyle: { textAlign: 'right' },
       editable: true,
       filter: true,
       sortable: false,
@@ -912,6 +914,7 @@ function Payment() {
     {
       headerName: "Outstanding",
       field: "Outstanding_Amount",
+      cellStyle: { textAlign: 'right' },
       editable: true,
       filter: true,
       sortable: false,
@@ -921,6 +924,7 @@ function Payment() {
     {
       headerName: "Adjustment Amount",
       field: "Adjust_Amount",
+      cellStyle: { textAlign: 'right' },
       editable: true,
       filter: true,
       sortable: false,
@@ -2002,6 +2006,7 @@ function Payment() {
                   title="Enter Amount"
                   placeholder="Enter Amount"
                   value={amount}
+                  style={{ textAlign: "right" }}
                   min="0"
                   step="0.01"
                   onChange={(e) => {

@@ -663,6 +663,7 @@ const UnplannedIssued = () => {
     {
       headerName: 'Serial No',
       field: 'serialno',
+      cellStyle: { textAlign: 'right' },
       editable: !showExcelButton,
       filter: true,
       sortable: false
@@ -670,6 +671,7 @@ const UnplannedIssued = () => {
     {
       headerName: 'Qty',
       field: 'quantityIssued',
+      cellStyle: { textAlign: 'right' },
       editable: !showExcelButton,
       filter: true,
       sortable: false,
