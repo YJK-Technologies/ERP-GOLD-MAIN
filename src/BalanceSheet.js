@@ -268,7 +268,26 @@ const BalanceSheet = () => {
         }
     ], [asOnDate, compareWithPrevYear]);
 
+    const validateFilters = (action) => {
+        if (!selectedFinancialYearId || !selectedFinancialYearId.value) {
+            toast.warning(`Please select a Financial Year before ${action}.`);
+            return false;
+        }
+        if (!asOnDate) {
+            toast.warning(`Please select an As on Date before ${action}.`);
+            return false;
+        }
+        if (!selectedCurrency || !selectedCurrency.value) {
+            toast.warning(`Please select a Currency before ${action}.`);
+            return false;
+        }
+        return true;
+    };
+
     const handlePrint = async () => {
+
+        if (!validateFilters("printing")) return;
+
         const data = await fetchBalanceSheetData();
         
         if (!data) return; // Stop if fetch failed
@@ -289,6 +308,9 @@ const BalanceSheet = () => {
     };
 
     const handleExportToExcel = async () => {
+
+        if (!validateFilters("exporting")) return;
+        
         const data = await fetchBalanceSheetData();
         
         if (!data) return; // Stop if fetch failed
@@ -477,4 +499,4 @@ const BalanceSheet = () => {
     );
 };
 
-export default BalanceSheet; 
+export default BalanceSheet;
