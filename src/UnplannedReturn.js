@@ -615,6 +615,7 @@ const UnplannedReturn = () => {
     {
       headerName: 'Serial No',
       field: 'SerialNo',
+      cellStyle: { textAlign: 'right' },
       editable: true,
       filter: true,
       sortable: false
@@ -622,6 +623,7 @@ const UnplannedReturn = () => {
     {
       headerName: 'Qty',
       field: 'quantityReturned',
+      cellStyle: { textAlign: 'right' },
       editable: true,
       filter: true,
       sortable: false,

@@ -941,6 +941,7 @@ function StockTransfer() {
     {
       headerName: 'Qty',
       field: 'purchaseQty',
+      cellStyle: { textAlign: 'right' },
       editable: true,
       // maxWidth: 110,
       filter: true,
@@ -955,6 +956,7 @@ function StockTransfer() {
     {
       headerName: 'Unit Weight',
       field: 'unitWeight',
+      cellStyle: { textAlign: 'right' },
       editable: false,
       // maxWidth: 150,
       filter: true,
@@ -963,6 +965,7 @@ function StockTransfer() {
     {
       headerName: 'Total Weight',
       field: 'ItemTotalWight',
+      cellStyle: { textAlign: 'right' },
       editable: false,
       // minWidth: 600,
       filter: true,
@@ -982,6 +985,7 @@ function StockTransfer() {
     {
       headerName: 'Tax S.No',
       field: 'TaxSNO',
+      cellStyle: { textAlign: 'right' },
       maxWidth: 120,
       sortable: false,
       editable: false
@@ -1003,6 +1007,7 @@ function StockTransfer() {
     {
       headerName: 'Tax %',
       field: 'TaxPercentage',
+      cellStyle: { textAlign: 'right' },
       // minWidth: 201,
       sortable: false,
       editable: false
@@ -1010,6 +1015,7 @@ function StockTransfer() {
     {
       headerName: 'Tax Amount',
       field: 'TaxAmount',
+      cellStyle: { textAlign: 'right' },
       // minWidth: 600,
       sortable: false,
       editable: false

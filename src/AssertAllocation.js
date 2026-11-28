@@ -471,6 +471,7 @@ function AssertAllocation({ }) {
     {
       headerName: 'Serial No',
       field: 'serialno',
+      cellStyle: { textAlign: 'right' },
       editable: !showExcelButton,
       filter: true,
       maxLength: 40,
@@ -479,6 +480,7 @@ function AssertAllocation({ }) {
     {
       headerName: 'Quantity',
       field: 'qty',
+      cellStyle: { textAlign: 'right' },
       editable: !showExcelButton,
       filter: true,
       sortable: false,

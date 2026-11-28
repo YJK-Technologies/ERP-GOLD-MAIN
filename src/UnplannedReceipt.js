@@ -795,6 +795,7 @@ const UnplannedReceipt = () => {
     {
       headerName: 'Serial No',
       field: 'serialno',
+      cellStyle: { textAlign: 'right' },
       editable: !showExcelButton,
       filter: true,
       sortable: false
@@ -802,6 +803,7 @@ const UnplannedReceipt = () => {
     {
       headerName: 'Qty',
       field: 'quantityReceived',
+      cellStyle: { textAlign: 'right' },
       editable: true,
       filter: true,
       sortable: false

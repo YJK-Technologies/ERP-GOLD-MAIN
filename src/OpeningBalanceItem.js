@@ -249,6 +249,7 @@ useEffect(() => {
     {
       headerName: "Qty",
       field: "billQty",
+      cellStyle: { textAlign: 'right' },
       editable: !showAsterisk,
       filter: true,
       sortable: false,
