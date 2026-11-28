@@ -16110,7 +16110,7 @@ const getallopeningBalDet = async (req, res) => {
 };
 
 const AddJournalHdr = async (req, res) => {
-  const { journal_no, company_code, transaction_date, created_by, modified_by,
+  const { journal_no, company_code, location_code, transaction_date, created_by, modified_by,
     tempstr1, tempstr2, tempstr3, tempstr4, datetime1, datetime2, datetime3, datetime4,
 
   } = req.body;
@@ -16122,6 +16122,7 @@ const AddJournalHdr = async (req, res) => {
       .input("mode", sql.NVarChar, "I") // Insert mode
       .input("journal_no", sql.NVarChar, journal_no)
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("transaction_date", sql.Date, transaction_date)
       .input("created_by", sql.NVarChar, created_by)
       .input("modified_by", sql.NVarChar, modified_by)
@@ -16133,7 +16134,7 @@ const AddJournalHdr = async (req, res) => {
       .input("datetime2", sql.NVarChar, datetime2)
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
-      .query(`EXEC [sp_journal_hdr] @mode,@journal_no,@company_code	,@transaction_date,@created_by,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+      .query(`EXEC [sp_journal_hdr_test] @mode,@journal_no,@company_code,@location_code,@transaction_date,@created_by,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
 `)
 
     if (result.recordset.length > 0) {
@@ -16150,14 +16151,15 @@ const AddJournalHdr = async (req, res) => {
 
 const JournaDeleteHdr = async (req, res) => {
 
-  const { journal_no, company_code } = req.body;
+  const { journal_no, company_code, location_code } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
     await pool.request()
       .input("journal_no", journal_no)
       .input("company_code", company_code)
-      .query(`EXEC [sp_journal_hdr] 'D',@journal_no,@company_code,'','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .input("location_code", location_code)
+      .query(`EXEC [sp_journal_hdr_test] 'D',@journal_no,@company_code,@location_code,'','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
     res.status(200).json("Journal Header deleted successfully");
   }
   catch (err) {
@@ -16167,7 +16169,7 @@ const JournaDeleteHdr = async (req, res) => {
 };
 
 const JournalUpdateHdr = async (req, res) => {
-  const { journal_no, company_code, transaction_date, modified_by } = req.body;
+  const { journal_no, company_code, location_code, transaction_date, modified_by } = req.body;
   try {
     const pool = await connection.connectToDatabase();
 
@@ -16176,10 +16178,11 @@ const JournalUpdateHdr = async (req, res) => {
       .input("mode", sql.NVarChar, "U")
       .input("journal_no", sql.NVarChar, journal_no)
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("transaction_date", sql.NVarChar, transaction_date)
       .input("modified_by", sql.NVarChar, modified_by)
 
-      .query(`EXEC [sp_journal_hdr] @mode,@journal_no,@company_code,@transaction_date,'',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+      .query(`EXEC [sp_journal_hdr_test] @mode,@journal_no,@company_code,@location_code,@transaction_date,'',@modified_by,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
 `);
     res.json({ success: true, message: "Data inserted successfully" });
   } catch (err) {
@@ -16191,7 +16194,7 @@ const JournalUpdateHdr = async (req, res) => {
 const GetAllJournalHdr = async (req, res) => {
   try {
     await connection.connectToDatabase();
-    const result = await sql.query(`EXEC [sp_journal_hdr] 'A','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+    const result = await sql.query(`EXEC [sp_journal_hdr_test] 'A','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
 
 `);
 
@@ -16204,7 +16207,7 @@ const GetAllJournalHdr = async (req, res) => {
 
 const AddJournalDetails = async (req, res) => {
   const {
-    journal_no, company_code, transaction_date, transaction_type, original_accountcode, contra_accountCode, journal_amount, Item_SNo, narration1, narration2, narration3, narration4, created_by, modified_by,
+    journal_no, company_code, location_code, transaction_date, transaction_type, original_accountcode, contra_accountCode, journal_amount, Item_SNo, narration1, narration2, narration3, narration4, created_by, modified_by,
     tempstr1, tempstr2, tempstr3, tempstr4, datetime1, datetime2, datetime3, datetime4,
 
   } = req.body;
@@ -16216,6 +16219,7 @@ const AddJournalDetails = async (req, res) => {
       .input("mode", sql.NVarChar, "I") // Insert mode
       .input("journal_no", sql.NVarChar, journal_no)
       .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("transaction_date", sql.Date, transaction_date)
       .input("transaction_type", sql.NVarChar, transaction_type)
       .input("original_accountcode", sql.NVarChar, original_accountcode)
@@ -16237,7 +16241,7 @@ const AddJournalDetails = async (req, res) => {
       .input("datetime3", sql.NVarChar, datetime3)
       .input("datetime4", sql.NVarChar, datetime4)
       .query(
-        `EXEC [sp_journal_details] @mode,@journal_no,@company_code,@transaction_date,@transaction_type,@original_accountcode,
+        `EXEC [sp_journal_details_test] @mode,@journal_no,@company_code,@location_code,@transaction_date,@transaction_type,@original_accountcode,
         @contra_accountCode,@journal_amount,@Item_SNo,@narration1,@narration2,@narration3,@narration4,'',@created_by,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
 
 
@@ -16250,7 +16254,7 @@ const AddJournalDetails = async (req, res) => {
 };
 
 const getJournalSC = async (req, res) => {
-  const { transaction_date, transaction_type, journal_no, original_accountcode, contra_accountCode, company_code } = req.body;
+  const { transaction_date, transaction_type, journal_no, original_accountcode, contra_accountCode, company_code, location_code } = req.body;
 
   try {
     // Connect to the database
@@ -16266,7 +16270,8 @@ const getJournalSC = async (req, res) => {
       .input("original_accountcode", sql.NVarChar, original_accountcode)
       .input("contra_accountCode", sql.NVarChar, contra_accountCode)
       .input("company_code", sql.NVarChar, company_code)
-      .query(`EXEC [sp_journal_details] @mode,@journal_no,@company_code,@transaction_date,@transaction_type,@original_accountcode,
+      .input("location_code", sql.NVarChar, location_code)
+      .query(`EXEC [sp_journal_details_test] @mode,@journal_no,@company_code,@location_code,@transaction_date,@transaction_type,@original_accountcode,
         @contra_accountCode,0,0,'','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
     `);
 
@@ -16283,7 +16288,7 @@ const getJournalSC = async (req, res) => {
 };
 
 const JournalDeletedet = async (req, res) => {
-  const { journal_no, company_code } = req.body;
+  const { journal_no, company_code, location_code } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -16291,7 +16296,8 @@ const JournalDeletedet = async (req, res) => {
     await pool.request()
       .input("journal_no", journal_no)
       .input("company_code", company_code)
-      .query(`EXEC [sp_journal_details] 'D',@journal_no,@company_code,'','','','',0,0,'','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
+      .input("location_code", location_code)
+      .query(`EXEC [sp_journal_details_test] 'D',@journal_no,@company_code,@location_code,'','','','',0,0,'','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL`);
 
     res.status(200).json("Journal Data deleted successfully");
   } catch (err) {
@@ -16304,7 +16310,7 @@ const JournalDeletedet = async (req, res) => {
 const GetAllJournalDet = async (req, res) => {
   try {
     await connection.connectToDatabase();
-    const result = await sql.query(`EXEC [sp_journal_details] 'A','','','','','','',0,0,'','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+    const result = await sql.query(`EXEC [sp_journal_details_test] 'A','','','','','','',0,0,'','','','','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
 
 `);
 
@@ -16984,7 +16990,7 @@ const JournalDetPrint = async (req, res) => {
 };
 
 const Journalsearch = async (req, res) => {
-  const { journal_no, transaction_date } = req.body;
+  const { journal_no, company_code, location_code, transaction_date } = req.body;
 
   try {
     const pool = await connection.connectToDatabase();
@@ -16992,8 +16998,10 @@ const Journalsearch = async (req, res) => {
       .request()
       .input("mode", sql.NVarChar, "SC")
       .input("journal_no", sql.NVarChar, journal_no)
+      .input("company_code", sql.NVarChar, company_code)
+      .input("location_code", sql.NVarChar, location_code)
       .input("transaction_date", sql.NVarChar, transaction_date)
-      .query(`EXEC [sp_journal_hdr] 'sc',@journal_no,'','','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+      .query(`EXEC [sp_journal_hdr_test] 'sc',@journal_no,@company_code,@location_code,'','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
 `);
     if (result.recordset.length > 0) {
       res.status(200).json(result.recordset);

@@ -623,6 +623,7 @@ function Grid() {
                 onChange={handleChangeItem}
                 options={filteredOptionItem}
                 className="exp-input-field"
+                classNamePrefix="react-select"
                 placeholder=""
                 styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -642,6 +643,7 @@ function Grid() {
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 options={filteredOptionVariant}
                 className="exp-input-field"
+                classNamePrefix="react-select"
                 placeholder=""
                 maxLength={25}
                 styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
@@ -676,7 +678,8 @@ function Grid() {
             pagination={true}
             paginationAutoPageSize={true}
             onRowSelected={onRowSelected}
-            headerHeight={25}
+            headerHeight={28}
+            rowHeight={25}
           />
         </div>
         <div>

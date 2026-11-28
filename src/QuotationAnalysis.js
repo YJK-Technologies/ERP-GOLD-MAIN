@@ -625,6 +625,7 @@ const QOanalysis = () => {
               onChange={handleChangePeriod}
               options={filteredOptionPeriod}
               className="border-secondary"
+              classNamePrefix="react-select"
               placeholder=""
               maxLength={18}
               styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
@@ -725,6 +726,8 @@ const QOanalysis = () => {
             pagination={true}
             paginationAutoPageSize={true}
             onGridReady={onGridReady}
+            headerHeight={28}
+            rowHeight={25}
           />
         </div>
       </div>

@@ -781,6 +781,7 @@ const handleTransactionClick = (transactionNo) => {
                 onChange={handleChangePeriod}
                 options={filteredOptionPeriod}
                 className="border-secondary"
+                classNamePrefix="react-select"
                 placeholder=""
                 required title="Please select a item code"
                 maxLength={18}
@@ -869,6 +870,7 @@ const handleTransactionClick = (transactionNo) => {
               <Select
                 id="InvoiceType"
                 className="exp-input-field"
+                classNamePrefix="react-select"
                 placeholder="Select a Invoice Type  "
                 options={filteredOptionInvoice}
                 value={selectedInvoice}
@@ -898,6 +900,8 @@ const handleTransactionClick = (transactionNo) => {
             pagination={true}
             paginationAutoPageSize={true}
             onGridReady={onGridReady}
+            headerHeight={28}
+            rowHeight={25}
           />
         </div>
       </div>

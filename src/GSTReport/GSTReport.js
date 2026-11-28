@@ -568,6 +568,7 @@ function Grid() {
               onChange={handleChangePeriod}
               options={filteredOptionPeriod}
               className="border-secondary"
+              classNamePrefix="react-select"
               placeholder=""
               styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
             />
@@ -604,6 +605,7 @@ function Grid() {
               onChange={handleChangeTax}
               options={filteredOptionTax}
               className="border-secondary"
+              classNamePrefix="react-select"
               placeholder=""
               styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
             />
@@ -618,6 +620,7 @@ function Grid() {
               onChange={handleChangeParty}
               options={filteredOptionParty}
               className="border-secondary"
+              classNamePrefix="react-select"
               placeholder=""
               styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
             />
@@ -664,6 +667,8 @@ function Grid() {
             pagination={true}
             paginationAutoPageSize={true}
             rowSelection="multiple"
+            headerHeight={28}
+            rowHeight={25}
           />
         </div>
       </div>

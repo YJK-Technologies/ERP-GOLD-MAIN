@@ -151,6 +151,7 @@ export default function JournalPopup({ open, handleClose, handlejournal }) {
         },
         body: JSON.stringify({
           company_code: sessionStorage.getItem('selectedCompanyCode'),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           journal_no, transaction_date, transaction_type: transaction_type, original_accountcode, contra_accountCode
         }) // Send company_no and company_name as search criteria
       });

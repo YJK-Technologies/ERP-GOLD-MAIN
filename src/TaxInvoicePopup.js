@@ -507,7 +507,7 @@ export default function TaxInvoicePopup({ open, handleClose, handletaxinvoice, i
                       <div class="col-md-12 text-center">
                         <div className="p-0 bg-body-tertiary">
                           <div className="purbut mb-0 d-flex justify-content-between" >
-                            <h1 align="left" className="purbut">{invoicetype === 'Proforma Invoice' ? 'Proforma Invoice' : 'Tax Invoice'}</h1>
+                            <h1 align="left" className="purbut">{invoicetype === 'Proforma Invoice' ? 'Proforma Invoice Help' : 'Invoice Help'}</h1>
                             <button onClick={handleClose} className="purbut btn btn-danger shadow-none rounded-0 h-70 fs-5" required title="Close">
                               <i class="fa-solid fa-xmark"></i>
                             </button>
@@ -550,6 +550,7 @@ export default function TaxInvoicePopup({ open, handleClose, handletaxinvoice, i
                                 onChange={handleChangeSales}
                                 options={filteredOptionSales}
                                 className="exp-input-field"
+                                classNamePrefix="react-select"
                                 placeholder="Sales type"
                                 isClearable
                               />
@@ -563,6 +564,7 @@ export default function TaxInvoicePopup({ open, handleClose, handletaxinvoice, i
                                 onChange={handleChangePay}
                                 options={filteredOptionPay}
                                 className="exp-input-field"
+                                classNamePrefix="react-select"
                                 placeholder="Pay type"
                                 isClearable
                               />
@@ -615,6 +617,8 @@ export default function TaxInvoicePopup({ open, handleClose, handletaxinvoice, i
                             pagination='true'
                             onSelectionChanged={handleRowSelected}
                             onRowDoubleClicked={handleRowDoubleClick}
+                            headerHeight={28}
+                            rowHeight={25}
                           />
                         </div>
                       </div>
@@ -670,7 +674,7 @@ export default function TaxInvoicePopup({ open, handleClose, handletaxinvoice, i
                               autoComplete='off'
                             />
                           </div>
-                          <div className="col-md-2 mb-2">
+                          {/* <div className="col-md-2 mb-2">
                             <input
                               type='text'
                               id='vendor_code'
@@ -718,7 +722,61 @@ export default function TaxInvoicePopup({ open, handleClose, handletaxinvoice, i
                               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                               autoComplete='off'
                             />
+                          </div> */}
+
+                          <div className="col-sm mb-2">
+                            <div title="Select the Sales type">
+                              <Select
+                                id="SalesType"
+                                value={selectedSales}
+                                onChange={handleChangeSales}
+                                options={filteredOptionSales}
+                                className="exp-input-field"
+                                classNamePrefix="react-select"
+                                placeholder="Sales type"
+                                isClearable
+                              />
+                            </div>
                           </div>
+                          <div className="col-sm mb-2">
+                            <div title="Select the Pay type">
+                              <Select
+                                id="PayType"
+                                value={selectedPay}
+                                onChange={handleChangePay}
+                                options={filteredOptionPay}
+                                className="exp-input-field"
+                                classNamePrefix="react-select"
+                                placeholder="Pay type"
+                                isClearable
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-2 mb-2">
+                            <input
+                              type='text'
+                              id='purchase_type'
+                              className='exp-input-field form-control'
+                              placeholder='Bill to Cus Name'
+                              value={billTo_customer_name}
+                              onChange={(e) => setbillTo_customer_name(e.target.value)}
+                              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                              autoComplete='off'
+                            />
+                          </div>
+                          <div className="col-md-2 mb-2">
+                            <input
+                              type='text'
+                              id='Pay_type'
+                              className='exp-input-field form-control'
+                              placeholder='Ship to Cus Name'
+                              value={shipTo_customer_name}
+                              onChange={(e) => setshipTo_customer_name(e.target.value)}
+                              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                              autoComplete='off'
+                            />
+                          </div>
+
                           <div className="mb-2 mt-2 d-flex justify-content-end">
                             <button className="" onClick={handleSearch} title="Search">
                               <FontAwesomeIcon icon={faMagnifyingGlass} />
@@ -739,6 +797,8 @@ export default function TaxInvoicePopup({ open, handleClose, handletaxinvoice, i
                               pagination='true'
                               onSelectionChanged={handleRowSelected}
                               onRowDoubleClicked={handleRowDoubleClick}
+                              headerHeight={28}
+                              rowHeight={25}
                             />
                           </div>
                         </div>

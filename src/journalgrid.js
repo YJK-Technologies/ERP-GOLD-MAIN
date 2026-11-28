@@ -535,6 +535,7 @@ function JournalGrid() {
     try {
       const Header = {
         company_code: sessionStorage.getItem("selectedCompanyCode"),
+        location_code: sessionStorage.getItem("selectedLocationCode"),
         transaction_date: transaction_date,
         created_by: sessionStorage.getItem("selectedUserCode"),
       };
@@ -633,6 +634,7 @@ function JournalGrid() {
 
         const Details = {
           company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           created_by: sessionStorage.getItem("selectedUserCode"),
           journal_no: journal_no,
           transaction_date: transaction_date,
@@ -769,6 +771,7 @@ function JournalGrid() {
         },
         body: JSON.stringify({
           company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           journal_no: journal_no,
         }),
       });
@@ -790,6 +793,7 @@ function JournalGrid() {
         },
         body: JSON.stringify({
           company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           journal_no: journal_no,
         }),
       });
@@ -1274,7 +1278,7 @@ function JournalGrid() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ journal_no: JournalNo,  
-          // company_code: sessionStorage.getItem('selectedCompanyCode')
+          company_code: sessionStorage.getItem('selectedCompanyCode')
         }),
       });
 
@@ -1361,7 +1365,10 @@ function JournalGrid() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ journal_no }),
+        body: JSON.stringify({ journal_no,
+          company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
+         }),
       });
       if (response.ok) {
         return true;
@@ -1378,6 +1385,7 @@ function JournalGrid() {
       for (const row of rowData) {
         const Details = {
           company_code: sessionStorage.getItem("selectedCompanyCode"),
+          location_code: sessionStorage.getItem("selectedLocationCode"),
           created_by: sessionStorage.getItem("selectedUserCode"),
           transaction_date,
           journal_no,

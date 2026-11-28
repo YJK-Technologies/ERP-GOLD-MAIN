@@ -632,6 +632,7 @@ function ReceivedGoodsRt() {
                                 onChange={handleChangeItem}
                                 options={filteredOptionItem}
                                 className="exp-input-field"
+                                classNamePrefix="react-select"
                                 placeholder=""
                                 onKeyDown={(e) => e.key === 'Enter' && fetchreceivedgoodsreport()}
                                 styles={{ menu: (provided) => ({ ...provided, zIndex: 9999 }) }}
@@ -656,6 +657,7 @@ function ReceivedGoodsRt() {
                             <Select
                                 id="returnType"
                                 className=" exp-input-field"
+                                classNamePrefix="react-select"
                                 placeholder=""
                                 required
                                 value={selectedPendingStatus}
@@ -689,6 +691,8 @@ function ReceivedGoodsRt() {
                             onSelectionChanged={onSelectionChanged}
                             pagination={true}
                             paginationAutoPageSize={true}
+                            headerHeight={28}
+                            rowHeight={25}
                         />
                     </div>
                 </div>

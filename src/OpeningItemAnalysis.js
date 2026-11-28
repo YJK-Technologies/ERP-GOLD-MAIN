@@ -383,6 +383,7 @@ function Grid() {
                                     onChange={handleChangeItem}
                                     options={filteredOptionItem}
                                     className="exp-input-field"
+                                    classNamePrefix="react-select"
                                     placeholder=""
                                     styles={{menu: (provided) => ({ ...provided, zIndex: 9999 })}}
                                 />
@@ -409,6 +410,8 @@ function Grid() {
                             pagination={true}
                             rowSelection="multiple"
                             paginationAutoPageSize={true}
+                            headerHeight={28}
+                            rowHeight={25}
                         />
                     </div>
                 </div>
